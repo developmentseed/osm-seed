@@ -1,7 +1,7 @@
 version: '2'
 services:
   web:
-    image: openstreetmap-website:v1
+    image: openseed-osm-website:v1
     build:
       context: ./openstreetmap-website
       dockerfile: Dockerfile
@@ -11,11 +11,11 @@ services:
     depends_on:
       - db
   db:
-    image: openstreetmap-db:v1
+    image: openseed-db:v1
     build:
       context: ./db
       dockerfile: Dockerfile
     ports:
-      - "5432:5432"
+      - "5432:5431"
     environment:
       POSTGRES_DB: openstreetmap
