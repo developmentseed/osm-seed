@@ -2,11 +2,20 @@ FROM ubuntu:16.04
 
 RUN apt-get update
 
+RUN apt-get install -y wget
+
+RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
+
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+
+RUN apt-get update
+
 RUN apt-get install -y ruby2.3 libruby2.3 ruby2.3-dev \
                      libmagickwand-dev libxml2-dev libxslt1-dev nodejs \
                      apache2 apache2-dev build-essential git-core \
-                     postgresql postgresql-contrib libpq-dev postgresql-server-dev-all \
+                     postgresql postgresql-contrib libpq-dev \
                      libsasl2-dev imagemagick libffi-dev
+
 
 RUN gem2.3 install bundler
 
