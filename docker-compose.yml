@@ -7,7 +7,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    command: bundle exec rails s -p 3000 -b '0.0.0.0'
     depends_on:
       - db
   db:
