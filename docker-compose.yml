@@ -18,3 +18,15 @@ services:
       - "5432:5431"
     environment:
       POSTGRES_DB: openstreetmap
+  import_osm:
+    image: openseed-import_osm:v1
+    build: 
+      context: ./osmosis
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+    environment:
+      S3_OSM_PATH: $S3_OSM_PATH
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+      AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
