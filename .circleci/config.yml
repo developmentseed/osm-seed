@@ -1,0 +1,58 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: docker:17.05.0-ce-git
+    working_directory: ~/osm-seed
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - caches/web.tar
+            - caches/db.tar
+            - caches/osmosis.tar
+
+      - run:
+        name: Load docker image layer caches
+        command: |
+          set +o pipefail
+          docker load -i caches/web.tar | true
+          docker load -i caches/db.tar | true
+          docker load -i caches/osmosis.tar | true
+
+      - run:
+        name: Build docker images
+        command: |
+          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+          docker build -t developmentseed/osmseed-web:${VERSION} openstreetmap-website/
+          docker build -t developmentseed/osmseed-db:${VERSION} db/
+          docker build -t developmentseed/osmseed-osmosis:${VERSION} osmosis/
+
+      - run:
+        name: Save Docker image layer caches
+        command: |
+          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+          mkdir -p caches
+          docker save -o caches/web.tar osmseed-web:${VERSION}
+          docker save -o caches/db.tar osmseed-db:${VERSION}
+          docker save -o caches/osmosis.tar osmseed-osmosis:${VERSION}
+
+      - save_cache:
+        key: v1-{{ .Branch }}-{{ epoch }}
+        paths:
+          - caches/web.tar
+          - caches/db.tar
+          - caches/osmosis.tar
+
+      - deploy:
+        name: Push docker images to DockerHub
+        command: |
+          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push developmentseed/osmseed-web:${VERSION}
+          docker push developmentseed/osmseed-db:${VERSION}
+          docker push developmentseed/osmseed-db:${VERSION}
