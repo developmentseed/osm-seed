@@ -37,9 +37,9 @@ jobs:
           command: |
             VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
             mkdir -p caches
-            docker save -o caches/web.tar osmseed-web:${VERSION}
-            docker save -o caches/db.tar osmseed-db:${VERSION}
-            docker save -o caches/osmosis.tar osmseed-osmosis:${VERSION}
+            docker save -o caches/web.tar developmentseed/osmseed-web:${VERSION}
+            docker save -o caches/db.tar developmentseed/osmseed-db:${VERSION}
+            docker save -o caches/osmosis.tar developmentseed/osmseed-osmosis:${VERSION}
 
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
