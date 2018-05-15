@@ -52,7 +52,7 @@ jobs:
           name: Push docker images to DockerHub
           command: |
             VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-            docker login -u $DOCKER_USER -p "$DOCKER_PASS"
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-web:${VERSION}
             docker push developmentseed/osmseed-db:${VERSION}
             docker push developmentseed/osmseed-db:${VERSION}
