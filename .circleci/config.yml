@@ -17,20 +17,20 @@ jobs:
             - caches/osmosis.tar
 
       - run:
-        name: Load docker image layer caches
-        command: |
-          set +o pipefail
-          docker load -i caches/web.tar | true
-          docker load -i caches/db.tar | true
-          docker load -i caches/osmosis.tar | true
+          name: Load docker image layer caches
+          command: |
+            set +o pipefail
+            docker load -i caches/web.tar | true
+            docker load -i caches/db.tar | true
+            docker load -i caches/osmosis.tar | true
 
       - run:
-        name: Build docker images
-        command: |
-          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          docker build -t developmentseed/osmseed-web:${VERSION} openstreetmap-website/
-          docker build -t developmentseed/osmseed-db:${VERSION} db/
-          docker build -t developmentseed/osmseed-osmosis:${VERSION} osmosis/
+          name: Build docker images
+          command: |
+            VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            docker build -t developmentseed/osmseed-web:${VERSION} openstreetmap-website/
+            docker build -t developmentseed/osmseed-db:${VERSION} db/
+            docker build -t developmentseed/osmseed-osmosis:${VERSION} osmosis/
 
       - run:
         name: Save Docker image layer caches
