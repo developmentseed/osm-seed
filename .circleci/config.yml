@@ -1,0 +1,135 @@
+version: 2
+jobs:
+  web:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+          paths:
+            - caches/web.tar
+
+      - run:
+          name: Load docker image cache
+          command: |
+            docker load -i caches/web.tar || true
+
+      - run:
+          name: Build application docker image
+          command: |
+            docker build --cache-from=web -t web openstreetmap-website/
+
+      - run:
+          name: Save docker image cache
+          command: |
+            mkdir -p caches
+            docker save -o caches/web.tar web
+
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/web.tar
+
+      - deploy:
+         name: Push docker image
+         command: |
+          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+          docker tag web developmentseed/osmseed-web:${VERSION}
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push developmentseed/osmseed-web:${VERSION}
+
+  db:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+          paths:
+            - caches/db.tar
+
+      - run:
+          name: Load docker image cache
+          command: |
+            docker load -i caches/db.tar || true
+
+      - run:
+          name: Build application docker image
+          command: |
+            docker build --cache-from=db -t db db/
+
+      - run:
+          name: Save docker image cache
+          command: |
+            mkdir -p caches
+            docker save -o caches/db.tar db
+
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/db.tar
+
+      - deploy:
+         name: Push docker image
+         command: |
+          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+          docker tag db developmentseed/osmseed-db:${VERSION}
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push developmentseed/osmseed-db:${VERSION}
+
+  osmosis:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+          paths:
+            - caches/osmosis.tar
+
+      - run:
+          name: Load docker image cache
+          command: |
+            docker load -i caches/osmosis.tar || true
+
+      - run:
+          name: Build application docker image
+          command: |
+            docker build --cache-from=osmosis -t osmosis osmosis/
+
+      - run:
+          name: Save docker image cache
+          command: |
+            mkdir -p caches
+            docker save -o caches/osmosis.tar osmosis
+
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/osmosis.tar
+
+      - deploy:
+         name: Push docker image
+         command: |
+          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+          docker tag osmosis developmentseed/osmseed-osmosis:${VERSION}
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push developmentseed/osmseed-osmosis:${VERSION}
+
+workflows:
+  version: 2
+  build_and_push:
+    jobs:
+      - web
+      - db
+      - osmosis
