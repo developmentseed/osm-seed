@@ -31,9 +31,9 @@ jobs:
             docker save -o caches/web.tar web
 
       - save_cache:
-        key: v1-{{ .Branch }}-{{ epoch }}
-        paths:
-          - caches/web.tar
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/web.tar
 
       - deploy:
          name: Push docker image
@@ -74,9 +74,9 @@ jobs:
             docker save -o caches/db.tar db
 
       - save_cache:
-        key: v1-{{ .Branch }}-{{ epoch }}
-        paths:
-          - caches/db.tar
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/db.tar
 
       - deploy:
          name: Push docker image
@@ -117,9 +117,9 @@ jobs:
             docker save -o caches/osmosis.tar osmosis
 
       - save_cache:
-        key: v1-{{ .Branch }}-{{ epoch }}
-        paths:
-          - caches/osmosis.tar
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/osmosis.tar
 
       - deploy:
          name: Push docker image
