@@ -16,8 +16,7 @@ jobs:
       - run:
           name: Load docker image cache
           command: |
-            set -o pipefail
-            docker load -i caches/web.tar | true
+            docker load -i caches/web.tar || true
 
       - run:
           name: Build application docker image
@@ -59,8 +58,7 @@ jobs:
       - run:
           name: Load docker image cache
           command: |
-            set -o pipefail
-            docker load -i caches/db.tar | true
+            docker load -i caches/db.tar || true
 
       - run:
           name: Build application docker image
@@ -102,8 +100,7 @@ jobs:
       - run:
           name: Load docker image cache
           command: |
-            set -o pipefail
-            docker load -i caches/osmosis.tar | true
+            docker load -i caches/osmosis.tar || true
 
       - run:
           name: Build application docker image
