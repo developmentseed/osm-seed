@@ -1,9 +1,38 @@
 ### Docker setup for postgres database instance
 
-The OSM `API server` database - builds off a postgres 9.4 docker image, and installs custom functions needed by `openstreetmap`.
+The OSM `API server` database - builds off a postgres 10 docker image, and installs custom functions needed by `openstreetmap`.
 
 The functions currently are copied over from the `openstreetmap-website` code-base. There should ideally be a better way to do this.
 
 If run via the `docker-compose` file, running this container will expose the database on the host machine on port `5431`.
 
-You can run this container by itself by doing `docker build .` and `docker run <image_id>`
+
+### Running container by itself 
+
+- Build the container
+
+```
+docker build -t osmdb .
+```
+
+- Run the container
+
+We are using the official postgres image we can pass in a username and password as an environment variable when you docker run it. Like so:
+
+
+```
+docker run -e POSTGRES_DB=openstreetmap \
+-e POSTGRES_PASSWORD=1234 \
+-e POSTGRES_USER=postgres \
+-p "5432:5432" \
+-it osmdb
+```
+
+- Those will create automatly the user, password and database.
+
+## Test
+
+```
+psql -h 0.0.0.0 -p 5432 -d openstreetmap -U postgres --password
+
+```
