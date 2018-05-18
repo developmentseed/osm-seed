@@ -1,5 +1,5 @@
 FROM ubuntu:16.04
-# FROM https://www.phusionpassenger.com/library/walkthroughs/deploy/ruby/ownserver/apache/oss/xenial/deploy_app.html
+
 ENV workdir /var/www
 
 # Production OSM setup
@@ -64,10 +64,12 @@ RUN bundle update listen && bundle install
 #  Configure database.yml, application.yml
 ADD config/database.yml $workdir/config/database.yml
 ADD config/application.yml $workdir/config/application.yml
-ADD config/secrets.yml $workdir/config/secrets.yml
+RUN echo "#session key \n\
+production: \n\
+  secret_key_base: $(bundle exec rake secret)" > $workdir/config/secrets.yml
 
 # # Protect sensitive information
-# RUN chmod 600 $workdir/config/database.yml $workdir/config/application.yml
+RUN chmod 600 $workdir/config/database.yml $workdir/config/application.yml $workdir/config/secrets.yml
 # Precompile the website assets
 RUN bundle exec rake assets:precompile
 # The rack interface requires a `tmp` directory
@@ -80,12 +82,6 @@ RUN a2dissite 000-default
 RUN a2ensite production
 
 
-# Install openstreetmap-cgimap from instructions at
-# <https://github.com/zerebubuth/openstreetmap-cgimap>.
-# RUN apt-get install -y libxml2-dev libpqxx3-dev libfcgi-dev \
-#   libboost-dev libboost-regex-dev libboost-program-options-dev \
-#   libboost-date-time-dev libmemcached-dev \
-#   automake autoconf
 #===============================================
 # RUN apt-get install -y libxml2-dev libpqxx-dev libfcgi-dev \
 #   libboost-dev libboost-regex-dev libboost-program-options-dev \
@@ -108,35 +104,21 @@ RUN a2ensite production
 # RUN apt-get install -y daemontools
 #===============================================
 
-# RUN echo "#session key \n \
-# production: \n\
-#   secret_key_base: $(bundle exec rake secret)" > $workdir/config/secrets.yml
-
-
 # Enable required apache modules for the cgimap Apache service
 RUN a2enmod proxy proxy_http rewrite
 
 ADD config/cgimap.conf /tmp/
+
 RUN sed -e 's/RewriteRule ^(.*)/#RewriteRule ^(.*)/' \
         -e 's/\/var\/www/\/var\/www\/public/g' \
         /tmp/cgimap.conf > /etc/apache2/sites-available/cgimap.conf
 RUN chmod 644 /etc/apache2/sites-available/cgimap.conf
 
-# # ADD config/cgimap.conf /etc/apache2/sites-available/cgimap.conf
-# # RUN chmod 644 /etc/apache2/sites-available/cgimap.conf
-# # RUN chown root:root /etc/apache2/sites-available/cgimap.conf
-# # RUN a2enmod rewrite
-
 RUN a2ensite cgimap
 
 RUN apache2ctl configtest
 
-RUN bundle exec rake secret
-# ENV SECRET_KEY_BASE RAILS_ENV=production rake secret
-
-
-
-RUN service apache2 restart
+# RUN bundle exec rake secret
 
 RUN chown -R www-data: /var/www
 
