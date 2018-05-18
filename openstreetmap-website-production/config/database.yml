@@ -4,5 +4,5 @@ production:
   database: openstreetmap
   username: postgres
   password: 1234
-  host: osmdatabase
+  host: db
   encoding: utf8

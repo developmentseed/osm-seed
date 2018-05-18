@@ -24,3 +24,12 @@ NOTE: The map-tiles on the instance are being served from the main osm.org websi
 ### Development
 
 See README notes in individual folders for details about individual components.
+
+
+
+### Production
+
+```
+docker-compose -f docker-compose build.yml up
+
+```

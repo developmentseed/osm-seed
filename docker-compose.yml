@@ -9,20 +9,6 @@ services:
       - "3000:3000"
     depends_on:
       - db
-  # web-production:
-  #   image: openseed-osm-website-production:v1
-  #   build:
-  #     context: ./openstreetmap-website-production
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     POSTGRES_HOST: $POSTGRES_HOST
-  #     POSTGRES_DB: $POSTGRES_DB
-  #     POSTGRES_USER: $POSTGRES_USER
-  #     POSTGRES_PASSWORD: $POSTGRES_PASSWORD
   db:
     image: openseed-db:v1
     build:
