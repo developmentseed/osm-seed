@@ -1,7 +1,7 @@
 version: '2'
 services:
-  web:
-    image: openseed-osm-website:v1
+  web-production:
+    image: openstreetmap-website-production:v1
     build:
       context: ./openstreetmap-website-production
       dockerfile: Dockerfile
