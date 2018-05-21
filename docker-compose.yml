@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   web:
     image: openseed-osm-website:v1
@@ -6,7 +6,9 @@ services:
       context: ./openstreetmap-website
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "80:80"
+    env_file: 
+      - ./.env
     depends_on:
       - db
   db:
@@ -15,9 +17,9 @@ services:
       context: ./db
       dockerfile: Dockerfile
     ports:
-      - "5432:5431"
-    environment:
-      POSTGRES_DB: openstreetmap
+      - "5432:5432"
+    env_file: 
+      - ./.env
   import_osm:
     image: openseed-import_osm:v1
     build: 
@@ -25,8 +27,5 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - web
-    environment:
-      S3_OSM_PATH: $S3_OSM_PATH
-      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-      AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+    env_file: 
+      - ./.env

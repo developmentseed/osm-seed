@@ -1,8 +1,0 @@
-# Let's edit later or set new 
-production:
-  adapter: postgresql
-  database: openstreetmap
-  username: postgres
-  password: 1234
-  host: db
-  encoding: utf8
