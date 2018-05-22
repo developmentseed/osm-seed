@@ -19,3 +19,16 @@ docker build -t prod .
 ```
 docker run -p "80:80" -h localhost -it prod /bin/bash
 ```
+
+
+
+
+```
+
+docker run --rm \
+  -e MAIL_USER=noreply@rub21.com.tld \
+  -e MAIL_PASS=abc12345678 \
+  -ti tvial/docker-mailserver:latest \
+  /bin/sh -c 'echo "$MAIL_USER|$(doveadm pw -s CRAM-MD5 -u $MAIL_USER -p $MAIL_PASS)"' >> config/postfix-accounts.cf
+
+  ```

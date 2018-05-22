@@ -1,5 +1,4 @@
 FROM ubuntu:16.04
-
 ENV workdir /var/www
 
 # Production OSM setup
@@ -14,12 +13,34 @@ RUN apt-get update
 
 # Install the openstreetmap-website dependencies and passenger dependencies
 RUN apt-get install -y ruby2.3 libruby2.3 ruby2.3-dev \
-                     libmagickwand-dev libxml2-dev libxslt1-dev nodejs \
-                     apache2 apache2-dev build-essential git \
-                     postgresql postgresql-contrib libpq-dev \
-                     libsasl2-dev imagemagick libffi-dev
-
+    libmagickwand-dev libxml2-dev libxslt1-dev \
+    apache2 apache2-dev build-essential git \
+    postgresql postgresql-contrib libpq-dev \
+    libsasl2-dev imagemagick libffi-dev curl
 RUN gem2.3 install bundler
+
+# Install node for some images process dependencies
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get install -y nodejs
+
+# Fixing image_optim issues, installing a bush of libraries from : https://github.com/toy/image_optim#pngout-installation-optional
+RUN apt-get install -y advancecomp gifsicle jhead jpegoptim optipng
+RUN git clone --recursive https://github.com/kornelski/pngquant.git && \
+    cd pngquant && \
+    ./configure && \
+    make && \
+    make install
+RUN git clone https://github.com/tjko/jpeginfo.git && \
+    cd jpeginfo && \
+    ./configure && \
+    make && \
+    make strip && \
+    make install
+RUN wget http://iweb.dl.sourceforge.net/project/pmt/pngcrush/1.8.12/pngcrush-1.8.12.tar.gz && \
+    tar zxf pngcrush-1.8.12.tar.gz && \
+    cd pngcrush-1.8.12 && \
+    make && cp -f pngcrush /usr/local/bin
+RUN npm install -g svgo
 
 # Install our PGP key and add HTTPS support for APT
 RUN apt-get install -y dirmngr gnupg
@@ -46,7 +67,7 @@ RUN /usr/sbin/passenger-memory-stats
 RUN rm -rf $workdir
 RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
 WORKDIR $workdir
-RUN git checkout master
+RUN git checkout 2fd0d2304f05bdac456e654681cd26565c2d7f08
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
@@ -78,11 +99,10 @@ RUN a2ensite production
 
 # Install openstreetmap-cgimap
 RUN apt-get install -y libxml2-dev libpqxx-dev libfcgi-dev \
-  libboost-dev libboost-regex-dev libboost-program-options-dev \
-  libboost-date-time-dev libboost-filesystem-dev \
-  libboost-system-dev libboost-locale-dev libmemcached-dev \
-  libcrypto++-dev automake autoconf libtool libyajl-dev
-
+    libboost-dev libboost-regex-dev libboost-program-options-dev \
+    libboost-date-time-dev libboost-filesystem-dev \
+    libboost-system-dev libboost-locale-dev libmemcached-dev \
+    libcrypto++-dev automake autoconf libtool libyajl-dev
 ENV cgimap /tmp/openstreetmap-cgimap
 RUN git clone git://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
 RUN cd $cgimap &&\
@@ -91,7 +111,7 @@ RUN cd $cgimap &&\
 	make &&\
 	make install
 
-# daemontools provides the `fghack` program required for running the `cgimap`
+# Daemontools provides the `fghack` program required for running the `cgimap`
 RUN apt-get install -y daemontools
 
 # Enable required apache modules for the cgimap Apache service
