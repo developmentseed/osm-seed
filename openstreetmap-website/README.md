@@ -4,4 +4,18 @@ The docker container installs dependencies required for the website, checks out 
 
 Config files can be edited in the `config/` folder.
 
-NOTE: This currently runs a development version of the site. This will change.
+
+### Running container by itself
+
+- Build
+
+```
+docker build -t prod .
+
+```
+
+- Run
+
+```
+docker run -p "80:80" -h localhost -it prod /bin/bash
+```

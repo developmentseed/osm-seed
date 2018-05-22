@@ -1,40 +1,112 @@
 FROM ubuntu:16.04
 
-RUN apt-get update
+ENV workdir /var/www
 
+# Production OSM setup
+ENV RAILS_ENV=production
+
+# Postgres dependecies
+RUN apt-get update
 RUN apt-get install -y wget
-
 RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
-
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
-
 RUN apt-get update
 
+# Install the openstreetmap-website dependencies and passenger dependencies
 RUN apt-get install -y ruby2.3 libruby2.3 ruby2.3-dev \
                      libmagickwand-dev libxml2-dev libxslt1-dev nodejs \
-                     apache2 apache2-dev build-essential git-core \
+                     apache2 apache2-dev build-essential git \
                      postgresql postgresql-contrib libpq-dev \
                      libsasl2-dev imagemagick libffi-dev
 
-
 RUN gem2.3 install bundler
 
-RUN mkdir -p app
+# Install our PGP key and add HTTPS support for APT
+RUN apt-get install -y dirmngr gnupg
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7
+RUN apt-get install -y apt-transport-https ca-certificates
 
-WORKDIR /app
+# Add our APT repository
+RUN sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main > /etc/apt/sources.list.d/passenger.list'
+RUN apt-get update
 
-RUN git clone https://github.com/openstreetmap/openstreetmap-website.git
+# Install Passenger + Apache module
+RUN apt-get install -y libapache2-mod-passenger
 
-WORKDIR /app/openstreetmap-website
+# Enable the Passenger Apache module and restart Apache
+RUN echo "ServerName $(cat /etc/hostname)" >> /etc/apache2/apache2.conf
+RUN a2enmod passenger
+RUN apache2ctl restart
 
-RUN git checkout master # we will want to checkout specific commits / versions
+# Check installation
+RUN /usr/bin/passenger-config validate-install
+RUN /usr/sbin/passenger-memory-stats
 
-RUN bundle install
+# Clone the openstreetmap-website
+RUN rm -rf $workdir
+RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
+WORKDIR $workdir
+RUN git checkout master
 
-ADD config/database.yml /app/openstreetmap-website/config/database.yml
+# Install the javascript runtime required by the `execjs` gem in
+RUN apt-get install -y libv8-dev
+RUN echo "gem 'therubyracer'" >> Gemfile
 
-ADD config/application.yml /app/openstreetmap-website/config/application.yml
+# Install app dependencies
+RUN bundle update listen && bundle install
 
-EXPOSE 3000
+#  Configure database.yml, application.yml
+ADD config/database.yml $workdir/config/database.yml
+ADD config/application.yml $workdir/config/application.yml
+RUN echo "#session key \n\
+production: \n\
+  secret_key_base: $(bundle exec rake secret)" > $workdir/config/secrets.yml
 
-CMD bundle exec rails db:migrate && bundle exec rails server -p 3000 -b '0.0.0.0'
+# Protect sensitive information
+RUN chmod 600 $workdir/config/database.yml $workdir/config/application.yml $workdir/config/secrets.yml
+
+# Precompile the website assets
+RUN bundle exec rake assets:precompile
+
+# The rack interface requires a `tmp` directory
+RUN ln -s /tmp /var/www/tmp
+
+# Add Apache configuration file
+ADD config/production.conf /etc/apache2/sites-available/production.conf
+RUN a2dissite 000-default
+RUN a2ensite production
+
+# Install openstreetmap-cgimap
+RUN apt-get install -y libxml2-dev libpqxx-dev libfcgi-dev \
+  libboost-dev libboost-regex-dev libboost-program-options-dev \
+  libboost-date-time-dev libboost-filesystem-dev \
+  libboost-system-dev libboost-locale-dev libmemcached-dev \
+  libcrypto++-dev automake autoconf libtool libyajl-dev
+
+ENV cgimap /tmp/openstreetmap-cgimap
+RUN git clone git://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
+RUN cd $cgimap &&\
+	./autogen.sh &&\
+	./configure &&\
+	make &&\
+	make install
+
+# daemontools provides the `fghack` program required for running the `cgimap`
+RUN apt-get install -y daemontools
+
+# Enable required apache modules for the cgimap Apache service
+RUN a2enmod proxy proxy_http rewrite
+
+# Config the virtual host apache2
+ADD config/cgimap.conf /tmp/
+RUN sed -e 's/RewriteRule ^(.*)/#RewriteRule ^(.*)/' \
+        -e 's/\/var\/www/\/var\/www\/public/g' \
+        /tmp/cgimap.conf > /etc/apache2/sites-available/cgimap.conf
+RUN chmod 644 /etc/apache2/sites-available/cgimap.conf
+RUN a2ensite cgimap
+RUN apache2ctl configtest
+
+# Permissions
+RUN chown -R www-data: /var/www
+
+CMD bundle exec rails db:migrate && apachectl -k start -DFOREGROUND

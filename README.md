@@ -1,4 +1,4 @@
-_Work in Progress_
+# OSM SEED
 
 Repository to hold Dockerfiles for a containerized OSM.
 
@@ -17,10 +17,9 @@ Run `docker-compose build` to build all Dockerfiles defined in `docker-compose.y
 
 Run `source .env && docker-compose up` to run all containers defined in `docker-compose`
 
-Once `docker-compose` is running, you should be able to access a local instance of the OpenStreetMap website on `http://localhost:3000`
+Once `docker-compose` is running, you should be able to access a local instance of the OpenStreetMap website on `http://localhost:80`
 
-NOTE: The map-tiles on the instance are being served from the main osm.org website currently
-
-### Development
-
-See README notes in individual folders for details about individual components.
+NOTE: 
+ 
+ - The map-tiles on the instance are being served from the main osm.org website currently.
+ - Make sure the port 5432 and 80 are not busy.
