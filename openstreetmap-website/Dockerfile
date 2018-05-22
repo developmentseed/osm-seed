@@ -129,4 +129,5 @@ RUN apache2ctl configtest
 # Permissions
 RUN chown -R www-data: /var/www
 
+RUN apt-get install nano
 CMD bundle exec rails db:migrate && apachectl -k start -DFOREGROUND
