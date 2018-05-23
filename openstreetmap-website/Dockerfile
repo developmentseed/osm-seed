@@ -107,7 +107,7 @@ RUN chmod 600 $workdir/config/database.yml $workdir/config/application.yml $work
 ADD config/action_mailer.rb config/initializers/action_mailer.rb
 
 # Precompile the website assets
-RUN bundle exec rake assets:precompile && RAILS_ENV=production rake assets:precompile
+RUN bundle exec rake assets:precompile
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
 RUN ln -s /tmp /var/www/tmp
@@ -131,5 +131,8 @@ RUN apache2ctl configtest
 
 # Permissions
 RUN chown -R www-data: /var/www
-RUN apt-get install nano
-CMD bundle exec rails db:migrate && apachectl -k start -DFOREGROUND
+
+# Script to start the app
+ADD start.sh $workdir/start.sh
+
+CMD $workdir/start.sh
