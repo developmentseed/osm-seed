@@ -29,3 +29,12 @@ services:
       - web
     env_file: 
       - ./.env
+  # dbbackup:
+  #   image: openseed-dbbackup:v1
+  #   build: 
+  #     context: ./dbbackup
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - web
+  #   env_file: 
+  #     - ./.env
