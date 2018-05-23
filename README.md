@@ -23,3 +23,16 @@ NOTE:
  
  - The map-tiles on the instance are being served from the main osm.org website currently.
  - Make sure the port 5432 and 80 are not busy.
+
+
+# Building and Running the containers by themself in a network
+
+Sometime you may require building the container by itself, so to do that and to put the container on the same network, first you should create a network.
+
+e.g
+
+```
+docker network create osm_network
+
+```
+ And then follow the README files in each container folder. 

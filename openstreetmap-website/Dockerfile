@@ -42,12 +42,29 @@ RUN wget http://iweb.dl.sourceforge.net/project/pmt/pngcrush/1.8.12/pngcrush-1.8
     make && cp -f pngcrush /usr/local/bin
 RUN npm install -g svgo
 
-# Install our PGP key and add HTTPS support for APT
+# Install openstreetmap-cgimap
+RUN apt-get install -y libxml2-dev libpqxx-dev libfcgi-dev \
+    libboost-dev libboost-regex-dev libboost-program-options-dev \
+    libboost-date-time-dev libboost-filesystem-dev \
+    libboost-system-dev libboost-locale-dev libmemcached-dev \
+    libcrypto++-dev automake autoconf libtool libyajl-dev
+ENV cgimap /tmp/openstreetmap-cgimap
+RUN git clone git://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
+RUN cd $cgimap &&\
+    ./autogen.sh &&\
+    ./configure &&\
+    make &&\
+    make install
+
+# Daemontools provides the `fghack` program required for running the `cgimap`
+RUN apt-get install -y daemontools
+
+# Install the PGP key and add HTTPS support for APT
 RUN apt-get install -y dirmngr gnupg
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7
 RUN apt-get install -y apt-transport-https ca-certificates
 
-# Add our APT repository
+# Add the APT repository
 RUN sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main > /etc/apt/sources.list.d/passenger.list'
 RUN apt-get update
 
@@ -76,7 +93,7 @@ RUN echo "gem 'therubyracer'" >> Gemfile
 # Install app dependencies
 RUN bundle update listen && bundle install
 
-#  Configure database.yml, application.yml
+# Configure database.yml, application.yml and secrets.yml
 ADD config/database.yml $workdir/config/database.yml
 ADD config/application.yml $workdir/config/application.yml
 RUN echo "#session key \n\
@@ -86,33 +103,19 @@ production: \n\
 # Protect sensitive information
 RUN chmod 600 $workdir/config/database.yml $workdir/config/application.yml $workdir/config/secrets.yml
 
-# Precompile the website assets
-RUN bundle exec rake assets:precompile
+# Configure ActionMailer SMTP settings, Replace config/initializers/action_mailer.rb with out configurations
+ADD config/action_mailer.rb config/initializers/action_mailer.rb
 
-# The rack interface requires a `tmp` directory
+# Precompile the website assets
+RUN bundle exec rake assets:precompile && RAILS_ENV=production rake assets:precompile
+
+# The rack interface requires a `tmp` directory to use openstreetmap-cgimap
 RUN ln -s /tmp /var/www/tmp
 
 # Add Apache configuration file
 ADD config/production.conf /etc/apache2/sites-available/production.conf
 RUN a2dissite 000-default
 RUN a2ensite production
-
-# Install openstreetmap-cgimap
-RUN apt-get install -y libxml2-dev libpqxx-dev libfcgi-dev \
-    libboost-dev libboost-regex-dev libboost-program-options-dev \
-    libboost-date-time-dev libboost-filesystem-dev \
-    libboost-system-dev libboost-locale-dev libmemcached-dev \
-    libcrypto++-dev automake autoconf libtool libyajl-dev
-ENV cgimap /tmp/openstreetmap-cgimap
-RUN git clone git://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
-RUN cd $cgimap &&\
-	./autogen.sh &&\
-	./configure &&\
-	make &&\
-	make install
-
-# Daemontools provides the `fghack` program required for running the `cgimap`
-RUN apt-get install -y daemontools
 
 # Enable required apache modules for the cgimap Apache service
 RUN a2enmod proxy proxy_http rewrite
@@ -128,6 +131,5 @@ RUN apache2ctl configtest
 
 # Permissions
 RUN chown -R www-data: /var/www
-
 RUN apt-get install nano
 CMD bundle exec rails db:migrate && apachectl -k start -DFOREGROUND
