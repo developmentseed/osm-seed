@@ -129,7 +129,7 @@ RUN chmod 644 /etc/apache2/sites-available/cgimap.conf
 RUN a2ensite cgimap
 RUN apache2ctl configtest
 
-# Permissions
+# Set Permissions for www-data
 RUN chown -R www-data: /var/www
 
 # Script to start the app
