@@ -20,8 +20,8 @@ jobs:
 
       - run:
           name: Build application docker image
-          command: |
-            docker build --cache-from=web -t web openstreetmap-website/
+          command: docker build --cache-from=web -t web openstreetmap-website/
+          no_output_timeout: 60m
 
       - run:
           name: Save docker image cache

@@ -4,29 +4,19 @@ The OSM `API server` database - builds off a postgres 10 docker image, and insta
 
 The functions currently are copied over from the `openstreetmap-website` code-base. There should ideally be a better way to do this.
 
-If run via the `docker-compose` file, running this container will expose the database on the host machine on port `5431`.
+If run via the `docker-compose` file, running this container will expose the database on the host machine on port `5432`.
 
 
-### Running container by itself in a network
+### Building container by itself in a network
 
-
-- Create a network for the DB and openstreetmap-website
-
-
-```
-docker network create osm_network
-
-```
-
-- Build the container
 
 ```
 docker build --network osm_network -t osmdb .
 
 ```
 
+### Running container
 
-- Run the container
 
 We are using the official postgres image we can pass in a username and password as an environment variable when you docker run it. Like so:
 
@@ -37,7 +27,7 @@ docker run -d \
 -e POSTGRES_PASSWORD=1234 \
 -e POSTGRES_USER=postgres \
 -p "5432:5432" \
---name osmdatabase  \
+--name db  \
 --network osm_network \
 osmdb
 ```
