@@ -23,4 +23,6 @@ elif [ "$ACTION" = "restore" ]; then
     gzip -f -d $restoreFile
     # Restore the database
     psql -h $POSTGRES_HOST -U $POSTGRES_USER  -d $POSTGRES_DB -f "${restoreFile%.*}"
+else
+    echo "The ACTION = 'backup' or 'restore' must be set up"
 fi

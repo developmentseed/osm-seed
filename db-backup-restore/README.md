@@ -1,4 +1,4 @@
-# Container to backup and restore the osm-seed DB
+# Backup and restore the osm-seed DB
 
 This container will take a backup to the database and it will compress  according to the current date and finally, it will upload the file to S3
 
