@@ -126,6 +126,47 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push developmentseed/osmseed-osmosis:${VERSION}
 
+  dbbackup:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+          paths:
+            - caches/dbbackup.tar
+
+      - run:
+          name: Load docker image cache
+          command: |
+            docker load -i caches/dbbackup.tar || true
+
+      - run:
+          name: Build application docker image
+          command: |
+            docker build --cache-from=dbbackup -t dbbackup dbbackup/
+
+      - run:
+          name: Save docker image cache
+          command: |
+            mkdir -p caches
+            docker save -o caches/dbbackup.tar dbbackup
+
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/dbbackup.tar
+
+      - deploy:
+         name: Push docker image
+         command: |
+          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+          docker tag dbbackup developmentseed/osmseed-dbbackup:${VERSION}
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push developmentseed/osmseed-dbbackup:${VERSION}
 workflows:
   version: 2
   build_and_push:
@@ -133,3 +174,4 @@ workflows:
       - web
       - db
       - osmosis
+      - dbbackup
