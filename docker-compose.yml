@@ -20,13 +20,20 @@ services:
       - "5432:5432"
     env_file: 
       - ./.env
-  import_osm:
-    image: openseed-import_osm:v1
+  replication:
+    image: openseed-replication:v1
     build: 
       context: ./osmosis
       dockerfile: Dockerfile
     depends_on:
       - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep the replication for a while!;
+      sleep 40;
+      echo Creating the replication!;
+      ./import_osm.sh"
     env_file: 
       - ./.env
   dbbackup:

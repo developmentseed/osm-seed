@@ -3,11 +3,11 @@
 Dockerfile definition to run a container with `osmosis` installed. This container definition will be responsible to run various tasks:
 
  - Import OSM data from a pbf file on s3 into the api database
- - Export data from the api database to a pbf and upload to s3
+ - Export data from the api database to osm.bz2 and upload to s3
 
 This container needs some environment variables passed into it in order to run:
 
- - `S3_OSM_PATH` - path on s3 to pbf file to import (if using `import_osm.sh`)
+ - `S3_OSM_PATH` - path  to bucket e.g: `s3://osm-seed`
  - `AWS_ACCESS_KEY_ID` - your AWS access key
  - `AWS_SECRET_ACCESS_KEY` - AWS secret
  - `AWS_DEFAULT_REGION` - AWS region for s3 access
