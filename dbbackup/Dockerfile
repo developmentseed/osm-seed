@@ -12,5 +12,5 @@ RUN pip install awscli
 
 WORKDIR $workdir
 ADD script.sh $workdir/script.sh
-
+RUN apt-get install -y nano
 CMD ./script.sh
