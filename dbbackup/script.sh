@@ -15,10 +15,12 @@ if [ "$ACTION" = "backup" ]; then
     echo "$S3_OSM_PATH/database/$backupFile" > $stateFile 
     aws s3 cp $stateFile $S3_OSM_PATH/database/$stateFile
 elif [ "$ACTION" = "restore" ]; then
+    # Get the state.txt file from s3
     aws s3 cp $S3_OSM_PATH/database/$stateFile .
     dbPath=$(head -n 1 $stateFile)
     echo $dbPath
     aws s3 cp $dbPath $restoreFile
     gzip -f -d $restoreFile
+    # Restore the database
     psql -h $POSTGRES_HOST -U $POSTGRES_USER  -d $POSTGRES_DB -f "${restoreFile%.*}"
 fi
