@@ -164,9 +164,9 @@ jobs:
          name: Push docker image
          command: |
           VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          docker tag db-backup-restore developmentseed/dbbackup-restore:${VERSION}
+          docker tag dbbackup developmentseed/osmseed-dbbackup:${VERSION}
           docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push developmentseed/dbbackup-restore:${VERSION}
+          docker push developmentseed/osmseed-dbbackup:${VERSION}
 workflows:
   version: 2
   build_and_push:
