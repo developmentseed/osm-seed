@@ -36,10 +36,10 @@ services:
       ./import_osm.sh"
     env_file: 
       - ./.env
-  dbbackup:
-    image: openseed-dbbackup:v1
+  db-backup-restore:
+    image: openseed-db-backup-restore:v1
     build: 
-      context: ./dbbackup
+      context: ./db-backup-restore
       dockerfile: Dockerfile
     depends_on:
       - web
