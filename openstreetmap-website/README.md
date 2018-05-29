@@ -67,9 +67,9 @@ docker run \
 -e POSTGRES_DB=openstreetmap \
 -e POSTGRES_USER=postgres \
 -e POSTGRES_PASSWORD=1234 \
--e MAILER_ADDRESS="smtp.gmail.com" \
--e MAILER_DOMAIN="gmail.com" \
--e MAILER_USERNAME="osmseed@gmail.com" \
+-e MAILER_ADDRESS=smtp.gmail.com \
+-e MAILER_DOMAIN=gmail.com \
+-e MAILER_USERNAME=osmseed@gmail.com \
 -e MAILER_PASSWORD=1234 \
 --network osm_network \
 -p "80:80" \

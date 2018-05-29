@@ -134,5 +134,5 @@ RUN chown -R www-data: /var/www
 
 # Script to start the app
 ADD start.sh $workdir/start.sh
-
+RUN apt-get install -y nano
 CMD $workdir/start.sh
