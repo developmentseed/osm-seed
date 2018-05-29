@@ -1,7 +1,7 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "osm-seed.fullname" . }}
+  name: {{ template "osm-seed.fullname" . }}-web
   labels:
     app: {{ template "osm-seed.name" . }}
     chart: {{ template "osm-seed.chart" . }}
@@ -13,11 +13,13 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-web
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
+        run: {{ .Release.Name}}-web
     spec:
       containers:
         - name: {{ .Chart.Name }}-web
@@ -26,3 +28,6 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          env:
+            - name: GET_HOSTS_FROM
+              value: dns

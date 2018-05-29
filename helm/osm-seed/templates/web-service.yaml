@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "osm-seed.fullname" . }}
+  name: {{ template "osm-seed.fullname" . }}-web
   labels:
     app: {{ template "osm-seed.name" . }}
     chart: {{ template "osm-seed.chart" . }}
@@ -17,3 +17,4 @@ spec:
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-web
