@@ -1,0 +1,28 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    chart: {{ template "osm-seed.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web
+          image: "{{ .Values.web.image }}:{{ .Values.osmSeedVersion }}"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP

@@ -1,6 +1,6 @@
-## Kubernetes Configuration
+## Helm Chart configuration
 
-This folder contains necessary configuration files to deploy osm-seed on a Kubernetes cluster.
+The `osm-seed` folder contains the `Helm` Chart to easily deploy osm-seed to a Kubernetes cluster. For more about helm, see https://helm.sh
 
 ### Setting up
 
@@ -8,6 +8,7 @@ Requirements:
 
   - `minikube`: https://kubernetes.io/docs/tasks/tools/install-minikube/
   - `kubectl`: https://kubernetes.io/docs/tasks/tools/install-kubectl/
+  - `helm`: https://docs.helm.sh/using_helm/#installing-helm
 
 Start minikube and your local Kubernetes cluster:
 
@@ -21,13 +22,19 @@ Check `minikube` status:
     minikube status
 ```
 
-Use `kubectl` to deploy `osm-seed`:
+Initialize `helm` on the cluster:
 
 ```
-    kubectl create -f kube-yaml/
+    helm init
 ```
 
-This will create the necessary services and deployments for the stack.
+Install the app onto the cluster:
+
+```
+    helm install -n <name> osm-seed/
+```
+
+Refer to `osm-seed/Values.yaml` for configuration values that can be over-ridden, and `helm` docs on methods to over-ride.
 
 To see status of deployments:
 
@@ -60,7 +67,7 @@ Refer to `kubectl` documentation for more information on interacting with the cl
 To delete all the resources created above:
 
 ```
-    kubectl delete -f kube-yaml/
+    helm delete <name>
 ```
 
 ### Using Minkube Docker context
