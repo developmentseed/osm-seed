@@ -52,3 +52,15 @@ services:
       ./script.sh"
     env_file: 
       - ./.env
+  id:
+    image: openseed-id-editor:v1
+    build: 
+      context: ./iD
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - web
+      - db
+    env_file: 
+      - ./.env

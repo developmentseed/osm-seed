@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "idappregister": "index.js"
   },
   "author": "devseed",
   "dependencies": {
-    "minimist": "^1.2.0",
     "moment": "^2.22.1",
     "pg": "^7.4.3"
   }
