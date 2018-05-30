@@ -5,9 +5,11 @@ Dockerfile definition to run a container with `osmosis` installed. This containe
  - Import OSM data from a pbf file on s3 into the api database
  - Export data from the api database to osm.bz2 and upload to s3
 
+### Configuration
+
 This container needs some environment variables passed into it in order to run:
 
-- `S3_OSM_PATH` - path  to bucket e.g: `s3://osm-seed`
+- `S3_OSM_PATH` - path to bucket e.g: `s3://osm-seed`
 - `AWS_ACCESS_KEY_ID` - your AWS access key
 - `AWS_SECRET_ACCESS_KEY` - AWS secret
 - `AWS_DEFAULT_REGION` - AWS region for s3 access
@@ -16,33 +18,19 @@ This container needs some environment variables passed into it in order to run:
 - `POSTGRES_USER` - postgres
 - `POSTGRES_PASSWORD`  - 1234
 
-
-### Building and running the container
-
-- **Building**
+#### Building the container
 
 ```
-docker build  -t rep .
+docker build  -t repication .
 ```
 
-- **Runing**
+#### Running the container
 
 ```
 docker run \
+--env-file ./../.env \
 --network osm_network \
--e S3_OSM_PATH=s3://osm-seed \
--e AWS_ACCESS_KEY_ID=abc \
--e AWS_SECRET_ACCESS_KEY=xyz \
--e AWS_DEFAULT_REGION=us-east-1 \
--e POSTGRES_HOST=db \
--e POSTGRES_DB=openstreetmap \
--e POSTGRES_PASSWORD=1234 \
--e POSTGRES_USER=postgres \
--e AWS_ACCESS_KEY_ID=abcd \
--e AWS_SECRET_ACCESS_KEY=xyzu \
--e AWS_DEFAULT_REGION=us-east-1 \
--e S3_OSM_PATH="s3://osm-seed" \
--it rep bash
+-it repication 
 ```
 
 The output file should save in s3 👇 

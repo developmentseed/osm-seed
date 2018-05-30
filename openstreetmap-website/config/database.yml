@@ -1,4 +1,5 @@
-# Let's edit later or set new 
+# The variables in this file are fake, There will be a new database.yml file in the database 
+# catching the variable environments on the run process.
 production:
   adapter: postgresql
   database: openstreetmap
