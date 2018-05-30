@@ -1,0 +1,14 @@
+{
+  "name": "idregister",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "idappregister": "index.js"
+  },
+  "author": "devseed",
+  "dependencies": {
+    "moment": "^2.22.1",
+    "pg": "^7.4.3"
+  }
+}

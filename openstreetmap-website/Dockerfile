@@ -132,6 +132,10 @@ RUN apache2ctl configtest
 # Set Permissions for www-data
 RUN chown -R www-data: /var/www
 
+# Install script to register iD
+ADD iDAppRegister $workdir/iDAppRegister
+RUN cd $workdir/iDAppRegister && npm install && npm link
+
 # Script to start the app
 ADD start.sh $workdir/start.sh
 

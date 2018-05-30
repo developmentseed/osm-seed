@@ -22,10 +22,8 @@ We are using the official postgres image we can pass in a username and password 
 
 
 ```
-docker run -d \
--e POSTGRES_DB=openstreetmap \
--e POSTGRES_PASSWORD=1234 \
--e POSTGRES_USER=postgres \
+docker run \
+--env-file ./../.env \
 -p "5432:5432" \
 --name db  \
 --network osm_network \
