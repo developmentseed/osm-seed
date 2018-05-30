@@ -12,7 +12,7 @@ production:
   encoding: utf8" > $workdir/config/database.yml
   
 # Setting up the email 
-sed -i -e 's/osmseed-test@developmentseed.org/$MAILER_USERNAME/g' $workdir/config/application.yml
+sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_USERNAME'/g' $workdir/config/application.yml
 
 # Precompile again, to catch the env variables
 RAILS_ENV=production rake assets:precompile
