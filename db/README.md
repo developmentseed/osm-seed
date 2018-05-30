@@ -34,7 +34,7 @@ docker run \
 osmdb
 ```
 
-### Test the DB connection
+### Test DB connection
 
 ```
 psql -h 0.0.0.0 -p 5432 -d openstreetmap -U postgres --password

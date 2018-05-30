@@ -1,9 +1,23 @@
-# Backup and restore the osm-seed DB
+# Backup and Restore the osm-seed DB
 
-This container will take a backup to the database and it will compress  according to the current date and finally, it will upload the file to S3
+This container will take a backup of the osm-seed database and will compress according to the current date and then it will upload the backup file to S3.
 
-The container is not working fine with the docker-compose build. (TODO) 
 
+### Configuration
+
+To run the container needs a bunch of ENV variables:
+
+- `POSTGRES_HOST` - Database host
+- `POSTGRES_DB` - Database name
+- `POSTGRES_USER` - Database user
+- `POSTGRES_PASSWORD` - Database user's password 
+- `AWS_ACCESS_KEY_ID` 
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_DEFAULT_REGION` e.g `us-east-1`
+- `S3_OSM_PATH`  e.g `s3://osm-seed`
+- `DB_ACTION` e.g `backup` or `restore`
+
+Change the `DB_ACTION` variable to restore or backup the database. `DB_ACTION` =  `restore` or `backup`
 
 ### Building and running the container
 
@@ -13,24 +27,14 @@ The container is not working fine with the docker-compose build. (TODO)
 docker build -t backup-restore .
 ```
 
-- **Run**
+- **Running**
 
 ```
 docker run \
--e POSTGRES_HOST=db \
--e POSTGRES_DB=openstreetmap \
--e POSTGRES_PASSWORD=1234 \
--e POSTGRES_USER=postgres \
--e AWS_ACCESS_KEY_ID=abcd \
--e AWS_SECRET_ACCESS_KEY=xyzu \
--e AWS_DEFAULT_REGION=us-east-1 \
--e S3_OSM_PATH=s3://osm-seed \
--e ACTION=backup
+--env-file ./../.env \
 --network osm_network \
 -it backup-restore /bin/bash
 ```
-
-Change the `ACTION` variable to restore or backup the database. `ACTION` =  `restore` or `backup`
 
 The output file should save in s3 👇 
 ![image](https://user-images.githubusercontent.com/1152236/40454691-6408a96a-5eaf-11e8-8de1-508cb13dced3.png)

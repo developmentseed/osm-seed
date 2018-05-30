@@ -35,4 +35,5 @@ e.g
 docker network create osm_network
 
 ```
- And then follow the README files in each container folder. 
+
+And then follow the README file in each container folder. 
