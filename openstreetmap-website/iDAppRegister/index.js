@@ -16,41 +16,7 @@ insertUser(function (idUser) {
         client.end();
     });
 });
-// INSERT INTO public.users(
-//     email, 
-//     id, 
-//     pass_crypt, 
-//      creation_time,
-//     display_name, 
-//     data_public, home_zoom,
-//     nearby, 
-//     pass_salt, 
-//     email_valid, 
-//     creation_ip, 
-//     languages, 
-//     status,
-//     consider_pd, 
-//     terms_seen, 
-//     description_format, 
-// 	image_use_gravatar)
-// 	VALUES ('ruben@developemenseed.org', 
-//             3, 
-//             'WeOf9adJmorOIBW+2+AW/WtImJgw2S6+Zs+1rec8HcA=',
-//             '2018-05-28 20:48:55.149874',
-//             'iDEditor', 
-//             true, 
-//             3 , 
-//             50, 
-//             'sha512!10000!3GUmzkwhkiirzKpLx/cHr58Db115vyNtKwDcavggb98=',
-//             true,
-//             '172.20.0.1',
-//             'en-US',
-//             'active',
-//             false,
-//             true,
-//             'markdown',
-//             false
-//            );
+
 function insertUser(cb) {
     const query = `INSERT INTO public.users(
         id,
@@ -64,14 +30,13 @@ function insertUser(cb) {
          status,
          terms_seen) 
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10);`;
-
     client.query('SELECT count(*) as count FROM public.users;')
         .then(res => {
             const id = parseInt(res.rows[0].count) + 1;
-            const email = 'osmseed5@developementseed.com';
+            const email = 'osmseed_ideditor@developementseed.com';
             const creation_time = moment(new Date(), 'YYYY-MM-DD HH:MM:SS');
             const pass_crypt = 'WeOf9adJmorOIBW+2+AW/WtImJgw2S6+Zs+1rec8HcA=';
-            const display_name = 'osmseed5';
+            const display_name = 'osmseed_ideditor';
             const data_public = true;
             const pass_salt = 'sha512!10000!3GUmzkwhkiirzKpLx/cHr58Db115vyNtKwDcavggb98=';
             const email_valid = true;
@@ -92,7 +57,7 @@ function inserAppp(idUser, cb) {
                 'allow_read_prefs, allow_write_prefs, allow_write_diary, allow_write_api, allow_read_gpx, allow_write_gpx, allow_write_notes)' +
                 ' VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)';
             const id = parseInt(res.rows[0].count) + 1;
-            const name = 'Access from iDEditor';
+            const name = 'iDEditor application';
             const url = process.env.ID_APPLICATION_URL || 'http://localhost'
             const support_url = url;
             const callback_url = url + '/callback';

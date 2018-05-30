@@ -1,4 +1,4 @@
-# Id editor container
+# iD Editor container
 
 - 
 
