@@ -132,17 +132,11 @@ RUN apache2ctl configtest
 # Set Permissions for www-data
 RUN chown -R www-data: /var/www
 
-# Install python to use aws cli
-RUN apt-get install -y python-pip software-properties-common python-software-properties 
-RUN pip install awscli
-
 # Install script to register iD
 ADD iDAppRegister $workdir/iDAppRegister
 RUN cd $workdir/iDAppRegister && npm install && npm link
 
 # Script to start the app
 ADD start.sh $workdir/start.sh
-
-RUN apt-get install -y nano
 
 CMD $workdir/start.sh

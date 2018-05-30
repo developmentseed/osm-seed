@@ -9,7 +9,7 @@ bundle exec rails db:migrate
 
 # # Create the Application to run iD
 idappregister > $workdir/idApplication.js
-# aws s3 cp $workdir/idApplication.js $S3_OSM_PATH/idAplication/idApplication.json
+aws s3 cp $workdir/idApplication.js $S3_OSM_PATH/idAplication/idApplication.json
 
 # Start the app
 apachectl -k start -DFOREGROUND
