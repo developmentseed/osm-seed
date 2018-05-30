@@ -22,7 +22,7 @@ We are using the official postgres image we can pass in a username and password 
 
 
 ```
-docker run -d \
+docker run \
 -e POSTGRES_DB=openstreetmap \
 -e POSTGRES_PASSWORD=1234 \
 -e POSTGRES_USER=postgres \
