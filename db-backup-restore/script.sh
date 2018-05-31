@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 export PGPASSWORD=$POSTGRES_PASSWORD
 
-date=`date '+%Y-%m-%d:%H'`
+date=`date '+%Y-%m-%d:%H:%M'`
 backupFile=osm-seed-${date}.sql.gz
 stateFile="state.txt"
 restoreFile="backup.sql.gz"
