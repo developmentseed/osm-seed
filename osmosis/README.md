@@ -2,8 +2,9 @@
 
 Dockerfile definition to run a container with `osmosis` installed. This container definition will be responsible to run various tasks:
 
- - Import OSM data from a pbf file on s3 into the api database
- - Export data from the api database to osm.bz2 and upload to s3
+ - Export data from the Database to osm file `history-latest-${date}`
+ - Comporess the osm filfile to `history-latest-${date}.osm.bz2` and upload to s3
+ - Convert the osm file to PBF `history-latest-${date}.pbf` and upload to s3
 
 ### Configuration
 
