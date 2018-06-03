@@ -31,3 +31,11 @@ spec:
           env:
             - name: GET_HOSTS_FROM
               value: dns
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.dbName }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.password }}
+            - name: POSTGRES_USER
+              values: {{ .Values.db.user }}

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: db # FIXME: dont hard-code this, send db_host to services that need it via env vars
+  name: {{ .Release.Name }}-db
   labels:
     app: {{ template "osm-seed.name" . }}
     chart: {{ template "osm-seed.chart" . }}

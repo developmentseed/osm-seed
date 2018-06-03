@@ -1,7 +1,7 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-db
+  name: {{ .Release.Name }}-db
   labels:
     app: {{ template "osm-seed.name" . }}
     chart: {{ template "osm-seed.chart" . }}
@@ -33,6 +33,6 @@ spec:
           - name: POSTGRES_USER
             value: {{ .Values.db.user }} 
           - name: POSTGRES_DB
-            value: openstreetmap
+            value: {{ .Values.db.dbName }}
           - name: POSTGRES_PASSWORD
             value: {{ quote .Values.db.password }}

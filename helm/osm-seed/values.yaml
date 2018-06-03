@@ -6,6 +6,7 @@ osmSeedVersion: 0.0.1-dev
 
 db:
   image: 'developmentseed/osmseed-db'
+  dbName: openstreetmap
   user: postgres
   password: '1234'
 
