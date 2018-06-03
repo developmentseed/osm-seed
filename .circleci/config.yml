@@ -38,16 +38,16 @@ jobs:
             - caches/web.tar
 
       - deploy:
-        name: Push docker image
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
-            VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          else
-            VERSION="${CIRCLE_BRANCH}-${SHORT_GIT_HASH}"
-          fi
-          docker tag web developmentseed/osmseed-web:${VERSION}
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push developmentseed/osmseed-web:${VERSION}
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="${CIRCLE_BRANCH}-${SHORT_GIT_HASH}"
+            fi
+            docker tag web developmentseed/osmseed-web:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-web:${VERSION}
 
   db:
     docker:
@@ -57,43 +57,43 @@ jobs:
       - setup_remote_docker
 
       - restore_cache:
-        keys:
-          - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
-        paths:
-          - caches/db.tar
+          keys:
+            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+          paths:
+            - caches/db.tar
 
       - run:
-        name: Load docker image cache
-        command: |
-          docker load -i caches/db.tar || true
+          name: Load docker image cache
+          command: |
+            docker load -i caches/db.tar || true
 
       - run:
-        name: Build application docker image
-        command: |
-          docker build --cache-from=db -t db db/
+          name: Build application docker image
+          command: |
+            docker build --cache-from=db -t db db/
 
       - run:
-        name: Save docker image cache
-        command: |
-          mkdir -p caches
-          docker save -o caches/db.tar db
+          name: Save docker image cache
+          command: |
+            mkdir -p caches
+            docker save -o caches/db.tar db
 
       - save_cache:
-        key: v1-{{ .Branch }}-{{ epoch }}
-        paths:
-          - caches/db.tar
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/db.tar
 
       - deploy:
-        name: Push docker image
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
-            VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          else
-            VERSION="${CIRCLE_BRANCH}-${SHORT_GIT_HASH}"
-          fi
-          docker tag db developmentseed/osmseed-db:${VERSION}
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push developmentseed/osmseed-db:${VERSION}
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="${CIRCLE_BRANCH}-${SHORT_GIT_HASH}"
+            fi
+            docker tag db developmentseed/osmseed-db:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-db:${VERSION}
 
   osmosis:
     docker:
@@ -103,43 +103,43 @@ jobs:
       - setup_remote_docker
 
       - restore_cache:
-        keys:
-          - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
-        paths:
-          - caches/osmosis.tar
+          keys:
+            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+          paths:
+            - caches/osmosis.tar
 
       - run:
-        name: Load docker image cache
-        command: |
-          docker load -i caches/osmosis.tar || true
+          name: Load docker image cache
+          command: |
+            docker load -i caches/osmosis.tar || true
 
       - run:
-        name: Build application docker image
-        command: |
-          docker build --cache-from=osmosis -t osmosis osmosis/
+          name: Build application docker image
+          command: |
+            docker build --cache-from=osmosis -t osmosis osmosis/
 
       - run:
-        name: Save docker image cache
-        command: |
-          mkdir -p caches
-          docker save -o caches/osmosis.tar osmosis
+          name: Save docker image cache
+          command: |
+            mkdir -p caches
+            docker save -o caches/osmosis.tar osmosis
 
       - save_cache:
-        key: v1-{{ .Branch }}-{{ epoch }}
-        paths:
-          - caches/osmosis.tar
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/osmosis.tar
 
       - deploy:
-        name: Push docker image
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
-            VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          else
-            VERSION="${CIRCLE_BRANCH}-${SHORT_GIT_HASH}"
-          fi
-          docker tag osmosis developmentseed/osmseed-osmosis:${VERSION}
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push developmentseed/osmseed-osmosis:${VERSION}
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="${CIRCLE_BRANCH}-${SHORT_GIT_HASH}"
+            fi
+            docker tag osmosis developmentseed/osmseed-osmosis:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-osmosis:${VERSION}
 
   db-backup-restore:
     docker:
@@ -149,43 +149,43 @@ jobs:
       - setup_remote_docker
 
       - restore_cache:
-        keys:
-          - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
-        paths:
-          - caches/db-backup-restore.tar
+          keys:
+            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+          paths:
+            - caches/db-backup-restore.tar
 
       - run:
-        name: Load docker image cache
-        command: |
-          docker load -i caches/db-backup-restore.tar || true
+          name: Load docker image cache
+          command: |
+            docker load -i caches/db-backup-restore.tar || true
 
       - run:
-        name: Build application docker image
-        command: |
-          docker build --cache-from=db-backup-restore -t db-backup-restore db-backup-restore/
+          name: Build application docker image
+          command: |
+            docker build --cache-from=db-backup-restore -t db-backup-restore db-backup-restore/
 
       - run:
-        name: Save docker image cache
-        command: |
-          mkdir -p caches
-          docker save -o caches/db-backup-restore.tar db-backup-restore
+          name: Save docker image cache
+          command: |
+            mkdir -p caches
+            docker save -o caches/db-backup-restore.tar db-backup-restore
 
       - save_cache:
-        key: v1-{{ .Branch }}-{{ epoch }}
-        paths:
-          - caches/db-backup-restore.tar
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/db-backup-restore.tar
 
       - deploy:
-        name: Push docker image
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
-            VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          else
-            VERSION="${CIRCLE_BRANCH}-${SHORT_GIT_HASH}"
-          fi
-          docker tag db-backup-restore developmentseed/osmseed-backup-restore:${VERSION}
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push developmentseed/osmseed-backup-restore:${VERSION}
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="${CIRCLE_BRANCH}-${SHORT_GIT_HASH}"
+            fi
+            docker tag db-backup-restore developmentseed/osmseed-backup-restore:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-backup-restore:${VERSION}
 
 workflows:
   version: 2
