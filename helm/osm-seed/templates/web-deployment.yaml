@@ -38,4 +38,4 @@ spec:
             - name: POSTGRES_PASSWORD
               value: {{ quote .Values.db.password }}
             - name: POSTGRES_USER
-              values: {{ .Values.db.user }}
+              value: {{ .Values.db.user }}
