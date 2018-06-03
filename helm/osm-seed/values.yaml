@@ -19,6 +19,9 @@ web:
   # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
   serviceType: NodePort
 
+dbbackup:
+  schedule: '5 * * * *'
+
 ingress:
   enabled: false
   annotations: {}

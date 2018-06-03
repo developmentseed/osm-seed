@@ -1,0 +1,31 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-db-backup
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    chart: {{ template "osm-seed.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  schedule: {{ quote .Values.dbbackup.schedule }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-db-backup
+            image: developmentseed/osmseed-backup-restore:{{ .Values.osmSeedVersion }}
+            command: ['./script.sh']
+            env:
+              - name: POSTGRES_HOST
+                value: {{ .Release.Name }}-db
+              - name: POSTGRES_DB
+                value: {{ .Values.db.dbName }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote .Values.db.password }}
+              - name: POSTGRES_USER
+                value: {{ .Values.db.user }}
+              - name: DB_ACTION
+                value: backup
+          restartPolicy: OnFailure
