@@ -1,0 +1,36 @@
+# Default values for osm-seed.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+osmSeedVersion: 0.0.1-dev
+
+db:
+  image: 'developmentseed/osmseed-db'
+  dbName: openstreetmap
+  user: postgres
+  password: '1234'
+
+web:
+  image: 'developmentseed/osmseed-web'
+  # web.replicaCount specifies number of replicas to run for the web container 
+  replicaCount: 1
+
+  # web.serviceType defines the type of service. Should be `nodePort` when running locally.
+  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
+  serviceType: NodePort
+
+dbbackup:
+  schedule: '5 * * * *'
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
