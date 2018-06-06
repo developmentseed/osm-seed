@@ -1,27 +1,32 @@
-# Default values for osm-seed.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 osmSeedVersion: 0.0.1-dev
-
 db:
   image: 'developmentseed/osmseed-db'
-  dbName: openstreetmap
-  user: postgres
-  password: '1234'
-
+  env:
+    POSTGRES_DB: openstreetmap
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: 1234
 web:
   image: 'developmentseed/osmseed-web'
   # web.replicaCount specifies number of replicas to run for the web container 
   replicaCount: 1
-
   # web.serviceType defines the type of service. Should be `nodePort` when running locally.
   # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
   serviceType: NodePort
-
+  env:
+    MAILER_ADDRESS: smtp.gmail.com
+    MAILER_DOMAIN: gmail.com
+    MAILER_USERNAME: osmseed.test@gmail.com
+    MAILER_PASSWORD: 1234
 dbbackup:
   schedule: '5 * * * *'
-
+  env:
+    DB_ACTION: backup
+aws:
+  env:
+    AWS_ACCESS_KEY_ID: abc
+    AWS_SECRET_ACCESS_KEY: xyz
+    AWS_DEFAULT_REGION: us-east-1
+    S3_OSM_PATH: s3://osm-seed
 ingress:
   enabled: false
   annotations: {}

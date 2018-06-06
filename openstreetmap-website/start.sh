@@ -10,8 +10,12 @@ production:
   username: ${POSTGRES_USER}
   password: ${POSTGRES_PASSWORD}
   encoding: utf8" > $workdir/config/database.yml
-  
-# Setting up the email 
+
+# Setting up the SERVER_URL and SERVER_PROTOCOL
+sed -i -e 's/server_url: "localhost"/server_url: "'$SERVER_URL'"/g' $workdir/config/application.yml
+sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/application.yml
+
+# Setting up the email
 sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_USERNAME'/g' $workdir/config/application.yml
 
 # Precompile again, to catch the env variables
