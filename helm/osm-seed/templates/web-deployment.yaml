@@ -48,6 +48,6 @@ spec:
             - name: MAILER_PASSWORD
               value: {{ .Values.web.env.MAILER_PASSWORD }}
             - name: SERVER_URL
-              value: {{ .Release.Name}}-service
+              value: {{ .Values.web.env.SERVER_URL }}
             - name: SERVER_PROTOCOL
               value : {{ .Values.web.env.SERVER_PROTOCOL }}

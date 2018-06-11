@@ -17,6 +17,9 @@ web:
     MAILER_DOMAIN: gmail.com
     MAILER_USERNAME: osmseed.test@gmail.com
     MAILER_PASSWORD: 1234
+    # SERVER_URL must be the application domain
+    SERVER_URL: localhost
+    SERVER_PROTOCOL: http
 dbbackup:
   schedule: '5 * * * *'
   env:
