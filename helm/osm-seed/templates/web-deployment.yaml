@@ -32,7 +32,7 @@ spec:
             - name: GET_HOSTS_FROM
               value: dns
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-db
+              value: {{ .Release.Name }}-db # This should give us the host for DB on the cluster.
             - name: POSTGRES_DB
               value: {{ .Values.db.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD

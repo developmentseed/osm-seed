@@ -1,5 +1,5 @@
 apiVersion: apps/v1beta2
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-db
   labels:
@@ -39,3 +39,14 @@ spec:
               value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
               value: {{ .Values.db.env.POSTGRES_USER }}
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: "/var/lib/postgresql/data"
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
