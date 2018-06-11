@@ -34,8 +34,20 @@ spec:
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-db
             - name: POSTGRES_DB
-              value: {{ .Values.db.dbName }}
+              value: {{ .Values.db.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.db.password }}
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
-              value: {{ .Values.db.user }}
+              value: {{ .Values.db.env.POSTGRES_USER }}
+            - name: MAILER_ADDRESS
+              value: {{ .Values.web.env.MAILER_ADDRESS }}
+            - name: MAILER_DOMAIN
+              value: {{ .Values.web.env.MAILER_DOMAIN }}
+            - name: MAILER_USERNAME
+              value: {{ .Values.web.env.MAILER_USERNAME }}
+            - name: MAILER_PASSWORD
+              value: {{ .Values.web.env.MAILER_PASSWORD }}
+            - name: SERVER_URL
+              value: {{ .Values.web.env.SERVER_URL }}
+            - name: SERVER_PROTOCOL
+              value : {{ .Values.web.env.SERVER_PROTOCOL }}

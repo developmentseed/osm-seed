@@ -29,10 +29,13 @@ spec:
               containerPort: 5432
               protocol: TCP
           env:
-          # FIXME: a lot of these will come from a Secret object
-          - name: POSTGRES_USER
-            value: {{ .Values.db.user }} 
-          - name: POSTGRES_DB
-            value: {{ .Values.db.dbName }}
-          - name: POSTGRES_PASSWORD
-            value: {{ quote .Values.db.password }}
+            - name: GET_HOSTS_FROM
+              value: dns
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.env.POSTGRES_USER }}

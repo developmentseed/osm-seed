@@ -21,11 +21,19 @@ spec:
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-db
               - name: POSTGRES_DB
-                value: {{ .Values.db.dbName }}
+                value: {{ .Values.db.env.POSTGRES_DB }}
               - name: POSTGRES_PASSWORD
-                value: {{ quote .Values.db.password }}
+                value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
-                value: {{ .Values.db.user }}
+                value: {{ .Values.db.env.POSTGRES_USER }}
               - name: DB_ACTION
-                value: backup
+                value: {{ .Values.dbbackup.env.DB_ACTION }}
+              - name: AWS_ACCESS_KEY_ID
+                value: {{ .Values.aws.env.AWS_ACCESS_KEY_ID }}
+              - name: AWS_SECRET_ACCESS_KEY
+                value: {{ .Values.aws.env.AWS_SECRET_ACCESS_KEY }}
+              - name: AWS_DEFAULT_REGION
+                value: {{ .Values.aws.env.AWS_DEFAULT_REGION }}
+              - name: S3_OSM_PATH
+                value: {{ .Values.aws.env.S3_OSM_PATH }}
           restartPolicy: OnFailure
