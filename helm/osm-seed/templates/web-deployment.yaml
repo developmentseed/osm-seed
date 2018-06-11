@@ -1,0 +1,41 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-web
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    chart: {{ template "osm-seed.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-web
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name}}-web
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web
+          image: "{{ .Values.web.image }}:{{ .Values.osmSeedVersion }}"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: GET_HOSTS_FROM
+              value: dns
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.dbName }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.password }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.user }}

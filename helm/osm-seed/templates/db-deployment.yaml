@@ -1,0 +1,38 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-db
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    chart: {{ template "osm-seed.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1 # we only ever want one replica of the db
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-db
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-db
+          image: "{{ .Values.db.image }}:{{ .Values.osmSeedVersion }}"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+          # FIXME: a lot of these will come from a Secret object
+          - name: POSTGRES_USER
+            value: {{ .Values.db.user }} 
+          - name: POSTGRES_DB
+            value: {{ .Values.db.dbName }}
+          - name: POSTGRES_PASSWORD
+            value: {{ quote .Values.db.password }}
