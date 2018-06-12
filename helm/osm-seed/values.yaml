@@ -40,4 +40,6 @@ ingress:
     - chart-example.local
   tls: []
 persistence:
-  size: 100Gi
+  existingPersistentDisks: false
+  diskName : osm-seed-storage-claim
+  size: 50Gi
