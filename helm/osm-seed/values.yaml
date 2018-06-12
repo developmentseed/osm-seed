@@ -39,6 +39,5 @@ ingress:
   hosts:
     - chart-example.local
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+persistence:
+  size: 100Gi
