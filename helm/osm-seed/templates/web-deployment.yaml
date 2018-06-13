@@ -47,7 +47,15 @@ spec:
               value: {{ .Values.web.env.MAILER_USERNAME }}
             - name: MAILER_PASSWORD
               value: {{ .Values.web.env.MAILER_PASSWORD }}
+            # Set domain name or pod ip  
+              {{- if .Values.domain.enabled }}
             - name: SERVER_URL
-              value: {{ .Values.web.env.SERVER_URL }}
+              value: {{ .Values.domain.domainName }}
             - name: SERVER_PROTOCOL
-              value : {{ .Values.web.env.SERVER_PROTOCOL }}
+              value : {{ .Values.domain.protocolo }}
+              {{- else }}
+            - name: SERVER_URL
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+            - name: SERVER_PROTOCOL
+              value : http
+              {{- end }}
