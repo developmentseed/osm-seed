@@ -17,9 +17,6 @@ web:
     MAILER_DOMAIN: gmail.com
     MAILER_USERNAME: osmseed.test@gmail.com
     MAILER_PASSWORD: 1234
-    # SERVER_URL must be the application domain
-    SERVER_URL: localhost
-    SERVER_PROTOCOL: http
 dbbackup:
   schedule: '5 * * * *'
   env:
@@ -39,6 +36,17 @@ ingress:
   hosts:
     - chart-example.local
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+## Persist data to a persitent volume
+persistence:
+  enabled: true
+  gcePersistentDisk:
+    pdName: osm-seed-data-disk
+  accessMode: ReadWriteOnce
+  size: 100Gi # The size should be tha same as the external disk
+  mountPath: /var/lib/postgresql/data
+  subPath: postgresql-db
+## Set  the domain for the app.
+domain:
+  enabled: false
+  domainName: example.com
+  protocolo: http
