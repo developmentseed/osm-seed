@@ -38,11 +38,37 @@ spec:
             - name: POSTGRES_PASSWORD
               value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
-              value: {{ .Values.db.env.POSTGRES_USER }}
+              value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
+            - name: PGUSER
+              value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
+            - name: PGDATA
+              value: /var/lib/postgresql/data/
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
           volumeMounts:
             - name: postgres-storage
-              mountPath: "/var/lib/postgresql/data"
+              mountPath: /var/lib/postgresql/data
+              subPath: {{ .Values.persistence.subPath }}
+
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.diskName }}
+            claimName: {{ .Release.Name }}-pv-claim
