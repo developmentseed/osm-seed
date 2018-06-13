@@ -15,7 +15,7 @@ Once you created the storage class you could set the name  `osm-seed-storage-cla
 
 - Createating a externat disk 
 
-`gcloud compute disks create --size=100GB --zone=us-west1-b pg-data-disk`
+`gcloud compute disks create --size=100GB --zone=us-west1-b --type=pd-standard osm-seed-data-disk`
 
 `gcloud compute instances list`
 
