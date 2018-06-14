@@ -16,15 +16,4 @@ Requirements:
 
 ### Deploying osm-seed in production Kubernetes cluster
 
-- Creating a Google Disk
-
-`gcloud compute disks create --size=100GB --zone=us-west1-b --type=pd-standard osm-seed-data-disk`
-
-Note:
-
-The disk and the cluster must be in the same availability zone.
-
-Set the name of the disk in the `values.yaml` file.
-
-
-
+Coming ask to responsible.

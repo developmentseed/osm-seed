@@ -9,6 +9,9 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   type: {{ .Values.web.serviceType }}
+  {{- if .Values.staticIp.enabled }}
+  loadBalancerIP : {{ .Values.staticIp.ip }}
+  {{- end }}
   ports:
     - port: 80
       targetPort: http
