@@ -1,0 +1,61 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-web
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    chart: {{ template "osm-seed.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-web
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name}}-web
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web
+          image: "{{ .Values.web.image }}:{{ .Values.osmSeedVersion }}"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: GET_HOSTS_FROM
+              value: dns
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db # This should give us the host for DB on the cluster.
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.env.POSTGRES_USER }}
+            - name: MAILER_ADDRESS
+              value: {{ .Values.web.env.MAILER_ADDRESS }}
+            - name: MAILER_DOMAIN
+              value: {{ .Values.web.env.MAILER_DOMAIN }}
+            - name: MAILER_USERNAME
+              value: {{ .Values.web.env.MAILER_USERNAME }}
+            - name: MAILER_PASSWORD
+              value: {{ .Values.web.env.MAILER_PASSWORD }}
+            # Set domain name or pod ip  
+              {{- if .Values.domain.enabled }}
+            - name: SERVER_URL
+              value: {{ .Values.domain.domainName }}
+            - name: SERVER_PROTOCOL
+              value : {{ .Values.domain.protocolo }}
+              {{- else }}
+            - name: SERVER_URL
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+            - name: SERVER_PROTOCOL
+              value : http
+              {{- end }}

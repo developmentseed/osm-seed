@@ -11,6 +11,6 @@ ActionMailer::Base.smtp_settings = {
 
 # Set the host and protocol for all ActionMailer URLs
 ActionMailer::Base.default_url_options = {
-  :host => SERVER_URL,
-  :protocol => SERVER_PROTOCOL
+  :host => ENV['SERVER_URL'],
+  :protocol => ENV['SERVER_PROTOCOL']
 }
