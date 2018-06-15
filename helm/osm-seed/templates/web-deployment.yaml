@@ -28,6 +28,12 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/0.6/capabilities
+              port: 80
+            initialDelaySeconds: 600
+            timeoutSeconds: 30
           env:
             - name: GET_HOSTS_FROM
               value: dns
