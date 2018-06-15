@@ -16,4 +16,6 @@ Requirements:
 
 ### Deploying osm-seed in production Kubernetes cluster
 
-Coming ask to responsible.
+```
+gcloud container clusters get-credentials osmseed-production-cluster
+```

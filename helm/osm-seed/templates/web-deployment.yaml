@@ -32,7 +32,7 @@ spec:
             httpGet:
               path: /api/0.6/capabilities
               port: 80
-            initialDelaySeconds: 600
+            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
           env:
             - name: GET_HOSTS_FROM
