@@ -26,8 +26,6 @@ spec:
                 value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
-              - name: DB_ACTION
-                value: {{ .Values.dbbackup.env.DB_ACTION }}
               - name: AWS_ACCESS_KEY_ID
                 value: {{ .Values.aws.env.AWS_ACCESS_KEY_ID }}
               - name: AWS_SECRET_ACCESS_KEY

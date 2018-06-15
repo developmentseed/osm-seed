@@ -32,7 +32,7 @@ dbbackup:
 
 # Variables for osm-seed for replication
 replication:
-  schedule: '5 * * * *'
+  schedule: '0 */1 * * *'
 
 # Variables for AWS settings
 aws:
