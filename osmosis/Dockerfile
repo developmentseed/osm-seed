@@ -6,5 +6,5 @@ RUN mkdir -p osmosis
 WORKDIR osmosis/
 RUN wget -O - http://m.m.i24.cc/osmconvert.c | cc -x c - -lz -O3 -o osmconvert
 RUN cp osmconvert /usr/bin/osmconvert
-COPY ./import_osm.sh .
-CMD ./import_osm.sh
+COPY ./script.sh .
+CMD ./script.sh
