@@ -26,13 +26,13 @@ web:
 
 # Variables for osm-seed database backup and restore
 dbbackup:
-  schedule: '5 * * * *'
+  schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
 
 # Variables for osm-seed for replication
 replication:
-  schedule: '2 * * * *'
+  schedule: '0 */1 * * *'
 
 # Variables for AWS settings
 aws:
