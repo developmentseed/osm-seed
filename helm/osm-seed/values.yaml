@@ -1,0 +1,70 @@
+osmSeedVersion: 0.0.1-dev
+
+#Variables for osm-seed database
+db:
+  image: 'developmentseed/osmseed-db'
+  env:
+    POSTGRES_DB: openstreetmap
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: 1234
+
+# Variables for osm-seed - OSM website
+web:
+  image: 'developmentseed/osmseed-web'
+  replicaCount: 1
+  # web.serviceType defines the type of service. Should be `NodePort` when running locally.
+  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
+  serviceType: NodePort
+  staticIp:
+    enabled : false
+    ip : 35.185.241.158
+  env:
+    MAILER_ADDRESS: smtp.gmail.com
+    MAILER_DOMAIN: gmail.com
+    MAILER_USERNAME: osmseed.test@gmail.com
+    MAILER_PASSWORD: 12345678
+
+# Variables for osm-seed database backup and restore
+dbbackup:
+  schedule: '0 */1 * * *'
+  env:
+    DB_ACTION: backup
+
+# Variables for osm-seed for replication
+replication:
+  schedule: '0 */1 * * *'
+
+# Variables for AWS settings
+aws:
+  env:
+    AWS_ACCESS_KEY_ID: xxxx
+    AWS_SECRET_ACCESS_KEY: xxxz
+    AWS_DEFAULT_REGION: us-east-1
+    S3_OSM_PATH: s3://osm-seed
+
+# Ingress variables
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - chart-example.local
+  tls: []
+
+# Persist data to a persitent volume
+persistence:
+  enabled: false
+  gcePersistentDisk:
+    pdName: osm-seed-data-disk
+  accessMode: ReadWriteOnce
+  size: 100Gi # The size should be tha same as the external disk
+  mountPath: /var/lib/postgresql/data
+  subPath: postgresql-db
+
+# Set  the domain for the app.
+domain:
+  enabled: false
+  domainName: example.com
+  protocolo: http
