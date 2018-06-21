@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+
+# Creating a gcloud-service-key to uthenticate the gcloud
+echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
+/root/google-cloud-sdk/bin/gcloud --quiet components update
+/root/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file gcloud-service-key.json
+/root/google-cloud-sdk/bin/gcloud config set project $GCLOUD_PROJECT
+
 # Read the DB and create the planet osm file
 date=`date '+%Y-%m-%d:%H:%M'`
 planetFile=history-latest-${date}.osm
@@ -20,9 +27,9 @@ osmconvert $planetFile -o=$planetPBFFile
 # Compress the file
 bzip2 -v $planetFile
 # Save the path file
-echo "$S3_OSM_PATH/planet/full-history/$planetFileCompress" > $stateFile
-echo "$S3_OSM_PATH/planet/full-history/$planetPBFFile" >> $stateFile
+echo "$GS_OSM_PATH/planet/full-history/$planetFileCompress" > $stateFile
+echo "$GS_OSM_PATH/planet/full-history/$planetPBFFile" >> $stateFile
 # Upload to S3
-aws s3 cp $planetPBFFile $S3_OSM_PATH/planet/full-history/$planetPBFFile
-aws s3 cp $planetFileCompress $S3_OSM_PATH/planet/full-history/$planetFileCompress
-aws s3 cp $stateFile $S3_OSM_PATH/planet/full-history/$stateFile --acl public-read
+gsutil cp $planetPBFFile $GS_OSM_PATH/planet/full-history/$planetPBFFile
+gsutil cp $planetFileCompress $GS_OSM_PATH/planet/full-history/$planetFileCompress
+gsutil cp $stateFile $GS_OSM_PATH/planet/full-history/$stateFile
