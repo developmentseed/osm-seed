@@ -46,7 +46,7 @@ if [ $STORAGE == "GS" ]; then
     # Save the path file
     echo "$GS_OSM_PATH/planet/full-history/$planetFileCompress" > $stateFile
     echo "$GS_OSM_PATH/planet/full-history/$planetPBFFile" >> $stateFile
-    # Upload to S3
+    # Upload to GS
     gsutil cp $planetPBFFile $GS_OSM_PATH/planet/full-history/$planetPBFFile
     gsutil cp $planetFileCompress $GS_OSM_PATH/planet/full-history/$planetFileCompress
     gsutil cp $stateFile $GS_OSM_PATH/planet/full-history/$stateFile
