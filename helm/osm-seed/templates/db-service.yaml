@@ -10,10 +10,10 @@ metadata:
 spec:
   ports:
     - port: 5432
-      targetPort: 5432 # FIXME / Q: should this rather be a name?
+      targetPort: 5432
       # protocol: TCP
       # name: http
   selector:
-    app: {{ template "osm-seed.name" . }} # name of the deploymet pod
+    app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-db

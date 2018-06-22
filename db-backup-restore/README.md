@@ -49,7 +49,7 @@ docker build -t backup-restore .
 docker run \
 --env-file ./../.env \
 --network osm_network \
--it backup-restore /bin/bash
+-it backup-restore
 ```
 
 The output file should save in s3 👇 

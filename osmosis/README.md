@@ -36,7 +36,7 @@ Depends on what types of data storage are you going to use, the following variab
 #### Building the container
 
 ```
-docker build  -t repication .
+docker build  -t osmosis .
 ```
 
 #### Running the container
@@ -45,8 +45,8 @@ docker build  -t repication .
 docker run \
 --env-file ./../.env \
 --network osm_network \
--it repication 
+-it osmosis
 ```
 
-The output file should save in s3 👇 
+The output files should save in s3 👇 
 ![image](https://user-images.githubusercontent.com/1152236/40563702-626f15b2-602b-11e8-9621-40b1b1a240c0.png)
