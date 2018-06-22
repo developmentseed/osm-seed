@@ -5,7 +5,7 @@ backupFile=osm-seed-${date}.sql.gz
 stateFile="state.txt"
 restoreFile="backup.sql.gz"
 
-# Creating a gcloud-service-key to uthenticate the gcloud
+# Creating a gcloud-service-key to authenticate the gcloud
 if [ $STORAGE == "GS" ]; then
 echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
 /root/google-cloud-sdk/bin/gcloud --quiet components update
