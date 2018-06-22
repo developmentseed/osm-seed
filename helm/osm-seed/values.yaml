@@ -6,7 +6,7 @@ db:
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: 1234
+    POSTGRES_PASSWORD: '1234'
 
 # Variables for osm-seed - OSM website
 web:
@@ -22,7 +22,7 @@ web:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
     MAILER_USERNAME: osmseed.test@gmail.com
-    MAILER_PASSWORD: 12345678
+    MAILER_PASSWORD: '12345678'
 
 # Variables for osm-seed database backup and restore
 dbbackup:
