@@ -45,7 +45,7 @@ docker build  -t osmosis .
 docker run \
 --env-file ./../.env \
 --network osm_network \
--it osmosis 
+-it osmosis
 ```
 
 The output files should save in s3 👇 
