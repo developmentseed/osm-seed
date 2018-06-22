@@ -6,7 +6,6 @@ planetPBFFile=history-latest-${date}.pbf
 planetFileCompress=$planetFile.bz2
 stateFile="state.txt"
 
-
 # Creating a gcloud-service-key to uthenticate the gcloud
 if [ $STORAGE == "GS" ]; then
     echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json

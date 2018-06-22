@@ -15,5 +15,5 @@ RUN pip install awscli
 RUN curl -sSL https://sdk.cloud.google.com | bash
 RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
 WORKDIR $workdir
-ADD start.sh $workdir/start.sh
+COPY ./start.sh .
 CMD ./start.sh
