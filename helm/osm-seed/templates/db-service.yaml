@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-db
   labels:
-    app: {{ template "osm-seed.name" . }}
-    chart: {{ template "osm-seed.chart" . }}
+    app: {{ template "osm-seed.chart" . }}
+    component: db-service
+    environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
 spec:
   ports:
     - port: 5432
