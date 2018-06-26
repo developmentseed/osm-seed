@@ -4,9 +4,9 @@ metadata:
   name: {{ template "osm-seed.fullname" . }}-web
   labels:
     app: {{ template "osm-seed.name" . }}
-    chart: {{ template "osm-seed.chart" . }}
+    component: web-deployment
+    environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.web.replicaCount }}
   selector:
@@ -19,7 +19,7 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name}}-web
+        run: {{ .Release.Name }}-web
     spec:
       containers:
         - name: {{ .Chart.Name }}-web

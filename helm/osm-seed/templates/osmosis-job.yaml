@@ -4,9 +4,9 @@ metadata:
   name: {{ .Release.Name }}-osmosis
   labels:
     app: {{ template "osm-seed.name" . }}
-    chart: {{ template "osm-seed.chart" . }}
+    component: osmosis-job
+    environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
 spec:
   schedule: {{ quote .Values.replication.schedule }}
   jobTemplate:

@@ -7,9 +7,9 @@ metadata:
   name: {{ $fullName }}
   labels:
     app: {{ template "osm-seed.name" . }}
-    chart: {{ template "osm-seed.chart" . }}
+    component: ingress
+    environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
 {{- with .Values.ingress.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}

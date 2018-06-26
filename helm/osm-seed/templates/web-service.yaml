@@ -4,9 +4,9 @@ metadata:
   name: {{ template "osm-seed.fullname" . }}-web
   labels:
     app: {{ template "osm-seed.name" . }}
-    chart: {{ template "osm-seed.chart" . }}
+    component: web-service
+    environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
 spec:
   type: {{ .Values.web.serviceType }}
   {{- if .Values.web.staticIp.enabled }}
