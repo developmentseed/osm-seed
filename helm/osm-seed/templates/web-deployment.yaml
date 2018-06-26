@@ -17,9 +17,10 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "osm-seed.name" . }}
+        app: {{ template "osm-seed.chart" . }}
+        component: web-deployment
+        environment: {{ .Values.environment }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name}}-web
     spec:
       containers:
         - name: {{ .Chart.Name }}-web

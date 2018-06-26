@@ -3,10 +3,10 @@ kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-db
   labels:
-    app: {{ template "osm-seed.name" . }}
-    chart: {{ template "osm-seed.chart" . }}
+    app: {{ template "osm-seed.chart" . }}
+    component: db-statefulset
+    environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
 spec:
   replicas: 1 # we only ever want one replica of the db
   selector:

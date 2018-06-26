@@ -1,12 +1,12 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-db-backup
+  name: {{ .Release.Name }}-db-backup-job
   labels:
-    app: {{ template "osm-seed.name" . }}
-    chart: {{ template "osm-seed.chart" . }}
+    app: {{ template "osm-seed.chart" . }}
+    component: db-backup-job 
+    environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
 spec:
   schedule: {{ quote .Values.dbbackup.schedule }}
   jobTemplate:
@@ -14,7 +14,7 @@ spec:
       template:
         spec:
           containers:
-          - name: {{ .Release.Name }}-db-backup
+          - name: {{ .Release.Name }}-db-backup-job
             image: developmentseed/osmseed-backup-restore:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
             env:
