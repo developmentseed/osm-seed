@@ -15,7 +15,7 @@ spec:
         spec:
           containers:
           - name: {{ .Release.Name }}-osmosis
-            image: developmentseed/osmseed-osmosis:{{ .Values.osmSeedVersion }}
+            image: {{ .Values.replication.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
             env:
               - name: POSTGRES_HOST
