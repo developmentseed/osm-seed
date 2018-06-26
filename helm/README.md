@@ -29,7 +29,7 @@ Look at the `values.yaml` file in this folder to see the various configuration o
 
 You can then install `osm-seed` with:
 
-`helm install -f myvalues.yaml osm-seed/`
+    helm install -f myvalues.yaml osm-seed/
 
 This will setup all the resources required and give you instructions to get the URL of your running instance. You can also use the standard `kubectl` commands to monitor your cluster, view the cluster dashboard, etc.
 
@@ -37,23 +37,23 @@ This will output a generated name for the deployed `release`.
 
 To delete all resources created in the Helm chart:
 
-    `helm delete <release-name>` 
+    helm delete <release-name> 
 
 
 ### Additional Notes
 
 When developing and testing locally, it is often useful to use the same `docker` context inside your minikube instance as your local machine. This avoids having to re-pull docker images from within your `minikube` VM. This can be accomplished with:
 
-    `eval $(minikube docker-env)`
+    eval $(minikube docker-env)`
 
 Some useful `kubectl` commands:
 
 To get the status of all resources:
 
-    `kubectl get all`
+    kubectl get all
 
 To get logs from a running container:
 
-    `kubectl logs <pod-id>`
+    kubectl logs <pod-id>
 
 Refer the `kubectl` [documentation](https://kubernetes.io/docs/reference/kubectl/overview/)

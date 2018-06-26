@@ -2,7 +2,7 @@
 
 There are two ways of running `osm-seed` - either using `docker-compose` on a single machine to run all the docker container definitions, or using the included `Helm` chart to deploy onto a Kubernetes cluster.
 
-This document describes working with `docker-compose` locally, most useful when working on adding or developing individual docker containers. For instructions on using the `Helm` chart to deploy to Kubernetes, refer to the README inside the `helm/` subfolder.
+This document describes working with `docker-compose` locally, most useful when working on adding or developing individual docker containers. For instructions on using the `Helm` chart to deploy to Kubernetes, refer to the [README](helm/README.md) inside the `helm/` subfolder.
 
 ### Requirements
 
