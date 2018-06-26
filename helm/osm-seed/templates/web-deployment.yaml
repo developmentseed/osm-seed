@@ -3,22 +3,23 @@ kind: Deployment
 metadata:
   name: {{ template "osm-seed.fullname" . }}-web
   labels:
-    app: {{ template "osm-seed.name" . }}
-    chart: {{ template "osm-seed.chart" . }}
+    app: {{ template "osm-seed.chart" . }}
+    component: web-development
+    environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.web.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "osm-seed.name" . }}
+      app: {{ template "osm-seed.chart" . }}
+      component: web-development
+      environment: {{ .Values.environment }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-web
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.chart" . }}
-        component: web-deployment
+        component: web-development
         environment: {{ .Values.environment }}
         release: {{ .Release.Name }}
     spec:
