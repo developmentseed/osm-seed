@@ -37,7 +37,7 @@ spec:
                 value: {{ .Values.backupStorage.aws.env.AWS_DEFAULT_REGION }}
               - name: S3_OSM_PATH
                 value: {{ .Values.backupStorage.aws.env.S3_OSM_PATH }}
-              {{- else }}
+              {{- end }}
               {{- if .Values.backupStorage.google.enabled }}
               - name: STORAGE
                 value: GS
@@ -47,5 +47,5 @@ spec:
                 value: {{ .Values.backupStorage.google.env.GCLOUD_SERVICE_KEY }}
               - name: GS_OSM_PATH
                 value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
-              {{- else }}
+              {{- end }}
           restartPolicy: OnFailure
