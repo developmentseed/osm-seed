@@ -1,39 +1,30 @@
 # OSM SEED
 
-Repository to hold Dockerfiles for a containerized OSM.
+Osm-seed aims to provide an easily installable package for the OpenStreetMap software stack.
 
-### Requirements
+### Why?
 
-You will need `docker` and `docker-compose` installed on your system.
+OpenStreetMap runs open source software to manage geospatial data for the entire planet. It has given birth to an entire ecosystem of tools to edit, export and process spatial data.
 
-  - Installing `docker`: https://docs.docker.com/install/
-  - Installing `docker-compose`: https://docs.docker.com/compose/install/
+Very often, one wants to manage geospatial datasets that cannot be added to the main OpenStreetMap project, either due to license restrictions, or because the data doesn't fit within the ambit of the OpenStreetMap project. However, it is still convenient and desirable to use the OpenStreetMap software backend, alongwith tools like JOSM to edit data, and `osmium` to export and process data.
 
-### Run locally
+The OpenStreetMap software stack has proven itself on a planetary scale, and has thousands of man hours of work behind it. This project aims to leverage this power, by making it simple to install and manage your own instance of the OpenStreetMap software.
 
-Copy `.env.example` to `.env` and edit as appropriate. 
+### How?
 
-Run `docker-compose build` to build all Dockerfiles defined in `docker-compose.yml`.
+This code-base provides docker container definitions for various aspects of the OpenStreetMap software stack. 
 
-Run `source .env && docker-compose up` to run all containers defined in `docker-compose`
+Currently:
 
-Once `docker-compose` is running, you should be able to access a local instance of the OpenStreetMap website on `http://localhost:80`
+ - The OpenStreetMap website + API
+ - The postgres database to hold data
+ - A container that runs `osmium` to export and import data
+ - A container that runs database backups
 
-NOTE: 
- 
- - The map-tiles on the instance are being served from the main osm.org website currently.
- - Make sure the port 5432 and 80 are not busy.
+NOTE: It does not currently provide a tile-server.
 
+It also provides a `Helm` [chart](helm/), simplifying the process of deploying the entire system onto a Kubernetes cluster.
 
-# Building and Running the containers by themself in a network
+For more details on installation, see [INSTALL.md](INSTALL.md). For future plans and goals for the project, see the [Project Roadmap](ROADMAP.md). 
 
-Sometime you may require building the container by itself, so to do that and to put the container on the same network, first you should create a network.
-
-e.g
-
-```
-docker network create osm_network
-
-```
-
-And then follow the README file in each container folder. 
+We are always interested in collaborations and contributions! If you are interested in contributing, please see the [Contributor Guidelines](CONTRIBUTING.md).

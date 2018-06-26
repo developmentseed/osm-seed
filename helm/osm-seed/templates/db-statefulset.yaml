@@ -1,0 +1,77 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-db
+  labels:
+    app: {{ template "osm-seed.chart" . }}
+    component: db-statefulset
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1 # we only ever want one replica of the db
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-db
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-db
+          image: "{{ .Values.db.image }}:{{ .Values.osmSeedVersion }}"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: GET_HOSTS_FROM
+              value: dns
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
+            - name: PGUSER
+              value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
+            - name: PGDATA
+              value: {{ .Values.persistence.mountPath }}
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: {{ .Values.persistence.mountPath }}
+              subPath: {{ .Values.persistence.subPath }}
+      volumes:
+        - name: postgres-storage
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}

@@ -10,11 +10,27 @@ To run the container needs a bunch of ENV variables:
 - `POSTGRES_HOST` - Database host
 - `POSTGRES_DB` - Database name
 - `POSTGRES_USER` - Database user
-- `POSTGRES_PASSWORD` - Database user's password 
+- `POSTGRES_PASSWORD` - Database user's password
+
+*Depends on what types of data storage are you going to use, the following variables should be established:*
+
+#### Amazon S3
+
 - `AWS_ACCESS_KEY_ID` 
 - `AWS_SECRET_ACCESS_KEY`
 - `AWS_DEFAULT_REGION` e.g `us-east-1`
 - `S3_OSM_PATH`  e.g `s3://osm-seed`
+
+#### Google Storage - SG
+
+# Google Store access
+
+- `GS_OSM_PATH` Google storage bucket
+- `GCLOUD_SERVICE_KEY` base64 encode key e.g: `base64 osm-seed-04ee080a55c5.json`
+- `GCLOUD_PROJECT` name of your project
+
+*Database action*
+
 - `DB_ACTION` e.g `backup` or `restore`
 
 Change the `DB_ACTION` variable to restore or backup the database. `DB_ACTION` =  `restore` or `backup`
@@ -33,7 +49,7 @@ docker build -t backup-restore .
 docker run \
 --env-file ./../.env \
 --network osm_network \
--it backup-restore /bin/bash
+-it backup-restore
 ```
 
 The output file should save in s3 👇 

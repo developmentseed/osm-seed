@@ -3,6 +3,8 @@ jobs:
   web:
     docker:
       - image: docker:17.05.0-ce-git
+    environment:
+      - PRODUCTION_BRANCH: master
     steps:
       - checkout
       - setup_remote_docker
@@ -35,12 +37,16 @@ jobs:
             - caches/web.tar
 
       - deploy:
-         name: Push docker image
-         command: |
-          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          docker tag web developmentseed/osmseed-web:${VERSION}
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push developmentseed/osmseed-web:${VERSION}
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+            fi
+            docker tag web developmentseed/osmseed-web:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-web:${VERSION}
 
   db:
     docker:
@@ -77,12 +83,16 @@ jobs:
             - caches/db.tar
 
       - deploy:
-         name: Push docker image
-         command: |
-          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          docker tag db developmentseed/osmseed-db:${VERSION}
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push developmentseed/osmseed-db:${VERSION}
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+            fi
+            docker tag db developmentseed/osmseed-db:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-db:${VERSION}
 
   osmosis:
     docker:
@@ -119,12 +129,16 @@ jobs:
             - caches/osmosis.tar
 
       - deploy:
-         name: Push docker image
-         command: |
-          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          docker tag osmosis developmentseed/osmseed-osmosis:${VERSION}
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push developmentseed/osmseed-osmosis:${VERSION}
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+            fi
+            docker tag osmosis developmentseed/osmseed-osmosis:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-osmosis:${VERSION}
 
   db-backup-restore:
     docker:
@@ -161,12 +175,17 @@ jobs:
             - caches/db-backup-restore.tar
 
       - deploy:
-         name: Push docker image
-         command: |
-          VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-          docker tag db-backup-restore developmentseed/osmseed-backup-restore:${VERSION}
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push developmentseed/osmseed-backup-restore:${VERSION}
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+            fi
+            docker tag db-backup-restore developmentseed/osmseed-backup-restore:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-backup-restore:${VERSION}
+
 workflows:
   version: 2
   build_and_push:
