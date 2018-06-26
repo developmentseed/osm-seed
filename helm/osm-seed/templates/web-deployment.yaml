@@ -61,7 +61,7 @@ spec:
               value : {{ .Values.domain.protocolo }}
               {{- else }}
             - name: SERVER_URL
-              value: {{ .Values.domain.domainName }}
+              value: dns
             - name: SERVER_PROTOCOL
               value : http
               {{- end }}
