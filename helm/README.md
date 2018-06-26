@@ -44,7 +44,7 @@ To delete all resources created in the Helm chart:
 
 When developing and testing locally, it is often useful to use the same `docker` context inside your minikube instance as your local machine. This avoids having to re-pull docker images from within your `minikube` VM. This can be accomplished with:
 
-    eval $(minikube docker-env)`
+    eval $(minikube docker-env)
 
 Some useful `kubectl` commands:
 
