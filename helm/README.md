@@ -25,7 +25,7 @@ With `minikube` as your cluster backend, this can be accomplished with `helm ini
 
 ### Install osm-seed onto your cluster
 
-Look at the `values.yaml` file in this folder to see the various configuration options and values that you need to configure for your installation. Then create a `myvalues.yaml` file, where you can over-ride any of the values defined in `values.yaml`.
+Look at the [`values.yaml`](osm-seed/values.yaml) file in the `osm-seed` sub-folder to see the various configuration options and values that you need to configure for your installation. Then create a `myvalues.yaml` file, where you can over-ride any of the values defined in `values.yaml`.
 
 You can then install `osm-seed` with:
 
