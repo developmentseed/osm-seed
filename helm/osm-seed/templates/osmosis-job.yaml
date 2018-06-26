@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: {{ .Release.Name }}-osmosis
   labels:
-    app: {{ template "osm-seed.chart" . }}
+    app: {{ template "osm-seed.name" . }}
     component: osmosis-job
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}

@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-db
   labels:
-    app: {{ template "osm-seed.chart" . }}
+    app: {{ template "osm-seed.name" . }}
     component: db-service
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
