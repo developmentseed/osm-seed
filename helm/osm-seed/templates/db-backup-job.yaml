@@ -15,7 +15,7 @@ spec:
         spec:
           containers:
           - name: {{ .Release.Name }}-db-backup-job
-            image: developmentseed/osmseed-backup-restore:{{ .Values.osmSeedVersion }}
+            image: {{ .Values.dbbackup.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
             env:
               - name: POSTGRES_HOST

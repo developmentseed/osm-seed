@@ -27,12 +27,14 @@ web:
 
 # Variables for osm-seed database backup and restore
 dbbackup:
+  image: 'developmentseed/osmseed-backup-restore'
   schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
 
 # Variables for osm-seed for replication
 replication:
+  image: 'developmentseed/osmseed-osmosis'
   schedule: '0 */1 * * *'
 
 # Variables for AWS settings
