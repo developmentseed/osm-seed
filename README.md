@@ -23,7 +23,7 @@ Currently:
 
 NOTE: It does not currently provide a tile-server.
 
-It also provides a `Helm` chart, simplifying the process of deploying the entire system onto a Kubernetes cluster.
+It also provides a `Helm` [chart](helm/), simplifying the process of deploying the entire system onto a Kubernetes cluster.
 
 For more details on installation, see [INSTALL.md](INSTALL.md). For future plans and goals for the project, see the [Project Roadmap](ROADMAP.md). 
 
