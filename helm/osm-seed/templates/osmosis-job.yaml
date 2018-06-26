@@ -27,6 +27,8 @@ spec:
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
               {{- if .Values.backupStorage.aws.enabled }}
+              - name: STORAGE
+                value: S3
               - name: AWS_ACCESS_KEY_ID
                 value: {{ .Values.backupStorage.aws.env.AWS_ACCESS_KEY_ID }}
               - name: AWS_SECRET_ACCESS_KEY
@@ -37,6 +39,8 @@ spec:
                 value: {{ .Values.backupStorage.aws.env.S3_OSM_PATH }}
               {{- else }}
               {{- if .Values.backupStorage.google.enabled }}
+              - name: STORAGE
+                value: GS
               - name: GCLOUD_PROJECT
                 value: {{ .Values.backupStorage.google.env.GCLOUD_PROJECT }}
               - name: GCLOUD_SERVICE_KEY
