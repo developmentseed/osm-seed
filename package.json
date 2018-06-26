@@ -1,3 +1,19 @@
 {
-    "version": "0.0.1-dev"
+  "name": "osm-seed",
+  "version": "0.0.1-dev",
+  "description": "Docker images and a Helm chart to install the OSM software onto a Kubernetes cluster",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/developmentseed/osm-seed.git"
+  },
+  "author": "Development Seed",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/developmentseed/osm-seed/issues"
+  },
+  "homepage": "https://github.com/developmentseed/osm-seed#readme"
 }
