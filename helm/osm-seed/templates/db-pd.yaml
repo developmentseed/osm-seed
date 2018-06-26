@@ -4,10 +4,10 @@ kind: PersistentVolume
 metadata:
   name: {{ .Release.Name }}-pv
   labels:
-    app: {{ template "osm-seed.chart" . }}
-    component: db-pd
-    environment: {{ .Values.environment }}
+    app: {{ template "osm-seed.name" . }}
+    chart: {{ template "osm-seed.chart" . }}
     release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   storageClassName: "" # It's necessary to specify "" as the storageClassName ,so that the default storage class won't be used, see : https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1
   capacity:
@@ -23,10 +23,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-pv-claim
   labels:
-    app: {{ template "osm-seed.chart" . }}
-    component: db-pd
-    environment: {{ .Values.environment }}
+    app: {{ template "osm-seed.name" . }}
+    chart: {{ template "osm-seed.chart" . }}
     release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   storageClassName: ""
   volumeName: {{ .Release.Name }}-pv

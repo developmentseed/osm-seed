@@ -3,25 +3,23 @@ kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-db
   labels:
-    app: {{ template "osm-seed.chart" . }}
-    component: db-statefulset
-    environment: {{ .Values.environment }}
+    app: {{ template "osm-seed.name" . }}
+    chart: {{ template "osm-seed.chart" . }}
     release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   replicas: 1 # we only ever want one replica of the db
   selector:
     matchLabels:
-      app: {{ template "osm-seed.chart" . }}
-      component: web-development
-      environment: {{ .Values.environment }}
-      release: {{ .Release.Name }}
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-db
   template:
     metadata:
       labels:
-        app: {{ template "osm-seed.chart" . }}
-        component: web-development
-        environment: {{ .Values.environment }}
+        app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-db
     spec:
       containers:
         - name: {{ .Chart.Name }}-db
