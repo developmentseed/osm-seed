@@ -4,7 +4,7 @@ kind: PersistentVolume
 metadata:
   name: {{ .Release.Name }}-pv
   labels:
-    app: {{ template "osm-seed.chart" . }}
+    app: {{ template "osm-seed.name" . }}
     component: db-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
@@ -23,7 +23,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-pv-claim
   labels:
-    app: {{ template "osm-seed.chart" . }}
+    app: {{ template "osm-seed.name" . }}
     component: db-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}

@@ -4,9 +4,9 @@ metadata:
   name: {{ template "osm-seed.fullname" . }}-web
   labels:
     app: {{ template "osm-seed.name" . }}
-    chart: {{ template "osm-seed.chart" . }}
+    component: web-deployment
+    environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.web.replicaCount }}
   selector:
@@ -17,10 +17,9 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "osm-seed.chart" . }}
-        component: web-deployment
-        environment: {{ .Values.environment }}
+        app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-web
     spec:
       containers:
         - name: {{ .Chart.Name }}-web
@@ -62,7 +61,7 @@ spec:
               value : {{ .Values.domain.protocolo }}
               {{- else }}
             - name: SERVER_URL
-              value: {{ .Values.domain.domainName }}
+              value: dns
             - name: SERVER_PROTOCOL
               value : http
               {{- end }}

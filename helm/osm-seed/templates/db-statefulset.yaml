@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-db
   labels:
-    app: {{ template "osm-seed.chart" . }}
+    app: {{ template "osm-seed.name" . }}
     component: db-statefulset
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}

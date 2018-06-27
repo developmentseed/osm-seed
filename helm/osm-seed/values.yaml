@@ -1,4 +1,4 @@
-osmSeedVersion: 0.0.1-dev
+osmSeedVersion: 0.1.1
 environment: development
 
 #Variables for osm-seed database
@@ -37,13 +37,21 @@ replication:
   image: 'developmentseed/osmseed-osmosis'
   schedule: '0 */1 * * *'
 
-# Variables for AWS settings
-aws:
-  env:
-    AWS_ACCESS_KEY_ID: xxxx
-    AWS_SECRET_ACCESS_KEY: xxxz
-    AWS_DEFAULT_REGION: us-east-1
-    S3_OSM_PATH: s3://osm-seed
+# ENV Variables for AWS or Google Storage
+backupStorage:
+  aws:
+    enabled: false #Set enabled=true if you are going to use AWS - S3
+    env:
+      AWS_ACCESS_KEY_ID: xxxx
+      AWS_SECRET_ACCESS_KEY: xxxz
+      AWS_DEFAULT_REGION: us-east-1
+      S3_OSM_PATH: s3://osm-seed
+  google:
+    enabled: true #Set enabled=true if you are going to use Google Storage
+    env:
+      GS_OSM_PATH: gs://osm-seed
+      GCLOUD_SERVICE_KEY: abc...==
+      GCLOUD_PROJECT: osm-seed-123456
 
 # Ingress variables
 ingress:
