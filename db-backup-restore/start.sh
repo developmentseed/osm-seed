@@ -58,3 +58,40 @@ if [ "$DB_ACTION" = "restore" ]; then
     gzip -f -d $restoreFile
     psql -h $POSTGRES_HOST -U $POSTGRES_USER  -d $POSTGRES_DB -f "${restoreFile%.*}"
 fi
+
+# This part of the code will clean the backups that have an aging of more than a week,
+# this can be activated according to a environment variable.
+if [ "$CLEAN_BACKUPS" = "true" ]; then
+    DATE=$(date --date="5 day ago" +"%Y-%m-%d")
+    # AWS
+    if [ $STORAGE == "S3" ]; then 
+        # Filter files from S3
+        aws s3 ls $S3_OSM_PATH/database/ | \
+        awk '{print $4}' | \
+        awk -F"osm-seed-" '{$1=$1}1' | \
+        awk '/sql.gz/{print}' | \
+        awk -F".sql.gz" '{$1=$1}1' |\
+        awk '$1 < "'"$DATE"'" {print $0}' | \
+        sort -n > output
+        # Delete filtered files
+        while read file; do
+            aws s3 rm $S3_OSM_PATH/database/osm-seed-$file.sql.gz
+        done < output
+        rm output
+    fi
+    # Google Storage
+    if [ $STORAGE == "GS" ]; then 
+        # Filter files from GS
+        gsutil ls $GS_OSM_PATH/planet/full-history/ | \
+        awk -F""$GS_OSM_PATH"/database/osm-seed-" '{$1=$1}1' | \
+        awk '/osm.bz2/{print}' | \
+        awk -F".sql.gz" '{$1=$1}1' |\
+        awk '$1 < "'"$DATE"'" {print $0}' | \
+        sort -n > output
+        # Delete filtered files
+        while read file; do
+            gsutil rm $GS_OSM_PATH/database/osm-seed-$file.osm.bz2
+            gsutil rm $GS_OSM_PATH/database/osm-seed-$file.pbf
+        done < output
+    fi
+fi
