@@ -19,7 +19,10 @@ sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $w
 sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_USERNAME'/g' $workdir/config/application.yml
 
 # Print the log while compiling the assets
-SECONDS=0; while [[ SECONDS -lt 300 ]] ; do sleep 2; echo "Running... rake assets:precompile"; done &
+until $(curl -sf -o /dev/null $SERVER_URL); do
+    echo "Waiting to start rails ports server..."
+    sleep 2
+done &
 
 # Precompile again, to catch the env variables
 RAILS_ENV=production rake assets:precompile --trace
