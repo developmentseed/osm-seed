@@ -114,6 +114,12 @@ defaults: &defaults
   #mapzen_valhalla_key: ""
   # Thunderforest authentication details
   #thunderforest_key: ""
+ # Key for generating TOTP tokens
+  #totp_key: ""
+  # Enforce Content-Security-Policy
+  csp_enforce: false
+  # URL for reporting Content-Security-Policy violations
+  #csp_report_url: ""
 
 development:
   <<: *defaults
@@ -134,4 +140,4 @@ test:
   windowslive_auth_id: "dummy"
   windowslive_auth_secret: "dummy"
   github_auth_id: "dummy"
-  github_auth_secret: "dummy"
+  github_auth_secret: "dummy" 
