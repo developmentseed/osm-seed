@@ -1,4 +1,4 @@
-osmSeedVersion: 0.0.1-dev
+osmSeedVersion: 0.1.1
 environment: development
 
 #Variables for osm-seed database
