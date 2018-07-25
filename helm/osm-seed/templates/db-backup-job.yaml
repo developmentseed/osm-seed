@@ -30,6 +30,8 @@ spec:
                 value: {{ .Values.db.env.POSTGRES_USER }}
               - name: DB_ACTION
                 value: {{ .Values.dbbackup.env.DB_ACTION }}
+              - name: CLEAN_BACKUPS
+                value: {{ quote .Values.dbbackup.env.CLEAN_BACKUPS }}
               {{- if .Values.backupStorage.aws.enabled }}
               - name: STORAGE
                 value: S3
@@ -52,6 +54,4 @@ spec:
               - name: GS_OSM_PATH
                 value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
               {{- end }}
-              - name: CLEAN_BACKUPS
-                value: {{ .Values.dbbackup.env.CLEAN_BACKUPS }}
           restartPolicy: OnFailure
