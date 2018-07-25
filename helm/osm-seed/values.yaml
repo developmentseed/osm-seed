@@ -31,11 +31,14 @@ dbbackup:
   schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
+    CLEAN_BACKUPS: true
 
 # Variables for osm-seed for replication
 replication:
   image: 'developmentseed/osmseed-osmosis'
   schedule: '0 */1 * * *'
+  env:
+    CLEAN_BACKUPS: true
 
 # ENV Variables for AWS or Google Storage
 backupStorage:
