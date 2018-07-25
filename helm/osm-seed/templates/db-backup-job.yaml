@@ -52,4 +52,6 @@ spec:
               - name: GS_OSM_PATH
                 value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
               {{- end }}
+              - name: CLEAN_BACKUPS
+                value: {{ .Values.dbbackup.env.CLEAN_BACKUPS }}
           restartPolicy: OnFailure
