@@ -9,6 +9,8 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   schedule: {{ quote .Values.replication.schedule }}
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 0
   jobTemplate:
     spec:
       template:

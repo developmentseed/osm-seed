@@ -14,7 +14,7 @@ echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key
 fi
 
 # Backing up DataBase
-if [ "$DB_ACTION" = "backup" ]; then
+if [ $DB_ACTION === "backup" ]; then
     # Backup database and make maximum compression at the slowest speed
     /usr/bin/pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB  | gzip -9 > $backupFile
 
@@ -38,7 +38,7 @@ if [ "$DB_ACTION" = "backup" ]; then
 fi
 
 # Restoring DataBase
-if [ "$DB_ACTION" = "restore" ]; then
+if [ $DB_ACTION == "restore" ]; then
     # AWS
     if [ $STORAGE == "S3" ]; then 
         # Get the state.txt file from S3
@@ -61,7 +61,7 @@ fi
 
 # This part of the code will clean the backups that have an aging of more than a week,
 # this can be activated according to a environment variable.
-if [ "$CLEAN_BACKUPS" = "true" ]; then
+if [ $CLEAN_BACKUPS == "true" ]; then
     DATE=$(date --date="5 day ago" +"%Y-%m-%d")
     # AWS
     if [ $STORAGE == "S3" ]; then 

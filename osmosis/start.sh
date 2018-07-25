@@ -53,7 +53,7 @@ fi
 
 # This part of the code will clean the backups that have an aging of more than a week,
 # this can be activated according to a environment variable.
-if [ "$CLEAN_BACKUPS" = "true" ]; then
+if [ $CLEAN_BACKUPS == "true" ]; then
     DATE=$(date --date="5 day ago" +"%Y-%m-%d")
     # AWS
     if [ $STORAGE == "S3" ]; then 
