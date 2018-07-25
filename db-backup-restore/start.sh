@@ -82,16 +82,15 @@ if [ "$CLEAN_BACKUPS" = "true" ]; then
     # Google Storage
     if [ $STORAGE == "GS" ]; then 
         # Filter files from GS
-        gsutil ls $GS_OSM_PATH/planet/full-history/ | \
+        gsutil ls $GS_OSM_PATH/database/ | \
         awk -F""$GS_OSM_PATH"/database/osm-seed-" '{$1=$1}1' | \
-        awk '/osm.bz2/{print}' | \
+        awk '/sql.gz/{print}' | \
         awk -F".sql.gz" '{$1=$1}1' |\
         awk '$1 < "'"$DATE"'" {print $0}' | \
         sort -n > output
         # Delete filtered files
         while read file; do
-            gsutil rm $GS_OSM_PATH/database/osm-seed-$file.osm.bz2
-            gsutil rm $GS_OSM_PATH/database/osm-seed-$file.pbf
+            gsutil rm $GS_OSM_PATH/database/osm-seed-$file.sql.gz
         done < output
     fi
 fi
