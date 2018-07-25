@@ -84,7 +84,8 @@ RUN /usr/sbin/passenger-memory-stats
 RUN rm -rf $workdir
 RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
 WORKDIR $workdir
-RUN git checkout 2fd0d2304f05bdac456e654681cd26565c2d7f08
+# gitsha 39f0b501e8cefea961447de9c8076e20fa3adbb4 at Jul 23, 2018
+RUN git checkout 39f0b501e8cefea961447de9c8076e20fa3adbb4
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
@@ -107,7 +108,7 @@ RUN chmod 600 $workdir/config/database.yml $workdir/config/application.yml $work
 ADD config/action_mailer.rb config/initializers/action_mailer.rb
 
 # Precompile the website assets
-RUN bundle exec rake assets:precompile
+RUN bundle exec rake assets:precompile --trace
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
 RUN ln -s /tmp /var/www/tmp
