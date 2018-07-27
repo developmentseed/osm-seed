@@ -1,3 +1,4 @@
 .env
 test.values.yaml
 prod.values.yaml
+postgres-data/
