@@ -2,9 +2,10 @@
 
 osm-seed iD-editor has a communication with the osm-seed api, We set up iD editor in the port `8080` since we are using a specific container run the application.
 
-### Configuration
 
-To set up this container, do the following:
+When you run ad first time the osm-seed iD-editor at port `8080`, you will get a notification to register an application. You should create the application and the update the in the following parameter in your `.env`  or `values.yaml` file.
+
+Do the following:
 * Log into your Rails Port instance - e.g. http://localhost
 * Click on your user name to go to your user page
 * Click on "my settings" on the user page
@@ -14,15 +15,31 @@ To set up this container, do the following:
 * Check the all the boxes
 * Click the "Register" button
 * On the next page, copy the "consumer key"
-* Set the following env variables
+* Set the following env variables in `.env`  or `values.yaml`
 
 ```
 SERVER_URL=127.0.0.1
 SERVER_PROTOCOL=http
-URLROOT='http:\/\/'$SERVER_URL
 OAUTH_CONSUMER_KEY='<cosumer key from the register aplication>'
 OAUTH_SECRET='<oauth secret key from the register aplication>'
 ```
+
+Finally, update the osm-seed stack:
+
+- Docker
+
+```
+docker-compose down && docker-compose up
+```
+
+- kubernetes
+
+```
+cd osm-seed/helm/
+helm upgrade -f osm-seed/values.yaml osm-seed osm-seed/
+```
+
+The next time when you start the iD editor, it will be available to use.
 
 
 ### Building the container
