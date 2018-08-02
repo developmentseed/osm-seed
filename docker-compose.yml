@@ -33,7 +33,7 @@ services:
       echo Sleep the replication for a while!;
       sleep 40;
       echo Creating the replication!;
-      ./import_osm.sh"
+      ./start.sh"
     env_file: 
       - ./.env
   db-backup-restore:
@@ -49,6 +49,6 @@ services:
       echo Sleep for a while!;
       sleep 20;
       echo Building backup!;
-      ./script.sh"
+      ./start.sh"
     env_file: 
       - ./.env
