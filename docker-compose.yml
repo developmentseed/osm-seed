@@ -18,6 +18,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
     env_file: 
       - ./.env
   replication:
@@ -51,4 +53,23 @@ services:
       echo Building backup!;
       ./start.sh"
     env_file: 
+      - ./.env
+  tiles-server:
+    image: openseed-tiles-server:v1
+    build: 
+      context: ./tiles-server
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+      - db-backup-restore
+    ports:
+      - "9090:9090"
+    command: >
+      /bin/bash -c "
+      echo Sleep for a while!;
+      sleep 20;
+      echo Starting tiles server!;
+      ./start.sh"
+    env_file:
       - ./.env

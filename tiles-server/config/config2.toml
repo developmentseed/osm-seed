@@ -1,0 +1,28 @@
+[webserver]
+port = ":9090"
+
+[cache]
+type="file"             # cache type
+basepath="/tmp/tegola"  # cache specific config
+# register data providers
+[[providers]]
+name = "osm"   # provider name is referenced from map layers
+type = "postgis"        # the type of data provider. currently only supports postgis
+host = "db"      # postgis database host
+port = 5432             # postgis database port
+database = "openstreetmap"     # postgis database name
+user = "postgres"         # postgis database user
+password = "1234"           # postgis database password
+srid = 3857             # The default srid for this provider. If not provided it will be WebMercator (3857)
+
+
+[[maps]]
+name = "osm"
+attribution = "OpenStreetMap" # map attribution
+center = [-74.275329586789, -2.153492567373, 8.0] # optional center value. part of the TileJSON spec
+	# Buildings
+	[[providers.layers]]
+	name = "buildings"
+	geometry_fieldname = "geometry"
+	id_fieldname = "osm_id"
+	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, nullif(as_numeric(height),-1) AS height, type FROM osm_buildings WHERE geometry && !BBOX!"

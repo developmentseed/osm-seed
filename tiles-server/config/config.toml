@@ -1,0 +1,54 @@
+[webserver]
+port = ":9090"
+
+[cache]
+type="file"             # cache type
+basepath="/tmp/tegola"  # cache specific config
+# register data providers
+[[providers]]
+name = "test_postgis"   # provider name is referenced from map layers
+type = "postgis"        # the type of data provider. currently only supports postgis
+host = "db"      # postgis database host
+port = 5432             # postgis database port
+database = "openstreetmap"     # postgis database name
+user = "postgres"         # postgis database user
+password = "1234"           # postgis database password
+srid = 3857             # The default srid for this provider. If not provided it will be WebMercator (3857)
+
+    # Example data
+    [[providers.layers]]
+    name = "landuse"                      # will be encoded as the layer name in the tile
+    tablename = "public.current_ways"    # sql or table_name are required
+    geometry_fieldname = "geom"           # geom field. default is geom
+    id_fieldname = "gid"                  # geom id field. default is gid
+    srid = 4326                           # the SRID of the geometry field if different than 
+
+    [[providers.layers]]
+    name = "roads"                         # will be encoded as the layer name in the tile
+    tablename = "poublic.current_ways"	   # sql or table_name are required
+    geometry_fieldname = "geom"            # geom field. default is geom
+    id_fieldname = "gid"                   # geom id field. default is gid
+    fields = [ "class", "name" ]           # Additional fields to include in the select statement.
+
+    [[providers.layers]]
+    name = "rivers"                        # will be encoded as the layer name in the tile
+    # Custom sql to be used for this layer. 
+    # Note that the geometry field is wrapped in a ST_AsBinary()
+    sql = "SELECT gid, ST_AsBinary(geom) AS geom FROM public.current_ways WHERE geom && !BBOX!"
+
+# maps are made up of layers
+[[maps]]
+name = "zoning"                             # used in the URL to reference this map (/maps/:map_name)
+
+    [[maps.layers]]
+    provider_layer = "test_postgis.landuse" # must match a data provider layer
+    min_zoom = 12                           # minimum zoom level to include this layer
+    max_zoom = 16                           # maximum zoom level to include this layer
+
+        [maps.layers.default_tags]          # table of default tags to encode in the tile. SQL statements will override
+        class = "park"
+
+    [[maps.layers]]
+    provider_layer = "test_postgis.rivers"  # must match a data provider layer
+    min_zoom = 10                           # minimum zoom level to include this layer
+    max_zoom = 18                           # maximum zoom level to include this layer
