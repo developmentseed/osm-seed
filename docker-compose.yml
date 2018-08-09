@@ -54,22 +54,34 @@ services:
       ./start.sh"
     env_file: 
       - ./.env
-  tiles-server:
-    image: openseed-tiles-server:v1
+  tiles-db:
+    image: openseed-tiles-db:v1
     build: 
-      context: ./tiles-server
+      context: ./tiler-db
       dockerfile: Dockerfile
     depends_on:
-      - web
       - db
-      - db-backup-restore
+      - web
     ports:
-      - "9090:9090"
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while!;
-      sleep 20;
-      echo Starting tiles server!;
-      ./start.sh"
+      -  "5433:5432"
     env_file:
       - ./.env
+  # tiles-server:
+  #   image: openseed-tiles-server:v1
+  #   build: 
+  #     context: ./tiles-server
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - web
+  #     - db
+  #     - db-backup-restore
+  #   ports:
+  #     - "9090:9090"
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while!;
+  #     sleep 20;
+  #     echo Starting tiles server!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env
