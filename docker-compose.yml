@@ -54,8 +54,8 @@ services:
       ./start.sh"
     env_file: 
       - ./.env
-  tiles-db:
-    image: openseed-tiles-db:v1
+  tiler-db:
+    image: openseed-tiler-db:v1
     build: 
       context: ./tiler-db
       dockerfile: Dockerfile
@@ -64,8 +64,27 @@ services:
       - web
     ports:
       -  "5433:5432"
+    volumes:
+      - ./postgres-data-gis:/var/lib/postgresql/data
     env_file:
       - ./.env
+  tiler-osm2pgsql:
+    image: openseed-tiler-osm2pgsql:v1
+    build: 
+      context: ./tiler-osm2pgsql
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+      - tiler-db
+    env_file: 
+      - ./.env
+    command: >
+      /bin/bash -c "
+      echo Sleep for a while!;
+      sleep 20;
+      echo starting osm2pgsql!;
+      ./start.sh"
   # tiles-server:
   #   image: openseed-tiles-server:v1
   #   build: 

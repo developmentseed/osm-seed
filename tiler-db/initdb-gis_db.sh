@@ -1,19 +1,19 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
-# export POSTGRES_HOST="$GIS_POSTGRES_HOST"
-# export POSTGRES_DB="$GIS_POSTGRES_DB"
-# export POSTGRES_USER="$GIS_POSTGRES_USER"
-# export POSTGRES_PASSWORD="$GIS_POSTGRES_PASSWORD"
+# Create the 'template_postgis' template db
+"${psql[@]}" <<- 'EOSQL'
+CREATE DATABASE template_postgis;
+UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template_postgis';
+EOSQL
 
-# Create the 'gis' template db
-
-# "${psql[@]}" <<- 'EOSQL'
-# CREATE DATABASE "$POSTGRES_DB";
-# EOSQL
-"${psql[@]}" --dbname="$POSTGRES_DB" <<-'EOSQL'
+# Load PostGIS into both template_database and $GIS_POSTGRES_DB
+for DB in template_postgis "$GIS_POSTGRES_DB"; do
+	echo "Loading PostGIS extensions into $DB"
+	"${psql[@]}" --dbname="$DB" <<-'EOSQL'
 		CREATE EXTENSION IF NOT EXISTS postgis;
 		CREATE EXTENSION IF NOT EXISTS postgis_topology;
 		CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
 		CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
 EOSQL
+done

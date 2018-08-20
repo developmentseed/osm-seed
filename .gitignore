@@ -2,3 +2,4 @@
 test.values.yaml
 prod.values.yaml
 postgres-data/
+postgres-data-gis/
