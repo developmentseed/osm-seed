@@ -10,7 +10,7 @@ RUN apt-get update \
            postgis=$POSTGIS_VERSION \
       && rm -rf /var/lib/apt/lists/*
 
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY ./config/docker-entrypoint.sh /usr/local/bin/
 RUN mkdir -p /docker-entrypoint-initdb.d
-COPY ./initdb-gis_db.sh /docker-entrypoint-initdb.d/postgis.sh
-COPY ./update-gis_db.sh /usr/local/bin
+COPY ./config/initdb-gis_db.sh /docker-entrypoint-initdb.d/postgis.sh
+COPY ./config/update-gis_db.sh /usr/local/bin
