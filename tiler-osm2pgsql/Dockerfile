@@ -32,7 +32,11 @@ RUN apt-get install -y osmctools postgresql-client \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update
+RUN apt-get install -y curl unzip gdal-bin
+
 # osm replication script
 WORKDIR /osm
 COPY start.sh start.sh
+COPY scripts scripts
 CMD ./start.sh
