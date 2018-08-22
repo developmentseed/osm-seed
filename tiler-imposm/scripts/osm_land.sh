@@ -1,21 +1,4 @@
 #!/bin/bash
-
-# This script will install the Open Street Maps land polygons (simplified for zooms 0-9 and split for zooms 10-20).
-#
-# The script assumes the following utilities are installed:
-# 	- psql: PostgreSQL client
-#	- ogr2ogr: GDAL vector lib
-#	- unzip: decompression util
-#
-# Usage
-# 	Set the database connection variables, then run
-#
-#		./osm_land.sh
-#
-# Important
-#	- The tegola config file is expecting these layers to be in the same database as the rest of the OSM data imported using imposm3
-#	- This script will drop the tables simplified_land_polygons and land_polygons if they exist and then replace them.
-
 set -e
 
 CONFIG_FILE=''
@@ -36,11 +19,11 @@ while getopts ":c:v" flag; do
 done
 
 # database connection variables
-DB_NAME="osm"
-DB_HOST=""
-DB_PORT=""
-DB_USER=""
-DB_PW=""
+DB_NAME=$GIS_POSTGRES_DB
+DB_HOST=$GIS_POSTGRES_HOST
+DB_PORT=5432
+DB_USER=$GIS_POSTGRES_USER
+DB_PW=$GIS_POSTGRES_PASSWORD
 
 # Check if we're using a config file
 if [[ -r $CONFIG_FILE ]]; then source $CONFIG_FILE

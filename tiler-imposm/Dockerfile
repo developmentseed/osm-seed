@@ -3,8 +3,6 @@ ENV GOPATH /usr/bin
 RUN apt-get -y update
 RUN apt-get install -y \
         build-essential \
-        make \
-        cmake \
         g++ \
         git-core \
         libboost-dev \
@@ -21,26 +19,22 @@ RUN apt-get install -y \
         libgeos-dev \
         libprotobuf-dev \
         libgeos++-dev \
-        libjson0-dev
-
-RUN apt-get install -y python-software-properties \
-        python3-software-properties \
+        libjson0-dev \
         software-properties-common \
-        wget
+        curl \
+        unzip \
+        postgresql \
+        postgresql-contrib
+
+RUN add-apt-repository ppa:ubuntugis/ppa
+RUN apt-get -y update
+RUN apt-get install -y gdal-bin
 
 RUN add-apt-repository ppa:gophers/archive
 RUN apt-get -y update
 RUN apt-get install -y golang-1.10-go
 RUN cp /usr/lib/go-1.10/bin/go /usr/bin/go
 RUN cp /usr/lib/go-1.10/bin/gofmt /usr/bin/gofmt
-
-# RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
-# RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
-# RUN apt-get -y update
-RUN apt-get install -y postgresql postgresql-contrib
-
-
-
 
 RUN mkdir -p go
 WORKDIR /go
