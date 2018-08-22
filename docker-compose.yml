@@ -82,7 +82,7 @@ services:
     command: >
       /bin/bash -c "
       echo Sleep for a while!;
-      sleep 40;
+      sleep 20;
       echo starting imposm!;
       ./start.sh"
   tiler-server:

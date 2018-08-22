@@ -185,7 +185,7 @@ password = "${GIS_POSTGRES_PASSWORD}"
 [[maps]]
 name = "osm"
 attribution = "OpenStreetMap" # map attribution
-center = [-12.275329586789, -74.153492567373, 8.0] # optional center value. part of the TileJSON spec
+center = [-74.153492567373, -12.275329586789, 8.0] # optional center value. part of the TileJSON spec
 
 
 	[[maps.layers]]

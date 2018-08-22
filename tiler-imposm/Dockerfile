@@ -22,6 +22,7 @@ RUN apt-get install -y \
         libjson0-dev \
         software-properties-common \
         curl \
+        wget \
         unzip \
         postgresql \
         postgresql-contrib
