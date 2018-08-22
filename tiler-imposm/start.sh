@@ -33,4 +33,3 @@ while "$flag" = true; do
             importData
         fi
 done
-

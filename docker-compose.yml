@@ -98,7 +98,7 @@ services:
     command: >
       /bin/bash -c "
       echo Sleep for a while!;
-      sleep 300;
+      sleep 20;
       echo Starting tiles server!;
       ./start.sh"
     env_file:

@@ -5,6 +5,8 @@ RUN apk add gcc=6.4.0-r5
 RUN apk add g++
 RUN apk add git
 RUN apk add bash
+RUN apk add postgresql
+RUN apk add postgresql-contrib
 
 # # Set up source for compilation
 RUN git clone -b v0.6.4 https://github.com/go-spatial/tegola.git /opt/tegola_src
