@@ -2,41 +2,44 @@ FROM ubuntu:14.04
 ENV GOPATH /usr/bin
 RUN apt-get -y update
 RUN apt-get install -y \
-        build-essential \
-        g++ \
-        git-core \
-        libboost-dev \
-        libboost-system-dev \
-        libboost-filesystem-dev \
-        libexpat1-dev \
-        zlib1g-dev \
-        libbz2-dev \
-        libpq-dev \
-        libgeos-dev \
-        libgeos++-dev \
-        libproj-dev \
-        libleveldb-dev \
-        libgeos-dev \
-        libprotobuf-dev \
-        libgeos++-dev \
-        libjson0-dev \
-        software-properties-common \
-        curl \
-        wget \
-        unzip \
-        postgresql \
-        postgresql-contrib
+    build-essential \
+    g++ \
+    git-core \
+    libboost-dev \
+    libboost-system-dev \
+    libboost-filesystem-dev \
+    libexpat1-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libpq-dev \
+    libgeos-dev \
+    libgeos++-dev \
+    libproj-dev \
+    libleveldb-dev \
+    libgeos-dev \
+    libprotobuf-dev \
+    libgeos++-dev \
+    libjson0-dev \
+    software-properties-common \
+    curl \
+    wget \
+    unzip \
+    postgresql \
+    postgresql-contrib
 
+# Gdal is required to process the natural earth files
 RUN add-apt-repository ppa:ubuntugis/ppa
 RUN apt-get -y update
 RUN apt-get install -y gdal-bin
 
+# Install go
 RUN add-apt-repository ppa:gophers/archive
 RUN apt-get -y update
 RUN apt-get install -y golang-1.10-go
 RUN cp /usr/lib/go-1.10/bin/go /usr/bin/go
 RUN cp /usr/lib/go-1.10/bin/gofmt /usr/bin/gofmt
 
+# Install imposm
 RUN mkdir -p go
 WORKDIR /go
 RUN export GOPATH=`pwd`

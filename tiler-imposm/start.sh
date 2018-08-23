@@ -5,6 +5,7 @@ mkdir -p /tmp
 FILE='http://download.geofabrik.de/south-america/peru-latest.osm.pbf'
 PBF='peru-latest.osm.pbf'
 flag=true
+
 function importData () {
     echo "Execute the missing functions"
     psql "postgresql://$GIS_POSTGRES_USER:$GIS_POSTGRES_PASSWORD@$GIS_POSTGRES_HOST/$GIS_POSTGRES_DB" -a -f postgis_helpers.sql

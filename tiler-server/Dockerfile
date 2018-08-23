@@ -1,12 +1,14 @@
 FROM golang:1.9.2-alpine3.7 AS build
 RUN apk update
-RUN apk add --no-cache musl-dev linux-headers g++
-RUN apk add gcc=6.4.0-r5
-RUN apk add g++
-RUN apk add git
-RUN apk add bash
-RUN apk add postgresql
-RUN apk add postgresql-contrib
+RUN apk add musl-dev \
+    linux-headers \
+    g++ \
+    gcc=6.4.0-r5 \
+    g++ \
+    git \
+    bash \
+    postgresql \
+    postgresql-contrib
 
 # # Set up source for compilation
 RUN git clone -b v0.6.4 https://github.com/go-spatial/tegola.git /opt/tegola_src
