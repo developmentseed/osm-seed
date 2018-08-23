@@ -20,12 +20,19 @@ RUN apt-get install -y \
     libprotobuf-dev \
     libgeos++-dev \
     libjson0-dev \
-    software-properties-common \
     curl \
     wget \
     unzip \
     postgresql \
-    postgresql-contrib
+    postgresql-contrib \
+    python-pip \
+    software-properties-common \
+    python-software-properties 
+
+# Install awscli  and gsutil  to get the pbf file
+RUN pip install awscli
+RUN curl -sSL https://sdk.cloud.google.com | bash
+RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
 
 # Gdal is required to process the natural earth files
 RUN add-apt-repository ppa:ubuntugis/ppa

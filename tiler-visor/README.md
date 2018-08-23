@@ -9,7 +9,7 @@ The stylization of vector tiles are based on: https://github.com/go-spatial/tego
 
 This container needs some environment variables passed into it in order to run:
 
-- `TILER_SERVER_PORT` e.g : 9090
-- `TILER_SERVER_HOST` e.g: localhost
-- `TILER_VISOR_HOST` e.g localhost
-- `TILER_VISOR_PORT` e.g 8081
+- `TILER_SERVER_PORT` e.g `9090`
+- `TILER_SERVER_HOST` e.g `localhost`
+- `TILER_VISOR_HOST` e.g `localhost`
+- `TILER_VISOR_PORT` e.g `8081`

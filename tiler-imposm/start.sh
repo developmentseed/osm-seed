@@ -1,10 +1,35 @@
 #!/bin/bash
 set -e
 mkdir -p /tmp
-
-FILE='http://download.geofabrik.de/south-america/peru-latest.osm.pbf'
-PBF='peru-latest.osm.pbf'
+stateFile="state.txt"
+PBFFile="osm.pbf"
 flag=true
+
+# Creating a gcloud-service-key to authenticate the gcloud
+if [ $STORAGE == "GS" ]; then
+    echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
+    /root/google-cloud-sdk/bin/gcloud --quiet components update
+    /root/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file gcloud-service-key.json
+    /root/google-cloud-sdk/bin/gcloud config set project $GCLOUD_PROJECT
+fi
+
+function getData () {
+    # S3 storage
+    if [ $STORAGE == "S3" ]; then 
+        # Get the state.txt file from S3
+        aws s3 cp $S3_OSM_PATH/planet/full-history/$stateFile .
+        PBFCloudPath=$(tail -n +2 $stateFile)
+        aws s3 cp $PBFCloudPath $PBFFile
+    fi
+
+    # Google storage
+    if [ $STORAGE == "GS" ]; then 
+        # Get the state.txt file from GS
+        gsutil cp $GS_OSM_PATH/planet/full-history/$stateFile .
+        PBFCloudPath=$(tail -n +2 $stateFile)
+        gsutil cp $PBFCloudPath $PBFFile
+    fi
+}
 
 function importData () {
     echo "Execute the missing functions"
@@ -15,8 +40,7 @@ function importData () {
     echo "Impor OMS Land"
     ./scripts/osm_land.sh
     echo "Import PBF file"
-    wget -O $PBF $FILE
-    imposm import -connection postgis://$GIS_POSTGRES_USER:$GIS_POSTGRES_PASSWORD@$GIS_POSTGRES_HOST/$GIS_POSTGRES_DB -mapping imposm3.json -read $PBF -write
+    imposm import -connection postgis://$GIS_POSTGRES_USER:$GIS_POSTGRES_PASSWORD@$GIS_POSTGRES_HOST/$GIS_POSTGRES_DB -mapping imposm3.json -read $PBFFile -write
     imposm import -connection postgis://$GIS_POSTGRES_USER:$GIS_POSTGRES_PASSWORD@$GIS_POSTGRES_HOST/$GIS_POSTGRES_DB -mapping imposm3.json -deployproduction
 }
 
@@ -30,7 +54,11 @@ while "$flag" = true; do
         if [ $hasData  \> 70 ]; then
             echo "Update the DB with osm data"
         else
-            echo "Start importing the data"
-            importData
+            echo "Download PBF file"
+            getData
+            if [ -f $PBFFile ]; then
+                echo "Start importing the data"
+                importData
+            fi
         fi
 done
