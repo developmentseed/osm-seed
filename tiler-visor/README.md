@@ -12,4 +12,5 @@ This container needs some environment variables passed into it in order to run:
 - `TILER_SERVER_PORT` e.g `9090`
 - `TILER_SERVER_HOST` e.g `localhost`
 - `TILER_VISOR_HOST` e.g `localhost`
+- `TILER_VISOR_PROTOCOL` e.g `http`
 - `TILER_VISOR_PORT` e.g `8081`
