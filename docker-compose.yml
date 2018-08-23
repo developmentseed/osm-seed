@@ -103,3 +103,14 @@ services:
       ./start.sh"
     env_file:
       - ./.env
+  tiler-visor:
+    image: openseed-tiler-visor:v1
+    build: 
+      context: ./tiler-visor
+      dockerfile: Dockerfile
+    depends_on:
+      - tiler-server
+    ports:
+      - "8081:80"
+    env_file:
+      - ./.env

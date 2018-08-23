@@ -22,5 +22,5 @@ RUN chmod a+x /opt/tegola
 RUN ln -s /opt/tegola /usr/bin/tegola
 
 COPY ./config/config.toml  /opt/tegola_config/config.toml
-COPY ./start.sh .
+COPY ./start.sh ./start.sh
 CMD ./start.sh

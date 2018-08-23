@@ -1,5 +1,5 @@
 [webserver]
-port = ":${TEGOLA_PORT}"
+port = ":${TILER_SERVER_PORT}"
 
 # Tegola offers three tile caching strategies: "file", "redis", and "s3"
 [cache]
