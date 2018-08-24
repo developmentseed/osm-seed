@@ -16,7 +16,7 @@ database = "${GIS_POSTGRES_DB}"
 user = "${GIS_POSTGRES_USER}"
 password = "${GIS_POSTGRES_PASSWORD}"
 srid = 3857
-max_connections = 1000
+max_connections = 75
 
 	[[providers.layers]]
 	name = "land_8-20"
@@ -202,7 +202,7 @@ database = "${GIS_POSTGRES_DB}"
 user = "${GIS_POSTGRES_USER}"
 password = "${GIS_POSTGRES_PASSWORD}"
 srid = 3857
-max_connections = 1000
+max_connections = 75
 
 	[[providers.layers]]
 	name = "ne_110m_populated_places"
