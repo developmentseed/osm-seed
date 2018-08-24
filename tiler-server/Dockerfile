@@ -10,11 +10,13 @@ RUN apk add musl-dev \
     postgresql \
     postgresql-contrib
 
-# # Set up source for compilation
-RUN git clone -b v0.6.4 https://github.com/go-spatial/tegola.git /opt/tegola_src
+# Set up source for compilation
+ENV GOROOT /usr/local/go
+RUN git clone -b v0.7.0 https://github.com/go-spatial/tegola.git /opt/tegola_src
 RUN rm -rf /opt/tegola_src/src
 RUN mkdir -p /opt/tegola_src/src/github.com/go-spatial
 RUN ln -s /opt/tegola_src /opt/tegola_src/src/github.com/go-spatial/tegola
+RUN git clone -b v1.10.0 https://github.com/theckman/goconstraint.git /opt/tegola_src/src/github.com/theckman/goconstraint
 
 # Build binary
 WORKDIR /opt/tegola_src/cmd/tegola
