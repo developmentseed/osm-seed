@@ -185,7 +185,186 @@ jobs:
             docker tag db-backup-restore developmentseed/osmseed-backup-restore:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-backup-restore:${VERSION}
+  tiler-db:
+      docker:
+        - image: docker:17.05.0-ce-git
+      steps:
+        - checkout
+        - setup_remote_docker
 
+        - restore_cache:
+            keys:
+              - v1-{{ .Branch }}
+            paths:
+              - caches/tiler-db.tar
+
+        - run:
+            name: Load docker image cache
+            command: |
+              docker load -i caches/tiler-db.tar || true
+
+        - run:
+            name: Build application docker image
+            command: |
+              docker build --cache-from=tiler-db -t tiler-db tiler-db/
+
+        - run:
+            name: Save docker image cache
+            command: |
+              mkdir -p caches
+              docker save -o caches/tiler-db.tar tiler-db
+
+        - save_cache:
+            key: v1-{{ .Branch }}-{{ epoch }}
+            paths:
+              - caches/tiler-db.tar
+
+        - deploy:
+            name: Push docker image
+            command: |
+              if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+                VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+              else
+                VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+              fi
+              docker tag tiler-db developmentseed/osmseed-tiler-db:${VERSION}
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker push developmentseed/osmseed-tiler-db:${VERSION}
+  tiler-imposm:
+      docker:
+        - image: docker:17.05.0-ce-git
+      steps:
+        - checkout
+        - setup_remote_docker
+
+        - restore_cache:
+            keys:
+              - v1-{{ .Branch }}
+            paths:
+              - caches/tiler-imposm.tar
+
+        - run:
+            name: Load docker image cache
+            command: |
+              docker load -i caches/tiler-imposm.tar || true
+
+        - run:
+            name: Build application docker image
+            command: |
+              docker build --cache-from=tiler-imposm -t tiler-imposm tiler-imposm/
+
+        - run:
+            name: Save docker image cache
+            command: |
+              mkdir -p caches
+              docker save -o caches/tiler-imposm.tar tiler-imposm
+
+        - save_cache:
+            key: v1-{{ .Branch }}-{{ epoch }}
+            paths:
+              - caches/tiler-imposm.tar
+
+        - deploy:
+            name: Push docker image
+            command: |
+              if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+                VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+              else
+                VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+              fi
+              docker tag tiler-imposm developmentseed/osmseed-tiler-imposm:${VERSION}
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker push developmentseed/osmseed-tiler-imposm:${VERSION}
+  tiler-server:
+      docker:
+        - image: docker:17.05.0-ce-git
+      steps:
+        - checkout
+        - setup_remote_docker
+
+        - restore_cache:
+            keys:
+              - v1-{{ .Branch }}
+            paths:
+              - caches/tiler-server.tar
+
+        - run:
+            name: Load docker image cache
+            command: |
+              docker load -i caches/tiler-server.tar || true
+
+        - run:
+            name: Build application docker image
+            command: |
+              docker build --cache-from=tiler-server -t tiler-server tiler-server/
+
+        - run:
+            name: Save docker image cache
+            command: |
+              mkdir -p caches
+              docker save -o caches/tiler-server.tar tiler-server
+
+        - save_cache:
+            key: v1-{{ .Branch }}-{{ epoch }}
+            paths:
+              - caches/tiler-server.tar
+
+        - deploy:
+            name: Push docker image
+            command: |
+              if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+                VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+              else
+                VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+              fi
+              docker tag tiler-server developmentseed/osmseed-tiler-server:${VERSION}
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker push developmentseed/osmseed-tiler-server:${VERSION}
+  tiler-visor:
+      docker:
+        - image: docker:17.05.0-ce-git
+      steps:
+        - checkout
+        - setup_remote_docker
+
+        - restore_cache:
+            keys:
+              - v1-{{ .Branch }}
+            paths:
+              - caches/tiler-visor.tar
+
+        - run:
+            name: Load docker image cache
+            command: |
+              docker load -i caches/tiler-visor.tar || true
+
+        - run:
+            name: Build application docker image
+            command: |
+              docker build --cache-from=tiler-visor -t tiler-visor tiler-visor/
+
+        - run:
+            name: Save docker image cache
+            command: |
+              mkdir -p caches
+              docker save -o caches/tiler-visor.tar tiler-visor
+
+        - save_cache:
+            key: v1-{{ .Branch }}-{{ epoch }}
+            paths:
+              - caches/tiler-visor.tar
+
+        - deploy:
+            name: Push docker image
+            command: |
+              if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+                VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+              else
+                VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+              fi
+              docker tag tiler-visor developmentseed/osmseed-tiler-visor:${VERSION}
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker push developmentseed/osmseed-tiler-visor:${VERSION}
 workflows:
   version: 2
   build_and_push:
@@ -194,3 +373,7 @@ workflows:
       - db
       - osmosis
       - db-backup-restore
+      - tiler-db
+      - tiler-imposm
+      - tiler-server
+      - tiler-visor
