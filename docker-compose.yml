@@ -55,9 +55,9 @@ services:
     env_file: 
       - ./.env
   id:
-    image: openseed-id-editor:v1
+    image: osmseed-id-editor:v1
     build: 
-      context: ./iD
+      context: ./id-editor
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
