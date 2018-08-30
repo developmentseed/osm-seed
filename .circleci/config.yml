@@ -185,6 +185,7 @@ jobs:
             docker tag db-backup-restore developmentseed/osmseed-backup-restore:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-backup-restore:${VERSION}
+
   id-editor:
     docker:
       - image: docker:17.05.0-ce-git
@@ -227,7 +228,7 @@ jobs:
             else
               VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
             fi
-            docker tag id-editor developmentseed/osmseed-backup-restore:${VERSION}
+            docker tag id-editor developmentseed/osmseed-id-editor:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-id-editor:${VERSION}
 workflows:
