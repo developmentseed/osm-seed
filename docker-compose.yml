@@ -64,6 +64,9 @@ services:
     depends_on:
       - web
       - db
+    ports:
+      - "8080:8080"
+      - "8081:8081"
     command: >
       /bin/bash -c "
       echo Sleep the replication-job for a while!;
