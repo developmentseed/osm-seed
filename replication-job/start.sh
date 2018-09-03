@@ -14,7 +14,7 @@ fi
 osmosis -q \
 --replicate-apidb \
 minInterval=$minInterval \
-iterations=0 \
+iterations=1 \
 host=$POSTGRES_HOST \
 database=$POSTGRES_DB \
 user=$POSTGRES_USER \
