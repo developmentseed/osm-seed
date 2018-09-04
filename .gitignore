@@ -4,3 +4,4 @@ prod.values.yaml
 postgres-data/
 postgres-data-gis/
 replication-files/
+cron.sh

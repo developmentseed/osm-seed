@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 stateFile="state.txt"
 workingDirectory="data"
-minInterval=$(( $REPLICATION_INTERVAL * 60 * 1000 ))
-maxInterval=$(( $REPLICATION_INTERVAL * 6 * 60 * 1000 ))
 
 # Creating the replication file
 osmosis -q \
 --replicate-apidb \
-minInterval=$minInterval \
-maxInterval=$maxInterval \
 iterations=1 \
 host=$POSTGRES_HOST \
 database=$POSTGRES_DB \

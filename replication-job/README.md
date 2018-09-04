@@ -15,10 +15,6 @@ In order to run this container, we should pass some environment variables
 - `POSTGRES_USER` e.g postgres
 - `POSTGRES_PASSWORD`  e.g 1234
 
-**Replication interval, in minutes**
-
-- `REPLICATION_INTERVAL` e.g 3 minutes.
-
 **Storage envs**
 
 - `STORAGE`, eg. `S3` or `GS`
