@@ -54,7 +54,7 @@ services:
       ./start.sh"
     env_file: 
       - ./.env
-  id:
+  id-editor:
     image: osmseed-id-editor:v1
     build: 
       context: ./id-editor
