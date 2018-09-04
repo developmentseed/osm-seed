@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-id-editor
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: id-editor-service
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  type: {{ .Values.idEditor.serviceType }}
+  {{- if .Values.idEditor.staticIp.enabled }}
+  loadBalancerIP : {{ .Values.idEditor.staticIp.ip }}
+  {{- end }}
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-id-editor

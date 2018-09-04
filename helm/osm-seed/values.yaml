@@ -77,8 +77,22 @@ persistence:
   mountPath: /var/lib/postgresql/data
   subPath: postgresql-db
 
-# Set  the domain for the app.
+# Set the domain for the app.
 domain:
   enabled: false
   domainName: example.com
   protocolo: http
+
+# Variables for id-editor
+idEditor:
+  image: 'developmentseed/osmseed-id-editor'
+  replicaCount: 1
+  serviceType: NodePort
+  staticIp:
+    enabled : false
+    ip : 35.233.232.82
+  env:
+    SERVER_URL : 192.168.64.13:32032
+    SERVER_PROTOCOL : http
+    OAUTH_CONSUMER_KEY : 8mrC6gchvfqz8Bc9I77pR5PzT5MfeuOPSIErMmag
+    OAUTH_SECRET : Cw8JMgMVUaXRvM1DqKUIeBSOBDDda30F5Hy3Klub

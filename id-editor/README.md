@@ -46,16 +46,15 @@ The next time when you start the iD editor, it will be available to use.
 
 
 ```
-docker build -t iD .
+docker build -t osmseed-id-editor:v1 .
 ```
 
 ### Running the container
 
-
 ```
 docker run \
 --env-file ./../.env \
---network osm_network \
--p "8081:8080" \
--it iD
+--network osm-seed_default \
+-p "8080:8080" \
+-it osmseed-id-editor:v1
 ```
