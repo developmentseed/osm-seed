@@ -22,38 +22,38 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     env_file: 
       - ./.env
-  # replication:
-  #   image: openseed-replication:v1
-  #   build: 
-  #     context: ./osmosis
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - web
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep the replication for a while!;
-  #     sleep 40;
-  #     echo Creating the replication!;
-  #     ./start.sh"
-  #   env_file: 
-  #     - ./.env
-  # db-backup-restore:
-  #   image: openseed-db-backup-restore:v1
-  #   build: 
-  #     context: ./db-backup-restore
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - web
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep for a while!;
-  #     sleep 20;
-  #     echo Building backup!;
-  #     ./start.sh"
-  #   env_file: 
-  #     - ./.env
+  replication:
+    image: openseed-replication:v1
+    build: 
+      context: ./osmosis
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep the replication for a while!;
+      sleep 40;
+      echo Creating the replication!;
+      ./start.sh"
+    env_file: 
+      - ./.env
+  db-backup-restore:
+    image: openseed-db-backup-restore:v1
+    build: 
+      context: ./db-backup-restore
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep for a while!;
+      sleep 20;
+      echo Building backup!;
+      ./start.sh"
+    env_file: 
+      - ./.env
   replication-job:
     image: openseed-replication-job:v1
     build: 
@@ -65,8 +65,8 @@ services:
       - web
       - db
     ports:
-      - "8080:8080"
       - "8081:8081"
+      - "8082:8082"
     command: >
       /bin/bash -c "
       echo Sleep the replication-job for a while!;
