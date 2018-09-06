@@ -44,5 +44,5 @@ In case Google storage:
   docker run --env-file ./../.env \
   --network osm-seed_default \
   -v $(pwd)/../replication-files:/app/data \
-  -t openseed-replication-job:v1
+  -t osmseed-replication-job:v1
 ```

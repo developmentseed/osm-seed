@@ -22,8 +22,8 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     env_file: 
       - ./.env
-  replication:
-    image: openseed-replication:v1
+  osmosis:
+    image: openseed-osmosis:v1
     build: 
       context: ./osmosis
       dockerfile: Dockerfile
@@ -32,9 +32,9 @@ services:
       - db
     command: >
       /bin/bash -c "
-      echo Sleep the replication for a while!;
+      echo Sleep the osmosis for a while!;
       sleep 40;
-      echo Creating the replication!;
+      echo Creating the osmosis!;
       ./start.sh"
     env_file: 
       - ./.env
