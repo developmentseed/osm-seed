@@ -66,3 +66,21 @@ services:
       - db
     env_file: 
       - ./.env
+  replication-job:
+    image: osmseed-replication-job:v1
+    build:
+      context: ./replication-job
+      dockerfile: Dockerfile
+    volumes:
+      - ./replication-files:/app/data
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep the replication-job for a while!;
+      sleep 40;
+      echo Creating the replication-job!;
+      ./start.sh"
+    env_file:
+      - ./.env
