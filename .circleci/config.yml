@@ -186,6 +186,51 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-backup-restore:${VERSION}
 
+  id-editor:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+          paths:
+            - caches/id-editor.tar
+
+      - run:
+          name: Load docker image cache
+          command: |
+            docker load -i caches/id-editor.tar || true
+
+      - run:
+          name: Build application docker image
+          command: |
+            docker build --cache-from=id-editor -t id-editor id-editor/
+
+      - run:
+          name: Save docker image cache
+          command: |
+            mkdir -p caches
+            docker save -o caches/id-editor.tar id-editor
+
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/id-editor.tar
+
+      - deploy:
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+            fi
+            docker tag id-editor developmentseed/osmseed-id-editor:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-id-editor:${VERSION}
 workflows:
   version: 2
   build_and_push:
@@ -194,3 +239,4 @@ workflows:
       - db
       - osmosis
       - db-backup-restore
+      - id-editor

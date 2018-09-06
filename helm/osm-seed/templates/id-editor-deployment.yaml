@@ -1,0 +1,47 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-id-editor
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: id-editor-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.idEditor.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-id-editor
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-id-editor
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-id-editor
+          image: "{{ .Values.idEditor.image }}:{{ .Values.osmSeedVersion }}"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: OAUTH_CONSUMER_KEY
+              value: {{ .Values.idEditor.env.OAUTH_CONSUMER_KEY }}
+            - name: OAUTH_SECRET
+              value: {{ .Values.idEditor.env.OAUTH_SECRET }}
+            # Set domain name or pod ip
+              {{- if .Values.domain.enabled }}
+            - name: SERVER_URL
+              value: {{ .Values.domain.domainName }}
+            - name: SERVER_PROTOCOL
+              value : {{ .Values.domain.protocolo }}
+              {{- else }}
+            - name: SERVER_URL
+              value: 192.168.64.13:32032
+            - name: SERVER_PROTOCOL
+              value : http
+              {{- end }}

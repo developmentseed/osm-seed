@@ -18,6 +18,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
     env_file: 
       - ./.env
   replication:
@@ -50,5 +52,17 @@ services:
       sleep 20;
       echo Building backup!;
       ./start.sh"
+    env_file: 
+      - ./.env
+  id-editor:
+    image: osmseed-id-editor:v1
+    build: 
+      context: ./id-editor
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - web
+      - db
     env_file: 
       - ./.env
