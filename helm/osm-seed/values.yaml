@@ -96,3 +96,9 @@ idEditor:
     SERVER_PROTOCOL : http
     OAUTH_CONSUMER_KEY : 8mrC6gchvfqz8Bc9I77pR5PzT5MfeuOPSIErMmag
     OAUTH_SECRET : Cw8JMgMVUaXRvM1DqKUIeBSOBDDda30F5Hy3Klub
+
+# Variables for osm-seed for replication
+populateApidb:
+  image: 'developmentseed/osmseed-populate-apidb'
+  env: 
+    URL_FILE_TO_IMPORT: 'https://download.geofabrik.de/europe/monaco-latest.osm.pbf'
