@@ -66,10 +66,10 @@ services:
       - db
     env_file: 
       - ./.env
-  populate-dbapi:
-    image: osmseed-populate-dbapi:v1
+  populate-apidb:
+    image: osmseed-populate-apidb:v1
     build:
-      context: ./populate-dbapi
+      context: ./populate-apidb
       dockerfile: Dockerfile
     volumes:
       - ./replication-files:/app/data
@@ -78,9 +78,9 @@ services:
       - db
     command: >
       /bin/bash -c "
-      echo Sleep the populate-dbapi for a while!;
+      echo Sleep the populate-apidb for a while!;
       sleep 40;
-      echo Creating the populate-dbapi!;
+      echo Creating the populate-apidb!;
       ./start.sh"
     env_file:
       - ./.env

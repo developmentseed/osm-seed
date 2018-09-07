@@ -30,4 +30,4 @@ We will use [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert#Keeping_
 ```
 docker run --rm -v ${PWD}:/app rub21/dosm osmconvert peru-latest.osm.pbf -B=lima.poly  -o=lima.pbf
 ```
-Upload this file anywhere where has public access, so that it can be imported  by the populate-dbapi container into the apidb.
+Upload this file anywhere where has public access, so that it can be imported  by the populate-apidb container into the apidb.
