@@ -18,7 +18,7 @@ if [ ${file: -4} == ".pbf" ]; then
     validateSchemaVersion=no
 else
     # In case the file is .osm
-    # Extract the file
+    # Extract the osm file
     bzip2 -d $file
     osmFile=${file%.*}
     echo "Importing $osmFile ..."

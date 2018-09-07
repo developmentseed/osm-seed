@@ -44,4 +44,4 @@ The container will build automatically by docker-compose, but if you want to run
 
 *Note:*
 
-If you want to customize the size of you import check [here](/doc.md) to clip your data.
+If you want to customize the size of you import check [here](doc.md) to clip your data.
