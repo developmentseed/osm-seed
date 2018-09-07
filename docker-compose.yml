@@ -66,3 +66,21 @@ services:
       - db
     env_file: 
       - ./.env
+  populate-dbapi:
+    image: osmseed-populate-dbapi:v1
+    build:
+      context: ./populate-dbapi
+      dockerfile: Dockerfile
+    volumes:
+      - ./replication-files:/app/data
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep the populate-dbapi for a while!;
+      sleep 40;
+      echo Creating the populate-dbapi!;
+      ./start.sh"
+    env_file:
+      - ./.env

@@ -1,0 +1,42 @@
+# Container to populate DB Api
+
+
+This container is in charge to import data from PBF file or OSM files into the API database!
+
+
+### Configuration
+
+This container needs some environment variables passed into it in order to run:
+
+**Files to import**
+
+- `URL_FILE_TO_IMPORT` it could be a PBF file or OSM file.
+
+Get the files form :
+
+- http://download.geofabrik.de/
+- https://wiki.openstreetmap.org/wiki/Planet.osm
+
+**DBAPI configuration**
+
+  - `POSTGRES_HOST`e.g localhost
+  - `POSTGRES_DB` e.g openstreetmap
+  - `POSTGRES_USER` e.g postgres
+  - `POSTGRES_PASSWORD` e.g 1234
+
+#### Building the container
+
+The container will build automatically by docker-compose, but if you want to run separately  you could follow the next command lines: 
+
+```
+  cd populate-dbapi/
+  docker build -t osmseed-populate-dbapi:v1 .
+```
+
+#### Running the container
+
+```
+  docker run --env-file ./../.env \
+  --network osm-seed_default \
+  -i -t osmseed-populate-dbapi:v1 bash
+```
