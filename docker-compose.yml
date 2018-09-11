@@ -78,9 +78,9 @@ services:
       - db
     command: >
       /bin/bash -c "
-      echo Sleep the populate-apidb for a while!;
-      sleep 40;
-      echo Creating the populate-apidb!;
+      echo Sleep for a while populate-apidb!;
+      sleep 20;
+      echo Starting populate-apidb!;
       ./start.sh"
     env_file:
       - ./.env

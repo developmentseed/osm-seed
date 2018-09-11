@@ -36,7 +36,7 @@ function importData () {
 
 flag=true
 while "$flag" = true; do
-    pg_isready -h $POSTGRES_HOST -p 5432 -U $POSTGRES_USER -d $POSTGRES_DB >/dev/null 2>&2 || continue
+    pg_isready -h $POSTGRES_HOST -p 5432 -U $POSTGRES_USER >/dev/null 2>&2 || continue
     # Change flag to false to stop ping the DB
     flag=false
     importData

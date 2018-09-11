@@ -8,7 +8,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: '* * * * 1'
+  schedule: '0 0 1 1 *' # every year, 
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 0
   jobTemplate:
@@ -28,6 +28,4 @@ spec:
                 value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
-              - name: URL_FILE_TO_IMPORT
-                value: {{.Values.populateApidb.env.URL_FILE_TO_IMPORT}}
           restartPolicy: OnFailure
