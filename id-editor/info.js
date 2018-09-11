@@ -14,4 +14,4 @@ Do the following:
 * On the next page, copy the "consumer key"
 * Set the following env variables in  .env or values.yaml`);
   res.end();
-}).listen(8080);
+}).listen(80);
