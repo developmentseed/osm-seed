@@ -32,6 +32,10 @@ In case Google storage:
 - `GCLOUD_SERVICE_KEY`
 - `GCLOUD_PROJECT`
 
+**Replication folder**
+
+- `REPLICATION_FOLDER`. a folder where we are going to save the data e.g  `/replication/minute`
+
 #### Building the container
 
 ```

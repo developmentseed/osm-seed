@@ -16,17 +16,17 @@ if [ ! -f $workingDirectory/state.txt ]; then
     echo "File $workingDirectory/state.txt does not exist"
     echo "let's get check the cloud"
     if [ $STORAGE == "S3" ]; then 
-        aws s3 ls $S3_OSM_PATH/replication/changesets/state.txt
+        aws s3 ls $S3_OSM_PATH$REPLICATION_FOLDER/state.txt
         if [[ $? -eq 0 ]]; then
             echo "File exist, let's get it"
-            aws s3 cp $S3_OSM_PATH/replication/changesets/state.txt $workingDirectory/state.txt
+            aws s3 cp $S3_OSM_PATH$REPLICATION_FOLDER/state.txt $workingDirectory/state.txt
         fi
     fi
     if [ $STORAGE == "GS" ]; then
-        gsutil ls $GS_OSM_PATH/replication/changesets/state.txt
+        gsutil ls $GS_OSM_PATH$REPLICATION_FOLDER/state.txt
         if [[ $? -eq 0 ]]; then
             echo "File exist, let's get it"
-            gsutil cp $GS_OSM_PATH/replication/changesets/state.txt $workingDirectory/state.txt
+            gsutil cp $GS_OSM_PATH$REPLICATION_FOLDER/state.txt $workingDirectory/state.txt
         fi
     fi
 fi
@@ -46,11 +46,11 @@ workingDirectory=$workingDirectory
 # AWS
 if [ $STORAGE == "S3" ]; then 
     # Sync to S3
-    aws s3 sync $workingDirectory $S3_OSM_PATH/replication/changesets
+    aws s3 sync $workingDirectory $S3_OSM_PATH$REPLICATION_FOLDER
 fi
 
 # Google Storage
 if [ $STORAGE == "GS" ]; then
     # Sync to GS
-    gsutil rsync -r $workingDirectory $GS_OSM_PATH/replication/changesets
+    gsutil rsync -r $workingDirectory $GS_OSM_PATH$REPLICATION_FOLDER
 fi
