@@ -231,7 +231,48 @@ jobs:
             docker tag id-editor developmentseed/osmseed-id-editor:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-id-editor:${VERSION}
+  replication-job:
+      docker:
+        - image: docker:17.05.0-ce-git
+      steps:
+        - checkout
+        - setup_remote_docker
 
+        - restore_cache:
+            keys:
+              - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+            paths:
+              - caches/replication-job.tar
+
+        - run:
+            name: Load docker image cache
+            command: |
+              docker load -i caches/replication-job.tar || true
+        - run:
+            name: Build application docker image
+            command: |
+              docker build --cache-from=replication-job -t replication-job replication-job/
+        - run:
+            name: Save docker image cache
+            command: |
+              mkdir -p caches
+              docker save -o caches/replication-job.tar replication-job
+        - save_cache:
+            key: v1-{{ .Branch }}-{{ epoch }}
+            paths:
+              - caches/replication-job.tar
+
+        - deploy:
+            name: Push docker image
+            command: |
+              if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+                VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+              else
+                VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+              fi
+              docker tag replication-job developmentseed/osmseed-replication-job:${VERSION}
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker push developmentseed/osmseed-replication-job:${VERSION}
   populate-apidb:
     docker:
       - image: docker:17.05.0-ce-git
@@ -249,18 +290,15 @@ jobs:
           name: Load docker image cache
           command: |
             docker load -i caches/populate-apidb.tar || true
-
       - run:
           name: Build application docker image
           command: |
             docker build --cache-from=populate-apidb -t populate-apidb populate-apidb/
-
       - run:
           name: Save docker image cache
           command: |
             mkdir -p caches
             docker save -o caches/populate-apidb.tar populate-apidb
-
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
@@ -277,6 +315,7 @@ jobs:
             docker tag populate-apidb developmentseed/osmseed-populate-apidb:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-populate-apidb:${VERSION}
+
 workflows:
   version: 2
   build_and_push:
@@ -286,4 +325,5 @@ workflows:
       - osmosis
       - db-backup-restore
       - id-editor
-      - populate-apidb
+      - replication-job
+      - populate-apidbs

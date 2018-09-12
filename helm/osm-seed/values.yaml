@@ -97,6 +97,11 @@ idEditor:
     OAUTH_CONSUMER_KEY : 8mrC6gchvfqz8Bc9I77pR5PzT5MfeuOPSIErMmag
     OAUTH_SECRET : Cw8JMgMVUaXRvM1DqKUIeBSOBDDda30F5Hy3Klub
 
+# Variables for replication-job
+replicationJob:
+  image: 'developmentseed/osmseed-replication-job'
+  schedule: '*/1 * * * *'
+
 # Variables for osm-seed for replication
 populateApidb:
   image: 'developmentseed/osmseed-populate-apidb'
