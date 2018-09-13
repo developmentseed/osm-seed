@@ -1,0 +1,33 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-populate-apidb-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: populate-apidb-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: '0 */6 * * *'
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-populate-apidb-job
+            image: {{ .Values.populateApidb.image }}:{{ .Values.osmSeedVersion }}
+            command: ['./start.sh']
+            env:
+              - name: POSTGRES_HOST
+                value: {{ .Release.Name }}-db
+              - name: POSTGRES_DB
+                value: {{ .Values.db.env.POSTGRES_DB }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              - name: POSTGRES_USER
+                value: {{ .Values.db.env.POSTGRES_USER }}
+              - name: URL_FILE_TO_IMPORT
+                value: {{.Values.populateApidb.env.URL_FILE_TO_IMPORT}}
+          restartPolicy: OnFailure

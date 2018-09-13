@@ -100,4 +100,10 @@ idEditor:
 # Variables for replication-job
 replicationJob:
   image: 'developmentseed/osmseed-replication-job'
-  schedule: '*/2 * * * *'
+  schedule: '*/1 * * * *'
+
+# Variables for osm-seed for replication
+populateApidb:
+  image: 'developmentseed/osmseed-populate-apidb'
+  env: 
+    URL_FILE_TO_IMPORT: 'https://download.geofabrik.de/europe/monaco-latest.osm.pbf'
