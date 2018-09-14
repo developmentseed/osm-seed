@@ -34,6 +34,13 @@ spec:
               port: 80
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
+          resources:
+            requests:
+              memory: {{ .Values.web.resources.requests.memory }}
+              cpu: {{ .Values.web.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.web.resources.limits.memory }}
+              cpu: {{ .Values.web.resources.limits.cpu }}
           env:
             - name: GET_HOSTS_FROM
               value: dns

@@ -1,4 +1,4 @@
-osmSeedVersion: 0.1.1
+osmSeedVersion: develop-169948b
 environment: development
 
 #Variables for osm-seed database
@@ -8,6 +8,13 @@ db:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: '1234'
+  resources:
+    requests:
+      memory: "24Gi"
+      cpu: "5"
+    limits:
+      memory: "26Gi"
+      cpu: "6"
 
 # Variables for osm-seed - OSM website
 web:
@@ -24,7 +31,14 @@ web:
     MAILER_DOMAIN: gmail.com
     MAILER_USERNAME: osmseed.test@gmail.com
     MAILER_PASSWORD: '12345678'
-
+  resources:
+    requests:
+      memory: "4Gi"
+      cpu: "2"
+    limits:
+      memory: "5Gi"
+      cpu: "3"
+  
 # Variables for osm-seed database backup and restore
 dbbackup:
   image: 'developmentseed/osmseed-backup-restore'
@@ -94,8 +108,8 @@ idEditor:
   env:
     SERVER_URL : 192.168.64.13:32032
     SERVER_PROTOCOL : http
-    OAUTH_CONSUMER_KEY : 8mrC6gchvfqz8Bc9I77pR5PzT5MfeuOPSIErMmag
-    OAUTH_SECRET : Cw8JMgMVUaXRvM1DqKUIeBSOBDDda30F5Hy3Klub
+    OAUTH_CONSUMER_KEY : xx
+    OAUTH_SECRET : xx
 
 # Variables for replication-job
 replicationJob:
@@ -105,5 +119,13 @@ replicationJob:
 # Variables for osm-seed for replication
 populateApidb:
   image: 'developmentseed/osmseed-populate-apidb'
+  schedule: '0 */60 * * *'
   env: 
     URL_FILE_TO_IMPORT: 'https://download.geofabrik.de/europe/monaco-latest.osm.pbf'
+  resources:
+    requests:
+      memory: "28Gi"
+      cpu: "7"
+    limits:
+      memory: "30Gi"
+      cpu: "8"
