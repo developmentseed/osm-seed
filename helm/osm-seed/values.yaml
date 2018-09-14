@@ -119,9 +119,8 @@ replicationJob:
 # Variables for osm-seed for replication
 populateApidb:
   image: 'developmentseed/osmseed-populate-apidb'
-  schedule: '0 */60 * * *'
   env: 
-    URL_FILE_TO_IMPORT: 'https://download.geofabrik.de/europe/monaco-latest.osm.pbf'
+    URL_FILE_TO_IMPORT: 'https://s3.amazonaws.com/osm-pds/2018/planet-180910.osm.pbf'
   resources:
     requests:
       memory: "28Gi"
