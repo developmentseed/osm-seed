@@ -24,6 +24,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-id-editor
           image: "{{ .Values.idEditor.image }}:{{ .Values.osmSeedVersion }}"
+          command: ['./start.sh']
           ports:
             - name: http
               containerPort: 8080

@@ -137,7 +137,7 @@ And then upgrade the stack !! 👇
 
 ```
 $ cd osm-seed/helm/
-$ helm upgrade -f osm-seed/dev.values.yaml dev osm-seed/
+$ helm upgrade  --wait --timeout 3000 -f osm-seed/dev.values.yaml dev osm-seed/
 ```
 
 Result 👇
