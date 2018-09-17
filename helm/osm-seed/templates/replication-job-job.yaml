@@ -19,6 +19,13 @@ spec:
           - name: {{ .Release.Name }}-replication-job-job
             image: {{ .Values.replicationJob.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
+            resources:
+              requests:
+                memory: {{ .Values.replicationJob.resources.requests.memory }}
+                cpu: {{ .Values.replicationJob.resources.requests.cpu }}
+              limits:
+                memory: {{ .Values.replicationJob.resources.limits.memory }}
+                cpu: {{ .Values.replicationJob.resources.limits.cpu }}
             env:
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-db

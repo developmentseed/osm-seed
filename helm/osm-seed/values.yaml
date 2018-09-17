@@ -1,7 +1,7 @@
 osmSeedVersion: develop-169948b
 environment: development
 
-#Variables for osm-seed database
+# Variables for osm-seed database
 db:
   image: 'developmentseed/osmseed-db'
   env:
@@ -16,16 +16,16 @@ db:
       memory: "26Gi"
       cpu: "6"
 
-# Variables for osm-seed - OSM website
+# Variables for osm-seed website
 web:
   image: 'developmentseed/osmseed-web'
   replicaCount: 1
   # web.serviceType defines the type of service. Should be `NodePort` when running locally.
   # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
   serviceType: NodePort
-  staticIp:
-    enabled : false
-    ip : 35.185.241.158
+  # staticIp:
+  #   enabled : false
+  #   ip : 35.185.241.158
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
@@ -38,7 +38,7 @@ web:
     limits:
       memory: "5Gi"
       cpu: "3"
-  
+
 # Variables for osm-seed database backup and restore
 dbbackup:
   image: 'developmentseed/osmseed-backup-restore'
@@ -46,6 +46,13 @@ dbbackup:
   env:
     DB_ACTION: backup
     CLEAN_BACKUPS: true
+  resources:
+    requests:
+      memory: "4Gi"
+      cpu: "2"
+    limits:
+      memory: "5Gi"
+      cpu: "3"
 
 # Variables for osm-seed for replication
 replication:
@@ -81,7 +88,7 @@ ingress:
     - chart-example.local
   tls: []
 
-# Persist data to a persitent volume
+# Persist data configuration
 persistence:
   enabled: false
   gcePersistentDisk:
@@ -106,11 +113,18 @@ idEditor:
     enabled : false
     ip : 35.233.232.82
   env:
-    SERVER_URL : 192.168.64.13:32032
+    SERVER_URL : 192.168.1.49 #osm-api ip or domain
     SERVER_PROTOCOL : http
     OAUTH_CONSUMER_KEY : xx
     OAUTH_SECRET : xx
-
+  resources:
+    requests:
+      memory: "4Gi"
+      cpu: "2"
+    limits:
+      memory: "5Gi"
+      cpu: "3"
+      
 # Variables for replication-job
 replicationJob:
   image: 'developmentseed/osmseed-replication-job'

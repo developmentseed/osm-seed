@@ -19,6 +19,13 @@ spec:
           - name: {{ .Release.Name }}-db-backup-job
             image: {{ .Values.dbbackup.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
+            resources:
+              requests:
+                memory: {{ .Values.dbbackup.resources.requests.memory }}
+                cpu: {{ .Values.dbbackup.resources.requests.cpu }}
+              limits:
+                memory: {{ .Values.dbbackup.resources.limits.memory }}
+                cpu: {{ .Values.dbbackup.resources.limits.cpu }}
             env:
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-db
