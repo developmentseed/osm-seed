@@ -3,7 +3,7 @@
 # ==================================Global Configurations=============================================
 # ====================================================================================================
 # ====================================================================================================
-osmSeedVersion: resource-543fb49 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
+osmSeedVersion: resource-5b43385 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
 environment: development
 
 # ====================================================================================================

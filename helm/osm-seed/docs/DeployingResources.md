@@ -157,12 +157,3 @@ In the case of minikube, the assignment of the ports are randomly, so we can che
 $ minikube service dev-osm-seed-id-editor --url
 http://192.168.64.22:31711
 ```
-
-
-
-
-
-
-
-
-
