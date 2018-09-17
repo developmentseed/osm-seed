@@ -48,7 +48,7 @@ spec:
               value : {{ .Values.domain.protocolo }}
               {{- else }}
             - name: SERVER_URL
-              value: 192.168.64.13:32032
+              value: dns
             - name: SERVER_PROTOCOL
               value : http
               {{- end }}

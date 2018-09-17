@@ -23,7 +23,7 @@ backupStorage:
     enabled: true
     env:
       GS_OSM_PATH: gs://osm-seed
-      GCLOUD_SERVICE_KEY: xzy==
+      GCLOUD_SERVICE_KEY: xyz==
       GCLOUD_PROJECT: osm-seed-12345
 
 # ====================================================================================================
@@ -47,19 +47,19 @@ persistence:
   enabled: false
   # gcePersistentDisk:
   #   pdName: osm-seed-data-disk
-  # accessMode: ReadWriteOnce
-  # size: 100Gi # The size should be tha same as the external disk
-  # mountPath: /var/lib/postgresql/data
-  # subPath: postgresql-db
+  accessMode: ReadWriteOnce
+  size: 100Gi # The size should be tha same as the external disk
+  mountPath: /var/lib/postgresql/data
+  subPath: postgresql-db
 
 # ====================================================================================================
 # Domain app configuration
 # ====================================================================================================
 domain:
   # If you set  enabled=true, you should uncomment the following configurations
-  enabled: false 
-  # domainName: example.com # You could set  IP too. 
-  # protocolo: http
+  enabled: true 
+  domainName: 192.168.64.22:30483 # Add here your domain or the fixed IP  where the server is running
+  protocolo: http
 
 # ====================================================================================================
 # ====================================================================================================
@@ -94,8 +94,9 @@ web:
   # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
   serviceType: NodePort
   staticIp:
+    # For production deployment,  you have to set enabled: true, and then uncomment the IP and set the IP or domain of your server or cluster
     enabled : false
-    # ip : 35.185.241.158
+    # ip : 35.185.241.158 , 
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
@@ -148,14 +149,16 @@ osmmosis:
 idEditor:
   image: 'developmentseed/osmseed-id-editor'
   replicaCount: 1
+  # id-editor.serviceType defines the type of service. Should be `NodePort` when running locally.
+  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
   serviceType: NodePort
   staticIp:
+    # If you are using LoadBalancer, set enabled=true 
     enabled : false
-    # ip : 35.233.232.82
   env:
     # osm-api ip or domain
-    SERVER_URL : 192.168.1.49
-    SERVER_PROTOCOL : http
+    # SERVER_URL : 192.168.1.49
+    # SERVER_PROTOCOL : http
     OAUTH_CONSUMER_KEY : xx
     OAUTH_SECRET : xx
   resources:

@@ -10,7 +10,7 @@ metadata:
 spec:
   type: {{ .Values.idEditor.serviceType }}
   {{- if .Values.idEditor.staticIp.enabled }}
-  loadBalancerIP : {{ .Values.idEditor.staticIp.ip }}
+  loadBalancerIP : {{ .Values.domain.domainName }}
   {{- end }}
   ports:
     - port: 8080
