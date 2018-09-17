@@ -1,7 +1,71 @@
-osmSeedVersion: develop-169948b
+# ====================================================================================================
+# ====================================================================================================
+# ==================================Global Configurations=============================================
+# ====================================================================================================
+# ====================================================================================================
+osmSeedVersion: develop-169948b # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
 environment: development
 
+# ====================================================================================================
+# Variables for AWS or Google Storage
+# ====================================================================================================
+backupStorage:
+  aws:
+    enabled: false # Set enabled=true if you are going to use AWS - S3
+    env:
+      AWS_ACCESS_KEY_ID: xxxx
+      AWS_SECRET_ACCESS_KEY: xxxz
+      AWS_DEFAULT_REGION: us-east-1
+      S3_OSM_PATH: s3://osm-seed
+  google:
+    enabled: true # Set enabled=true if you are going to use Google Storage
+    env:
+      GS_OSM_PATH: gs://osm-seed
+      GCLOUD_SERVICE_KEY: abc...==
+      GCLOUD_PROJECT: osm-seed-123456
+
+# ====================================================================================================
+# Ingress variables
+# ====================================================================================================
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - chart-example.local
+  tls: []
+
+# ====================================================================================================
+# Persist data configuration
+# ====================================================================================================
+persistence:
+  enabled: false
+  gcePersistentDisk:
+    pdName: osm-seed-data-disk
+  accessMode: ReadWriteOnce
+  size: 100Gi # The size should be tha same as the external disk
+  mountPath: /var/lib/postgresql/data
+  subPath: postgresql-db
+
+# ====================================================================================================
+# Domain app configuration
+# ====================================================================================================
+domain:
+  enabled: false
+  domainName: example.com # You could set  IP too. 
+  protocolo: http
+
+# ====================================================================================================
+# ====================================================================================================
+# ==================================Pods Configurations===============================================
+# ====================================================================================================
+# ====================================================================================================
+
+# ====================================================================================================
 # Variables for osm-seed database
+# ====================================================================================================
 db:
   image: 'developmentseed/osmseed-db'
   env:
@@ -16,7 +80,9 @@ db:
       memory: "26Gi"
       cpu: "6"
 
+# ====================================================================================================
 # Variables for osm-seed website
+# ====================================================================================================
 web:
   image: 'developmentseed/osmseed-web'
   replicaCount: 1
@@ -39,7 +105,9 @@ web:
       memory: "5Gi"
       cpu: "3"
 
+# ====================================================================================================
 # Variables for osm-seed database backup and restore
+# ====================================================================================================
 dbbackup:
   image: 'developmentseed/osmseed-backup-restore'
   schedule: '0 */1 * * *'
@@ -54,57 +122,18 @@ dbbackup:
       memory: "5Gi"
       cpu: "3"
 
-# Variables for osm-seed for replication
-replication:
+# ====================================================================================================
+# Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
+# ====================================================================================================
+osmmosis:
   image: 'developmentseed/osmseed-osmosis'
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true
 
-# ENV Variables for AWS or Google Storage
-backupStorage:
-  aws:
-    enabled: false #Set enabled=true if you are going to use AWS - S3
-    env:
-      AWS_ACCESS_KEY_ID: xxxx
-      AWS_SECRET_ACCESS_KEY: xxxz
-      AWS_DEFAULT_REGION: us-east-1
-      S3_OSM_PATH: s3://osm-seed
-  google:
-    enabled: true #Set enabled=true if you are going to use Google Storage
-    env:
-      GS_OSM_PATH: gs://osm-seed
-      GCLOUD_SERVICE_KEY: abc...==
-      GCLOUD_PROJECT: osm-seed-123456
-
-# Ingress variables
-ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - chart-example.local
-  tls: []
-
-# Persist data configuration
-persistence:
-  enabled: false
-  gcePersistentDisk:
-    pdName: osm-seed-data-disk
-  accessMode: ReadWriteOnce
-  size: 100Gi # The size should be tha same as the external disk
-  mountPath: /var/lib/postgresql/data
-  subPath: postgresql-db
-
-# Set the domain for the app.
-domain:
-  enabled: false
-  domainName: example.com
-  protocolo: http
-
+# ====================================================================================================
 # Variables for id-editor
+# ====================================================================================================
 idEditor:
   image: 'developmentseed/osmseed-id-editor'
   replicaCount: 1
@@ -124,13 +153,17 @@ idEditor:
     limits:
       memory: "5Gi"
       cpu: "3"
-      
-# Variables for replication-job
+
+# ====================================================================================================
+# Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
+# ====================================================================================================
 replicationJob:
   image: 'developmentseed/osmseed-replication-job'
   schedule: '*/1 * * * *'
 
-# Variables for osm-seed for replication
+# ====================================================================================================
+# Variables for osm-seed to pupulate the apidb
+# ====================================================================================================
 populateApidb:
   image: 'developmentseed/osmseed-populate-apidb'
   env: 

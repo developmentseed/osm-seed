@@ -8,7 +8,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: {{ quote .Values.replication.schedule }}
+  schedule: {{ quote .Values.osmmosis.schedule }}
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 0
   jobTemplate:
@@ -17,7 +17,7 @@ spec:
         spec:
           containers:
           - name: {{ .Release.Name }}-osmosis
-            image: {{ .Values.replication.image }}:{{ .Values.osmSeedVersion }}
+            image: {{ .Values.osmmosis.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
             env:
               - name: POSTGRES_HOST
@@ -29,7 +29,7 @@ spec:
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
               - name: CLEAN_BACKUPS
-                value: {{ quote .Values.replication.env.CLEAN_BACKUPS }}
+                value: {{ quote .Values.osmmosis.env.CLEAN_BACKUPS }}
               {{- if .Values.backupStorage.aws.enabled }}
               - name: STORAGE
                 value: S3
