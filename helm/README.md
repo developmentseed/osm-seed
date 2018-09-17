@@ -14,7 +14,7 @@ To test with a local Kubernetes cluster, you may also want to install `Minikube`
 
 Follow instructions to setup a Kubernetes cluster on your favourite cloud / hosting provider: https://kubernetes.io/docs/setup/
 
-If you want to test locally, you can simply run `minikube start` to start your locally running cluster. 
+If you want to test locally, you can simply run `minikube start --cpus 4 --memory 8192` to start your locally running cluster. 
 
 
 ### Setup `helm` on your cluster

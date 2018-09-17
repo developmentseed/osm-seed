@@ -78,11 +78,11 @@ db:
     POSTGRES_PASSWORD: '1234'
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "0.4"
+      memory: "300Mi"
+      cpu: "0.2"
     limits:
-      memory: "600Mi"
-      cpu: "0.5"
+      memory: "400Mi"
+      cpu: "0.4"
 
 # ====================================================================================================
 # Variables for osm-seed website
