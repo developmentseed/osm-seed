@@ -24,32 +24,16 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-id-editor
           image: "{{ .Values.idEditor.image }}:{{ .Values.osmSeedVersion }}"
-          command: ['./start.sh']
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 80
               protocol: TCP
-          # resources:
-          #   requests:
-          #     memory: {{ .Values.idEditor.resources.requests.memory }}
-          #     cpu: {{ .Values.idEditor.resources.requests.cpu }}
-          #   limits:
-          #     memory: {{ .Values.idEditor.resources.limits.memory }}
-          #     cpu: {{ .Values.idEditor.resources.limits.cpu }}
           env:
             - name: OAUTH_CONSUMER_KEY
               value: {{ .Values.idEditor.env.OAUTH_CONSUMER_KEY }}
             - name: OAUTH_SECRET
               value: {{ .Values.idEditor.env.OAUTH_SECRET }}
-            # Set domain name or pod ip
-              {{- if .Values.domain.enabled }}
             - name: SERVER_URL
-              value: {{ .Values.domain.domainName }}
+              value: {{ .Values.idEditor.env.OSM_API_DOMAIN }}
             - name: SERVER_PROTOCOL
-              value : {{ .Values.domain.protocolo }}
-              {{- else }}
-            - name: SERVER_URL
-              value: dns
-            - name: SERVER_PROTOCOL
-              value : http
-              {{- end }}
+              value : {{ .Values.idEditor.env.OSM_API_PROTOCOL }}

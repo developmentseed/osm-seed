@@ -4,7 +4,7 @@ This is an alternative guide to make the deployment little by little, according 
 
 ## Deploying Database and API pods.
 
-Let's start by installing the Chart in the cluster, it could be locally or in the cloud, in this case, let's use a local minikube cluster.
+Let's start installing the chart in the cluster, it could be locally or in the cloud, in this case, let's use a local minikube cluster.
 
 Let's keep the following files in `template` folder.
 
@@ -25,33 +25,34 @@ $ cd osm-seed/helm/
 $ helm install -n dev -f osm-seed/dev.values.yaml osm-seed/
 ```
 
-let's check if the pods are running 👉 `kubectl get pods`
+let's check if the pods are running 👇
 
 ```
 $ kubectl get pods
 NAME                                READY     STATUS    RESTARTS   AGE
-dev-db-0                            1/1       Running   0          1m
-dev-osm-seed-web-74b7b58765-h9tqt   1/1       Running   0          1m
+dev-db-0                            1/1       Running   0          9m
+dev-osm-seed-web-d9584cd86-hb7q8    1/1       Running   0          9m
 ```
 
-Let's check if our application is running correctly, we will execute 👉 `minikube service dev-osm-seed-web --url` to access the application.
+Let's get the IP where our aplication is running 👇
 
 ```
 $ minikube service dev-osm-seed-web --url
-http://192.168.64.22:30483
+http://192.168.64.26:32331
 ```
 
-For local deployment, we have to update the domain part in the values.yaml file, using the ip which we got.👉 `192.168.64.22:30483`
+For local deployment, we have to update the `domain` value in the values.yaml file, we are going to use the IP which we got 👇
 
 
 ```yaml
+# values.yaml
 domain:
   enabled: true 
-  domainName: 192.168.64.22:30483
+  domainName: 192.168.64.26:32331
   protocolo: http
 ```
 
-And then upgrade the stack: 👇
+And then upgrade the stack 👇
 
 ```
 $ cd osm-seed/helm/
@@ -60,11 +61,11 @@ $ helm upgrade -f osm-seed/dev.values.yaml dev osm-seed/
 
 *Note: The osm application could take couple of minutes to start up.* 
 
-Open the ip `http://192.168.64.22:30483`, and verify that the osm application is working. Everything is going fine so far 😃!!!
+Open the ip `http://192.168.64.26:32331`, and verify that the osm application is working. Everything is going fine so far 😃!!!
 
 ## Deploying popupate-apidb pod
 
-In order to deploy this container, we can use `kubectl`, or we can also add the file `populate-apidb-job.yaml` in the `templates` folder, the result would be 👇
+In order to deploy this container, we can use `kubectl` [explaining here](RunIndependentlyPod.md) , or we can also add the file `populate-apidb-job.yaml` in the `templates` folder, we will choose the second option, make a copy of the file, result would be like this👇
 
 ```
 _helpers.tpl
@@ -78,7 +79,7 @@ web-deployment.yaml
 web-service.yaml
 ```
 
-And then upgrade the stack !! 👇
+And then let's upgrade the chart 👇
 
 ```
 $ cd osm-seed/helm/
@@ -87,36 +88,32 @@ $ helm upgrade -f osm-seed/dev.values.yaml dev osm-seed/
 
 You will see a result like this 👇
 
-
 ```
-NAME                               READY  STATUS             RESTARTS  AGE
-dev-osm-seed-web-68dbd7768f-qlt8r  1/1    Running            0         17m
-dev-db-0                           1/1    Running            0         34m
-dev-populate-apidb-job-ftght       0/1    ContainerCreating  0         0s
-```
-
-To verify the status of the import execute command 
-
-```
-kubectl logs dev-populate-apidb-job-ftght
+$ kubectl get pods
+NAME                                READY     STATUS      RESTARTS   AGE
+dev-db-0                            1/1       Running     0          4m
+dev-osm-seed-web-7687fd75db-f77gc   1/1       Running     0          49s
+dev-populate-apidb-job-pg68l        0/1       Completed   0          4m
 ```
 
-Result 👇
+Check the logs using 👇
 
-![image](https://user-images.githubusercontent.com/1152236/45645360-c72f9080-ba85-11e8-8129-abad8dc4e0bb.png)
+```
+kubectl logs dev-populate-apidb-job-pg68l 
+```
 
 Now you have the Monaco country imported into your local database. For verifying if the data is in the Database, we will export some data from Monaco from our instance.
 
 
 ```
-wget -O map.osm http://192.168.64.22:30483/api/0.6/map?bbox=7.42529%2C43.7381%2C7.42855%2C43.73984s
+wget -O map.osm http://192.168.64.26:32331/api/0.6/map?bbox=7.42529%2C43.7381%2C7.42855%2C43.73984s
 ```
 
 ## Deploying iD-editor pod
 
 In order to deploy an iD-editor, we need create copy the files `id-editor-deployment.yaml` and  `id-editor-service.yaml` into the `templates` folder.
 
-The reults would be 👇
+The reults would be like this 👇
 
 ```
 _helpers.tpl
@@ -133,27 +130,26 @@ web-service.yaml
 
 ```
 
-And then upgrade the stack !! 👇
+And then upgrade the chart !! 👇
 
 ```
 $ cd osm-seed/helm/
-$ helm upgrade  --wait --timeout 3000 -f osm-seed/dev.values.yaml dev osm-seed/
+$ helm upgrade -f osm-seed/dev.values.yaml dev osm-seed/
 ```
 
 Result 👇
 
 ```
-NAME                                   READY  STATUS             RESTARTS  AGE
-dev-osm-seed-id-editor-b96f79c8-f72kg  0/1    ContainerCreating  0         0s
-dev-osm-seed-web-68dbd7768f-qlt8r      1/1    Running            0         48m
-dev-db-0                               1/1    Running            0         1h
-dev-populate-apidb-job-ftght           0/1    Completed          0         30m
+NAME                                      READY     STATUS              RESTARTS   AGE
+dev-db-0                                  1/1       Running             0          9m
+dev-osm-seed-id-editor-785b89c7bd-hj5j5   0/1       ContainerCreating   0          7s
+dev-osm-seed-web-7687fd75db-f77gc         1/1       Running             0          6m
+dev-populate-apidb-job-pg68l              0/1       Completed           0          9m
 ```
 
-In the case of minikube, the assignment of the ports are randomly, so we can check on which port is running the iD-editor.
-
+Get the IP of the iD-editor 👇
 
 ```
-$ minikube service dev-osm-seed-id-editor --url
-http://192.168.64.22:31711
+$  minikube service dev-osm-seed-id-editor --url
+http://192.168.64.26:30416
 ```
