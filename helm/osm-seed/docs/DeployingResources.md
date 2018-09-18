@@ -127,7 +127,26 @@ ingress.yaml
 populate-apidb-job.yaml
 web-deployment.yaml
 web-service.yaml
+```
 
+Before the update the chart, we need to register a client application, to do that use the OSM-API Domain or IP. 👇.
+
+![image](https://user-images.githubusercontent.com/1152236/45662126-31682580-bac6-11e8-8612-391c3a769d7d.png)
+
+And then updateh the `values.yaml` file
+
+```yaml
+idEditor:
+  image: 'developmentseed/osmseed-id-editor'
+  replicaCount: 1
+  serviceType: NodePort
+  staticIp:
+    enabled : false
+  env:
+    OSM_API_PROTOCOL: http
+    OSM_API_DOMAIN: 192.168.64.26:32331 # osm-api domain or IP
+    OAUTH_CONSUMER_KEY : gqQruapvmE5prKUiP2zXXFmdzsE9preyka3NOm6K
+    OAUTH_SECRET : uBag7fQbBDVOSjlFllViqjPYriYyUCNcFnKparZZ
 ```
 
 And then upgrade the chart !! 👇
