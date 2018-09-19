@@ -1,62 +1,35 @@
-osmSeedVersion: 0.1.1
+# ====================================================================================================
+# ====================================================================================================
+# ==================================Global Configurations=============================================
+# ====================================================================================================
+# ====================================================================================================
+# The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
+osmSeedVersion: resource-4793ea5
 environment: development
 
-#Variables for osm-seed database
-db:
-  image: 'developmentseed/osmseed-db'
-  env:
-    POSTGRES_DB: openstreetmap
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: '1234'
-
-# Variables for osm-seed - OSM website
-web:
-  image: 'developmentseed/osmseed-web'
-  replicaCount: 1
-  # web.serviceType defines the type of service. Should be `NodePort` when running locally.
-  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
-  serviceType: NodePort
-  staticIp:
-    enabled : false
-    ip : 35.185.241.158
-  env:
-    MAILER_ADDRESS: smtp.gmail.com
-    MAILER_DOMAIN: gmail.com
-    MAILER_USERNAME: osmseed.test@gmail.com
-    MAILER_PASSWORD: '12345678'
-
-# Variables for osm-seed database backup and restore
-dbbackup:
-  image: 'developmentseed/osmseed-backup-restore'
-  schedule: '0 */1 * * *'
-  env:
-    DB_ACTION: backup
-    CLEAN_BACKUPS: true
-
-# Variables for osm-seed for replication
-replication:
-  image: 'developmentseed/osmseed-osmosis'
-  schedule: '0 */1 * * *'
-  env:
-    CLEAN_BACKUPS: true
-
-# ENV Variables for AWS or Google Storage
+# ====================================================================================================
+# Variables for AWS or Google Storage
+# ====================================================================================================
 backupStorage:
   aws:
-    enabled: false #Set enabled=true if you are going to use AWS - S3
-    env:
-      AWS_ACCESS_KEY_ID: xxxx
-      AWS_SECRET_ACCESS_KEY: xxxz
-      AWS_DEFAULT_REGION: us-east-1
-      S3_OSM_PATH: s3://osm-seed
+    # Set enabled=true if you are going to use AWS - S3
+    enabled: false
+    # env:
+    #   AWS_ACCESS_KEY_ID: xxxx
+    #   AWS_SECRET_ACCESS_KEY: xxxz
+    #   AWS_DEFAULT_REGION: us-east-1
+    #   S3_OSM_PATH: s3://osm-seed
   google:
-    enabled: true #Set enabled=true if you are going to use Google Storage
+    # Set enabled=true if you are going to use Google Storage
+    enabled: true
     env:
       GS_OSM_PATH: gs://osm-seed
-      GCLOUD_SERVICE_KEY: abc...==
-      GCLOUD_PROJECT: osm-seed-123456
+      GCLOUD_SERVICE_KEY: xyz==
+      GCLOUD_PROJECT: osm-seed-12345
 
+# ====================================================================================================
 # Ingress variables
+# ====================================================================================================
 ingress:
   enabled: false
   annotations: {}
@@ -67,43 +40,160 @@ ingress:
     - chart-example.local
   tls: []
 
-# Persist data to a persitent volume
+# ====================================================================================================
+# Persist data configuration
+# ====================================================================================================
 persistence:
+  # If you set  enabled=true, you should uncomment the following configurations
   enabled: false
-  gcePersistentDisk:
-    pdName: osm-seed-data-disk
+  # gcePersistentDisk:
+  #   pdName: osm-seed-data-disk
   accessMode: ReadWriteOnce
   size: 100Gi # The size should be tha same as the external disk
   mountPath: /var/lib/postgresql/data
   subPath: postgresql-db
 
-# Set the domain for the app.
+# ====================================================================================================
+# Domain app configuration
+# ====================================================================================================
 domain:
-  enabled: false
-  domainName: example.com
+  # If you set  enabled=true, you should uncomment the following configurations
+  enabled: false 
+  domainName: example.com # Add here your domain or the fixed IP  where the server is running
   protocolo: http
 
+# ====================================================================================================
+# ====================================================================================================
+# ==================================Pods Configurations===============================================
+# ====================================================================================================
+# ====================================================================================================
+
+# ====================================================================================================
+# Variables for osm-seed database
+# ====================================================================================================
+db:
+  image: 'developmentseed/osmseed-db'
+  env:
+    POSTGRES_DB: openstreetmap
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: '1234'
+  resources:
+    requests:
+      memory: "300Mi"
+      cpu: "0.2"
+    limits:
+      memory: "400Mi"
+      cpu: "0.4"
+
+# ====================================================================================================
+# Variables for osm-seed website
+# ====================================================================================================
+web:
+  image: 'developmentseed/osmseed-web'
+  replicaCount: 1
+  # web.serviceType defines the type of service. Should be `NodePort` when running locally.
+  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
+  serviceType: NodePort
+  staticIp:
+    # For production deployment,  you have to set enabled: true, and then uncomment the IP and set the IP or domain of your server or cluster
+    enabled : false
+    # ip : 35.185.241.158
+  env:
+    MAILER_ADDRESS: smtp.gmail.com
+    MAILER_DOMAIN: gmail.com
+    MAILER_USERNAME: osmseed.test@gmail.com
+    MAILER_PASSWORD: '12345678'
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "0.4"
+    limits:
+      memory: "512Mi"
+      cpu: "0.5"
+
+# ====================================================================================================
+# Variables for osm-seed database backup and restore
+# ====================================================================================================
+dbbackup:
+  image: 'developmentseed/osmseed-backup-restore'
+  schedule: '0 */1 * * *'
+  env:
+    DB_ACTION: backup
+    CLEAN_BACKUPS: true
+  resources:
+    requests:
+      memory: "300Mi"
+      cpu: "0.5"
+    limits:
+      memory: "400Mi"
+      cpu: "0.6"
+
+# ====================================================================================================
+# Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
+# ====================================================================================================
+osmmosis:
+  image: 'developmentseed/osmseed-osmosis'
+  schedule: '0 */1 * * *'
+  env:
+    CLEAN_BACKUPS: true
+  resources:
+    requests:
+      memory: "300Mi"
+      cpu: "0.5"
+    limits:
+      memory: "400Mi"
+      cpu: "0.6"
+
+# ====================================================================================================
 # Variables for id-editor
+# ====================================================================================================
 idEditor:
   image: 'developmentseed/osmseed-id-editor'
   replicaCount: 1
+  # id-editor.serviceType defines the type of service. Should be `NodePort` when running locally.
+  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
   serviceType: NodePort
   staticIp:
+    # If you are using LoadBalancer, set enabled=true 
     enabled : false
-    ip : 35.233.232.82
+    # ip : 35.185.241.158
   env:
-    SERVER_URL : 192.168.64.13:32032
-    SERVER_PROTOCOL : http
-    OAUTH_CONSUMER_KEY : 8mrC6gchvfqz8Bc9I77pR5PzT5MfeuOPSIErMmag
-    OAUTH_SECRET : Cw8JMgMVUaXRvM1DqKUIeBSOBDDda30F5Hy3Klub
-
-# Variables for replication-job
+    OSM_API_PROTOCOL: http
+    OSM_API_DOMAIN: 192.168.64.26:32331
+    OAUTH_CONSUMER_KEY : xxx
+    OAUTH_SECRET : xxx
+  # resources:
+  #   requests:
+  #     memory: "300Mi"
+  #     cpu: "0.4"
+  #   limits:
+  #     memory: "400Mi"
+  #     cpu: "0.5"
+# ====================================================================================================
+# Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
+# ====================================================================================================
 replicationJob:
   image: 'developmentseed/osmseed-replication-job'
   schedule: '*/1 * * * *'
+  resources:
+    requests:
+      memory: "500Mi"
+      cpu: "0.5"
+    limits:
+      memory: "650Mi"
+      cpu: "0.6"
 
-# Variables for osm-seed for replication
+# ====================================================================================================
+# Variables for osm-seed to pupulate the apidb
+# ====================================================================================================
 populateApidb:
   image: 'developmentseed/osmseed-populate-apidb'
   env: 
-    URL_FILE_TO_IMPORT: 'https://download.geofabrik.de/europe/monaco-latest.osm.pbf'
+    URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "2"
+    limits:
+      memory: "2Gi"
+      cpu: "2.5"

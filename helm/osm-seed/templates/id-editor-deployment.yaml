@@ -26,22 +26,14 @@ spec:
           image: "{{ .Values.idEditor.image }}:{{ .Values.osmSeedVersion }}"
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 80
               protocol: TCP
           env:
             - name: OAUTH_CONSUMER_KEY
               value: {{ .Values.idEditor.env.OAUTH_CONSUMER_KEY }}
             - name: OAUTH_SECRET
               value: {{ .Values.idEditor.env.OAUTH_SECRET }}
-            # Set domain name or pod ip
-              {{- if .Values.domain.enabled }}
             - name: SERVER_URL
-              value: {{ .Values.domain.domainName }}
+              value: {{ .Values.idEditor.env.OSM_API_DOMAIN }}
             - name: SERVER_PROTOCOL
-              value : {{ .Values.domain.protocolo }}
-              {{- else }}
-            - name: SERVER_URL
-              value: 192.168.64.13:32032
-            - name: SERVER_PROTOCOL
-              value : http
-              {{- end }}
+              value : {{ .Values.idEditor.env.OSM_API_PROTOCOL }}
