@@ -9,9 +9,9 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   type: {{ .Values.idEditor.serviceType }}
-  {{- if .Values.idEditor.staticIp.enabled }}
-  loadBalancerIP : {{ .Values.idEditor.staticIp.ip }}
-  {{- end }}
+  # {{- if .Values.idEditor.staticIp.enabled }}
+  # loadBalancerIP : {{ .Values.idEditor.staticIp.ip }}
+  # {{- end }}
   ports:
     - port: 80
       targetPort: http
