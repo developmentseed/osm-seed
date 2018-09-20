@@ -14,9 +14,17 @@ spec:
     storage: {{ .Values.persistence.size }}
   accessModes:
     - ReadWriteOnce
+
+  {{- if .Values.persistence.gcePersistentDisk }}
   gcePersistentDisk:
     pdName: {{ .Values.persistence.gcePersistentDisk.pdName }}
     fsType: ext4
+  {{- else if .Values.persistence.awsElasticBlockStore }}
+  awsElasticBlockStore:
+    volumeID: {{ .Values.persistence.ewsElasticBlockStore.volumeID }}
+    fsType: ext4
+  {{- end }}
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

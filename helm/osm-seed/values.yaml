@@ -46,8 +46,17 @@ ingress:
 persistence:
   # If you set  enabled=true, you should uncomment the following configurations
   enabled: false
+
+  # If using persistence, uncomment either `gcePersistentDisk` or `awsElasticBlockStore` depending on what you're using
+  # and fill in the `pdName` / `volumeID` accordingly.
+  # In both cases, ensure the volume already exists on your cloud provider.  
+
   # gcePersistentDisk:
   #   pdName: osm-seed-data-disk
+
+  # awsElasticBlockStore:
+  #   volumeID: vol-abcde1234f
+
   accessMode: ReadWriteOnce
   size: 100Gi # The size should be tha same as the external disk
   mountPath: /var/lib/postgresql/data
