@@ -21,7 +21,7 @@ spec:
     fsType: ext4
   {{- else if .Values.persistence.awsElasticBlockStore }}
   awsElasticBlockStore:
-    volumeID: {{ .Values.persistence.ewsElasticBlockStore.volumeID }}
+    volumeID: {{ .Values.persistence.awsElasticBlockStore.volumeID }}
     fsType: ext4
   {{- end }}
 

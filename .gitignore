@@ -1,5 +1,7 @@
 .env
 dev.values.yaml
+test.values.yaml
+staging.values.yaml
 prod.values.yaml
 planet.values.yaml
 postgres-data/
