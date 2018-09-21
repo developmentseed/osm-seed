@@ -15,6 +15,7 @@ spec:
     spec:
       template:
         spec:
+          startingDeadlineSeconds: 240
           containers:
           - name: {{ .Release.Name }}-osmosis
             image: {{ .Values.osmmosis.image }}:{{ .Values.osmSeedVersion }}
@@ -33,10 +34,10 @@ spec:
               {{- if .Values.backupStorage.aws.enabled }}
               - name: STORAGE
                 value: S3
-              - name: AWS_ACCESS_KEY_ID
-                value: {{ .Values.backupStorage.aws.env.AWS_ACCESS_KEY_ID }}
-              - name: AWS_SECRET_ACCESS_KEY
-                value: {{ .Values.backupStorage.aws.env.AWS_SECRET_ACCESS_KEY }}
+              # - name: AWS_ACCESS_KEY_ID
+              #   value: {{ .Values.backupStorage.aws.env.AWS_ACCESS_KEY_ID }}
+              # - name: AWS_SECRET_ACCESS_KEY
+              #   value: {{ .Values.backupStorage.aws.env.AWS_SECRET_ACCESS_KEY }}
               - name: AWS_DEFAULT_REGION
                 value: {{ .Values.backupStorage.aws.env.AWS_DEFAULT_REGION }}
               - name: S3_OSM_PATH
@@ -53,3 +54,4 @@ spec:
                 value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
               {{- end }}
           restartPolicy: OnFailure
+          backoffLimit: 3

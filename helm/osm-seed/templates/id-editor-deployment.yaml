@@ -28,6 +28,13 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          resources:
+            requests:
+              memory: {{ .Values.idEditor.resources.requests.memory }}
+              cpu: {{ .Values.idEditor.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.idEditor.resources.limits.memory }}
+              cpu: {{ .Values.idEditor.resources.limits.cpu }}
           env:
             - name: OAUTH_CONSUMER_KEY
               value: {{ .Values.idEditor.env.OAUTH_CONSUMER_KEY }}

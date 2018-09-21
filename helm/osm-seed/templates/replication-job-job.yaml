@@ -15,6 +15,7 @@ spec:
     spec:
       template:
         spec:
+          startingDeadlineSeconds: 60
           containers:
           - name: {{ .Release.Name }}-replication-job-job
             image: {{ .Values.replicationJob.image }}:{{ .Values.osmSeedVersion }}
@@ -35,13 +36,15 @@ spec:
                 value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
+              - name: REPLICATION_FOLDER
+                value: /replication/minute
               {{- if .Values.backupStorage.aws.enabled }}
               - name: STORAGE
                 value: S3
-              - name: AWS_ACCESS_KEY_ID
-                value: {{ .Values.backupStorage.aws.env.AWS_ACCESS_KEY_ID }}
-              - name: AWS_SECRET_ACCESS_KEY
-                value: {{ .Values.backupStorage.aws.env.AWS_SECRET_ACCESS_KEY }}
+              # - name: AWS_ACCESS_KEY_ID
+              #   value: {{ .Values.backupStorage.aws.env.AWS_ACCESS_KEY_ID }}
+              # - name: AWS_SECRET_ACCESS_KEY
+              #   value: {{ .Values.backupStorage.aws.env.AWS_SECRET_ACCESS_KEY }}
               - name: AWS_DEFAULT_REGION
                 value: {{ .Values.backupStorage.aws.env.AWS_DEFAULT_REGION }}
               - name: S3_OSM_PATH
