@@ -40,6 +40,7 @@ host=$POSTGRES_HOST \
 database=$POSTGRES_DB \
 user=$POSTGRES_USER \
 password=$POSTGRES_PASSWORD \
+validateSchemaVersion=no \
 allowIncorrectSchemaVersion=true \
 --write-replication \
 workingDirectory=$workingDirectory &
@@ -57,5 +58,5 @@ do
         # Sync to GS, Need to test,if the files do not exist  in the folder it will remove into the bucket too.
         gsutil rsync -r $workingDirectory $GS_OSM_PATH$REPLICATION_FOLDER
     fi
-    sleep 1
+    sleep 1m
 done
