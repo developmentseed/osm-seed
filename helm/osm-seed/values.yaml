@@ -4,7 +4,7 @@
 # ====================================================================================================
 # ====================================================================================================
 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
-osmSeedVersion: resource-4793ea5
+osmSeedVersion: feature-eks-elb-953cfdb
 environment: development
 
 # ====================================================================================================
@@ -140,8 +140,8 @@ dbbackup:
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
-osmmosis:
-  image: 'developmentseed/osmseed-osmosis'
+planetDump:
+  image: 'developmentseed/osmseed-planet-dump'
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true

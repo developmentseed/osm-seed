@@ -9,13 +9,13 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   schedule: {{ quote .Values.planetDump.schedule }}
-  successfulJobsHistoryLimit: 0
-  failedJobsHistoryLimit: 0
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
   jobTemplate:
     spec:
       template:
         spec:
-          startingDeadlineSeconds: 120
           containers:
           - name: {{ .Release.Name }}-planet-dump-job
             image: {{ .Values.planetDump.image }}:{{ .Values.osmSeedVersion }}
@@ -29,8 +29,6 @@ spec:
                 value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
-              - name: CLEAN_BACKUPS
-                value: {{ quote .Values.planetDump.env.CLEAN_BACKUPS }}
               {{- if .Values.backupStorage.aws.enabled }}
               - name: STORAGE
                 value: S3
@@ -53,5 +51,5 @@ spec:
               - name: GS_OSM_PATH
                 value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
               {{- end }}
-          restartPolicy: OnFailure
-          backoffLimit: 3
+          restartPolicy: Never
+      backoffLimit: 3
