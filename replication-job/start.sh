@@ -34,23 +34,27 @@ fi
 # Creating the replication file
 osmosis -q \
 --replicate-apidb \
-iterations=1 \
+iterations=0 \
+minInterval=60000 \
 host=$POSTGRES_HOST \
 database=$POSTGRES_DB \
 user=$POSTGRES_USER \
 password=$POSTGRES_PASSWORD \
 allowIncorrectSchemaVersion=true \
 --write-replication \
-workingDirectory=$workingDirectory
+workingDirectory=$workingDirectory &
+while true
+do 
+    # AWS
+    if [ $STORAGE == "S3" ]; then 
+        # Sync to S3
+        aws s3 sync $workingDirectory $S3_OSM_PATH$REPLICATION_FOLDER
+    fi
 
-# AWS
-if [ $STORAGE == "S3" ]; then 
-    # Sync to S3
-    aws s3 sync $workingDirectory $S3_OSM_PATH$REPLICATION_FOLDER
-fi
-
-# Google Storage
-if [ $STORAGE == "GS" ]; then
-    # Sync to GS
-    gsutil rsync -r $workingDirectory $GS_OSM_PATH$REPLICATION_FOLDER
-fi
+    # Google Storage
+    if [ $STORAGE == "GS" ]; then
+        # Sync to GS, Need to test,if the files do not exist  in the folder it will remove into the bucket too.
+        gsutil rsync -r $workingDirectory $GS_OSM_PATH$REPLICATION_FOLDER
+    fi
+    sleep 1
+done
