@@ -3,7 +3,6 @@
 date=`date '+%Y-%m-%d:%H:%M'`
 planetFile=history-latest-${date}.osm
 planetPBFFile=history-latest-${date}.pbf
-planetFileCompress=$planetFile.bz2
 stateFile="state.txt"
 
 # Creating a gcloud-service-key to authenticate the gcloud
