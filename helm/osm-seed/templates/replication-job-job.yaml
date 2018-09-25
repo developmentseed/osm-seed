@@ -8,50 +8,50 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  template:
-    containers:
-      - name: {{ .Release.Name }}-replication-job-job
-        image: {{ .Values.replicationJob.image }}:{{ .Values.osmSeedVersion }}
-        command: ['./start.sh']
-        resources:
-          requests:
-            memory: {{ .Values.replicationJob.resources.requests.memory }}
-            cpu: {{ .Values.replicationJob.resources.requests.cpu }}
-          limits:
-            memory: {{ .Values.replicationJob.resources.limits.memory }}
-            cpu: {{ .Values.replicationJob.resources.limits.cpu }}
-        env:
-          - name: POSTGRES_HOST
-            value: {{ .Release.Name }}-db
-          - name: POSTGRES_DB
-            value: {{ .Values.db.env.POSTGRES_DB }}
-          - name: POSTGRES_PASSWORD
-            value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
-          - name: POSTGRES_USER
-            value: {{ .Values.db.env.POSTGRES_USER }}
-          - name: REPLICATION_FOLDER
-            value: /replication/minute
-          {{- if .Values.backupStorage.aws.enabled }}
-          - name: STORAGE
-            value: S3
-          # - name: AWS_ACCESS_KEY_ID
-          #   value: {{ .Values.backupStorage.aws.env.AWS_ACCESS_KEY_ID }}
-          # - name: AWS_SECRET_ACCESS_KEY
-          #   value: {{ .Values.backupStorage.aws.env.AWS_SECRET_ACCESS_KEY }}
-          - name: AWS_DEFAULT_REGION
-            value: {{ .Values.backupStorage.aws.env.AWS_DEFAULT_REGION }}
-          - name: S3_OSM_PATH
-            value: {{ .Values.backupStorage.aws.env.S3_OSM_PATH }}
-          {{- end }}
-          {{- if .Values.backupStorage.google.enabled }}
-          - name: STORAGE
-            value: GS
-          - name: GCLOUD_PROJECT
-            value: {{ .Values.backupStorage.google.env.GCLOUD_PROJECT }}
-          - name: GCLOUD_SERVICE_KEY
-            value: {{ .Values.backupStorage.google.env.GCLOUD_SERVICE_KEY }}
-          - name: GS_OSM_PATH
-            value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
-          {{- end }}
-    restartPolicy: OnFailure
-  backoffLimit: 4
+    template:
+      spec:
+        containers:
+        - name: {{ .Release.Name }}-replication-job-job
+          image: {{ .Values.replicationJob.image }}:{{ .Values.osmSeedVersion }}
+          command: ['./start.sh']
+          resources:
+            requests:
+              memory: {{ .Values.replicationJob.resources.requests.memory }}
+              cpu: {{ .Values.replicationJob.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.replicationJob.resources.limits.memory }}
+              cpu: {{ .Values.replicationJob.resources.limits.cpu }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.env.POSTGRES_USER }}
+            - name: REPLICATION_FOLDER
+              value: /replication/minute
+            {{- if .Values.backupStorage.aws.enabled }}
+            - name: STORAGE
+              value: S3
+            # - name: AWS_ACCESS_KEY_ID
+            #   value: {{ .Values.backupStorage.aws.env.AWS_ACCESS_KEY_ID }}
+            # - name: AWS_SECRET_ACCESS_KEY
+            #   value: {{ .Values.backupStorage.aws.env.AWS_SECRET_ACCESS_KEY }}
+            - name: AWS_DEFAULT_REGION
+              value: {{ .Values.backupStorage.aws.env.AWS_DEFAULT_REGION }}
+            - name: S3_OSM_PATH
+              value: {{ .Values.backupStorage.aws.env.S3_OSM_PATH }}
+            {{- end }}
+            {{- if .Values.backupStorage.google.enabled }}
+            - name: STORAGE
+              value: GS
+            - name: GCLOUD_PROJECT
+              value: {{ .Values.backupStorage.google.env.GCLOUD_PROJECT }}
+            - name: GCLOUD_SERVICE_KEY
+              value: {{ .Values.backupStorage.google.env.GCLOUD_SERVICE_KEY }}
+            - name: GS_OSM_PATH
+              value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
+            {{- end }}
+        restartPolicy: OnFailure
