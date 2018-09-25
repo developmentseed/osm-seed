@@ -45,6 +45,7 @@ allowIncorrectSchemaVersion=true \
 workingDirectory=$workingDirectory &
 while true
 do 
+    echo "Sync bucket at ..." $S3_OSM_PATH$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
     # AWS
     if [ $STORAGE == "S3" ]; then 
         # Sync to S3
