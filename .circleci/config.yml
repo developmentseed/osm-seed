@@ -94,7 +94,7 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-db:${VERSION}
 
-  osmosis:
+  planet-dump:
     docker:
       - image: docker:17.05.0-ce-git
     steps:
@@ -105,28 +105,28 @@ jobs:
           keys:
             - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
           paths:
-            - caches/osmosis.tar
+            - caches/planet-dump.tar
 
       - run:
           name: Load docker image cache
           command: |
-            docker load -i caches/osmosis.tar || true
+            docker load -i caches/planet-dump.tar || true
 
       - run:
           name: Build application docker image
           command: |
-            docker build --cache-from=osmosis -t osmosis osmosis/
+            docker build --cache-from=planet-dump -t planet-dump planet-dump/
 
       - run:
           name: Save docker image cache
           command: |
             mkdir -p caches
-            docker save -o caches/osmosis.tar osmosis
+            docker save -o caches/planet-dump.tar planet-dump
 
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
-            - caches/osmosis.tar
+            - caches/planet-dump.tar
 
       - deploy:
           name: Push docker image
@@ -136,9 +136,9 @@ jobs:
             else
               VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
             fi
-            docker tag osmosis developmentseed/osmseed-osmosis:${VERSION}
+            docker tag planet-dump developmentseed/osmseed-planet-dump:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push developmentseed/osmseed-osmosis:${VERSION}
+            docker push developmentseed/osmseed-planet-dump:${VERSION}
 
   db-backup-restore:
     docker:
@@ -322,7 +322,7 @@ workflows:
     jobs:
       - web
       - db
-      - osmosis
+      - planet-dump
       - db-backup-restore
       - id-editor
       - replication-job
