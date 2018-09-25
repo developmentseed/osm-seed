@@ -1,24 +1,24 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-osmosis
+  name: {{ .Release.Name }}-planet-dump-job
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmosis-job
+    component: planet-dump-job
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: {{ quote .Values.osmmosis.schedule }}
+  schedule: {{ quote .Values.planetDump.schedule }}
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 0
   jobTemplate:
     spec:
       template:
         spec:
-          startingDeadlineSeconds: 240
+          startingDeadlineSeconds: 120
           containers:
-          - name: {{ .Release.Name }}-osmosis
-            image: {{ .Values.osmmosis.image }}:{{ .Values.osmSeedVersion }}
+          - name: {{ .Release.Name }}-planet-dump-job
+            image: {{ .Values.planetDump.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
             env:
               - name: POSTGRES_HOST
@@ -30,7 +30,7 @@ spec:
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
               - name: CLEAN_BACKUPS
-                value: {{ quote .Values.osmmosis.env.CLEAN_BACKUPS }}
+                value: {{ quote .Values.planetDump.env.CLEAN_BACKUPS }}
               {{- if .Values.backupStorage.aws.enabled }}
               - name: STORAGE
                 value: S3

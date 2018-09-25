@@ -9,13 +9,14 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   schedule: {{ quote .Values.replicationJob.schedule }}
-  successfulJobsHistoryLimit: 0
-  failedJobsHistoryLimit: 0
+  startingDeadlineSeconds: 20
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
-        spec:
-          startingDeadlineSeconds: 60
+        spec:          
           containers:
           - name: {{ .Release.Name }}-replication-job-job
             image: {{ .Values.replicationJob.image }}:{{ .Values.osmSeedVersion }}
@@ -60,4 +61,5 @@ spec:
               - name: GS_OSM_PATH
                 value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
               {{- end }}
-          restartPolicy: OnFailure
+          restartPolicy: Never
+      backoffLimit: 2
