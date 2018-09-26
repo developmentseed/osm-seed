@@ -36,7 +36,6 @@ osmosis -q \
 --replicate-apidb \
 iterations=0 \
 minInterval=10000 \
-maxInterval=60000 \
 host=$POSTGRES_HOST \
 database=$POSTGRES_DB \
 user=$POSTGRES_USER \
