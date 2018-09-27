@@ -41,7 +41,6 @@ database=$POSTGRES_DB \
 user=$POSTGRES_USER \
 password=$POSTGRES_PASSWORD \
 validateSchemaVersion=no \
-allowIncorrectSchemaVersion=true \
 --write-replication \
 workingDirectory=$workingDirectory &
 while true
