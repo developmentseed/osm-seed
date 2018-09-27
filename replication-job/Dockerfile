@@ -20,8 +20,8 @@ RUN git clone https://github.com/openstreetmap/osmosis.git
 WORKDIR osmosis
 RUN git checkout e344f05d4cffbd70801a5c50af02b409a7d2adfc
 RUN ./gradlew assemble
-RUN echo package/bin/osmosis --version 2>&1 | grep "Osmosis Version"
-RUN cp package/bin/osmosis /usr/bin
+RUN ln -s "$PWD"/package/bin/osmosis /usr/bin/osmosis
+RUN osmosis --version 2>&1 | grep "Osmosis Version"
 WORKDIR $workdir
 RUN mkdir data
 VOLUME ["/app/data"]
