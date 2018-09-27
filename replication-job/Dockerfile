@@ -8,21 +8,20 @@ RUN apt-get install -y \
     software-properties-common \
     python-software-properties \
     libz-dev zlib1g-dev \
-    curl openjdk-8-jdk
+    curl unzip \
+    gdal-bin tar \
+    bzip2 clang git
 
+RUN apt-get -y install default-jre default-jdk gradle
 RUN pip install awscli
 RUN curl -sSL https://sdk.cloud.google.com | bash
 RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
-# RUN wget -O - http://m.m.i24.cc/osmconvert.c | cc -x c - -lz -O3 -o osmconvert
-# RUN cp osmconvert /usr/bin/osmconvert
-RUN wget https://bretth.dev.openstreetmap.org/osmosis-build/osmosis-latest.tgz
-RUN mkdir osmosis
-RUN mv osmosis-latest.tgz osmosis
+RUN git clone https://github.com/openstreetmap/osmosis.git
 WORKDIR osmosis
-RUN tar xvfz osmosis-latest.tgz
-RUN rm osmosis-latest.tgz
-RUN chmod a+x bin/osmosis
-RUN cp bin/osmosis /usr/bin/
+RUN git checkout e344f05d4cffbd70801a5c50af02b409a7d2adfc
+RUN ./gradlew assemble
+RUN echo package/bin/osmosis --version 2>&1 | grep "Osmosis Version"
+RUN cp package/bin/osmosis /usr/bin
 WORKDIR $workdir
 RUN mkdir data
 VOLUME ["/app/data"]
