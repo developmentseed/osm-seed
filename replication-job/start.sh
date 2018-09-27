@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-stateFile="state.txt"
 workingDirectory="data"
 
 if [ $STORAGE == "GS" ]; then
@@ -42,20 +41,22 @@ user=$POSTGRES_USER \
 password=$POSTGRES_PASSWORD \
 validateSchemaVersion=no \
 --write-replication \
-workingDirectory=$workingDirectory &
-while true
-do 
-    echo "Sync bucket at ..." $S3_OSM_PATH$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
-    # AWS
-    if [ $STORAGE == "S3" ]; then 
-        # Sync to S3
-        aws s3 sync $workingDirectory $S3_OSM_PATH$REPLICATION_FOLDER
-    fi
+workingDirectory=$workingDirectory
 
-    # Google Storage
-    if [ $STORAGE == "GS" ]; then
-        # Sync to GS, Need to test,if the files do not exist  in the folder it will remove into the bucket too.
-        gsutil rsync -r $workingDirectory $GS_OSM_PATH$REPLICATION_FOLDER
-    fi
-    sleep 1m
-done
+#  &
+# while true
+# do 
+#     echo "Sync bucket at ..." $S3_OSM_PATH$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
+#     # AWS
+#     if [ $STORAGE == "S3" ]; then 
+#         # Sync to S3
+#         aws s3 sync $workingDirectory $S3_OSM_PATH$REPLICATION_FOLDER
+#     fi
+
+#     # Google Storage
+#     if [ $STORAGE == "GS" ]; then
+#         # Sync to GS, Need to test,if the files do not exist  in the folder it will remove into the bucket too.
+#         gsutil rsync -r $workingDirectory $GS_OSM_PATH$REPLICATION_FOLDER
+#     fi
+#     sleep 1m
+# done
