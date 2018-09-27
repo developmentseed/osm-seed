@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Read the DB and create the planet osm file
 date=`date '+%Y-%m-%d:%H:%M'`
-planetFile=history-latest-${date}.osm
 planetPBFFile=history-latest-${date}.pbf
 stateFile="state.txt"
 
@@ -20,11 +19,8 @@ database=$POSTGRES_DB \
 user=$POSTGRES_USER \
 password=$POSTGRES_PASSWORD \
 validateSchemaVersion=no \
---write-xml \
-file=$planetFile
-
-# PBF File
-osmconvert $planetFile -o=$planetPBFFile
+--write-pbf \
+file=$planetPBFFile
 
 # AWS
 if [ $STORAGE == "S3" ]; then 
