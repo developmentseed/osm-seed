@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-stateFile="state.txt"
 workingDirectory="data"
 
 if [ $STORAGE == "GS" ]; then
-# Creating a gcloud-service-key to authenticate the gcloud
-echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
-/root/google-cloud-sdk/bin/gcloud --quiet components update
-/root/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file gcloud-service-key.json
-/root/google-cloud-sdk/bin/gcloud config set project $GCLOUD_PROJECT
+    # Creating a gcloud-service-key to authenticate the gcloud
+    echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
+    /root/google-cloud-sdk/bin/gcloud --quiet components update
+    /root/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file gcloud-service-key.json
+    /root/google-cloud-sdk/bin/gcloud config set project $GCLOUD_PROJECT
 fi
 
 # Check if state.txt exist in the workingDirectory,
@@ -30,7 +29,6 @@ if [ ! -f $workingDirectory/state.txt ]; then
         fi
     fi
 fi
-
 # Creating the replication file
 osmosis -q \
 --replicate-apidb \
