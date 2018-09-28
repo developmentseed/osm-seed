@@ -1,5 +1,5 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: {{ .Release.Name }}-replication-job
   labels:
@@ -8,10 +8,17 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-    template:
-      spec:
-        containers:
-        - name: {{ .Release.Name }}-replication-job-job
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-replication-job-deployment
           image: {{ .Values.replicationJob.image }}:{{ .Values.osmSeedVersion }}
           command: ['./start.sh']
           resources:
@@ -54,4 +61,3 @@ spec:
             - name: GS_OSM_PATH
               value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
             {{- end }}
-        restartPolicy: OnFailure

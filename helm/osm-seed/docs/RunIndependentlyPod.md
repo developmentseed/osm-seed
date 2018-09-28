@@ -7,7 +7,7 @@ But another problem arises when we need to run a pod after that has already been
 
 ```
 cd helm/osm-seed/
-helm template -f values.yaml -n osm-seed-staging . -x templates/populate-apidb-job.yaml > populate-apidb-job-filled.yaml
+helm template -f values.yaml -n osm-seed-staging . -x $(pwd)/templates/populate-apidb-job.yaml > populate-apidb-job-filled.yaml
 ```
 
 Make sure the `-n` parameter is the name of your release.
