@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# OSMOSIS tuning: https://wiki.openstreetmap.org/wiki/Osmosis/Tuning
+echo JAVACMD_OPTIONS=-$JVM_JAVACMD_OPTIONS > ~/.osmosis
+memory="${MEMORY_JAVACMD_OPTIONS//i}"
+echo JAVACMD_OPTIONS=-Xmx$memory >> ~/.osmosis
+
 # Get the data
 wget $URL_FILE_TO_IMPORT
 file=$(basename $URL_FILE_TO_IMPORT)
