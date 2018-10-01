@@ -2,7 +2,6 @@
 dev.values.yaml
 test.values.yaml
 usa.values.yaml
-usa.values.v2.yaml
 staging.values.yaml
 prod.values.yaml
 planet.values.yaml
