@@ -9,11 +9,11 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   # In case cloudProvider=aws
-  {{ if eq .Values.cloudProvider "aws" }}
+  {{- if eq .Values.cloudProvider "aws" }}
   type: LoadBalancer
   {{- end }}
   # In case cloudProvider=gcp
-  {{ if eq .Values.cloudProvider "gcp" }}
+  {{- if eq .Values.cloudProvider "gcp" }}
   type: LoadBalancer
   loadBalancerIP : {{ .Values.idEditor.staticIp }}
   {{- end }}

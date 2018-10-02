@@ -40,7 +40,7 @@ spec:
             - name: REPLICATION_FOLDER
               value: /replication/minute
             # In case cloudProvider=aws
-            {{ if eq .Values.cloudProvider "aws" }}
+            {{- if eq .Values.cloudProvider "aws" }}
             - name: STORAGE
               value: S3
             - name: AWS_DEFAULT_REGION
@@ -49,7 +49,7 @@ spec:
               value: {{ .Values.AWS_S3_BUCKET }}
             {{- end }}
             # In case cloudProvider=gcp
-            {{ if eq .Values.cloudProvider "gcp" }}
+            {{- if eq .Values.cloudProvider "gcp" }}
             - name: STORAGE
               value: GS
             - name: GCLOUD_PROJECT

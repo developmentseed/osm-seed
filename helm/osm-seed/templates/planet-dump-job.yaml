@@ -38,7 +38,7 @@ spec:
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
               # In case cloudProvider=aws
-              {{ if eq .Values.cloudProvider "aws" }}
+              {{- if eq .Values.cloudProvider "aws" }}
               - name: STORAGE
                 value: S3
               - name: AWS_DEFAULT_REGION
@@ -47,7 +47,7 @@ spec:
                 value: {{ .Values.AWS_S3_BUCKET }}
               {{- end }}
               # In case cloudProvider=gcp
-              {{ if eq .Values.cloudProvider "gcp" }}
+              {{- if eq .Values.cloudProvider "gcp" }}
               - name: STORAGE
                 value: GS
               - name: GCLOUD_PROJECT
@@ -58,6 +58,6 @@ spec:
                 value: {{ .Values.GCP_GS_OSM_PATH }}
               {{- end }}
               - name: MEMORY_JAVACMD_OPTIONS
-              value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
+                value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
           restartPolicy: Never
       backoffLimit: 3
