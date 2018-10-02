@@ -4,17 +4,17 @@
 # ====================================================================================================
 # ====================================================================================================
 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
-osmSeedVersion: feature-eks-elb-953cfdb
+osmSeedVersion: cloudProvider-b1fee6e
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
-cloudProvider: minikube
+cloudProvider: minukube
 # ====================================================================================================
 # AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
-# ====================================================================================================
+# =================s===================================================================================
 AWS_DEFAULT_REGION: us-east-1
 AWS_S3_BUCKET: s3://osm-seed
-AWS_ElasticBlockStore_volumeID : vol-abcde1234f
-AWS_ElasticBlockStore_size: 1500Gi
+AWS_ElasticBlockStore_volumeID : vol-1234bcd
+AWS_ElasticBlockStore_size: 500Gi
 
 # ====================================================================================================
 # GCP: In case you are using the cloudProvider=gcp set the below variables
@@ -74,11 +74,11 @@ db:
     POSTGRES_PASSWORD: '1234'
   resources:
     requests:
-      memory: "300Mi"
-      cpu: "0.2"
+      memory: "1Gi"
+      cpu: "1"
     limits:
-      memory: "400Mi"
-      cpu: "0.4"
+      memory: "2Gi"
+      cpu: "1"
 
 # ====================================================================================================
 # Variables for osm-seed website
@@ -95,11 +95,11 @@ web:
     MAILER_PASSWORD: '12345678'
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "0.4"
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "512Mi"
-      cpu: "0.5"
+      memory: "2Gi"
+      cpu: "2"
 
 # ====================================================================================================
 # Variables for osm-seed database backup and restore
@@ -128,11 +128,11 @@ planetDump:
     CLEAN_BACKUPS: true
   resources:
     requests:
-      memory: "300Mi"
-      cpu: "0.5"
+      memory: "14Gi"
+      cpu: "4"
     limits:
-      memory: "400Mi"
-      cpu: "0.6"
+      memory: "16Gi"
+      cpu: "4"
 
 # ====================================================================================================
 # Variables for id-editor
@@ -159,14 +159,13 @@ idEditor:
 # ====================================================================================================
 replicationJob:
   image: 'developmentseed/osmseed-replication-job'
-  schedule: '*/1 * * * *'
   resources:
     requests:
-      memory: "500Mi"
-      cpu: "0.5"
+      memory: "20Gi"
+      cpu: "8"
     limits:
-      memory: "650Mi"
-      cpu: "0.6"
+      memory: "24Gi"
+      cpu: "10"
 
 # ====================================================================================================
 # Variables for osm-seed to pupulate the apidb
