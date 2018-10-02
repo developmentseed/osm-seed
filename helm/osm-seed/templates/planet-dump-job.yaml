@@ -21,6 +21,13 @@ spec:
           - name: {{ .Release.Name }}-planet-dump-job
             image: {{ .Values.planetDump.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
+            resources:
+              requests:
+                memory: {{ .Values.planetDump.resources.requests.memory }}
+                cpu: {{ .Values.planetDump.resources.requests.cpu }}
+              limits:
+                memory: {{ .Values.planetDump.resources.limits.memory }}
+                cpu: {{ .Values.planetDump.resources.limits.cpu }}
             env:
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-db
@@ -50,5 +57,7 @@ spec:
               - name: GS_OSM_PATH
                 value: {{ .Values.GCP_GS_OSM_PATH }}
               {{- end }}
+              - name: MEMORY_JAVACMD_OPTIONS
+              value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
           restartPolicy: Never
       backoffLimit: 3

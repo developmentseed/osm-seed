@@ -32,8 +32,6 @@ spec:
               value: {{ .Values.db.env.POSTGRES_USER }}
             - name: URL_FILE_TO_IMPORT
               value: {{.Values.populateApidb.env.URL_FILE_TO_IMPORT}}
-            - name: JVM_JAVACMD_OPTIONS
-              value: server
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.populateApidb.resources.requests.memory  | default "4Gi" | quote}}
         restartPolicy: Never
