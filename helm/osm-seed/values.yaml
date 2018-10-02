@@ -7,10 +7,10 @@
 osmSeedVersion: feature-eks-elb-953cfdb
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
-cloudProvider: aws
+cloudProvider: minikube
 # ====================================================================================================
 # AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
-# ====================================================================================================
+# =================s===================================================================================
 AWS_DEFAULT_REGION: us-east-1
 AWS_S3_BUCKET: s3://osm-seed
 
