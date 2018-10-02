@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+# OSMOSIS tuning: https://wiki.openstreetmap.org/wiki/Osmosis/Tuning,https://lists.openstreetmap.org/pipermail/talk/2012-October/064771.html
+memory="${MEMORY_JAVACMD_OPTIONS//i}"
+echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" > ~/.osmosis
+
 workingDirectory="data"
 
 if [ $STORAGE == "GS" ]; then
