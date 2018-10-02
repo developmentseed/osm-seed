@@ -1,10 +1,8 @@
 .env
-dev.values.yaml
-test.values.yaml
 usa.values.yaml
-staging.values.yaml
 prod.values.yaml
 planet.values.yaml
+usa-staging.values.yaml
 postgres-data/
 postgres-data-gis/
 replication-files/
