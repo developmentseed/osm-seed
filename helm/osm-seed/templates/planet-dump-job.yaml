@@ -21,6 +21,13 @@ spec:
           - name: {{ .Release.Name }}-planet-dump-job
             image: {{ .Values.planetDump.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
+            resources:
+              requests:
+                memory: {{ .Values.planetDump.resources.requests.memory }}
+                cpu: {{ .Values.planetDump.resources.requests.cpu }}
+              limits:
+                memory: {{ .Values.planetDump.resources.limits.memory }}
+                cpu: {{ .Values.planetDump.resources.limits.cpu }}
             env:
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-db
@@ -30,27 +37,27 @@ spec:
                 value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
-              {{- if .Values.backupStorage.aws.enabled }}
+              # In case cloudProvider=aws
+              {{- if eq .Values.cloudProvider "aws" }}
               - name: STORAGE
                 value: S3
-              # - name: AWS_ACCESS_KEY_ID
-              #   value: {{ .Values.backupStorage.aws.env.AWS_ACCESS_KEY_ID }}
-              # - name: AWS_SECRET_ACCESS_KEY
-              #   value: {{ .Values.backupStorage.aws.env.AWS_SECRET_ACCESS_KEY }}
               - name: AWS_DEFAULT_REGION
-                value: {{ .Values.backupStorage.aws.env.AWS_DEFAULT_REGION }}
+                value: {{ .Values.AWS_DEFAULT_REGION }}
               - name: S3_OSM_PATH
-                value: {{ .Values.backupStorage.aws.env.S3_OSM_PATH }}
+                value: {{ .Values.AWS_S3_BUCKET }}
               {{- end }}
-              {{- if .Values.backupStorage.google.enabled }}
+              # In case cloudProvider=gcp
+              {{- if eq .Values.cloudProvider "gcp" }}
               - name: STORAGE
                 value: GS
               - name: GCLOUD_PROJECT
-                value: {{ .Values.backupStorage.google.env.GCLOUD_PROJECT }}
+                value: {{ .Values.GCP_GCLOUD_PROJECT }}
               - name: GCLOUD_SERVICE_KEY
-                value: {{ .Values.backupStorage.google.env.GCLOUD_SERVICE_KEY }}
+                value: {{ .Values.GCP_GCLOUD_SERVICE_KEY }}
               - name: GS_OSM_PATH
-                value: {{ .Values.backupStorage.google.env.GS_OSM_PATH }}
+                value: {{ .Values.GCP_GS_OSM_PATH }}
               {{- end }}
+              - name: MEMORY_JAVACMD_OPTIONS
+                value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
           restartPolicy: Never
       backoffLimit: 3
