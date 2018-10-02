@@ -6,10 +6,13 @@
 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
 osmSeedVersion: feature-eks-elb-953cfdb
 environment: development
+# aws, gcp, minikube
+cloudProvider: minikube
 
 # ====================================================================================================
 # Variables for AWS or Google Storage
 # ====================================================================================================
+
 backupStorage:
   aws:
     # Set enabled=true if you are going to use AWS - S3
@@ -100,13 +103,8 @@ db:
 web:
   image: 'developmentseed/osmseed-web'
   replicaCount: 1
-  # web.serviceType defines the type of service. Should be `NodePort` when running locally.
-  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
-  serviceType: NodePort
-  staticIp:
-    # For production deployment,  you have to set enabled: true, and then uncomment the IP and set the IP or domain of your server or cluster
-    enabled : false
-    # ip : 35.185.241.158
+  # Set staticIp, if you are using cloudProvider=gcp
+  staticIp: 35.185.241.158
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
@@ -159,25 +157,20 @@ planetDump:
 idEditor:
   image: 'developmentseed/osmseed-id-editor'
   replicaCount: 1
-  # id-editor.serviceType defines the type of service. Should be `NodePort` when running locally.
-  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
-  serviceType: NodePort
-  staticIp:
-    # If you are using LoadBalancer, set enabled=true 
-    enabled : false
-    # ip : 35.185.241.158
+  # Set staticIp, if you are using cloudProvider=gcp
+  staticIp: 35.185.241.158
   env:
     OSM_API_PROTOCOL: http
     OSM_API_DOMAIN: 192.168.64.26:32331
     OAUTH_CONSUMER_KEY : xxx
     OAUTH_SECRET : xxx
-  # resources:
-  #   requests:
-  #     memory: "300Mi"
-  #     cpu: "0.4"
-  #   limits:
-  #     memory: "400Mi"
-  #     cpu: "0.5"
+  resources:
+    requests:
+      memory: "300Mi"
+      cpu: "0.4"
+    limits:
+      memory: "400Mi"
+      cpu: "0.5"
 # ====================================================================================================
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
