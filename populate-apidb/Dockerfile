@@ -22,9 +22,11 @@ RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
 # Install osmosis
 RUN git clone https://github.com/openstreetmap/osmosis.git
 WORKDIR osmosis
-RUN git checkout 2b287a73bf5483a31a8719fb2e6136d845c41924
+RUN git checkout 9cfb8a06d9bcc948f34a6c8df31d878903d529fc
+RUN mkdir dist
 RUN ./gradlew assemble
-RUN ln -s "$PWD"/package/bin/osmosis /usr/bin/osmosis
+RUN tar -xvzf "$PWD"/package/build/distribution/*.tgz -C "$PWD"/dist/
+RUN ln -s "$PWD"/dist/bin/osmosis /usr/bin/osmosis
 RUN osmosis --version 2>&1 | grep "Osmosis Version"
 WORKDIR $workdir
 COPY ./start.sh .
