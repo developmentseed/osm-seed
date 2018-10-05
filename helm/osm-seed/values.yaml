@@ -4,28 +4,26 @@
 # ====================================================================================================
 # ====================================================================================================
 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
-osmSeedVersion: resource-4793ea5
+osmSeedVersion: cloudProvider-b1fee6e
 environment: development
+# cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
+cloudProvider: minukube
+# ====================================================================================================
+# AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
+# =================s===================================================================================
+AWS_DEFAULT_REGION: us-east-1
+AWS_S3_BUCKET: s3://osm-seed
+AWS_ElasticBlockStore_volumeID : vol-1234bcd
+AWS_ElasticBlockStore_size: 500Gi
 
 # ====================================================================================================
-# Variables for AWS or Google Storage
+# GCP: In case you are using the cloudProvider=gcp set the below variables
 # ====================================================================================================
-backupStorage:
-  aws:
-    # Set enabled=true if you are going to use AWS - S3
-    enabled: false
-    # env:
-    #   AWS_ACCESS_KEY_ID: xxxx
-    #   AWS_SECRET_ACCESS_KEY: xxxz
-    #   AWS_DEFAULT_REGION: us-east-1
-    #   S3_OSM_PATH: s3://osm-seed
-  google:
-    # Set enabled=true if you are going to use Google Storage
-    enabled: true
-    env:
-      GS_OSM_PATH: gs://osm-seed
-      GCLOUD_SERVICE_KEY: xyz==
-      GCLOUD_PROJECT: osm-seed-12345
+GCP_GCLOUD_PROJECT: osm-seed-12345
+GCP_GCLOUD_SERVICE_KEY: xyz==
+GCP_GS_OSM_PATH: gs://osm-seed
+GCP_gcePersistentDisk_pdName: osm-seed-data-disk
+GCP_gcePersistentDisk_size: 100Gi
 
 # ====================================================================================================
 # Ingress variables
@@ -44,22 +42,19 @@ ingress:
 # Persist data configuration
 # ====================================================================================================
 persistence:
-  # If you set  enabled=true, you should uncomment the following configurations
   enabled: false
-  # gcePersistentDisk:
-  #   pdName: osm-seed-data-disk
-  accessMode: ReadWriteOnce
-  size: 100Gi # The size should be tha same as the external disk
-  mountPath: /var/lib/postgresql/data
-  subPath: postgresql-db
+  # accessMode: ReadWriteOnce
+  # mountPath: /var/lib/postgresql/data
+  # subPath: postgresql-db
 
 # ====================================================================================================
 # Domain app configuration
 # ====================================================================================================
 domain:
-  # If you set  enabled=true, you should uncomment the following configurations
-  enabled: false 
-  domainName: example.com # Add here your domain or the fixed IP  where the server is running
+  #enabled, If you set  enabled=true, you should uncomment the following configurations
+  enabled: false
+  # domainName, Add here your domain or the fixed IP  where the server is running
+  domainName: example.com
   protocolo: http
 
 # ====================================================================================================
@@ -79,11 +74,11 @@ db:
     POSTGRES_PASSWORD: '1234'
   resources:
     requests:
-      memory: "300Mi"
-      cpu: "0.2"
+      memory: "1Gi"
+      cpu: "1"
     limits:
-      memory: "400Mi"
-      cpu: "0.4"
+      memory: "2Gi"
+      cpu: "1"
 
 # ====================================================================================================
 # Variables for osm-seed website
@@ -91,13 +86,8 @@ db:
 web:
   image: 'developmentseed/osmseed-web'
   replicaCount: 1
-  # web.serviceType defines the type of service. Should be `NodePort` when running locally.
-  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
-  serviceType: NodePort
-  staticIp:
-    # For production deployment,  you have to set enabled: true, and then uncomment the IP and set the IP or domain of your server or cluster
-    enabled : false
-    # ip : 35.185.241.158
+  # Set staticIp, if you are using cloudProvider=gcp
+  staticIp: 35.185.241.158
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
@@ -105,11 +95,11 @@ web:
     MAILER_PASSWORD: '12345678'
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "0.4"
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "512Mi"
-      cpu: "0.5"
+      memory: "2Gi"
+      cpu: "2"
 
 # ====================================================================================================
 # Variables for osm-seed database backup and restore
@@ -131,18 +121,18 @@ dbbackup:
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
-osmmosis:
-  image: 'developmentseed/osmseed-osmosis'
+planetDump:
+  image: 'developmentseed/osmseed-planet-dump'
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true
   resources:
     requests:
-      memory: "300Mi"
-      cpu: "0.5"
+      memory: "14Gi"
+      cpu: "4"
     limits:
-      memory: "400Mi"
-      cpu: "0.6"
+      memory: "16Gi"
+      cpu: "4"
 
 # ====================================================================================================
 # Variables for id-editor
@@ -150,38 +140,32 @@ osmmosis:
 idEditor:
   image: 'developmentseed/osmseed-id-editor'
   replicaCount: 1
-  # id-editor.serviceType defines the type of service. Should be `NodePort` when running locally.
-  # and `LoadBalancer` when running on a cloud backend that provides a LoadBalancer
-  serviceType: NodePort
-  staticIp:
-    # If you are using LoadBalancer, set enabled=true 
-    enabled : false
-    # ip : 35.185.241.158
+  # Set staticIp, if you are using cloudProvider=gcp
+  staticIp: 35.185.241.158
   env:
     OSM_API_PROTOCOL: http
     OSM_API_DOMAIN: 192.168.64.26:32331
     OAUTH_CONSUMER_KEY : xxx
     OAUTH_SECRET : xxx
-  # resources:
-  #   requests:
-  #     memory: "300Mi"
-  #     cpu: "0.4"
-  #   limits:
-  #     memory: "400Mi"
-  #     cpu: "0.5"
+  resources:
+    requests:
+      memory: "300Mi"
+      cpu: "0.4"
+    limits:
+      memory: "400Mi"
+      cpu: "0.5"
 # ====================================================================================================
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
 replicationJob:
   image: 'developmentseed/osmseed-replication-job'
-  schedule: '*/1 * * * *'
   resources:
     requests:
-      memory: "500Mi"
-      cpu: "0.5"
+      memory: "20Gi"
+      cpu: "8"
     limits:
-      memory: "650Mi"
-      cpu: "0.6"
+      memory: "24Gi"
+      cpu: "10"
 
 # ====================================================================================================
 # Variables for osm-seed to pupulate the apidb

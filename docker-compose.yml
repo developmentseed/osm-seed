@@ -22,19 +22,19 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     env_file: 
       - ./.env
-  osmosis:
-    image: openseed-osmosis:v1
+  planet-dump:
+    image: openseed-planet-dump:v1
     build: 
-      context: ./osmosis
+      context: ./planet-dump
       dockerfile: Dockerfile
     depends_on:
       - web
       - db
     command: >
       /bin/bash -c "
-      echo Sleep the osmosis for a while!;
+      echo Sleep the planet-dump for a while!;
       sleep 40;
-      echo Creating the osmosis!;
+      echo Creating the planet-dump!;
       ./start.sh"
     env_file: 
       - ./.env

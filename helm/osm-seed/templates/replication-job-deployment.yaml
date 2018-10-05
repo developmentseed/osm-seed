@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-replication-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: replication-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-replication-job-deployment
+          image: {{ .Values.replicationJob.image }}:{{ .Values.osmSeedVersion }}
+          command: ['./start.sh']
+          resources:
+            requests:
+              memory: {{ .Values.replicationJob.resources.requests.memory }}
+              cpu: {{ .Values.replicationJob.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.replicationJob.resources.limits.memory }}
+              cpu: {{ .Values.replicationJob.resources.limits.cpu }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.env.POSTGRES_USER }}
+            - name: REPLICATION_FOLDER
+              value: /replication/minute
+            # In case cloudProvider=aws
+            {{- if eq .Values.cloudProvider "aws" }}
+            - name: STORAGE
+              value: S3
+            - name: AWS_DEFAULT_REGION
+              value: {{ .Values.AWS_DEFAULT_REGION }}
+            - name: S3_OSM_PATH
+              value: {{ .Values.AWS_S3_BUCKET }}
+            {{- end }}
+            # In case cloudProvider=gcp
+            {{- if eq .Values.cloudProvider "gcp" }}
+            - name: STORAGE
+              value: GS
+            - name: GCLOUD_PROJECT
+              value: {{ .Values.GCP_GCLOUD_PROJECT }}
+            - name: GCLOUD_SERVICE_KEY
+              value: {{ .Values.GCP_GCLOUD_SERVICE_KEY }}
+            - name: GS_OSM_PATH
+              value: {{ .Values.GCP_GS_OSM_PATH }}
+            {{- end }}
+            - name: MEMORY_JAVACMD_OPTIONS
+              value: {{ .Values.replicationJob.resources.requests.memory | default "2Gi" | quote}}

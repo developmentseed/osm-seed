@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
-stateFile="state.txt"
+
+# OSMOSIS tuning: https://wiki.openstreetmap.org/wiki/Osmosis/Tuning,https://lists.openstreetmap.org/pipermail/talk/2012-October/064771.html
+memory="${MEMORY_JAVACMD_OPTIONS//i}"
+echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" > ~/.osmosis
+
 workingDirectory="data"
 
 if [ $STORAGE == "GS" ]; then
-# Creating a gcloud-service-key to authenticate the gcloud
-echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
-/root/google-cloud-sdk/bin/gcloud --quiet components update
-/root/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file gcloud-service-key.json
-/root/google-cloud-sdk/bin/gcloud config set project $GCLOUD_PROJECT
+    # Creating a gcloud-service-key to authenticate the gcloud
+    echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
+    /root/google-cloud-sdk/bin/gcloud --quiet components update
+    /root/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file gcloud-service-key.json
+    /root/google-cloud-sdk/bin/gcloud config set project $GCLOUD_PROJECT
 fi
 
 # Check if state.txt exist in the workingDirectory,
@@ -30,27 +34,31 @@ if [ ! -f $workingDirectory/state.txt ]; then
         fi
     fi
 fi
-
 # Creating the replication file
 osmosis -q \
 --replicate-apidb \
-iterations=1 \
+iterations=0 \
+minInterval=60000 \
 host=$POSTGRES_HOST \
 database=$POSTGRES_DB \
 user=$POSTGRES_USER \
 password=$POSTGRES_PASSWORD \
-allowIncorrectSchemaVersion=true \
+validateSchemaVersion=no \
 --write-replication \
-workingDirectory=$workingDirectory
+workingDirectory=$workingDirectory &
+while true
+do 
+    echo "Sync bucket at ..." $S3_OSM_PATH$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
+    # AWS
+    if [ $STORAGE == "S3" ]; then 
+        # Sync to S3
+        aws s3 sync $workingDirectory $S3_OSM_PATH$REPLICATION_FOLDER
+    fi
 
-# AWS
-if [ $STORAGE == "S3" ]; then 
-    # Sync to S3
-    aws s3 sync $workingDirectory $S3_OSM_PATH$REPLICATION_FOLDER
-fi
-
-# Google Storage
-if [ $STORAGE == "GS" ]; then
-    # Sync to GS
-    gsutil rsync -r $workingDirectory $GS_OSM_PATH$REPLICATION_FOLDER
-fi
+    # Google Storage
+    if [ $STORAGE == "GS" ]; then
+        # Sync to GS, Need to test,if the files do not exist  in the folder it will remove into the bucket too.
+        gsutil rsync -r $workingDirectory $GS_OSM_PATH$REPLICATION_FOLDER
+    fi
+    sleep 1m
+done

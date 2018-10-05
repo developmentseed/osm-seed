@@ -1,31 +1,33 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-db-backup-job
+  name: {{ .Release.Name }}-planet-dump-job
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-backup-job
+    component: planet-dump-job
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: {{ quote .Values.dbbackup.schedule }}
-  successfulJobsHistoryLimit: 0
-  failedJobsHistoryLimit: 0
+  schedule: {{ quote .Values.planetDump.schedule }}
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: {{ .Release.Name }}-db-backup-job
-            image: {{ .Values.dbbackup.image }}:{{ .Values.osmSeedVersion }}
+          - name: {{ .Release.Name }}-planet-dump-job
+            image: {{ .Values.planetDump.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
             resources:
               requests:
-                memory: {{ .Values.dbbackup.resources.requests.memory }}
-                cpu: {{ .Values.dbbackup.resources.requests.cpu }}
+                memory: {{ .Values.planetDump.resources.requests.memory }}
+                cpu: {{ .Values.planetDump.resources.requests.cpu }}
               limits:
-                memory: {{ .Values.dbbackup.resources.limits.memory }}
-                cpu: {{ .Values.dbbackup.resources.limits.cpu }}
+                memory: {{ .Values.planetDump.resources.limits.memory }}
+                cpu: {{ .Values.planetDump.resources.limits.cpu }}
             env:
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-db
@@ -35,10 +37,6 @@ spec:
                 value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
-              - name: DB_ACTION
-                value: {{ .Values.dbbackup.env.DB_ACTION }}
-              - name: CLEAN_BACKUPS
-                value: {{ quote .Values.dbbackup.env.CLEAN_BACKUPS }}
               # In case cloudProvider=aws
               {{- if eq .Values.cloudProvider "aws" }}
               - name: STORAGE
@@ -59,4 +57,7 @@ spec:
               - name: GS_OSM_PATH
                 value: {{ .Values.GCP_GS_OSM_PATH }}
               {{- end }}
-          restartPolicy: OnFailure
+              - name: MEMORY_JAVACMD_OPTIONS
+                value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
+          restartPolicy: Never
+      backoffLimit: 3
