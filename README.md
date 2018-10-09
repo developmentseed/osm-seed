@@ -25,6 +25,9 @@ This project provides docker container definitions for various aspects of the Op
 ### Usage
 For more details on installation, see [INSTALL.md](INSTALL.md).
 
+### Using OSM data
+If you plan to use data from the main OpenStreetMap project in your OSM Seed instance, then please make sure you're familiar with [the ODbL license](https://wiki.osmfoundation.org/wiki/Licence).
+
 ## What's next?
 
 Our immediate next goal is integrate a tile server. Eventually, the goal is include as many tools from the OSM ecosystem part of this stack. Take a look at our [roadmap](https://github.com/developmentseed/osm-seed/blob/master/ROADMAP.md), and help out if this project helps what you're trying to do! We are always interested in collaborations and contributions! If you are interested in contributing, please see the [Contributor Guidelines](CONTRIBUTING.md).
