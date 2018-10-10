@@ -29,6 +29,7 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          {{- if .Values.idEditor.resources.enabled -}}
           resources:
             requests:
               memory: {{ .Values.idEditor.resources.requests.memory }}
@@ -36,6 +37,7 @@ spec:
             limits:
               memory: {{ .Values.idEditor.resources.limits.memory }}
               cpu: {{ .Values.idEditor.resources.limits.cpu }}
+          {{- end }}
           env:
             - name: OAUTH_CONSUMER_KEY
               value: {{ .Values.idEditor.env.OAUTH_CONSUMER_KEY }}

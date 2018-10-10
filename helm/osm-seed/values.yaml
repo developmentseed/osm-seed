@@ -74,6 +74,7 @@ db:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: '1234'
   resources:
+    enabled: false
     requests:
       memory: "1Gi"
       cpu: "1"
@@ -96,6 +97,7 @@ web:
     MAILER_USERNAME: osmseed.test@gmail.com
     MAILER_PASSWORD: '12345678'
   resources:
+    enabled: false
     requests:
       memory: "1Gi"
       cpu: "2"
@@ -114,6 +116,7 @@ dbbackup:
     DB_ACTION: backup
     CLEAN_BACKUPS: true
   resources:
+    enabled: false
     requests:
       memory: "300Mi"
       cpu: "0.5"
@@ -131,6 +134,7 @@ planetDump:
   env:
     CLEAN_BACKUPS: true
   resources:
+    enabled: false
     requests:
       memory: "14Gi"
       cpu: "4"
@@ -153,6 +157,7 @@ idEditor:
     OAUTH_CONSUMER_KEY : xxx
     OAUTH_SECRET : xxx
   resources:
+    enabled: false
     requests:
       memory: "300Mi"
       cpu: "0.4"
@@ -166,6 +171,7 @@ replicationJob:
   enabled: true
   image: 'developmentseed/osmseed-replication-job'
   resources:
+    enabled: false
     requests:
       memory: "20Gi"
       cpu: "8"
@@ -182,6 +188,7 @@ populateApidb:
   env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
   resources:
+    enabled: false
     requests:
       memory: "1Gi"
       cpu: "2"
