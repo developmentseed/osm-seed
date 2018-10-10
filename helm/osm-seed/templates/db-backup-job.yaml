@@ -1,3 +1,4 @@
+{{- if .Values.dbbackup.enabled -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -60,3 +61,4 @@ spec:
                 value: {{ .Values.GCP_GS_OSM_PATH }}
               {{- end }}
           restartPolicy: OnFailure
+{{- end }}

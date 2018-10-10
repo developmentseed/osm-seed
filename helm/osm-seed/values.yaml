@@ -67,6 +67,7 @@ domain:
 # Variables for osm-seed database
 # ====================================================================================================
 db:
+  enabled: true
   image: 'developmentseed/osmseed-db'
   env:
     POSTGRES_DB: openstreetmap
@@ -84,6 +85,7 @@ db:
 # Variables for osm-seed website
 # ====================================================================================================
 web:
+  enabled: true
   image: 'developmentseed/osmseed-web'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -105,6 +107,7 @@ web:
 # Variables for osm-seed database backup and restore
 # ====================================================================================================
 dbbackup:
+  enabled: true
   image: 'developmentseed/osmseed-backup-restore'
   schedule: '0 */1 * * *'
   env:
@@ -122,6 +125,7 @@ dbbackup:
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
 planetDump:
+  enabled: true
   image: 'developmentseed/osmseed-planet-dump'
   schedule: '0 */1 * * *'
   env:
@@ -138,6 +142,7 @@ planetDump:
 # Variables for id-editor
 # ====================================================================================================
 idEditor:
+  enabled: true
   image: 'developmentseed/osmseed-id-editor'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -158,6 +163,7 @@ idEditor:
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
 replicationJob:
+  enabled: true
   image: 'developmentseed/osmseed-replication-job'
   resources:
     requests:
@@ -171,8 +177,9 @@ replicationJob:
 # Variables for osm-seed to pupulate the apidb
 # ====================================================================================================
 populateApidb:
+  enabled: true
   image: 'developmentseed/osmseed-populate-apidb'
-  env: 
+  env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
   resources:
     requests:

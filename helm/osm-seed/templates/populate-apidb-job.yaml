@@ -1,3 +1,4 @@
+{{- if .Values.populateApidb.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -35,3 +36,4 @@ spec:
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.populateApidb.resources.requests.memory  | default "4Gi" | quote}}
         restartPolicy: Never
+{{- end }}

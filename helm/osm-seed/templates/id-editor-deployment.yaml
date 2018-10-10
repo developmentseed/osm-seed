@@ -1,3 +1,4 @@
+{{- if .Values.idEditor.enabled -}}
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -44,3 +45,4 @@ spec:
               value: {{ .Values.idEditor.env.OSM_API_DOMAIN }}
             - name: SERVER_PROTOCOL
               value : {{ .Values.idEditor.env.OSM_API_PROTOCOL }}
+{{- end }}

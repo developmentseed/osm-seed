@@ -1,3 +1,4 @@
+{{- if .Values.db.enabled -}}
 {{- if .Values.persistence.enabled -}}
 apiVersion: v1
 kind: PersistentVolume
@@ -51,4 +52,5 @@ spec:
       {{- if eq .Values.cloudProvider "gcp" }}
       storage: {{ .Values.GCP_gcePersistentDisk_size }}
       {{- end }}
+{{- end }}
 {{- end }}

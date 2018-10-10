@@ -1,4 +1,5 @@
-apiVersion: apps/v1beta2
+{{- if .Values.db.enabled -}}
+capiVersion: apps/v1beta2
 kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-db
@@ -82,3 +83,4 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+{{- end }}
