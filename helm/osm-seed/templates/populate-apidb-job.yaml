@@ -1,3 +1,4 @@
+{{- if .Values.populateApidb.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -14,6 +15,7 @@ spec:
         - name: {{ .Release.Name }}-populate-apidb-job
           image: {{ .Values.populateApidb.image }}:{{ .Values.osmSeedVersion }}
           command: ['./start.sh']
+          {{- if .Values.populateApidb.resources.enabled -}}   
           resources:
             requests:
               memory: {{ .Values.populateApidb.resources.requests.memory }}
@@ -21,6 +23,7 @@ spec:
             limits:
               memory: {{ .Values.populateApidb.resources.limits.memory }}
               cpu: {{ .Values.populateApidb.resources.limits.cpu }}
+          {{- end }}
           env:
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-db
@@ -35,3 +38,4 @@ spec:
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.populateApidb.resources.requests.memory  | default "4Gi" | quote}}
         restartPolicy: Never
+{{- end }}

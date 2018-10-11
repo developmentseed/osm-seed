@@ -1,3 +1,4 @@
+{{- if .Values.planetDump.enabled -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -21,6 +22,7 @@ spec:
           - name: {{ .Release.Name }}-planet-dump-job
             image: {{ .Values.planetDump.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
+            {{- if .Values.planetDump.resources.enabled -}}   
             resources:
               requests:
                 memory: {{ .Values.planetDump.resources.requests.memory }}
@@ -28,6 +30,7 @@ spec:
               limits:
                 memory: {{ .Values.planetDump.resources.limits.memory }}
                 cpu: {{ .Values.planetDump.resources.limits.cpu }}
+            {{- end }}
             env:
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-db
@@ -61,3 +64,4 @@ spec:
                 value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
           restartPolicy: Never
       backoffLimit: 3
+{{- end }}

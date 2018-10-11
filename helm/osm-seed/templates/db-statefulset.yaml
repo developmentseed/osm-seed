@@ -1,3 +1,4 @@
+{{- if .Values.db.enabled -}}
 apiVersion: apps/v1beta2
 kind: StatefulSet
 metadata:
@@ -67,6 +68,7 @@ spec:
             - name: postgres-storage
               mountPath: {{ .Values.persistence.mountPath }}
               subPath: {{ .Values.persistence.subPath }}
+          {{- if .Values.db.resources.enabled -}}
           resources:
             requests:
               memory: {{ .Values.db.resources.requests.memory }}
@@ -74,6 +76,7 @@ spec:
             limits:
               memory: {{ .Values.db.resources.limits.memory }}
               cpu: {{ .Values.db.resources.limits.cpu }}
+          {{- end }}
       volumes:
         - name: postgres-storage
         {{- if .Values.persistence.enabled }}
@@ -82,3 +85,4 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+{{- end }}

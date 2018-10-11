@@ -67,12 +67,14 @@ domain:
 # Variables for osm-seed database
 # ====================================================================================================
 db:
+  enabled: true
   image: 'developmentseed/osmseed-db'
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: '1234'
   resources:
+    enabled: false
     requests:
       memory: "1Gi"
       cpu: "1"
@@ -84,6 +86,7 @@ db:
 # Variables for osm-seed website
 # ====================================================================================================
 web:
+  enabled: true
   image: 'developmentseed/osmseed-web'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -94,6 +97,7 @@ web:
     MAILER_USERNAME: osmseed.test@gmail.com
     MAILER_PASSWORD: '12345678'
   resources:
+    enabled: false
     requests:
       memory: "1Gi"
       cpu: "2"
@@ -105,12 +109,14 @@ web:
 # Variables for osm-seed database backup and restore
 # ====================================================================================================
 dbbackup:
+  enabled: true
   image: 'developmentseed/osmseed-backup-restore'
   schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
     CLEAN_BACKUPS: true
   resources:
+    enabled: false
     requests:
       memory: "300Mi"
       cpu: "0.5"
@@ -122,11 +128,13 @@ dbbackup:
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
 planetDump:
+  enabled: true
   image: 'developmentseed/osmseed-planet-dump'
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true
   resources:
+    enabled: false
     requests:
       memory: "14Gi"
       cpu: "4"
@@ -138,6 +146,7 @@ planetDump:
 # Variables for id-editor
 # ====================================================================================================
 idEditor:
+  enabled: true
   image: 'developmentseed/osmseed-id-editor'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -148,6 +157,7 @@ idEditor:
     OAUTH_CONSUMER_KEY : xxx
     OAUTH_SECRET : xxx
   resources:
+    enabled: false
     requests:
       memory: "300Mi"
       cpu: "0.4"
@@ -158,8 +168,10 @@ idEditor:
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
 replicationJob:
+  enabled: true
   image: 'developmentseed/osmseed-replication-job'
   resources:
+    enabled: false
     requests:
       memory: "20Gi"
       cpu: "8"
@@ -171,10 +183,12 @@ replicationJob:
 # Variables for osm-seed to pupulate the apidb
 # ====================================================================================================
 populateApidb:
+  enabled: true
   image: 'developmentseed/osmseed-populate-apidb'
-  env: 
+  env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
   resources:
+    enabled: false
     requests:
       memory: "1Gi"
       cpu: "2"

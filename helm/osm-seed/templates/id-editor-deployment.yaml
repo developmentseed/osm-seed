@@ -1,3 +1,4 @@
+{{- if .Values.idEditor.enabled -}}
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -28,6 +29,7 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          {{- if .Values.idEditor.resources.enabled -}}
           resources:
             requests:
               memory: {{ .Values.idEditor.resources.requests.memory }}
@@ -35,6 +37,7 @@ spec:
             limits:
               memory: {{ .Values.idEditor.resources.limits.memory }}
               cpu: {{ .Values.idEditor.resources.limits.cpu }}
+          {{- end }}
           env:
             - name: OAUTH_CONSUMER_KEY
               value: {{ .Values.idEditor.env.OAUTH_CONSUMER_KEY }}
@@ -44,3 +47,4 @@ spec:
               value: {{ .Values.idEditor.env.OSM_API_DOMAIN }}
             - name: SERVER_PROTOCOL
               value : {{ .Values.idEditor.env.OSM_API_PROTOCOL }}
+{{- end }}
