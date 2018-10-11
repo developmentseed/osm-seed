@@ -62,6 +62,8 @@ spec:
             - name: GS_OSM_PATH
               value: {{ .Values.GCP_GS_OSM_PATH }}
             {{- end }}
+            {{- if .Values.replicationJob.resources.enabled -}}
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.replicationJob.resources.requests.memory | default "2Gi" | quote}}
+            {{- end }}
 {{- end }}
