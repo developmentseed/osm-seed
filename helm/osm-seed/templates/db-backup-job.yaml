@@ -20,7 +20,7 @@ spec:
           - name: {{ .Release.Name }}-db-backup-job
             image: {{ .Values.dbbackup.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
-            {{- if .Values.dbbackup.resources.enabled -}}
+            {{- if .Values.dbbackup.resources.enabled }}
             resources:
               requests:
                 memory: {{ .Values.dbbackup.resources.requests.memory }}

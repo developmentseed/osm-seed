@@ -35,7 +35,7 @@ spec:
               port: 80
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
-          {{- if .Values.web.resources.enabled -}}
+          {{- if .Values.web.resources.enabled }}
           resources:
             requests:
               memory: {{ .Values.web.resources.requests.memory }}

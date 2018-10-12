@@ -68,7 +68,7 @@ spec:
             - name: postgres-storage
               mountPath: {{ .Values.persistence.mountPath }}
               subPath: {{ .Values.persistence.subPath }}
-          {{- if .Values.db.resources.enabled -}}
+          {{- if .Values.db.resources.enabled }}
           resources:
             requests:
               memory: {{ .Values.db.resources.requests.memory }}
