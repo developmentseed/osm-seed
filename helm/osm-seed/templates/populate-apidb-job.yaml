@@ -15,7 +15,7 @@ spec:
         - name: {{ .Release.Name }}-populate-apidb-job
           image: {{ .Values.populateApidb.image }}:{{ .Values.osmSeedVersion }}
           command: ['./start.sh']
-          {{- if .Values.populateApidb.resources.enabled -}}   
+          {{- if .Values.populateApidb.resources.enabled }}   
           resources:
             requests:
               memory: {{ .Values.populateApidb.resources.requests.memory }}
@@ -35,7 +35,9 @@ spec:
               value: {{ .Values.db.env.POSTGRES_USER }}
             - name: URL_FILE_TO_IMPORT
               value: {{.Values.populateApidb.env.URL_FILE_TO_IMPORT}}
+            {{- if .Values.populateApidb.resources.enabled }}   
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.populateApidb.resources.requests.memory  | default "4Gi" | quote}}
+            {{- end }}
         restartPolicy: Never
 {{- end }}

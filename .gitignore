@@ -2,8 +2,7 @@
 usa.values.yaml
 prod.values.yaml
 planet.values.yaml
-usa-staging.values.yaml
-devseed.values.yaml
+*.values.yaml
 postgres-data/
 postgres-data-gis/
 replication-files/

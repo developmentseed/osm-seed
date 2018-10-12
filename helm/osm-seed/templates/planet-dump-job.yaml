@@ -22,7 +22,7 @@ spec:
           - name: {{ .Release.Name }}-planet-dump-job
             image: {{ .Values.planetDump.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
-            {{- if .Values.planetDump.resources.enabled -}}   
+            {{- if .Values.planetDump.resources.enabled }}   
             resources:
               requests:
                 memory: {{ .Values.planetDump.resources.requests.memory }}
@@ -60,8 +60,10 @@ spec:
               - name: GS_OSM_PATH
                 value: {{ .Values.GCP_GS_OSM_PATH }}
               {{- end }}
+              {{- if .Values.planetDump.resources.enabled }}   
               - name: MEMORY_JAVACMD_OPTIONS
                 value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
+              {{- end }}
           restartPolicy: Never
       backoffLimit: 3
 {{- end }}
