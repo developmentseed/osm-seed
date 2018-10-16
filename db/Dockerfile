@@ -1,7 +1,7 @@
-FROM postgres:10
+FROM postgres:9.5
 RUN apt-get update
 RUN apt-get install -y make \
-    postgresql-server-dev-all \
+    postgresql-server-dev-9.5 \
     build-essential \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p db
