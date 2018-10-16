@@ -97,7 +97,7 @@ services:
     command: >
       /bin/bash -c "
       echo Sleep for a while populate-apidb!;
-      sleep 20;
+      sleep 70s;
       echo Starting populate-apidb!;
       ./start.sh"
     env_file:
