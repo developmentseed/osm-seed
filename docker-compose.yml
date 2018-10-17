@@ -22,50 +22,50 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     env_file: 
       - ./.env
-  # planet-dump:
-  #   image: openseed-planet-dump:v1
-  #   build: 
-  #     context: ./planet-dump
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - web
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep the planet-dump for a while!;
-  #     sleep 40;
-  #     echo Creating the planet-dump!;
-  #     ./start.sh"
-  #   env_file: 
-  #     - ./.env
-  # db-backup-restore:
-  #   image: openseed-db-backup-restore:v1
-  #   build: 
-  #     context: ./db-backup-restore
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - web
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep for a while!;
-  #     sleep 20;
-  #     echo Building backup!;
-  #     ./start.sh"
-  #   env_file: 
-  #     - ./.env
-  # id-editor:
-  #   image: osmseed-id-editor:v1
-  #   build: 
-  #     context: ./id-editor
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8080:80"
-  #   depends_on:
-  #     - web
-  #     - db
-  #   env_file: 
-  #     - ./.env
+  planet-dump:
+    image: openseed-planet-dump:v1
+    build: 
+      context: ./planet-dump
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep the planet-dump for a while!;
+      sleep 40;
+      echo Creating the planet-dump!;
+      ./start.sh"
+    env_file: 
+      - ./.env
+  db-backup-restore:
+    image: openseed-db-backup-restore:v1
+    build: 
+      context: ./db-backup-restore
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep for a while!;
+      sleep 20;
+      echo Building backup!;
+      ./start.sh"
+    env_file: 
+      - ./.env
+  id-editor:
+    image: osmseed-id-editor:v1
+    build: 
+      context: ./id-editor
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - web
+      - db
+    env_file: 
+      - ./.env
   replication-job:
     image: osmseed-replication-job:v1
     build:
@@ -84,30 +84,30 @@ services:
       ./start.sh"
     env_file:
       - ./.env
-  # populate-apidb:
-  #   image: osmseed-populate-apidb:v1
-  #   build:
-  #     context: ./populate-apidb
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./replication-files:/app/data
-  #   depends_on:
-  #     - web
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep for a while populate-apidb!;
-  #     sleep 70s;
-  #     echo Starting populate-apidb!;
-  #     ./start.sh"
-  #   env_file:
-  #     - ./.env
-  # osm-processor:
-  #   image: osmseed-osm-processor:v1
-  #   build:
-  #     context: ./osm-processor
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./osm-processor-files:/app/data
-  #   env_file:
-  #     - ./.env
+  populate-apidb:
+    image: osmseed-populate-apidb:v1
+    build:
+      context: ./populate-apidb
+      dockerfile: Dockerfile
+    volumes:
+      - ./replication-files:/app/data
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep for a while populate-apidb!;
+      sleep 70s;
+      echo Starting populate-apidb!;
+      ./start.sh"
+    env_file:
+      - ./.env
+  osm-processor:
+    image: osmseed-osm-processor:v1
+    build:
+      context: ./osm-processor
+      dockerfile: Dockerfile
+    volumes:
+      - ./osm-processor-files:/app/data
+    env_file:
+      - ./.env
