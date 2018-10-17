@@ -16,8 +16,9 @@ fi
 # Backing up DataBase
 if [ "$DB_ACTION" == "backup" ]; then
     # Backup database and make maximum compression at the slowest speed
-    pg_dump --quote-all-identifiers -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB  | gzip -9 > $backupFile
-    # pg_dumpall --quote-all-identifiers --host=$POSTGRES_HOST --username=$POSTGRES_USER --database=$POSTGRES_DB | gzip > $backupFile
+    # --quote-all-identifiers
+    pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB | gzip -9 > $backupFile
+    
     # AWS
     if [ "$STORAGE" == "S3" ]; then 
         # Upload to S3
