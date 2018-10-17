@@ -15,6 +15,7 @@ wget -O data/$IMPUT_FILE $URL_FILE_TO_PROCESS
 
 # Simplify pbf, remove users and changeset from the file.
 if [ "$OMS_FILE_ACTION" == "simple_pbf" ]; then
+    echo "Processing $IMPUT_FILE -> $OUTPUT_FILE ..."
     osmium cat -o data/$OUTPUT_FILE \
     --output-format pbf,pbf_dense_nodes=false,pbf_compression=true,add_metadata=version,timestamp \
     data/$IMPUT_FILE
