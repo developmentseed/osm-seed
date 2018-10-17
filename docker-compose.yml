@@ -102,3 +102,12 @@ services:
       ./start.sh"
     env_file:
       - ./.env
+  osm-processor:
+    image: osmseed-osm-processor:v1
+    build:
+      context: ./osm-processor
+      dockerfile: Dockerfile
+    volumes:
+      - ./osm-processor-files:/app/data
+    env_file:
+      - ./.env
