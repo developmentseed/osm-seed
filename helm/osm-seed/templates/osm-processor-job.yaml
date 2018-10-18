@@ -29,5 +29,25 @@ spec:
               value: {{.Values.osmProcessor.env.URL_FILE_TO_PROCESS}}
             - name: OMS_FILE_ACTION
               value: {{.Values.osmProcessor.env.OMS_FILE_ACTION}}
+            # In case cloudProvider=aws
+            {{- if eq .Values.cloudProvider "aws" }}
+            - name: STORAGE
+              value: S3
+            - name: AWS_DEFAULT_REGION
+              value: {{ .Values.AWS_DEFAULT_REGION }}
+            - name: S3_OSM_PATH
+              value: {{ .Values.AWS_S3_BUCKET }}
+            {{- end }}
+            # In case cloudProvider=gcp
+            {{- if eq .Values.cloudProvider "gcp" }}
+            - name: STORAGE
+              value: GS
+            - name: GCLOUD_PROJECT
+              value: {{ .Values.GCP_GCLOUD_PROJECT }}
+            - name: GCLOUD_SERVICE_KEY
+              value: {{ .Values.GCP_GCLOUD_SERVICE_KEY }}
+            - name: GS_OSM_PATH
+              value: {{ .Values.GCP_GS_OSM_PATH }}
+            {{- end }}
         restartPolicy: Never
 {{- end }}
