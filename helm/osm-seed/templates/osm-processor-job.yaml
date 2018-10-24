@@ -27,8 +27,8 @@ spec:
           env:
             - name: URL_FILE_TO_PROCESS
               value: {{.Values.osmProcessor.env.URL_FILE_TO_PROCESS}}
-            - name: OMS_FILE_ACTION
-              value: {{.Values.osmProcessor.env.OMS_FILE_ACTION}}
+            - name: OSM_FILE_ACTION
+              value: {{.Values.osmProcessor.env.OSM_FILE_ACTION}}
             # In case cloudProvider=aws
             {{- if eq .Values.cloudProvider "aws" }}
             - name: STORAGE

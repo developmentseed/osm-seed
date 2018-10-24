@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo $OMS_FILE_ACTION
+echo $OSM_FILE_ACTION
 # Creating a gcloud-service-key to authenticate the gcloud
 if [ "$STORAGE" == "GS" ]; then
     echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
@@ -14,7 +14,7 @@ OUTPUT_FILE="${IMPUT_FILE%.*}-output.$IMPUT_FILE_EXTENCION"
 wget -O data/$IMPUT_FILE $URL_FILE_TO_PROCESS
 
 # Simplify pbf, remove users and changeset from the file.
-if [ "$OMS_FILE_ACTION" == "simple_pbf" ]; then
+if [ "$OSM_FILE_ACTION" == "simple_pbf" ]; then
     echo "Processing $IMPUT_FILE -> $OUTPUT_FILE ..."
     osmium cat -o data/$OUTPUT_FILE \
     --output-format pbf,pbf_dense_nodes=false,pbf_compression=true,add_metadata=version,timestamp \
