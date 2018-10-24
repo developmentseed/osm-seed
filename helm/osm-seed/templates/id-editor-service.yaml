@@ -8,6 +8,10 @@ metadata:
     component: id-editor-service
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
+  {{- if eq .Values.cloudProvider "aws" }}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+  {{- end }}
 spec:
   # In case cloudProvider=aws
   {{- if eq .Values.cloudProvider "aws" }}
