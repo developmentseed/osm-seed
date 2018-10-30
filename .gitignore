@@ -6,3 +6,4 @@ planet.values.yaml
 postgres-data/
 postgres-data-gis/
 replication-files/
+osm-processor-files/

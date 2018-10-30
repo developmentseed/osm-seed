@@ -1,6 +1,6 @@
 # Backup and Restore the osm-seed DB
 
-This container will take a backup of the osm-seed database and will compress according to the current date and then it will upload the backup file to S3.
+This container will take a backup of the osm-seed database and will compress according to the current date and then it will upload the backup file to s3 or Google store.
 
 
 ### Configuration
@@ -40,7 +40,7 @@ Change the `DB_ACTION` variable to restore or backup the database. `DB_ACTION` =
 - **Building**
 
 ```
-docker build -t backup-restore .
+  docker build -t openseed-db-backup-restore:v1 .
 ```
 
 - **Running**
@@ -48,9 +48,6 @@ docker build -t backup-restore .
 ```
 docker run \
 --env-file ./../.env \
---network osm_network \
--it backup-restore
+--network osm-seed_default \
+-it openseed-db-backup-restore:v1 
 ```
-
-The output file should save in s3 👇 
-![image](https://user-images.githubusercontent.com/1152236/40454691-6408a96a-5eaf-11e8-8de1-508cb13dced3.png)
