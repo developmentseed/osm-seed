@@ -1,6 +1,18 @@
 # OSM-processor
 
-This is a container that has a set of tools for the processing of OSM files, for processing you just to need to set the URL file `URL_FILE_TO_PROCESS` and the action `OMS_FILE_ACTION`, and then the container will return the results and uploading in an S3 or GCP bucket.
+This is a container that has a set of tools for the processing of OSM files, you need to pass two variables to process a files: `URL_FILE_TO_PROCESS` and the action `OSM_FILE_ACTION`, and then the container will return the results and uploading in an S3 or GCP bucket.
+
+# Current actions
+
+### Simplify PBF file
+
+This action simplifies the PBF file by removing the changeset number and users.
+
+`URL_FILE_TO_PROCESS=https://s3.amazonaws.com/osmseed-staging/pbf/dc.pbf`
+
+`OSM_FILE_ACTION=simple_pbf`
+
+The output file would be `dc-output.pbf`
 
 #### Building the container
 
