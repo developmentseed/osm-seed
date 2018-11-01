@@ -8,12 +8,15 @@ else
     echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" > ~/.osmosis
 fi
 
-for i in $(seq 210 240 ); do 
-    wget https://planet.openstreetmap.org/replication/day/000/002/${i}.osc.gz
-    gzip -d ${i}.osc.gz
-    python remove_user_changeset.py ${i}.osc ${i}-new.osc
-    mv ${i}-new.osc ${i}.osc
-    gzip -f ${i}.osc
+
+for i in $(seq 1 150 ); do 
+    numFile=$(printf "%03d\n" ${i})
+    # TODO: those parameters should be pass by ENV Variable.
+    wget https://planet.openstreetmap.org/replication/hour/000/053/${numFile}.osc.gz
+    gzip -d ${numFile}.osc.gz
+    python remove_user_changeset.py ${numFile}.osc ${numFile}-new.osc
+    mv ${numFile}-new.osc ${numFile}.osc
+    gzip -f ${numFile}.osc
     osmosis --read-xml-change file=$i.osc.gz \
     --write-apidb-change \
     host=$POSTGRES_HOST \

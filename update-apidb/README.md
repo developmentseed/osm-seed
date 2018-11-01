@@ -1,5 +1,6 @@
 # Container to update APIDB
 
+This container is in charge of updating the APIDB, with the OSM data that was recently generated.
 
 #### Building the container
 

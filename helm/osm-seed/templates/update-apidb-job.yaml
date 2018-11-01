@@ -1,0 +1,41 @@
+{{- if .Values.updateApidb.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-update-apidb-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: update-apidb-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+    template:
+      spec:
+        containers:
+        - name: {{ .Release.Name }}-update-apidb-job
+          image: {{ .Values.updateApidb.image }}:{{ .Values.osmSeedVersion }}
+          command: ['./start.sh']
+          {{- if .Values.updateApidb.resources.enabled }}   
+          resources:
+            requests:
+              memory: {{ .Values.updateApidb.resources.requests.memory }}
+              cpu: {{ .Values.updateApidb.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.updateApidb.resources.limits.memory }}
+              cpu: {{ .Values.updateApidb.resources.limits.cpu }}
+          {{- end }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.env.POSTGRES_USER }}
+            {{- if .Values.updateApidb.resources.enabled }}   
+            - name: MEMORY_JAVACMD_OPTIONS
+              value: {{ .Values.updateApidb.resources.requests.memory  | default "4Gi" | quote}}
+            {{- end }}
+        restartPolicy: Never
+{{- end }}
