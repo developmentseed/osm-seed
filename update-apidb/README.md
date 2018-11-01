@@ -8,7 +8,7 @@ The container will build automatically by docker-compose, but if you want to run
 
 ```
   cd populate-apidb/
-  docker build -t osmseed-populate-apidb:v1 .
+  docker build -t osmseed-update-apidb:v1 .
 ```
 
 #### Running the container
