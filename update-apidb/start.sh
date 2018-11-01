@@ -9,7 +9,7 @@ else
 fi
 
 
-for i in $(seq 33 720 ); do 
+for i in $(seq $STAR_NUM $END_NUM ); do 
     numFile=$(printf "%03d\n" ${i})
     # TODO: those parameters should be pass by ENV Variable.
     wget https://planet.openstreetmap.org/replication/hour/000/053/${numFile}.osc.gz
