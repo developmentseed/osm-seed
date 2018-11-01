@@ -33,10 +33,10 @@ spec:
               value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
               value: {{ .Values.db.env.POSTGRES_USER }}
-            - name: STAR_NUM
-              value: 33
+            - name: START_NUM
+              value: {{ .Values.updateApidb.env.START_NUM | quote}}
             - name: END_NUM
-              value: 720
+              value: {{ .Values.updateApidb.env.END_NUM | quote}}
             {{- if .Values.updateApidb.resources.enabled }}   
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.updateApidb.resources.requests.memory  | default "4Gi" | quote}}
