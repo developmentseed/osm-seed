@@ -357,7 +357,7 @@ jobs:
             docker tag osm-processor developmentseed/osmseed-osm-processor:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-osm-processor:${VERSION}
- update-apidb:
+  update-apidb:
     docker:
       - image: docker:17.05.0-ce-git
     steps:
