@@ -9,7 +9,7 @@ else
 fi
 
 
-for i in $(seq $STAR_NUM $END_NUM ); do 
+for i in $(seq $START_NUM $END_NUM ); do 
     numFile=$(printf "%03d\n" ${i})
     # TODO: those parameters should be pass by ENV Variable.
     wget https://planet.openstreetmap.org/replication/hour/000/053/${numFile}.osc.gz
@@ -17,12 +17,12 @@ for i in $(seq $STAR_NUM $END_NUM ); do
     python remove_user_changeset.py ${numFile}.osc ${numFile}-new.osc
     mv ${numFile}-new.osc ${numFile}.osc
     gzip -f ${numFile}.osc
-    osmosis --read-xml-change file=$numFile.osc.gz \
+    osmosis -v --read-xml-change file=${numFile}.osc.gz \
     --write-apidb-change \
     host=$POSTGRES_HOST \
     database=$POSTGRES_DB \
     user=$POSTGRES_USER \
     password=$POSTGRES_PASSWORD \
     validateSchemaVersion=no \
-    populateCurrentTables=yes
+    populateCurrentTables=no
 done
