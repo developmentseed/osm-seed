@@ -6,32 +6,36 @@ PBFFile="osm.pbf"
 flag=true
 
 # Creating a gcloud-service-key to authenticate the gcloud
-# if [ $STORAGE == "GS" ]; then
-#     echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
-#     /root/google-cloud-sdk/bin/gcloud --quiet components update
-#     /root/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file gcloud-service-key.json
-#     /root/google-cloud-sdk/bin/gcloud config set project $GCLOUD_PROJECT
-# fi
+if [ $STORAGE == "GS" ]; then
+    echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
+    /root/google-cloud-sdk/bin/gcloud --quiet components update
+    /root/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file gcloud-service-key.json
+    /root/google-cloud-sdk/bin/gcloud config set project $GCLOUD_PROJECT
+fi
 
 function getData () {
-    # S3 storage
-    wget $TILER_IMPORT_PBF_URL -O $PBFFile
-    # if [ $STORAGE == "S3" ]; then 
-    #     # Get the state.txt file from S3
-    #     aws s3 cp $S3_OSM_PATH/planet/full-history/$stateFile .
-    #     PBFCloudPath=$(tail -n +2 $stateFile)
-    #     aws s3 cp $PBFCloudPath $PBFFile
-    # fi
+    # Import from pubic url, ussualy it come from osm
+    if [ $IMPORT_PROM == "osm" ]; then 
+        wget $TILER_IMPORT_PBF_URL -O $PBFFile
+    fi
 
-    # # Google storage
-    # if [ $STORAGE == "GS" ]; then 
-    #     # Get the state.txt file from GS
-    #     gsutil cp $GS_OSM_PATH/planet/full-history/$stateFile .
-    #     echo "gsutil cp $GS_OSM_PATH/planet/full-history/$stateFile ."
-    #     PBFCloudPath=$(tail -n +2 $stateFile)
-    #     echo $PBFCloudPath
-    #     gsutil cp $PBFCloudPath $PBFFile
-    # fi
+    if [ $IMPORT_PROM == "osmseed" ]; then 
+        if [ $STORAGE == "S3" ]; then 
+            # Get the state.txt file from S3
+            aws s3 cp $S3_OSM_PATH/planet/full-history/$stateFile .
+            PBFCloudPath=$(tail -n +1 $stateFile)
+            aws s3 cp $PBFCloudPath $PBFFile
+        fi
+        # Google storage
+        if [ $STORAGE == "GS" ]; then 
+            # Get the state.txt file from GS
+            gsutil cp $GS_OSM_PATH/planet/full-history/$stateFile .
+            echo "gsutil cp $GS_OSM_PATH/planet/full-history/$stateFile ."
+            PBFCloudPath=$(tail -n +1 $stateFile)
+            echo $PBFCloudPath
+            gsutil cp $PBFCloudPath $PBFFile
+        fi
+    fi
 }
 
 function importData () {
