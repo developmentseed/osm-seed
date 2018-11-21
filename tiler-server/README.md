@@ -25,5 +25,6 @@ Required environment variables:
 ```
   docker run --env-file ./../.env \
   --network osm-seed_default \
+  -p "9090:9090" \
   -t osmseed-tiler-server:v1
 ```

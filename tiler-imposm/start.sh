@@ -5,6 +5,20 @@ stateFile="state.txt"
 PBFFile="osm.pbf"
 flag=true
 
+# directories to keep the imposm's cache for updating the db
+cachedir="./imposmDirs/cachedir"
+mkdir -p $cachedir
+diffdir="./imposmDirs/diff"
+mkdir -p $diffdir
+
+# Create config file to set variable  for imposm
+echo "{" > config.json
+# echo "\"cachedir\": \"$cachedir\","  >> config.json
+# echo "\"diffdir\": \"$diffdir\","  >> config.json
+echo "\"connection\": \"postgis://$GIS_POSTGRES_USER:$GIS_POSTGRES_PASSWORD@$GIS_POSTGRES_HOST/$GIS_POSTGRES_DB\"," >> config.json
+echo "\"mapping\": \"imposm3.json\""  >> config.json
+echo "}" >> config.json
+
 # Creating a gcloud-service-key to authenticate the gcloud
 if [ $STORAGE == "GS" ]; then
     echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
@@ -47,8 +61,24 @@ function importData () {
     echo "Impor OMS Land"
     ./scripts/osm_land.sh
     echo "Import PBF file"
-    imposm import -connection postgis://$GIS_POSTGRES_USER:$GIS_POSTGRES_PASSWORD@$GIS_POSTGRES_HOST/$GIS_POSTGRES_DB -mapping imposm3.json -read $PBFFile -write
-    imposm import -connection postgis://$GIS_POSTGRES_USER:$GIS_POSTGRES_PASSWORD@$GIS_POSTGRES_HOST/$GIS_POSTGRES_DB -mapping imposm3.json -deployproduction
+
+    imposm import \
+    -config config.json \
+    -read $PBFFile \
+    -write \
+    -diff -cachedir $cachedir -diffdir $diffdir
+
+    imposm import \
+    -config config.json \
+    -deployproduction
+    # -diff -cachedir $cachedir -diffdir $diffdir
+    # Update the DB
+    imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &     
+    while true
+    do 
+        echo "Updating..."
+        sleep 1m
+    done
 }
 
 while "$flag" = true; do
