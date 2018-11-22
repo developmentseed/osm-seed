@@ -12,7 +12,7 @@ RUN apk add musl-dev \
 
 # Set up source for compilation
 ENV GOROOT /usr/local/go
-RUN git clone -b v0.7.0 https://github.com/go-spatial/tegola.git /opt/tegola_src
+RUN git clone -b v0.8.1 https://github.com/go-spatial/tegola.git /opt/tegola_src
 RUN rm -rf /opt/tegola_src/src
 RUN mkdir -p /opt/tegola_src/src/github.com/go-spatial
 RUN ln -s /opt/tegola_src /opt/tegola_src/src/github.com/go-spatial/tegola

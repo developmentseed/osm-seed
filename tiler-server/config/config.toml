@@ -3,8 +3,13 @@ port = ":${TILER_SERVER_PORT}"
 
 # Tegola offers three tile caching strategies: "file", "redis", and "s3"
 [cache]
-type = "${CACHE_TYPE}"
-basepath = "/tmp"
+type = "${TILER_CACHE_TYPE}"
+bucket = "${TILER_CACHE_BUCKET}"
+basepath ="${TILER_CACHE_BASEPATH}"
+region = "${TILER_CACHE_REGION}"
+aws_access_key_id = "${TILER_CACHE_AWS_ACCESS_KEY_ID}"
+aws_secret_access_key = "${TILER_CACHE_AWS_SECRET_ACCESS_KEY}"
+max_zoom = "${TILER_CACHE_MAX_ZOOM}"
 
 #   OpenStreetMap (OSM)
 [[providers]]
@@ -16,7 +21,7 @@ database = "${GIS_POSTGRES_DB}"
 user = "${GIS_POSTGRES_USER}"
 password = "${GIS_POSTGRES_PASSWORD}"
 srid = 3857
-max_connections = 75
+max_connections = 300
 
 	[[providers.layers]]
 	name = "land_8-20"
@@ -202,7 +207,7 @@ database = "${GIS_POSTGRES_DB}"
 user = "${GIS_POSTGRES_USER}"
 password = "${GIS_POSTGRES_PASSWORD}"
 srid = 3857
-max_connections = 75
+max_connections = 300
 
 	[[providers.layers]]
 	name = "ne_110m_populated_places"

@@ -13,8 +13,8 @@ mkdir -p $diffdir
 
 # Create config file to set variable  for imposm
 echo "{" > config.json
-# echo "\"cachedir\": \"$cachedir\","  >> config.json
-# echo "\"diffdir\": \"$diffdir\","  >> config.json
+echo "\"cachedir\": \"$cachedir\","  >> config.json
+echo "\"diffdir\": \"$diffdir\","  >> config.json
 echo "\"connection\": \"postgis://$GIS_POSTGRES_USER:$GIS_POSTGRES_PASSWORD@$GIS_POSTGRES_HOST/$GIS_POSTGRES_DB\"," >> config.json
 echo "\"mapping\": \"imposm3.json\""  >> config.json
 echo "}" >> config.json
@@ -52,6 +52,15 @@ function getData () {
     fi
 }
 
+function updateData(){
+    imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &     
+    while true
+    do 
+        echo "Updating..."
+        sleep 1m
+    done
+}
+
 function importData () {
     echo "Execute the missing functions"
     psql "postgresql://$GIS_POSTGRES_USER:$GIS_POSTGRES_PASSWORD@$GIS_POSTGRES_HOST/$GIS_POSTGRES_DB" -a -f postgis_helpers.sql
@@ -73,12 +82,7 @@ function importData () {
     -deployproduction
     # -diff -cachedir $cachedir -diffdir $diffdir
     # Update the DB
-    imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &     
-    while true
-    do 
-        echo "Updating..."
-        sleep 1m
-    done
+    updateData
 }
 
 while "$flag" = true; do
@@ -90,6 +94,7 @@ while "$flag" = true; do
         # After import there are more than 70 tables
         if [ $hasData  \> 70 ]; then
             echo "Update the DB with osm data"
+            updateData
         else
             echo "Import PBF data to DB"
             getData
