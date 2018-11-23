@@ -124,7 +124,7 @@ services:
     volumes:
       - ./postgres-data-gis:/var/lib/postgresql/data
     env_file:
-      - ./.env
+      - ./.env-tiler
   tiler-imposm:
     image: osmseed-tiler-imposm:v1
     build: 
@@ -135,39 +135,39 @@ services:
       # - db
       - tiler-db
     env_file: 
-      - ./.env
+      - ./.env-tiler
     command: >
       /bin/bash -c "
       echo Sleep for a while!;
       sleep 20;
       echo starting imposm!;
       ./start.sh"
-  tiler-server:
-    image: osmseed-tiler-server:v1
-    build: 
-      context: ./tiler-server
-      dockerfile: Dockerfile
-    depends_on:
-      - tiler-db
-      - tiler-imposm
-    ports:
-      - "9090:9090"
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while!;
-      sleep 100;
-      echo Starting tiles server!;
-      ./start.sh"
-    env_file:
-      - ./.env
-  tiler-visor:
-    image: osmseed-tiler-visor:v1
-    build: 
-      context: ./tiler-visor
-      dockerfile: Dockerfile
-    depends_on:
-      - tiler-server
-    ports:
-      - "8081:80"
-    env_file:
-      - ./.env
+  # tiler-server:
+  #   image: osmseed-tiler-server:v1
+  #   build: 
+  #     context: ./tiler-server
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - tiler-db
+  #     - tiler-imposm
+  #   ports:
+  #     - "9090:9090"
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while!;
+  #     sleep 100;
+  #     echo Starting tiles server!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env-tiler
+  # tiler-visor:
+  #   image: osmseed-tiler-visor:v1
+  #   build: 
+  #     context: ./tiler-visor
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - tiler-server
+  #   ports:
+  #     - "8081:80"
+  #   env_file:
+  #     - ./.env-tiler

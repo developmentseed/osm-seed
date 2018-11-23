@@ -6,11 +6,12 @@ PostGIS database container, to store the osm-seed or osm data.
 
 Required environment variables:
 
-- `GIS_POSTGRES_HOST` e.g `tiler-db`
-- `GIS_POSTGRES_DB` e.g `gis_osm`
-- `GIS_POSTGRES_USER` e.g `postgres`
-- `GIS_POSTGRES_PASSWORD` e.g `1234`
-- `POSTGIS_VERSION` e.g `2.4.4`
+- `POSTGRES_HOST` e.g `tiler-db`
+- `POSTGRES_DB` e.g `tiler-osm`
+- `POSTGRES_PORT` e.g `5432`
+- `POSTGRES_USER` e.g `postgres`
+- `POSTGRES_PASSWORD` e.g `1234`
+
 
 #### Building the container
 
@@ -21,8 +22,9 @@ Required environment variables:
 #### Running the container
 
 ```
-  docker run --env-file ./../.env \
+  docker run --env-file ./../.env-tiler \
   --network osm-seed_default \
   -v $(pwd)/../postgres-data-gis:/var/lib/postgresql/data \
+  -p "5433:5432" \
   -t osmseed-tiler-db:v1
 ```

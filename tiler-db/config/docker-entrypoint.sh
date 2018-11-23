@@ -39,10 +39,10 @@ if [ "$1" = 'postgres' ] && [ "$(id -u)" = '0' ]; then
 	chmod 775 /var/run/postgresql
 
 	# Create the transaction log directory before initdb is run (below) so the directory is owned by the correct user
-	if [ "$GIS_POSTGRES_INITDB_WALDIR" ]; then
-		mkdir -p "$GIS_POSTGRES_INITDB_WALDIR"
-		chown -R postgres "$GIS_POSTGRES_INITDB_WALDIR"
-		chmod 700 "$GIS_POSTGRES_INITDB_WALDIR"
+	if [ "$POSTGRES_INITDB_WALDIR" ]; then
+		mkdir -p "$POSTGRES_INITDB_WALDIR"
+		chown -R postgres "$POSTGRES_INITDB_WALDIR"
+		chmod 700 "$POSTGRES_INITDB_WALDIR"
 	fi
 
 	exec gosu postgres "$BASH_SOURCE" "$@"
@@ -66,10 +66,10 @@ if [ "$1" = 'postgres' ]; then
 		fi
 
 		file_env 'POSTGRES_INITDB_ARGS'
-		if [ "$GIS_POSTGRES_INITDB_WALDIR" ]; then
-			export POSTGRES_INITDB_ARGS="$GIS_POSTGRES_INITDB_ARGS --waldir $GIS_POSTGRES_INITDB_WALDIR"
+		if [ "$POSTGRES_INITDB_WALDIR" ]; then
+			export POSTGRES_INITDB_ARGS="$POSTGRES_INITDB_ARGS --waldir $POSTGRES_INITDB_WALDIR"
 		fi
-		eval "initdb --username=postgres $GIS_POSTGRES_INITDB_ARGS"
+		eval "initdb --username=postgres $POSTGRES_INITDB_ARGS"
 
 		# unset/cleanup "nss_wrapper" bits
 		if [ "${LD_PRELOAD:-}" = '/usr/lib/libnss_wrapper.so' ]; then
@@ -80,8 +80,8 @@ if [ "$1" = 'postgres' ]; then
 		# check password first so we can output the warning before postgres
 		# messes it up
 		file_env 'POSTGRES_PASSWORD'
-		if [ "$GIS_POSTGRES_PASSWORD" ]; then
-			pass="PASSWORD '$GIS_POSTGRES_PASSWORD'"
+		if [ "$POSTGRES_PASSWORD" ]; then
+			pass="PASSWORD '$POSTGRES_PASSWORD'"
 			authMethod=md5
 		else
 			# The - option suppresses leading tabs but *not* spaces. :)
@@ -116,28 +116,28 @@ if [ "$1" = 'postgres' ]; then
 			-w start
 
 		file_env 'POSTGRES_USER' 'postgres'
-		file_env 'POSTGRES_DB' "$GIS_POSTGRES_USER"
+		file_env 'POSTGRES_DB' "$POSTGRES_USER"
 
 		psql=( psql -v ON_ERROR_STOP=1 )
 
-		if [ "$GIS_POSTGRES_DB" != 'postgres' ]; then
+		if [ "$POSTGRES_DB" != 'postgres' ]; then
 			"${psql[@]}" --username postgres <<-EOSQL
-				CREATE DATABASE "$GIS_POSTGRES_DB" ;
+				CREATE DATABASE "$POSTGRES_DB" ;
 			EOSQL
 			echo
 		fi
 
-		if [ "$GIS_POSTGRES_USER" = 'postgres' ]; then
+		if [ "$POSTGRES_USER" = 'postgres' ]; then
 			op='ALTER'
 		else
 			op='CREATE'
 		fi
 		"${psql[@]}" --username postgres <<-EOSQL
-			$op USER "$GIS_POSTGRES_USER" WITH SUPERUSER $pass ;
+			$op USER "$POSTGRES_USER" WITH SUPERUSER $pass ;
 		EOSQL
 		echo
 
-		psql+=( --username "$GIS_POSTGRES_USER" --dbname "$GIS_POSTGRES_DB" )
+		psql+=( --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" )
 
 		echo
 		for f in /docker-entrypoint-initdb.d/*; do

@@ -42,11 +42,11 @@ while getopts ":c:dv" flag; do
 done
 
 # database connection variables
-DB_NAME=$GIS_POSTGRES_DB
-DB_HOST=$GIS_POSTGRES_HOST
-DB_PORT=5432
-DB_USER=$GIS_POSTGRES_USER
-DB_PW=$GIS_POSTGRES_PASSWORD
+DB_NAME=$POSTGRES_DB
+DB_HOST=$POSTGRES_HOST
+DB_PORT=$POSTGRES_PORT
+DB_USER=$POSTGRES_USER
+DB_PW=$POSTGRES_PASSWORD
 
 # Check if we're using a config file
 if [[ -r $CONFIG_FILE ]]; then source $CONFIG_FILE

@@ -9,8 +9,13 @@ The stylization of vector tiles are based on: https://github.com/go-spatial/tego
 
 Required environment variables:
 
+**Env variables to access to tiler-serve**
+
 - `TILER_SERVER_PORT` e.g `9090`
 - `TILER_SERVER_HOST` e.g `localhost`
+
+**Env variables to serve the visor**
+
 - `TILER_VISOR_HOST` e.g `localhost`
 - `TILER_VISOR_PROTOCOL` e.g `http`
 - `TILER_VISOR_PORT` e.g `8081`
@@ -25,7 +30,8 @@ Required environment variables:
 #### Running the container
 
 ```
-  docker run --env-file ./../.env \
+  docker run --env-file ./../.env-tiler \
   --network osm-seed_default \
+  -p "8081:80" \
   -t osmseed-tiler-visor:v1
 ```

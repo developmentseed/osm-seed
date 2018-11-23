@@ -10,10 +10,21 @@ If we are running the container for the first time the container will import the
 
 Required environment variables:
 
-- `GIS_POSTGRES_HOST` e.g `tiler-db`
-- `GIS_POSTGRES_DB` e.g `gis_osm`
-- `GIS_POSTGRES_USER` e.g `postgres`
-- `GIS_POSTGRES_PASSWORD` e.g `1234`
+ **Env variables to connect to the db-tiler**
+
+- `POSTGRES_HOST` e.g `tiler-db`
+- `POSTGRES_DB` e.g `tiler-osm`
+- `POSTGRES_PORT` e.g `5432`
+- `POSTGRES_USER` e.g `postgres`
+- `POSTGRES_PASSWORD` e.g `1234`
+
+ **Env variables to  import the files**
+
+- `TILER_IMPORT_PROM` e.g `osm` or `osmseed`
+- `TILER_IMPORT_PBF_URL` eg `http://download.geofabrik.de/south-america/peru-latest.osm.pbf`
+
+Note: In case you use the `TILER_IMPORT_PROM`=`osmseed` you need to make public the minute replication files to update the DB with the recent changes.
+
 
 #### Building the container
 
@@ -24,7 +35,7 @@ Required environment variables:
 #### Running the container
 
 ```
-  docker run --env-file ./../.env \
+  docker run --env-file ./../.env-tiler \
   --network osm-seed_default \
   -t osmseed-tiler-imposm:v1
 ```
