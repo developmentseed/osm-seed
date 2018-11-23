@@ -41,7 +41,7 @@ TILER_CACHE_* , by default osmseed-tiler is using aws-s3 for caching the tiles, 
 #### Running the container
 
 ```
-  docker run --env-file ./../.env \
+  docker run --env-file ./../.env-tiler \
   --network osm-seed_default \
   -p "9090:9090" \
   -t osmseed-tiler-server:v1
