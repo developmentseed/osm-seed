@@ -1,0 +1,38 @@
+{{- if .Values.web.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-web
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: web-service
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+  {{- if eq .Values.cloudProvider "aws" }}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+  {{- end }}
+spec:
+  # In case cloudProvider=aws
+  {{- if eq .Values.cloudProvider "aws" }}
+  type: LoadBalancer
+  {{- end }}
+  # In case cloudProvider=gcp
+  {{- if eq .Values.cloudProvider "gcp" }}
+  type: LoadBalancer
+  loadBalancerIP : {{ .Values.idEditor.staticIp }}
+  {{- end }}
+  # In case cloudProvider=minikube
+  {{- if eq .Values.cloudProvider "minikube" }}
+  type: NodePort
+  {{- end }}
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-web
+{{- end }}

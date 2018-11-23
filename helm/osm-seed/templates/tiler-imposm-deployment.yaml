@@ -1,0 +1,52 @@
+{{- if .Values.tilerImposm.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-tiler-imposm
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: replication-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-tiler-imposm-deployment
+          image: {{ .Values.tilerImposm.image }}:{{ .Values.osmSeedVersion }}
+          command: ['./start.sh']
+          {{- if .Values.tilerImposm.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.tilerImposm.resources.requests.memory }}
+              cpu: {{ .Values.tilerImposm.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.tilerImposm.resources.limits.memory }}
+              cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
+          {{- end }}
+          env:
+              # tiler-db env variables
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-tiler-db
+            - name: POSTGRES_DB
+              value: {{ .Values.tilerDb.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.tilerDb.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.tilerDb.env.POSTGRES_USER }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.tilerDb.env.POSTGRES_PORT }}
+
+            # tiler-imposm env vars
+            - name: TILER_IMPORT_PROM
+              value: {{ .Values.tilerImposm.env.TILER_IMPORT_PROM }}
+            - name: TILER_IMPORT_PBF_URL
+              value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL }}
+{{- end }}

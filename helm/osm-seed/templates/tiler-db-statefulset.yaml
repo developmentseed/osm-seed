@@ -1,0 +1,88 @@
+{{- if .Values.tilerDb.enabled -}}
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-tiler-db
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: db-statefulset
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1 # we only ever want one replica of the db
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-tiler-db
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-tiler-db
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-tiler-db
+          image: "{{ .Values.tilerDb.image }}:{{ .Values.osmSeedVersion }}"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            # - name: GET_HOSTS_FROM
+            #   value: dns
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-tiler-db
+            - name: POSTGRES_DB
+              value: {{ .Values.tilerDb.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.tilerDb.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ default "postgres" .Values.tilerDb.env.POSTGRES_USER | quote }}
+            - name: PGUSER
+              value: {{ default "postgres" .Values.tilerDb.env.POSTGRES_USER | quote }}
+            - name: PGDATA
+              value: {{ .Values.tilerDb.persistenceDisk.mountPath }}
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: {{ .Values.tilerDb.persistenceDisk.mountPath }}
+              subPath: {{ .Values.tilerDb.persistenceDisk.subPath }}
+          {{- if .Values.tilerDb.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.tilerDb.resources.requests.memory }}
+              cpu: {{ .Values.tilerDb.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.tilerDb.resources.limits.memory }}
+              cpu: {{ .Values.tilerDb.resources.limits.cpu }}
+          {{- end }}
+      volumes:
+        - name: postgres-storage
+        {{- if .Values.tilerDb.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+{{- end }}
