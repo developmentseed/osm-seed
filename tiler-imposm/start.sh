@@ -83,6 +83,8 @@ function importData () {
     updateData
 }
 
+echo "Connecting... to postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
+
 while "$flag" = true; do
     pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
         # Change flag to false to stop ping the DB

@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-statefulset
+    component: db-tiler-statefulset
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
