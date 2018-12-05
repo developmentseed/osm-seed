@@ -29,11 +29,11 @@ fi
 
 function getData () {
     # Import from pubic url, ussualy it come from osm
-    if [ $TILER_IMPORT_PROM == "osm" ]; then 
+    if [ $TILER_IMPORT_FROM == "osm" ]; then 
         wget $TILER_IMPORT_PBF_URL -O $PBFFile
     fi
 
-    if [ $TILER_IMPORT_PROM == "osmseed" ]; then 
+    if [ $TILER_IMPORT_FROM == "osmseed" ]; then 
         if [ $CLOUDPROVIDER == "AWS" ]; then 
             # Get the state.txt file from S3
             aws s3 cp $S3_OSM_PATH/planet/full-history/$stateFile .

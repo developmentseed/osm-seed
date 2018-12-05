@@ -4,7 +4,7 @@
 # ====================================================================================================
 # ====================================================================================================
 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
-osmSeedVersion: cloudProvider-b1fee6e
+osmSeedVersion: tiler-a154ef9
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
 cloudProvider: minukube
@@ -17,8 +17,6 @@ AWS_DEFAULT_REGION: us-east-1
 AWS_S3_BUCKET: s3://osm-seed
 AWS_ElasticBlockStore_volumeID : vol-1234bcd
 AWS_ElasticBlockStore_size: 500Gi
-
-
 
 
 # ====================================================================================================
@@ -72,7 +70,7 @@ domain:
 # Variables for osm-seed database
 # ====================================================================================================
 db:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-db'
   env:
     POSTGRES_DB: openstreetmap
@@ -91,7 +89,7 @@ db:
 # Variables for osm-seed website
 # ====================================================================================================
 web:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-web'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -114,7 +112,7 @@ web:
 # Variables for osm-seed database backup and restore
 # ====================================================================================================
 dbbackup:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-backup-restore'
   schedule: '0 */1 * * *'
   env:
@@ -133,7 +131,7 @@ dbbackup:
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
 planetDump:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-planet-dump'
   schedule: '0 */1 * * *'
   env:
@@ -151,7 +149,7 @@ planetDump:
 # Variables for id-editor
 # ====================================================================================================
 idEditor:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-id-editor'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -173,7 +171,7 @@ idEditor:
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
 replicationJob:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-replication-job'
   resources:
     enabled: false
@@ -188,7 +186,7 @@ replicationJob:
 # Variables for osm-seed to pupulate the apidb
 # ====================================================================================================
 populateApidb:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-populate-apidb'
   env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
@@ -202,10 +200,28 @@ populateApidb:
       cpu: "2.5"
 
 # ====================================================================================================
+# Variables to start a pod to process osm files
+# ====================================================================================================
+osmProcessor:
+  enabled: false
+  image: 'developmentseed/osmseed-osm-processor'
+  env: 
+    URL_FILE_TO_PROCESS: 'https://s3.amazonaws.com/osm-pds/2018/planet-181008.osm.pbf'
+    OSM_FILE_ACTION: simple_pbf
+  resources:
+    enabled: false
+    requests:
+      memory: "14Gi"
+      cpu: "4"
+    limits:
+      memory: "16Gi"
+      cpu: "4"
+
+# ====================================================================================================
 # Variables for tiler-db
 # ====================================================================================================
 tilerDb:
-  enabled: false
+  enabled: true
   image: 'developmentseed/osmseed-tiler-db'
   env:
     POSTGRES_HOST: tiler-db
@@ -214,17 +230,16 @@ tilerDb:
     POSTGRES_PASSWORD: '1234'
     POSTGRES_PORT: 5432
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-d
-    cloudProvider: aws # aws or gcp
-    # AWS
-    AWS_ElasticBlockStore_volumeID : vol-1234bcd
-    AWS_ElasticBlockStore_size: 500Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osm-seed-data-disk
-    GCP_gcePersistentDisk_size: 100Gi
+    # In case cloudProvider: aws
+    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    # AWS_ElasticBlockStore_size: 500Gi
+    # In case cloudProvider: gcp
+    # GCP_gcePersistentDisk_pdName: osm-seed-tiler-disk
+    # GCP_gcePersistentDisk_size: 100Gi
   resources:
     enabled: false
     requests:
@@ -235,41 +250,14 @@ tilerDb:
       cpu: "2.5"
 
 # ====================================================================================================
-# Variables for tiler-server
-# ====================================================================================================
-tilerServer:
-  enabled: true
-  image: 'developmentseed/osmseed-tiler-server'
-  replicaCount: 1
-  # Set staticIp, if you are using cloudProvider=gcp
-  staticIp: 35.185.241.158
-  env:
-    TILER_SERVER_PORT: 9090
-    TILER_CACHE_TYPE: s3
-    TILER_CACHE_BUCKET: osmseed-tiler
-    TILER_CACHE_BASEPATH: local
-    TILER_CACHE_REGION: us-east-1
-    TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
-    TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
-    TILER_CACHE_MAX_ZOOM: 22
-  resources:
-    enabled: false
-    requests:
-      memory: "1Gi"
-      cpu: "2"
-    limits:
-      memory: "2Gi"
-      cpu: "2"
-
-# ====================================================================================================
 # Variables for tiler-imposm
 # ====================================================================================================
 tilerImposm:
   enabled: true
-  image: 'developmentseed/osmseed-replication-job'
+  image: 'developmentseed/osmseed-tiler-imposm'
   env:
     # Tiler import
-    TILER_IMPORT_PROM: osm
+    TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/south-america/peru-latest.osm.pbf
   resources:
     enabled: false
@@ -279,3 +267,31 @@ tilerImposm:
     limits:
       memory: "24Gi"
       cpu: "10"
+
+# ====================================================================================================
+# Variables for tiler-server
+# ====================================================================================================
+tilerServer:
+  enabled: false
+  image: 'developmentseed/osmseed-tiler-server'
+  replicaCount: 1
+  # Set staticIp, if you are using cloudProvider=gcp
+  staticIp: 35.185.241.158
+  env:
+    TILER_SERVER_PORT: 9090
+    TILER_CACHE_TYPE: file
+    TILER_CACHE_BASEPATH: local
+    TILER_CACHE_MAX_ZOOM: 22
+    # in case s3
+    # TILER_CACHE_BUCKET: osmseed-tiler
+    # TILER_CACHE_REGION: us-east-1
+    # TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
+    # TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
+  resources:
+    enabled: false
+    requests:
+      memory: "1Gi"
+      cpu: "2"
+    limits:
+      memory: "2Gi"
+      cpu: "2"
