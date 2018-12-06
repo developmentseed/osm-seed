@@ -1,0 +1,13 @@
+{{- if .Values.tilerImposm.enabled -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+{{- end }}

@@ -29,12 +29,12 @@ spec:
             - name: http
               containerPort: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
-            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
-            timeoutSeconds: 30
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
+          #   initialDelaySeconds: 600 # 10 min, because the compile process takes time.
+          #   timeoutSeconds: 30
           {{- if .Values.tilerVisor.resources.enabled }}
           resources:
             requests:

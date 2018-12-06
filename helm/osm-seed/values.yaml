@@ -4,7 +4,7 @@
 # ====================================================================================================
 # ====================================================================================================
 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
-osmSeedVersion: tiler-569acee
+osmSeedVersion: tiler-6be452f
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
 cloudProvider: minikube
@@ -271,7 +271,7 @@ tilerImposm:
 # Variables for tiler-server
 # ====================================================================================================
 tilerServer:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-tiler-server'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -299,7 +299,7 @@ tilerServer:
 # Variables for tiler-visor
 # ====================================================================================================
 tilerVisor:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-tiler-visor'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
