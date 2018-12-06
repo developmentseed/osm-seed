@@ -1,0 +1,58 @@
+{{- if .Values.tilerVisor.enabled -}}
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-tiler-visor
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-visor-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.tilerVisor.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-tiler-visor
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-tiler-visor
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-tiler-visor
+          image: "{{ .Values.tilerVisor.image }}:{{ .Values.osmSeedVersion }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
+            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
+            timeoutSeconds: 30
+          {{- if .Values.tilerVisor.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.tilerVisor.resources.requests.memory }}
+              cpu: {{ .Values.tilerVisor.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.tilerVisor.resources.limits.memory }}
+              cpu: {{ .Values.tilerVisor.resources.limits.cpu }}
+          {{- end }}
+          env:
+            - name: TILER_SERVER_HOST
+              value: {{ .Release.Name }}-tiler-server
+            - name: TILER_SERVER_HOST
+              value: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
+            - name: TILER_VISOR_PROTOCOL
+              value: {{ .Values.tilerVisor.env.TILER_VISOR_PROTOCOL }}
+            - name: TILER_VISOR_HOST
+              value: "{{ .Release.Name }}-tiler-visor"
+            - name: TILER_VISOR_PORT
+              value: {{ .Values.tilerVisor.env.TILER_VISOR_PORT | quote }}
+{{- end }}

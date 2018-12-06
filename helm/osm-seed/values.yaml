@@ -294,3 +294,24 @@ tilerServer:
     limits:
       memory: "2Gi"
       cpu: "2"
+
+# ====================================================================================================
+# Variables for tiler-visor
+# ====================================================================================================
+tilerVisor:
+  enabled: true
+  image: 'developmentseed/osmseed-tiler-visor'
+  replicaCount: 1
+  # Set staticIp, if you are using cloudProvider=gcp
+  staticIp: 35.185.241.158
+  env:
+    TILER_VISOR_PROTOCOL: http
+    TILER_VISOR_PORT: 8081
+  resources:
+    enabled: false
+    requests:
+      memory: "1Gi"
+      cpu: "2"
+    limits:
+      memory: "2Gi"
+      cpu: "2"
