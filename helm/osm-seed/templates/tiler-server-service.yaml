@@ -1,11 +1,11 @@
-{{- if .Values.web.enabled -}}
+{{- if .Values.tilerServer.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-web
+  name: {{ template "osm-seed.fullname" . }}-tiler-server
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: web-service
+    component: tiler-server-service
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   {{- if eq .Values.cloudProvider "aws" }}
@@ -21,7 +21,7 @@ spec:
   # In case cloudProvider=gcp
   {{- if eq .Values.cloudProvider "gcp" }}
   type: LoadBalancer
-  loadBalancerIP : {{ .Values.idEditor.staticIp }}
+  loadBalancerIP : {{ .Values.tilerServer.staticIp }}
   {{- end }}
 
   # In case cloudProvider=minikube
@@ -30,11 +30,11 @@ spec:
   {{- end }}
   ports:
     - port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
-      targetPort: http
+      targetPort: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
       protocol: TCP
       name: http
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-web
+    run: {{ .Release.Name }}-tiler-server
 {{- end }}

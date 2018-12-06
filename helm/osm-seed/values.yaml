@@ -7,7 +7,7 @@
 osmSeedVersion: tiler-569acee
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
-cloudProvider: minukube
+cloudProvider: minikube
 
 
 # ====================================================================================================

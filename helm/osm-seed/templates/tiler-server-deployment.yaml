@@ -5,7 +5,7 @@ metadata:
   name: {{ template "osm-seed.fullname" . }}-tiler-server
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: web-deployment
+    component: tiler-server-deployment
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -70,5 +70,5 @@ spec:
             - name: TILER_CACHE_AWS_SECRET_ACCESS_KEY
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
             - name: TILER_CACHE_MAX_ZOOM
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM | quote }}
+              value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
 {{- end }}
