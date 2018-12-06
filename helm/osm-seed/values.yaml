@@ -258,6 +258,16 @@ tilerImposm:
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/south-america/peru-latest.osm.pbf
+  persistenceDisk:
+    enabled: false
+    accessMode: ReadWriteOnce
+    mountPath: /mnt/data
+    # In case cloudProvider: aws
+    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    # AWS_ElasticBlockStore_size: 500Gi
+    # In case cloudProvider: gcp
+    # AWS_ElasticBlockStore_volumeID : vol-0d1e227f5882443b0
+    # AWS_ElasticBlockStore_size: 6000Gi
   resources:
     enabled: false
     requests:

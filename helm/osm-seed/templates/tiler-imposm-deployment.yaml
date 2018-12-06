@@ -18,10 +18,6 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
-      volumes:
-        - name: task-pv-storage
-          persistentVolumeClaim:
-            claimName: task-pv-claim
       containers:
         - name: {{ .Release.Name }}-tiler-imposm-deployment
           image: {{ .Values.tilerImposm.image }}:{{ .Values.osmSeedVersion }}
@@ -53,8 +49,15 @@ spec:
               value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL }}
             - name: CLOUDPROVIDER
               value: {{ .Values.cloudProvider }}
-            ## 
           volumeMounts:
-            - mountPath: "/mnt/data"
-              name: task-pv-storage
+            - name: tiler-imposm-storage
+              mountPath: {{ .Values.tilerDb.persistenceDisk.mountPath }}
+      volumes:
+        - name: tiler-imposm-storage
+        {{- if .Values.tilerDb.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-tiler-imposm-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
 {{- end }}
