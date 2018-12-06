@@ -271,7 +271,7 @@ tilerImposm:
 # Variables for tiler-server
 # ====================================================================================================
 tilerServer:
-  enabled: false
+  enabled: true
   image: 'developmentseed/osmseed-tiler-server'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp

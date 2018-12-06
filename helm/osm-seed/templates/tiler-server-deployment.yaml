@@ -55,10 +55,10 @@ spec:
             - name: POSTGRES_USER
               value: {{ .Values.tilerDb.env.POSTGRES_USER }}
             - name: POSTGRES_PORT
-              value: {{ .Values.tilerDb.env.POSTGRES_PORT }}
+              value: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
               # tiler-server env variables
             - name: TILER_SERVER_PORT
-              value: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
+              value: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
             - name: TILER_CACHE_TYPE
               value: {{ .Values.tilerServer.env.TILER_CACHE_TYPE }}
             - name: TILER_CACHE_BUCKET
@@ -70,5 +70,5 @@ spec:
             - name: TILER_CACHE_AWS_SECRET_ACCESS_KEY
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
             - name: TILER_CACHE_MAX_ZOOM
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
+              value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM | quote }}
 {{- end }}
