@@ -18,6 +18,11 @@ RUN mkdir -p /opt/tegola_src/src/github.com/go-spatial
 RUN ln -s /opt/tegola_src /opt/tegola_src/src/github.com/go-spatial/tegola
 RUN git clone -b v1.10.0 https://github.com/theckman/goconstraint.git /opt/tegola_src/src/github.com/theckman/goconstraint
 
+# Volumen
+ENV CACHEDATA /mnt/data
+RUN mkdir -p "$CACHEDATA" && chmod 777 "$CACHEDATA"
+VOLUME /mnt/data
+
 # Build binary
 WORKDIR /opt/tegola_src/cmd/tegola
 ENV GOPATH /opt/tegola_src

@@ -1,6 +1,6 @@
 {{- if .Values.tilerServer.enabled -}}
 apiVersion: apps/v1beta2
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ template "osm-seed.fullname" . }}-tiler-server
   labels:
@@ -71,4 +71,14 @@ spec:
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
             - name: TILER_CACHE_MAX_ZOOM
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
+      volumeClaimTemplates:
+      - metadata:
+          name: zookeeper-vol
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 8Gi
+          storageClassName: rbd
 {{- end }}
