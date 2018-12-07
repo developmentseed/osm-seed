@@ -49,10 +49,10 @@ spec:
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL }}
           - name: CLOUDPROVIDER
             value: {{ .Values.cloudProvider }}
-          - name: GCLOUD_PROJECT
-            value: {{ .Values.GCP_GCLOUD_PROJECT }}
+          - name: GCP_PROJECT
+            value: {{ .Values.GCP_PROJECT }}
           - name: GCP_SERVICE_KEY
-            value: {{ .Values.GCP_GCLOUD_SERVICE_KEY }}
+            value: {{ .Values.GCP_SERVICE_KEY }}
         volumeMounts:
         - mountPath: {{ .Values.tilerDb.persistenceDisk.mountPath }}
           name: tiler-imposm-storage
