@@ -55,7 +55,7 @@ RUN go install github.com/omniscale/imposm3/cmd/imposm
 RUN cp $GOPATH/bin/imposm /usr/bin/imposm
 
 ENV IMPOSMDATA /mnt/data
-RUN mkdir -p "$IMPOSMDATA" && chown -R postgres:postgres "$IMPOSMDATA" && chmod 777 "$IMPOSMDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
+RUN mkdir -p "$IMPOSMDATA" && chmod 777 "$IMPOSMDATA"
 VOLUME /mnt/data
 
 WORKDIR /osm

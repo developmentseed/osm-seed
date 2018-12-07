@@ -4,7 +4,7 @@
 # ====================================================================================================
 # ====================================================================================================
 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
-osmSeedVersion: tiler-6be452f
+osmSeedVersion: tiler-pd-c2cfc88
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
 cloudProvider: gcp
