@@ -147,6 +147,8 @@ services:
     build: 
       context: ./tiler-server
       dockerfile: Dockerfile
+    volumes:
+      - ./tiler-server-data:/mnt/data
     depends_on:
       - tiler-db
       - tiler-imposm

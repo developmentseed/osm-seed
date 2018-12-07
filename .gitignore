@@ -11,3 +11,4 @@ postgres-data-gis/
 replication-files/
 osm-processor-files/
 imposm-data/
+tiler-server-data/
