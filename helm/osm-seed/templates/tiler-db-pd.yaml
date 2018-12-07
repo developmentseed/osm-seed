@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Release.Name }}-pv
+  name: {{ .Release.Name }}-tiler-db-pv
   labels:
     app: {{ template "osm-seed.name" . }}
     component: tiler-db-pd
@@ -35,7 +35,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-pv-claim
+  name: {{ .Release.Name }}-tiler-db-pv-claim
   labels:
     app: {{ template "osm-seed.name" . }}
     component: db-pd
@@ -43,7 +43,7 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   storageClassName: ""
-  volumeName: {{ .Release.Name }}-pv
+  volumeName: {{ .Release.Name }}-tiler-db-pv
   accessModes:
     - ReadWriteOnce
   resources:

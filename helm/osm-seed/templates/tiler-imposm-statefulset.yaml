@@ -1,8 +1,9 @@
 {{- if .Values.tilerImposm.enabled -}}
+{{- if .Values.tilerImposm.persistenceDisk.enabled -}}
 apiVersion: apps/v1beta2
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-tiler-imposm
+  name: {{ .Release.Name }}-tiler-imposm-statefulset
   labels:
     app: {{ template "osm-seed.name" . }}
     component: tiler-imposm
@@ -11,26 +12,26 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app:  {{ .Release.Name }}-tiler-imposm
+      app:  {{ .Release.Name }}-tiler-imposm-statefulset
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-tiler-imposm
+        app: {{ .Release.Name }}-tiler-imposm-statefulset
     spec:
       containers:
-      - name: {{ .Release.Name }}-tiler-imposm-deployment
+      - name: {{ .Release.Name }}-tiler-imposm-statefulset
         image: {{ .Values.tilerImposm.image }}:{{ .Values.osmSeedVersion }}
         command: ['./start.sh']
-#           {{- if .Values.tilerImposm.resources.enabled }}
-#           resources:
-#             requests:
-#               memory: {{ .Values.tilerImposm.resources.requests.memory }}
-#               cpu: {{ .Values.tilerImposm.resources.requests.cpu }}
-#             limits:
-#               memory: {{ .Values.tilerImposm.resources.limits.memory }}
-#               cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
-#           {{- end }}
+        {{- if .Values.tilerImposm.resources.enabled }}
+        resources:
+          requests:
+            memory: {{ .Values.tilerImposm.resources.requests.memory }}
+            cpu: {{ .Values.tilerImposm.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.tilerImposm.resources.limits.memory }}
+            cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
+        {{- end }}
         env:
           - name: POSTGRES_HOST
             value: {{ .Release.Name }}-tiler-db
@@ -50,25 +51,19 @@ spec:
             value: {{ .Values.cloudProvider }}
           - name: GCLOUD_PROJECT
             value: {{ .Values.GCP_GCLOUD_PROJECT }}
-          - name: GCLOUD_SERVICE_KEY
+          - name: GCP_SERVICE_KEY
             value: {{ .Values.GCP_GCLOUD_SERVICE_KEY }}
         volumeMounts:
         - mountPath: {{ .Values.tilerDb.persistenceDisk.mountPath }}
-          name: {{ .Release.Name }}-tiler-imposm-pv
+          name: tiler-imposm-storage
       restartPolicy: Always
-  volumeClaimTemplates:
-  - metadata:
-      name: {{ .Release.Name }}-tiler-imposm-pv
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          {{- if eq .Values.cloudProvider "aws" }}
-          storage: {{ .Values.tilerImposm.persistenceDisk.AWS_ElasticBlockStore_size }}
-          {{- end }}
-          {{- if eq .Values.cloudProvider "gcp" }}
-          storage: {{ .Values.tilerImposm.persistenceDisk.GCP_gcePersistentDisk_size }}
-          {{- end }}
-      storageClassName: ""
+      volumes:
+        - name: tiler-imposm-storage
+        {{- if .Values.tilerImposm.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-tiler-imposm-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+{{- end }}
 {{- end }}

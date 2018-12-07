@@ -10,3 +10,4 @@ postgres-data/
 postgres-data-gis/
 replication-files/
 osm-processor-files/
+imposm-data/
