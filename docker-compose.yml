@@ -130,6 +130,8 @@ services:
     build: 
       context: ./tiler-imposm
       dockerfile: Dockerfile
+    volumes:
+      - ./imposm-data:/mnt/data
     depends_on:
       - tiler-db
     env_file: 
