@@ -54,7 +54,7 @@ function updateData(){
     imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &     
     while true
     do 
-        echo "Updating..."
+        echo "Updating...$(date +%F_%H-%M-%S)"
         sleep 1m
     done
 }
