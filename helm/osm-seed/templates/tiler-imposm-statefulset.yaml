@@ -54,7 +54,7 @@ spec:
           - name: GCP_SERVICE_KEY
             value: {{ .Values.GCP_SERVICE_KEY }}
         volumeMounts:
-        - mountPath: {{ .Values.tilerDb.persistenceDisk.mountPath }}
+        - mountPath: {{ .Values.tilerImposm.persistenceDisk.mountPath }}
           name: tiler-imposm-storage
       restartPolicy: Always
       volumes:
