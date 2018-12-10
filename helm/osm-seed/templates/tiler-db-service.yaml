@@ -9,6 +9,22 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
+  # In case cloudProvider=aws
+  {{- if eq .Values.cloudProvider "aws" }}
+  type: LoadBalancer
+  {{- end }}
+  
+  # In case cloudProvider=gcp
+  {{- if eq .Values.cloudProvider "gcp" }}
+  type: LoadBalancer
+  loadBalancerIP : {{ .Values.tilerServer.staticIp }}
+  {{- end }}
+
+  # In case cloudProvider=minikube
+  {{- if eq .Values.cloudProvider "minikube" }}
+  type: NodePort
+  {{- end }}
+  
   ports:
     - port: 5432
       targetPort: 5432
