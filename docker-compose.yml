@@ -1,116 +1,116 @@
 version: '3'
 services:
-  # web:
-  #   image: openseed-osm-website:v1
-  #   build:
-  #     context: ./openstreetmap-website
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "80:80"
-  #   env_file: 
-  #     - ./.env
-  #   depends_on:
-  #     - db
-  # db:
-  #   image: openseed-db:v1
-  #   build:
-  #     context: ./db
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - ./postgres-data:/var/lib/postgresql/data
-  #   env_file: 
-  #     - ./.env
-  # planet-dump:
-  #   image: openseed-planet-dump:v1
-  #   build: 
-  #     context: ./planet-dump
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - web
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep the planet-dump for a while!;
-  #     sleep 40;
-  #     echo Creating the planet-dump!;
-  #     ./start.sh"
-  #   env_file: 
-  #     - ./.env
-  # db-backup-restore:
-  #   image: openseed-db-backup-restore:v1
-  #   build: 
-  #     context: ./db-backup-restore
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - web
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep for a while!;
-  #     sleep 20;
-  #     echo Building backup!;
-  #     ./start.sh"
-  #   env_file: 
-  #     - ./.env
-  # id-editor:
-  #   image: osmseed-id-editor:v1
-  #   build: 
-  #     context: ./id-editor
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8080:80"
-  #   depends_on:
-  #     - web
-  #     - db
-  #   env_file: 
-  #     - ./.env
-  # replication-job:
-  #   image: osmseed-replication-job:v1
-  #   build:
-  #     context: ./replication-job
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./replication-files:/app/data
-  #   depends_on:
-  #     - web
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep the replication-job for a while!;
-  #     sleep 40;
-  #     echo Creating the replication-job!;
-  #     ./start.sh"
-  #   env_file:
-  #     - ./.env
-  # populate-apidb:
-  #   image: osmseed-populate-apidb:v1
-  #   build:
-  #     context: ./populate-apidb
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./replication-files:/app/data
-  #   depends_on:
-  #     - web
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep for a while populate-apidb!;
-  #     sleep 70s;
-  #     echo Starting populate-apidb!;
-  #     ./start.sh"
-  #   env_file:
-  #     - ./.env
-  # osm-processor:
-  #   image: osmseed-osm-processor:v1
-  #   build:
-  #     context: ./osm-processor
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./osm-processor-files:/app/data
-  #   env_file:
-  #     - ./.env
+  web:
+    image: openseed-osm-website:v1
+    build:
+      context: ./openstreetmap-website
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    env_file: 
+      - ./.env
+    depends_on:
+      - db
+  db:
+    image: openseed-db:v1
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    env_file: 
+      - ./.env
+  planet-dump:
+    image: openseed-planet-dump:v1
+    build: 
+      context: ./planet-dump
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep the planet-dump for a while!;
+      sleep 40;
+      echo Creating the planet-dump!;
+      ./start.sh"
+    env_file: 
+      - ./.env
+  db-backup-restore:
+    image: openseed-db-backup-restore:v1
+    build: 
+      context: ./db-backup-restore
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep for a while!;
+      sleep 20;
+      echo Building backup!;
+      ./start.sh"
+    env_file: 
+      - ./.env
+  id-editor:
+    image: osmseed-id-editor:v1
+    build: 
+      context: ./id-editor
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - web
+      - db
+    env_file: 
+      - ./.env
+  replication-job:
+    image: osmseed-replication-job:v1
+    build:
+      context: ./replication-job
+      dockerfile: Dockerfile
+    volumes:
+      - ./replication-files:/app/data
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep the replication-job for a while!;
+      sleep 40;
+      echo Creating the replication-job!;
+      ./start.sh"
+    env_file:
+      - ./.env
+  populate-apidb:
+    image: osmseed-populate-apidb:v1
+    build:
+      context: ./populate-apidb
+      dockerfile: Dockerfile
+    volumes:
+      - ./replication-files:/app/data
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep for a while populate-apidb!;
+      sleep 70s;
+      echo Starting populate-apidb!;
+      ./start.sh"
+    env_file:
+      - ./.env
+  osm-processor:
+    image: osmseed-osm-processor:v1
+    build:
+      context: ./osm-processor
+      dockerfile: Dockerfile
+    volumes:
+      - ./osm-processor-files:/app/data
+    env_file:
+      - ./.env
   ##=========================================================================
   ## OMSSEED-TILER section
   ##=========================================================================
@@ -131,7 +131,7 @@ services:
       context: ./tiler-imposm
       dockerfile: Dockerfile
     volumes:
-      - ./tiler-simposm-data:/mnt/data
+      - ./tiler-imposm-data:/mnt/data
     depends_on:
       - tiler-db
     env_file: 
