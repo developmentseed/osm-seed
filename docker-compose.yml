@@ -130,6 +130,8 @@ services:
     build: 
       context: ./tiler-imposm
       dockerfile: Dockerfile
+    volumes:
+      - ./tiler-imposm-data:/mnt/data
     depends_on:
       - tiler-db
     env_file: 
@@ -145,6 +147,8 @@ services:
     build: 
       context: ./tiler-server
       dockerfile: Dockerfile
+    volumes:
+      - ./tiler-server-data:/mnt/data
     depends_on:
       - tiler-db
       - tiler-imposm

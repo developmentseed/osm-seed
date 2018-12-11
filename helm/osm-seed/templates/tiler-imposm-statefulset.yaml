@@ -1,0 +1,69 @@
+{{- if .Values.tilerImposm.enabled -}}
+{{- if .Values.tilerImposm.persistenceDisk.enabled -}}
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-tiler-imposm-statefulset
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-imposm
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app:  {{ .Release.Name }}-tiler-imposm-statefulset
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-tiler-imposm-statefulset
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-tiler-imposm-statefulset
+        image: {{ .Values.tilerImposm.image }}:{{ .Values.osmSeedVersion }}
+        command: ['./start.sh']
+        {{- if .Values.tilerImposm.resources.enabled }}
+        resources:
+          requests:
+            memory: {{ .Values.tilerImposm.resources.requests.memory }}
+            cpu: {{ .Values.tilerImposm.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.tilerImposm.resources.limits.memory }}
+            cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
+        {{- end }}
+        env:
+          - name: POSTGRES_HOST
+            value: {{ .Release.Name }}-tiler-db
+          - name: POSTGRES_DB
+            value: {{ .Values.tilerDb.env.POSTGRES_DB }}
+          - name: POSTGRES_PASSWORD
+            value: {{ quote .Values.tilerDb.env.POSTGRES_PASSWORD }}
+          - name: POSTGRES_USER
+            value: {{ .Values.tilerDb.env.POSTGRES_USER }}
+          - name: POSTGRES_PORT
+            value: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
+          - name: TILER_IMPORT_FROM
+            value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM }}
+          - name: TILER_IMPORT_PBF_URL
+            value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL }}
+          - name: CLOUDPROVIDER
+            value: {{ .Values.cloudProvider }}
+          - name: GCP_PROJECT
+            value: {{ .Values.GCP_PROJECT }}
+          - name: GCP_SERVICE_KEY
+            value: {{ .Values.GCP_SERVICE_KEY }}
+        volumeMounts:
+        - mountPath: {{ .Values.tilerImposm.persistenceDisk.mountPath }}
+          name: tiler-imposm-storage
+      restartPolicy: Always
+      volumes:
+        - name: tiler-imposm-storage
+        {{- if .Values.tilerImposm.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-tiler-imposm-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+{{- end }}
+{{- end }}

@@ -3,8 +3,12 @@
 usa.values.yaml
 prod.values.yaml
 planet.values.yaml
+values.tiler.yaml
+values.*.yaml
 *.values.yaml
 postgres-data/
 postgres-data-gis/
 replication-files/
 osm-processor-files/
+tiler-imposm-data/
+tiler-server-data/

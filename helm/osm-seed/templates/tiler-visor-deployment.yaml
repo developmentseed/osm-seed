@@ -33,7 +33,7 @@ spec:
             httpGet:
               path: /
               port: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
-            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
+            initialDelaySeconds: 120 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
           {{- if .Values.tilerVisor.resources.enabled }}
           resources:
@@ -52,7 +52,7 @@ spec:
             - name: TILER_VISOR_PROTOCOL
               value: {{ .Values.tilerVisor.env.TILER_VISOR_PROTOCOL }}
             - name: TILER_VISOR_HOST
-              value: "{{ .Release.Name }}-tiler-visor"
+              value: {{ .Values.tilerVisor.staticIp }}
             - name: TILER_VISOR_PORT
               value: {{ .Values.tilerVisor.env.TILER_VISOR_PORT | quote }}
 {{- end }}

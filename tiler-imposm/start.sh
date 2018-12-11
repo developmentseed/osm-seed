@@ -6,9 +6,9 @@ PBFFile="osm.pbf"
 flag=true
 
 # directories to keep the imposm's cache for updating the db
-cachedir="./imposmDirs/cachedir"
+cachedir="/mnt/data/cachedir"
 mkdir -p $cachedir
-diffdir="./imposmDirs/diff"
+diffdir="/mnt/data/diff"
 mkdir -p $diffdir
 
 # Create config file to set variable  for imposm
@@ -54,7 +54,7 @@ function updateData(){
     imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &     
     while true
     do 
-        echo "Updating..."
+        echo "Updating...$(date +%F_%H-%M-%S)"
         sleep 1m
     done
 }

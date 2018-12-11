@@ -4,7 +4,7 @@
 # ====================================================================================================
 # ====================================================================================================
 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
-osmSeedVersion: tiler-569acee
+osmSeedVersion: tiler-6be452f
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
 cloudProvider: minikube
@@ -258,6 +258,16 @@ tilerImposm:
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/south-america/peru-latest.osm.pbf
+  persistenceDisk:
+    enabled: false
+    accessMode: ReadWriteOnce
+    mountPath: /mnt/data
+    # In case cloudProvider: aws
+    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    # AWS_ElasticBlockStore_size: 500Gi
+    # In case cloudProvider: gcp
+    # AWS_ElasticBlockStore_volumeID : vol-0d1e227f5882443b0
+    # AWS_ElasticBlockStore_size: 6000Gi
   resources:
     enabled: false
     requests:
@@ -271,7 +281,7 @@ tilerImposm:
 # Variables for tiler-server
 # ====================================================================================================
 tilerServer:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-tiler-server'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -299,7 +309,7 @@ tilerServer:
 # Variables for tiler-visor
 # ====================================================================================================
 tilerVisor:
-  enabled: true
+  enabled: false
   image: 'developmentseed/osmseed-tiler-visor'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp

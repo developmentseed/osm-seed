@@ -1,11 +1,11 @@
 {{- if .Values.tilerServer.enabled -}}
 apiVersion: apps/v1beta2
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ template "osm-seed.fullname" . }}-tiler-server
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-server-deployment
+    component: tiler-server-statefulset
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -71,4 +71,16 @@ spec:
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
             - name: TILER_CACHE_MAX_ZOOM
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
+          volumeMounts:
+          - mountPath: /mnt/data
+            name: tiler-server-storage
+      restartPolicy: Always
+      volumes:
+        - name: tiler-server-storage
+        {{- if .Values.tilerServer.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-tiler-server-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
 {{- end }}

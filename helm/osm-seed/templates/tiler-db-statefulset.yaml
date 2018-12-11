@@ -81,7 +81,7 @@ spec:
         - name: postgres-storage
         {{- if .Values.tilerDb.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-pv-claim
+            claimName: {{ .Release.Name }}-tiler-db-pv-claim
         {{- else }}
           emptyDir: {}
         {{- end }}
