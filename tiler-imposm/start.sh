@@ -52,7 +52,7 @@ function getData () {
 }
 
 function updateData(){
-    imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &     
+    imposm run -config config.json -cachedir $cachedir -diffdir $diffdir -limitto $limitFile &     
     while true
     do 
         echo "Updating...$(date +%F_%H-%M-%S)"
