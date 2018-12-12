@@ -3,6 +3,7 @@ set -e
 mkdir -p /tmp
 stateFile="state.txt"
 PBFFile="osm.pbf"
+limitFile="limitFile.geojson"
 flag=true
 
 # directories to keep the imposm's cache for updating the db
@@ -69,11 +70,21 @@ function importData () {
     ./scripts/osm_land.sh
     echo "Import PBF file"
 
-    imposm import \
-    -config config.json \
-    -read $PBFFile \
-    -write \
-    -diff -cachedir $cachedir -diffdir $diffdir
+    if [ -z "$TILER_IMPORT_LIMIT" ]; then
+        wget $TILER_IMPORT_LIMIT -O $limitFile
+        imposm import \
+        -config config.json \
+        -read $PBFFile \
+        -write \
+        -diff -cachedir $cachedir -diffdir $diffdir \
+        -limitto $limitFile
+    else
+        imposm import \
+        -config config.json \
+        -read $PBFFile \
+        -write \
+        -diff -cachedir $cachedir -diffdir $diffdir
+    fi
 
     imposm import \
     -config config.json \
