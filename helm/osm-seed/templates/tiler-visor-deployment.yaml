@@ -29,12 +29,6 @@ spec:
             - name: http
               containerPort: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
-            initialDelaySeconds: 120 # 10 min, because the compile process takes time.
-            timeoutSeconds: 30
           {{- if .Values.tilerVisor.resources.enabled }}
           resources:
             requests:
@@ -46,8 +40,8 @@ spec:
           {{- end }}
           env:
             - name: TILER_SERVER_HOST
-              value: {{ .Release.Name }}-tiler-server
-            - name: TILER_SERVER_HOST
+              value: {{ .Values.tilerVisor.staticIp }}
+            - name: TILER_SERVER_PORT
               value: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
             - name: TILER_VISOR_PROTOCOL
               value: {{ .Values.tilerVisor.env.TILER_VISOR_PROTOCOL }}

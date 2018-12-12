@@ -230,7 +230,7 @@ tilerDb:
     POSTGRES_PASSWORD: '1234'
     POSTGRES_PORT: 5432
   persistenceDisk:
-    enabled: false
+    enabled: true
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-d
@@ -238,8 +238,8 @@ tilerDb:
     # AWS_ElasticBlockStore_volumeID : vol-1234bcd
     # AWS_ElasticBlockStore_size: 500Gi
     # In case cloudProvider: gcp
-    # GCP_gcePersistentDisk_pdName: osm-seed-tiler-disk
-    # GCP_gcePersistentDisk_size: 100Gi
+    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-db-v1
+    GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
     requests:
@@ -257,17 +257,18 @@ tilerImposm:
   image: 'developmentseed/osmseed-tiler-imposm'
   env:
     TILER_IMPORT_FROM: osm
-    TILER_IMPORT_PBF_URL: http://download.geofabrik.de/south-america/peru-latest.osm.pbf
+    TILER_IMPORT_PBF_URL: 'url for pbf file'
+    TILER_IMPORT_LIMIT: 'url for geojson limit file'
   persistenceDisk:
-    enabled: false
+    enabled: true
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
     # In case cloudProvider: aws
     # AWS_ElasticBlockStore_volumeID : vol-1234bcd
     # AWS_ElasticBlockStore_size: 500Gi
     # In case cloudProvider: gcp
-    # AWS_ElasticBlockStore_volumeID : vol-0d1e227f5882443b0
-    # AWS_ElasticBlockStore_size: 6000Gi
+    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-imposm-v1
+    GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
     requests:
@@ -281,21 +282,31 @@ tilerImposm:
 # Variables for tiler-server
 # ====================================================================================================
 tilerServer:
-  enabled: false
+  enabled: true
   image: 'developmentseed/osmseed-tiler-server'
   replicaCount: 1
-  # Set staticIp, if you are using cloudProvider=gcp
-  staticIp: 35.185.241.158
+  staticIp: 35.27.6.1
   env:
     TILER_SERVER_PORT: 9090
     TILER_CACHE_TYPE: file
-    TILER_CACHE_BASEPATH: local
+    TILER_CACHE_BASEPATH: /mnt/data
     TILER_CACHE_MAX_ZOOM: 22
     # in case s3
     # TILER_CACHE_BUCKET: osmseed-tiler
     # TILER_CACHE_REGION: us-east-1
     # TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
     # TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
+  # In case you use TILER_CACHE_TYPE: file with  persistenceDisk 
+  persistenceDisk:
+    enabled: true
+    accessMode: ReadWriteOnce
+    mountPath: /mnt/data
+    # In case cloudProvider: aws
+    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    # AWS_ElasticBlockStore_size: 500Gi
+    # In case cloudProvider: gcp
+    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-server-v1
+    GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
     requests:
@@ -309,11 +320,10 @@ tilerServer:
 # Variables for tiler-visor
 # ====================================================================================================
 tilerVisor:
-  enabled: false
+  enabled: true
   image: 'developmentseed/osmseed-tiler-visor'
   replicaCount: 1
-  # Set staticIp, if you are using cloudProvider=gcp
-  staticIp: 35.185.241.158
+  staticIp: 35.27.6.1
   env:
     TILER_VISOR_PROTOCOL: http
     TILER_VISOR_PORT: 8081
