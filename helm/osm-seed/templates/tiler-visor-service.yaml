@@ -31,7 +31,7 @@ spec:
   
   ports:
     - port: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
-      targetPort: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
+      targetPort: 80
       protocol: TCP
       name: http
   selector:
