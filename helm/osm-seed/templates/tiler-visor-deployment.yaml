@@ -40,7 +40,7 @@ spec:
           {{- end }}
           env:
             - name: TILER_SERVER_HOST
-              value: {{ .Release.Name }}-tiler-server
+              value: {{ .Values.tilerVisor.staticIp }}
             - name: TILER_SERVER_PORT
               value: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
             - name: TILER_VISOR_PROTOCOL

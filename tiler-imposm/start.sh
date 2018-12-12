@@ -52,12 +52,22 @@ function getData () {
 }
 
 function updateData(){
-    imposm run -config config.json -cachedir $cachedir -diffdir $diffdir -limitto $limitFile &     
-    while true
-    do 
-        echo "Updating...$(date +%F_%H-%M-%S)"
-        sleep 1m
-    done
+    if [ -z "$TILER_IMPORT_LIMIT" ]; then
+        wget $TILER_IMPORT_LIMIT -O $limitFile
+        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir -limitto $limitFile &     
+        while true
+        do 
+            echo "Updating...$(date +%F_%H-%M-%S)"
+            sleep 1m
+        done
+    else
+        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &     
+        while true
+        do 
+            echo "Updating...$(date +%F_%H-%M-%S)"
+            sleep 1m
+        done
+    fi
 }
 
 function importData () {
