@@ -53,15 +53,14 @@ function getData () {
 
 function updateData(){
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
-        wget $TILER_IMPORT_LIMIT -O $limitFile
-        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir -limitto $limitFile &     
+        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &
         while true
         do 
             echo "Updating...$(date +%F_%H-%M-%S)"
             sleep 1m
         done
     else
-        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &     
+        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir -limitto /mnt/data/$limitFile &
         while true
         do 
             echo "Updating...$(date +%F_%H-%M-%S)"
@@ -81,19 +80,19 @@ function importData () {
     echo "Import PBF file"
 
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
-        wget $TILER_IMPORT_LIMIT -O $limitFile
-        imposm import \
-        -config config.json \
-        -read $PBFFile \
-        -write \
-        -diff -cachedir $cachedir -diffdir $diffdir \
-        -limitto $limitFile
-    else
         imposm import \
         -config config.json \
         -read $PBFFile \
         -write \
         -diff -cachedir $cachedir -diffdir $diffdir
+    else
+        wget $TILER_IMPORT_LIMIT -O /mnt/data/$limitFile
+        imposm import \
+        -config config.json \
+        -read $PBFFile \
+        -write \
+        -diff -cachedir $cachedir -diffdir $diffdir \
+        -limitto /mnt/data/$limitFile
     fi
 
     imposm import \
