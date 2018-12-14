@@ -111,3 +111,19 @@ services:
       - ./osm-processor-files:/app/data
     env_file:
       - ./.env
+  update-apidb:
+    image: osmseed-update-apidb:v1
+    build:
+      context: ./update-apidb
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep for a while update-apidb!;
+      sleep 70s;
+      echo Starting update-apidb!;
+      ./start.sh"
+    env_file:
+      - ./.env
