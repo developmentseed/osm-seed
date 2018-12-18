@@ -7,8 +7,9 @@ values.tiler.yaml
 values.*.yaml
 *.values.yaml
 postgres-data/
-postgres-data-gis/
-replication-files/
-osm-processor-files/
+replication-job-data/
+populate-apidb-data/
+osm-processor-data/
+postgres-gis-data/
 tiler-imposm-data/
 tiler-server-data/

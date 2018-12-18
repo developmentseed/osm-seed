@@ -2,8 +2,6 @@
 
 This contain is responsible for creating the delta replication files it may be set up by minute, hour, etc. Those replications files will be uploaded to a repository in AWs of Gooble Storage, depends on what you are using.
 
-This container must be configured through a cron job to be executed.
-
 ### Configuration
 
 In order to run this container, we should pass some environment variables
@@ -39,14 +37,17 @@ In case Google storage:
 #### Building the container
 
 ```
-  docker build -t openseed-replication-job:v1 .
+    cd replication-job
+    docker network create osm-seed_default
+    docker build -t osmseed-replication-job:v1 .
 ```
 
 #### Running the container
 
 ```
-  docker run --env-file ./../.env \
-  --network osm-seed_default \
-  -v $(pwd)/../replication-files:/app/data \
-  -t osmseed-replication-job:v1
+    docker run \
+    --env-file ./../.env \
+    --network osm-seed_default \
+    -v $(pwd)/../replication-job-data:/app/data \
+    -t osmseed-replication-job:v1
 ```

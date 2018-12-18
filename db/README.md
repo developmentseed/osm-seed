@@ -13,29 +13,32 @@ We are using the official postgres image we need to pass the following environme
   - `POSTGRES_HOST` - Database host
   - `POSTGRES_DB` - Database name
   - `POSTGRES_USER` - Database user
-  - `POSTGRES_PASSWORD` - Database user's password 
+  - `POSTGRES_PASSWORD` - Database user's password
 
 When we set up the above variables the container will create automatically the user, password and database in the on the container
 
-### Building the container by itself in a network
+### Building the container
 
 ```
-docker build --network osm_network -t osmdb .
+  cd db/
+  docker network create osm-seed_default
+  docker build -t osmseed-db:v1 .
 ```
 
 ### Running the container
 
 ```
-docker run \
---env-file ./../.env \
--p "5432:5432" \
---name db \
---network osm_network \
-osmdb
+  docker run \
+  --env-file ./../.env \
+  --network osm-seed_default \
+  --name db \
+  -v $(pwd)/../postgres-data:/var/lib/postgresql/data \
+  -p "5432:5432" \
+  -t osmseed-db:v1
 ```
 
 ### Test DB connection
 
 ```
-psql -h 0.0.0.0 -p 5432 -d openstreetmap -U postgres --password
+psql -h 127.0.0.1 -p 5432 -d openstreetmap -U postgres --password
 ```

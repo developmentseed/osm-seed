@@ -1,6 +1,6 @@
 # OSM-processor
 
-This is a container that has a set of tools for the processing of OSM files, you need to pass two variables to process a files: `URL_FILE_TO_PROCESS` and the action `OSM_FILE_ACTION`, and then the container will return the results and uploading in an S3 or GCP bucket.
+This is a container has a set of tools for the processing of OSM files, you need to pass two variables to the container, a url file `URL_FILE_TO_PROCESS` and the action `OSM_FILE_ACTION`, and then the container will process the results and uploading in an S3 or GCP bucket.
 
 # Current actions
 
@@ -20,6 +20,7 @@ The container will build automatically by docker-compose, but if you want to run
 
 ```
   cd osm-processor/
+  docker network create osm-seed_default
   docker build -t osmseed-osm-processor:v1 .
 ```
 
@@ -28,6 +29,6 @@ The container will build automatically by docker-compose, but if you want to run
 ```
   docker run --env-file ./../.env \
   --network osm-seed_default \
-  -v ~/data:/app/data \
+  -v $(pwd)/../osm-processor-data:/app/data \
   -i -t osmseed-osm-processor:v1
 ```
