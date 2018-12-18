@@ -1,0 +1,19 @@
+{{- if .Values.tilerImposm.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-tiler-imposm
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-imposm-service
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-tiler-imposm
+{{- end }}

@@ -1,0 +1,41 @@
+{{- if .Values.tilerServer.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-tiler-server
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-server-service
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+  {{- if eq .Values.cloudProvider "aws" }}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+  {{- end }}
+spec:
+  # In case cloudProvider=aws
+  {{- if eq .Values.cloudProvider "aws" }}
+  type: LoadBalancer
+  {{- end }}
+  
+  # In case cloudProvider=gcp
+  {{- if eq .Values.cloudProvider "gcp" }}
+  type: LoadBalancer
+  loadBalancerIP : {{ .Values.tilerServer.staticIp }}
+  {{- end }}
+
+  # In case cloudProvider=minikube
+  {{- if eq .Values.cloudProvider "minikube" }}
+  type: NodePort
+  {{- end }}
+  
+  ports:
+    - port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
+      targetPort: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-tiler-server
+{{- end }}

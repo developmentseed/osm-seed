@@ -1,0 +1,41 @@
+{{- if .Values.tilerVisor.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-tiler-visor
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-visor-service
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+  {{- if eq .Values.cloudProvider "aws" }}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+  {{- end }}
+spec:
+  # In case cloudProvider=aws
+  {{- if eq .Values.cloudProvider "aws" }}
+  type: LoadBalancer
+  {{- end }}
+  
+  # In case cloudProvider=gcp
+  {{- if eq .Values.cloudProvider "gcp" }}
+  type: LoadBalancer
+  loadBalancerIP : {{ .Values.tilerVisor.staticIp }}
+  {{- end }}
+
+  # In case cloudProvider=minikube
+  {{- if eq .Values.cloudProvider "minikube" }}
+  type: NodePort
+  {{- end }}
+  
+  ports:
+    - port: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-tiler-visor
+{{- end }}

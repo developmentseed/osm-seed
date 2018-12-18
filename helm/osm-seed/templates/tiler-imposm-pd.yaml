@@ -1,0 +1,58 @@
+{{- if .Values.tilerImposm.enabled -}}
+{{- if .Values.tilerImposm.persistenceDisk.enabled -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-tiler-imposm-pv
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-imposm-pd
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  storageClassName: "" # It's necessary to specify "" as the storageClassName ,so that the default storage class won't be used, see : https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1
+  # AWS Provider
+  {{- if eq .Values.cloudProvider "aws" }}
+  capacity:
+    storage: {{ .Values.tilerImposm.persistenceDisk.AWS_ElasticBlockStore_size }}
+  accessModes:
+    - ReadWriteOnce
+  awsElasticBlockStore:
+    volumeID: {{ .Values.tilerImposm.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
+    fsType: ext4
+  {{- end }}
+  # GCP Provider
+  {{- if eq .Values.cloudProvider "gcp" }}
+  capacity:
+    storage: {{ .Values.tilerImposm.persistenceDisk.GCP_gcePersistentDisk_size }}
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: {{ .Values.tilerImposm.persistenceDisk.GCP_gcePersistentDisk_pdName}}
+    fsType: ext4
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-tiler-imposm-pv-claim
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: db-pd
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  storageClassName: ""
+  volumeName: {{ .Release.Name }}-tiler-imposm-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      {{- if eq .Values.cloudProvider "aws" }}
+      storage: {{ .Values.tilerImposm.persistenceDisk.AWS_ElasticBlockStore_size }}
+      {{- end }}
+      {{- if eq .Values.cloudProvider "gcp" }}
+      storage: {{ .Values.tilerImposm.persistenceDisk.GCP_gcePersistentDisk_size }}
+      {{- end }}
+{{- end }}
+{{- end }}
