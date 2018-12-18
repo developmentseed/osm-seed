@@ -15,8 +15,6 @@ cloudProvider: minikube
 # ====================================================================================================
 AWS_DEFAULT_REGION: us-east-1
 AWS_S3_BUCKET: s3://osm-seed
-AWS_ElasticBlockStore_volumeID : vol-1234bcd
-AWS_ElasticBlockStore_size: 500Gi
 
 
 # ====================================================================================================
@@ -25,8 +23,6 @@ AWS_ElasticBlockStore_size: 500Gi
 GCP_GCLOUD_PROJECT: osm-seed-12345
 GCP_GCLOUD_SERVICE_KEY: xyz==
 GCP_GS_OSM_PATH: gs://osm-seed
-GCP_gcePersistentDisk_pdName: osm-seed-data-disk
-GCP_gcePersistentDisk_size: 100Gi
 
 # ====================================================================================================
 # Ingress variables
@@ -40,15 +36,6 @@ ingress:
   hosts:
     - chart-example.local
   tls: []
-
-# ====================================================================================================
-# Persist data configuration
-# ====================================================================================================
-persistence:
-  enabled: false
-  # accessMode: ReadWriteOnce
-  # mountPath: /var/lib/postgresql/data
-  # subPath: postgresql-db
 
 # ====================================================================================================
 # Domain app configuration
@@ -76,6 +63,17 @@ db:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: '1234'
+  persistenceDisk:
+    enabled: true
+    accessMode: ReadWriteOnce
+    mountPath: /var/lib/postgresql/data
+    subPath: postgresql-db
+    # In case cloudProvider: aws
+    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    # AWS_ElasticBlockStore_size: 500Gi
+    # In case cloudProvider: gcp
+    GCP_gcePersistentDisk_pdName: osmseed-api-db-v1
+    GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
     requests:
