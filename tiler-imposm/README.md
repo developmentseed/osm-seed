@@ -1,6 +1,6 @@
 # Tiler imposm
 
-This container is responsible to import the replication PBF files from OMS-seed or OMS planet dump into the `tiler-db`
+This container is responsible to import the replication PBF files from osm-seed or OSM planet dump into the `tiler-db`
 
 If we are running the container for the first time the container will import the [OSM Land](http://data.openstreetmapdata.com/land-polygons-split-3857.zip) and [Natural Earth dataset](http://nacis.org/initiatives/natural-earth) and [osm-land] files into the data bases. [Check more here](https://github.com/go-spatial/tegola-osm#import-the-osm-land-and-natural-earth-dataset-requires-gdal-natural-earth-can-be-skipped-if-youre-only-interested-in-osm).
 
@@ -29,13 +29,16 @@ Note: In case you use the `TILER_IMPORT_PROM`=`osmseed` you need to make public 
 #### Building the container
 
 ```
-  docker build -t osmseed-tiler-imposm:v1 .
+    cd tiler-imposm/
+    docker network create osm-seed_default
+    docker build -t osmseed-tiler-imposm:v1 .
 ```
 
 #### Running the container
 
 ```
-  docker run --env-file ./../.env-tiler \
-  --network osm-seed_default \
-  -t osmseed-tiler-imposm:v1
+    docker run \
+    --env-file ./../.env-tiler \
+    --network osm-seed_default \
+    -t osmseed-tiler-imposm:v1  
 ```

@@ -1,14 +1,13 @@
 # Container to populate APIDB
 
 
-This container is in charge to import data from PBF file or OSM files into the API database!
+This container is in charge to import data from PBF file or OSM files into the API database.
 
 
 ### Configuration
 
 This container needs some environment variables passed into it in order to run:
 
-**Files to import**
 
 - `URL_FILE_TO_IMPORT` it could be a PBF file or OSM file.
 
@@ -26,17 +25,18 @@ Get the files form :
 
 #### Building the container
 
-The container will build automatically by docker-compose, but if you want to run separately  you could follow the next command lines: 
 
 ```
-  cd populate-apidb/
-  docker build -t osmseed-populate-apidb:v1 .
+    cd populate-apidb/
+    docker network create osm-seed_default
+    docker build -t osmseed-populate-apidb:v1 .
 ```
 
 #### Running the container
 
 ```
-  docker run --env-file ./../.env \
+  docker run \
+  --env-file ./../.env \
   --network osm-seed_default \
-  -i -t osmseed-populate-apidb:v1 bash
+  -t osmseed-populate-apidb:v1
 ```

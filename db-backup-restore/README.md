@@ -1,6 +1,6 @@
 # Backup and Restore the osm-seed DB
 
-This container will take a backup of the osm-seed database and will compress according to the current date and then it will upload the backup file to s3 or Google store.
+This container will create a backup of the osm-seed-db and compress according to the current date and then it will upload the backup file to s3 or Google store.
 
 
 ### Configuration
@@ -35,19 +35,20 @@ To run the container needs a bunch of ENV variables:
 
 Change the `DB_ACTION` variable to restore or backup the database. `DB_ACTION` =  `restore` or `backup`
 
-### Building and running the container
-
-- **Building**
+### Building the container
 
 ```
-  docker build -t openseed-db-backup-restore:v1 .
+  cd db-backup-restore/
+  docker network create osm-seed_default 
+  docker build -t osmseed-db-backup-restore:v1 .
 ```
 
-- **Running**
+### Running the container
+
 
 ```
 docker run \
 --env-file ./../.env \
 --network osm-seed_default \
--it openseed-db-backup-restore:v1 
+-it osmseed-db-backup-restore:v1 
 ```

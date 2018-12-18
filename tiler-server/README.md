@@ -1,6 +1,6 @@
 # Tiler server
 
-Container for rendering the vector tiles base on [Tegola](https://github.com/go-spatial/tegola), the container connects to the database `tiler-db` and serves the tiles through the port `9090`.
+This container is for rendering the vector tiles base on [Tegola](https://github.com/go-spatial/tegola), the container connects to the database `tiler-db` and serves the tiles through the port `9090`.
 
 
 ### Configuration
@@ -35,13 +35,16 @@ TILER_CACHE_* , by default osmseed-tiler is using aws-s3 for caching the tiles, 
 #### Building the container
 
 ```
-  docker build -t osmseed-tiler-server:v1 .
+    cd tiler-server/
+    docker network create osm-seed_default
+    docker build -t osmseed-tiler-server:v1 .
 ```
 
 #### Running the container
 
 ```
-  docker run --env-file ./../.env-tiler \
+  docker run \
+  --env-file ./../.env-tiler \
   --network osm-seed_default \
   -v $(pwd)/../tiler-server-data:/mnt/data \
   -p "9090:9090" \

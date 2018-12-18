@@ -28,30 +28,25 @@ To run the container needs a bunch of ENV variables which are:
 Those parameters must be set up for the run the container, not required to build the container
 
 
-### Building the container by itself in a network
+### Building the container
 
-To run this command you should first create the [DB](https://github.com/developmentseed/osm-seed/tree/master/db).
+Before to start the api, you should first create the [api-db](https://github.com/developmentseed/osm-seed/tree/master/db).
 
 
 ```
-docker build --network osm_network -t prod .
+    cd openstreetmap-website/
+    docker network create osm-seed_default
+    docker build -t osmseed-openstreetmap-website:v1 .
 ```
+
 
 ### Running the container
 
 ```
-docker run \
---env-file ./../.env \
---network osm_network \
--p "80:80" \
--h localhost \
--it prod 
+    docker run \
+    --env-file ./../.env \
+    --network osm_network \
+    -p "80:80" \
+    -h localhost \
+    -t osmseed-openstreetmap-website:v1
 ```
-
-## Build and Run the container using docker-compose
-
-If you wan to run the infraestructure at once, check the [../README.md](https://github.com/developmentseed/osm-seed/blob/master/README.md)
-
-
-
-

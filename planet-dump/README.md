@@ -1,10 +1,7 @@
-### Osmosis Container
+### Planet dump Container
 
-Dockerfile definition to run a container with `osmosis` installed. This container definition will be responsible to run various tasks:
+Dockerfile definition to run a container with `osmosis` installed. This container definition will be responsible to create the planet dump in PBF format according to a schedule.
 
- - Export data from the Database to osm file `history-latest-${date}`
- - Comporess the osm filfile to `history-latest-${date}.osm.bz2` and upload to s3
- - Convert the osm file to PBF `history-latest-${date}.pbf` and upload to s3
 
 ### Configuration
 
@@ -36,7 +33,9 @@ Depends on what types of data storage are you going to use, the following variab
 #### Building the container
 
 ```
-docker build  -t osmosis .
+    cd planet-dump
+    docker network create osm-seed_default
+    docker build -t osmseed-planet-dump:v1 .
 ```
 
 #### Running the container
@@ -44,9 +43,6 @@ docker build  -t osmosis .
 ```
 docker run \
 --env-file ./../.env \
---network osm_network \
--it osmosis
+--network osm-seed_default \
+-it osmseed-planet-dump:v1
 ```
-
-The output files should save in s3 👇 
-![image](https://user-images.githubusercontent.com/1152236/40563702-626f15b2-602b-11e8-9621-40b1b1a240c0.png)

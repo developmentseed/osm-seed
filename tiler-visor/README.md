@@ -24,13 +24,16 @@ Required environment variables:
 #### Building the container
 
 ```
-  docker build -t osmseed-tiler-visor:v1 .
+    cd tiler-visor/
+    docker network create osm-seed_default
+    docker build -t osmseed-tiler-visor:v1 .
 ```
 
 #### Running the container
 
 ```
-  docker run --env-file ./../.env-tiler \
+  docker run \
+  --env-file ./../.env-tiler \
   --network osm-seed_default \
   -p "8081:80" \
   -t osmseed-tiler-visor:v1
