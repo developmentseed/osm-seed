@@ -16,11 +16,18 @@ This project provides docker container definitions for various aspects of the Op
 
 ### What's included now:
 
- - The OpenStreetMap Rails Port.
- - A container that runs `osmium` to export and import data.
- - A container that runs database backup.
+ - `web` A container that runs The OpenStreetMap Rails Port.
+ - `db` A container that runs OSM Api database.
+ - `id-editor` A container that runs id-editor, synchronizer with  Rails Port. 
+ - `populate-apidb` A container that runs `osmium` to import data into the api-db.
+ - `planet-dump` A container that exports a planet replication in pbf format.
+ - `replication-job`  A container that exports data from the api-db every minute, hour or day.
+ - `db-backup-restore` A container that runs database backup.
  - A `Helm` [chart](https://www.helm.sh/), simplifying the process of deploying the entire system onto a Kubernetes cluster.
 
+### Diagram
+
+![](https://user-images.githubusercontent.com/1152236/49454074-6c6b2280-f7b2-11e8-944d-e47136d1dcf9.png)
 
 ### Usage
 For more details on installation, see [INSTALL.md](INSTALL.md).
