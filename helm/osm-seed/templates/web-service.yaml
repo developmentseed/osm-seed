@@ -20,7 +20,7 @@ spec:
   # In case cloudProvider=gcp
   {{- if eq .Values.cloudProvider "gcp" }}
   type: LoadBalancer
-  loadBalancerIP : {{ .Values.idEditor.staticIp }}
+  loadBalancerIP : {{ .Values.web.staticIp }}
   {{- end }}
   # In case cloudProvider=minikube
   {{- if eq .Values.cloudProvider "minikube" }}
