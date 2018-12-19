@@ -42,26 +42,19 @@ spec:
               value: {{ .Values.db.env.POSTGRES_USER }}
             - name: REPLICATION_FOLDER
               value: /replication/minute
+            - name: CLOUDPROVIDER
+              value: {{ .Values.cloudProvider }}
             # In case cloudProvider=aws
             {{- if eq .Values.cloudProvider "aws" }}
-            - name: STORAGE
-              value: S3
-            - name: AWS_DEFAULT_REGION
-              value: {{ .Values.AWS_DEFAULT_REGION }}
-            - name: S3_OSM_PATH
+            - name: AWS_S3_BUCKET
               value: {{ .Values.AWS_S3_BUCKET }}
             {{- end }}
             # In case cloudProvider=gcp
             {{- if eq .Values.cloudProvider "gcp" }}
-            - name: STORAGE
-              value: GS
-            - name: GCLOUD_PROJECT
-              value: {{ .Values.GCP_GCLOUD_PROJECT }}
-            - name: GCLOUD_SERVICE_KEY
-              value: {{ .Values.GCP_GCLOUD_SERVICE_KEY }}
-            - name: GS_OSM_PATH
-              value: {{ .Values.GCP_GS_OSM_PATH }}
+            - name: GCP_STORAGE_BUCKET
+              value: {{ .Values.GCP_STORAGE_BUCKET }}
             {{- end }}
+              # Memory optimization for osmosis
             {{- if .Values.replicationJob.resources.enabled }}
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.replicationJob.resources.requests.memory | default "2Gi" | quote}}

@@ -15,18 +15,18 @@ workingDirectory="data"
 if [ ! -f $workingDirectory/state.txt ]; then
 	echo "File $workingDirectory/state.txt does not exist"
 	echo "let's get check the cloud"
-	if [ $STORAGE == "S3" ]; then
-		aws s3 ls $S3_OSM_PATH$REPLICATION_FOLDER/state.txt
+	if [ $CLOUDPROVIDER == "aws" ]; then
+		aws s3 ls $AWS_S3_BUCKET$REPLICATION_FOLDER/state.txt
 		if [[ $? -eq 0 ]]; then
 			echo "File exist, let's get it"
-			aws s3 cp $S3_OSM_PATH$REPLICATION_FOLDER/state.txt $workingDirectory/state.txt
+			aws s3 cp $AWS_S3_BUCKET$REPLICATION_FOLDER/state.txt $workingDirectory/state.txt
 		fi
 	fi
-	if [ $STORAGE == "GS" ]; then
-		gsutil ls $GS_OSM_PATH$REPLICATION_FOLDER/state.txt
+	if [ $CLOUDPROVIDER == "gcp" ]; then
+		gsutil ls $GCP_STORAGE_BUCKET$REPLICATION_FOLDER/state.txt
 		if [[ $? -eq 0 ]]; then
 			echo "File exist, let's get it"
-			gsutil cp $GS_OSM_PATH$REPLICATION_FOLDER/state.txt $workingDirectory/state.txt
+			gsutil cp $GCP_STORAGE_BUCKET$REPLICATION_FOLDER/state.txt $workingDirectory/state.txt
 		fi
 	fi
 fi
@@ -43,17 +43,17 @@ osmosis -q \
 	--write-replication \
 	workingDirectory=$workingDirectory &
 while true; do
-	echo "Sync bucket at ..." $S3_OSM_PATH$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
+	echo "Sync bucket at ..." $AWS_S3_BUCKET$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
 	# AWS
-	if [ $STORAGE == "S3" ]; then
+	if [ $CLOUDPROVIDER == "aws" ]; then
 		# Sync to S3
-		aws s3 sync $workingDirectory $S3_OSM_PATH$REPLICATION_FOLDER
+		aws s3 sync $workingDirectory $AWS_S3_BUCKET$REPLICATION_FOLDER
 	fi
 
 	# Google Storage
-	if [ $STORAGE == "GS" ]; then
+	if [ $CLOUDPROVIDER == "gcp" ]; then
 		# Sync to GS, Need to test,if the files do not exist  in the folder it will remove into the bucket too.
-		gsutil rsync -r $workingDirectory $GS_OSM_PATH$REPLICATION_FOLDER
+		gsutil rsync -r $workingDirectory $GCP_STORAGE_BUCKET$REPLICATION_FOLDER
 	fi
 	sleep 1m
 done
