@@ -79,7 +79,7 @@ spec:
           {{- end }}
       volumes:
         - name: postgres-storage
-        {{- if .Values.persistence.enabled }}
+        {{- if .Values.db.persistenceDisk.enabled }}
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-pv-claim
         {{- else }}
