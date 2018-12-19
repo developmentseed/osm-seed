@@ -9,20 +9,15 @@ environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
 cloudProvider: minikube
 
-
 # ====================================================================================================
 # AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
 # ====================================================================================================
-AWS_DEFAULT_REGION: us-east-1
 AWS_S3_BUCKET: s3://osm-seed
-
 
 # ====================================================================================================
 # GCP: In case you are using the cloudProvider=gcp set the below variables
 # ====================================================================================================
-GCP_GCLOUD_PROJECT: osm-seed-12345
-GCP_GCLOUD_SERVICE_KEY: xyz==
-GCP_GS_OSM_PATH: gs://osm-seed
+GCP_STORAGE_BUCKET: gs://osm-seed
 
 # ====================================================================================================
 # Ingress variables
