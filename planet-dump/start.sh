@@ -23,19 +23,19 @@ osmosis --read-apidb \
 	file=$planetPBFFile
 
 # AWS
-if [ $STORAGE == "S3" ]; then
+if [ $CLOUDPROVIDER == "aws" ]; then
 	# Save the path file
-	echo "$S3_OSM_PATH/planet/full-history/$planetPBFFile" >>$stateFile
+	echo "$AWS_S3_BUCKET/planet/full-history/$planetPBFFile" >>$stateFile
 	# Upload to S3
-	aws s3 cp $planetPBFFile $S3_OSM_PATH/planet/full-history/$planetPBFFile
-	aws s3 cp $stateFile $S3_OSM_PATH/planet/full-history/$stateFile --acl public-read
+	aws s3 cp $planetPBFFile $AWS_S3_BUCKET/planet/full-history/$planetPBFFile
+	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read
 fi
 
 # Google Storage
-if [ $STORAGE == "GS" ]; then
+if [ $CLOUDPROVIDER == "gcp" ]; then
 	# Save the path file
-	echo "$GS_OSM_PATH/planet/full-history/$planetPBFFile" >>$stateFile
+	echo "$GCP_STORAGE_BUCKET/planet/full-history/$planetPBFFile" >>$stateFile
 	# Upload to GS
-	gsutil cp $planetPBFFile $GS_OSM_PATH/planet/full-history/$planetPBFFile
-	gsutil cp $stateFile $GS_OSM_PATH/planet/full-history/$stateFile
+	gsutil cp $planetPBFFile $GCP_STORAGE_BUCKET/planet/full-history/$planetPBFFile
+	gsutil cp $stateFile $GCP_STORAGE_BUCKET/planet/full-history/$stateFile
 fi
