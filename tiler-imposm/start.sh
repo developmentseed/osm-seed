@@ -20,14 +20,6 @@ echo "\"connection\": \"postgis://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HO
 echo "\"mapping\": \"imposm3.json\""  >> config.json
 echo "}" >> config.json
 
-# Creating a gcloud-service-key to authenticate the gcloud
-if [ $CLOUDPROVIDER == "gcp" ]; then
-    echo $GCP_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
-    /root/google-cloud-sdk/bin/gcloud --quiet components update
-    /root/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file gcloud-service-key.json
-    /root/google-cloud-sdk/bin/gcloud config set project $GCP_PROJECT
-fi
-
 function getData () {
     # Import from pubic url, ussualy it come from osm
     if [ $TILER_IMPORT_FROM == "osm" ]; then 
@@ -37,14 +29,14 @@ function getData () {
     if [ $TILER_IMPORT_FROM == "osmseed" ]; then 
         if [ $CLOUDPROVIDER == "aws" ]; then 
             # Get the state.txt file from S3
-            aws s3 cp $S3_OSM_PATH/planet/full-history/$stateFile .
+            aws s3 cp $AWS_S3_BUCKET/planet/full-history/$stateFile .
             PBFCloudPath=$(tail -n +1 $stateFile)
             aws s3 cp $PBFCloudPath $PBFFile
         fi
         # Google storage
         if [ $CLOUDPROVIDER == "gcp" ]; then 
             # Get the state.txt file from GS
-            gsutil cp $GS_OSM_PATH/planet/full-history/$stateFile .
+            gsutil cp $GCP_STORAGE_BUCKET/planet/full-history/$stateFile .
             PBFCloudPath=$(tail -n +1 $stateFile)
             gsutil cp $PBFCloudPath $PBFFile
         fi
