@@ -13,12 +13,12 @@ if [ "$OSM_FILE_ACTION" == "simple_pbf" ]; then
 		--output-format pbf,pbf_dense_nodes=false,pbf_compression=true,add_metadata=version,timestamp \
 		data/$IMPUT_FILE
 
-	if [ "$STORAGE" == "S3" ]; then
+	if [ "$CLOUDPROVIDER" == "aws" ]; then
 		# Upload to S3
-		aws s3 cp data/$OUTPUT_FILE $S3_OSM_PATH/osm-processor/$OUTPUT_FILE
+		aws s3 cp data/$OUTPUT_FILE $AWS_S3_BUCKET/osm-processor/$OUTPUT_FILE
 	fi
-	if [ "$STORAGE" == "GS" ]; then
+	if [ "$CLOUDPROVIDER" == "gcp" ]; then
 		# Upload to GS
-		gsutil cp data/$OUTPUT_FILE $GS_OSM_PATH/osm-processor/$OUTPUT_FILE
+		gsutil cp data/$OUTPUT_FILE $GCP_STORAGE_BUCKET/osm-processor/$OUTPUT_FILE
 	fi
 fi
