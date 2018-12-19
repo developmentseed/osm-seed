@@ -27,8 +27,8 @@ spec:
   type: NodePort
   {{- end }}
   ports:
-    - port: 80
-      targetPort: http
+    - port: {{ .Values.idEditor.env.ID_EDITOR_PORT }}
+      targetPort: 80
       protocol: TCP
       name: http
   selector:

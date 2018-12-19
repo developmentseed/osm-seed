@@ -27,7 +27,7 @@ spec:
           image: "{{ .Values.idEditor.image }}:{{ .Values.osmSeedVersion }}"
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.idEditor.env.ID_EDITOR_PORT }}
               protocol: TCP
           {{- if .Values.idEditor.resources.enabled }}
           resources:

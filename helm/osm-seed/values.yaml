@@ -148,6 +148,7 @@ idEditor:
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.185.241.158
   env:
+    ID_EDITOR_PORT: 8080
     OSM_API_PROTOCOL: http
     OSM_API_DOMAIN: 192.168.64.26:32331
     OAUTH_CONSUMER_KEY : xxx
