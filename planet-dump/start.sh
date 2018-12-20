@@ -39,3 +39,39 @@ if [ $CLOUDPROVIDER == "gcp" ]; then
 	gsutil cp $planetPBFFile $GCP_STORAGE_BUCKET/planet/full-history/$planetPBFFile
 	gsutil cp $stateFile $GCP_STORAGE_BUCKET/planet/full-history/$stateFile
 fi
+
+# Clean backups older than 7 days
+
+if [ $CLEAN_BACKUPS == "true" ]; then
+	DATE=$(date --date="5 day ago" +"%Y-%m-%d")
+	# AWS
+	if [ $CLOUDPROVIDER == "aws" ]; then
+		# Filter files from S3
+		aws s3 ls $AWS_S3_BUCKET/database/ |
+			awk '{print $4}' |
+			awk -F"history-latest-" '{$1=$1}1' |
+			awk '/pbf/{print}' |
+			awk -F".pbf" '{$1=$1}1' |
+			awk '$1 < "'"$DATE"'" {print $0}' |
+			sort -n >output
+		# Delete filtered files
+		while read file; do
+			aws s3 rm $AWS_S3_BUCKET/database/osm-seed-$file.pbf
+		done <output
+		rm output
+	fi
+	# Google Storage
+	if [ $CLOUDPROVIDER == "gcp" ]; then
+		# Filter files from GS
+		gsutil ls $GCP_STORAGE_BUCKET/database/ |
+			awk -F""$GCP_STORAGE_BUCKET"/database/history-latest-" '{$1=$1}1' |
+			awk '/pbf/{print}' |
+			awk -F".pbf" '{$1=$1}1' |
+			awk '$1 < "'"$DATE"'" {print $0}' |
+			sort -n >output
+		# Delete filtered files
+		while read file; do
+			gsutil rm $GCP_STORAGE_BUCKET/database/osm-seed-$file.pbf
+		done <output
+	fi
+fi

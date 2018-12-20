@@ -40,6 +40,8 @@ spec:
                 value: {{ .Values.db.env.POSTGRES_USER }}
               - name: DB_ACTION
                 value: {{ .Values.dbbackup.env.DB_ACTION }}
+              - name: RESTORE_URL_FILE
+                value: {{.Values.dbbackup.env.RESTORE_URL_FILE}}
               - name: CLEAN_BACKUPS
                 value: {{ quote .Values.dbbackup.env.CLEAN_BACKUPS }}
               - name: CLOUDPROVIDER
