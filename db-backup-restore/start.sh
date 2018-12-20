@@ -33,21 +33,7 @@ fi
 # Restoring DataBase
 if [ "$DB_ACTION" == "restore" ]; then
 	# AWS
-	if [ "$CLOUDPROVIDER" == "aws" ]; then
-		# Get the state.txt file from S3
-		aws s3 cp $AWS_S3_BUCKET/database/$stateFile .
-		dbPath=$(head -n 1 $stateFile)
-		aws s3 cp $dbPath $restoreFile
-	fi
-
-	# Google Storage
-	if [ "$CLOUDPROVIDER" == "gcp" ]; then
-		# Get the state.txt file from GS
-		gsutil cp $GCP_STORAGE_BUCKET/database/$stateFile .
-		dbPath=$(head -n 1 $stateFile)
-		gsutil cp $dbPath $restoreFile
-	fi
-
+	wget -O $restoreFile $RESTORE_URL_FILE
 	gunzip <$restoreFile | psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB
 fi
 
