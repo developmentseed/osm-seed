@@ -10,8 +10,8 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   schedule: {{ quote .Values.dbbackup.schedule }}
-  successfulJobsHistoryLimit: 0
-  failedJobsHistoryLimit: 0
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:

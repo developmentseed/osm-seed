@@ -11,8 +11,8 @@ metadata:
 spec:
   schedule: {{ quote .Values.planetDump.schedule }}
   startingDeadlineSeconds: 100
-  successfulJobsHistoryLimit: 5
-  failedJobsHistoryLimit: 5
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:

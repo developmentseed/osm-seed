@@ -47,7 +47,7 @@ if [ $CLEAN_BACKUPS == "true" ]; then
 	# AWS
 	if [ $CLOUDPROVIDER == "aws" ]; then
 		# Filter files from S3
-		aws s3 ls $AWS_S3_BUCKET/database/ |
+		aws s3 ls $AWS_S3_BUCKET/planet/full-history/ |
 			awk '{print $4}' |
 			awk -F"history-latest-" '{$1=$1}1' |
 			awk '/pbf/{print}' |
@@ -56,22 +56,22 @@ if [ $CLEAN_BACKUPS == "true" ]; then
 			sort -n >output
 		# Delete filtered files
 		while read file; do
-			aws s3 rm $AWS_S3_BUCKET/database/osm-seed-$file.pbf
+			aws s3 rm $AWS_S3_BUCKET/planet/full-history/history-latest-$file.pbf
 		done <output
 		rm output
 	fi
 	# Google Storage
 	if [ $CLOUDPROVIDER == "gcp" ]; then
 		# Filter files from GS
-		gsutil ls $GCP_STORAGE_BUCKET/database/ |
-			awk -F""$GCP_STORAGE_BUCKET"/database/history-latest-" '{$1=$1}1' |
+		gsutil ls $GCP_STORAGE_BUCKET/planet/full-history/ |
+			awk -F""$GCP_STORAGE_BUCKET"/planet/full-history/history-latest-" '{$1=$1}1' |
 			awk '/pbf/{print}' |
 			awk -F".pbf" '{$1=$1}1' |
 			awk '$1 < "'"$DATE"'" {print $0}' |
 			sort -n >output
 		# Delete filtered files
 		while read file; do
-			gsutil rm $GCP_STORAGE_BUCKET/database/osm-seed-$file.pbf
+			gsutil rm $GCP_STORAGE_BUCKET/planet/full-history/history-latest--$file.pbf
 		done <output
 	fi
 fi
