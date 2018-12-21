@@ -47,8 +47,8 @@ spec:
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM }}
           - name: TILER_IMPORT_PBF_URL
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL }}
-          - name: TILER_IMPORT_LIMIT
-            value: {{ .Values.tilerImposm.env.TILER_IMPORT_LIMIT }}
+          # - name: TILER_IMPORT_LIMIT
+          #   value: {{ .Values.tilerImposm.env.TILER_IMPORT_LIMIT }}
           - name: CLOUDPROVIDER
             value: {{ .Values.cloudProvider }}
           # In case cloudProvider=aws
