@@ -12,22 +12,17 @@ This container needs some environment variables passed into it in order to run:
 - `POSTGRES_USER` - postgres
 - `POSTGRES_PASSWORD`  - 1234
 
-Depends on what types of data storage are you going to use, the following variables should be established:
+The following env variables are according to which cloud provider you are going to use:
 
-#### Amazon S3
+- `CLOUDPROVIDER`, eg. `aws` or `gcp`
 
-- `AWS_ACCESS_KEY_ID` 
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_DEFAULT_REGION` e.g `us-east-1`
-- `S3_OSM_PATH`  e.g `s3://osm-seed`
+In case AWS:
 
-#### Google Storage - SG
+- `AWS_S3_BUCKET` e.g `s3://osm-seed-test`
 
-# Google Store access
+In case GCP:
 
-- `GS_OSM_PATH` Google storage bucket
-- `GCLOUD_SERVICE_KEY` base64 encode key e.g: `base64 osm-seed-04ee080a55c5.json`
-- `GCLOUD_PROJECT` name of your project
+- `GCP_STORAGE_BUCKET` e.g `gs://osm-seed-test`
 
 
 #### Building the container

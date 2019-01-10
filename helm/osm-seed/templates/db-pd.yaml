@@ -1,5 +1,5 @@
 {{- if .Values.db.enabled -}}
-{{- if .Values.persistence.enabled -}}
+{{- if .Values.db.persistenceDisk.enabled -}}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -11,22 +11,24 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   storageClassName: "" # It's necessary to specify "" as the storageClassName ,so that the default storage class won't be used, see : https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1
+  # AWS Provider
   {{- if eq .Values.cloudProvider "aws" }}
   capacity:
-    storage: {{ .Values.AWS_ElasticBlockStore_size }}
+    storage: {{ .Values.db.persistenceDisk.AWS_ElasticBlockStore_size }}
   accessModes:
     - ReadWriteOnce
   awsElasticBlockStore:
-    volumeID: {{ .Values.AWS_ElasticBlockStore_volumeID }}
+    volumeID: {{ .Values.db.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
     fsType: ext4
   {{- end }}
+  # GCP Provider
   {{- if eq .Values.cloudProvider "gcp" }}
   capacity:
-    storage: {{ .Values.GCP_gcePersistentDisk_size }}
+    storage: {{ .Values.db.persistenceDisk.GCP_gcePersistentDisk_size }}
   accessModes:
     - ReadWriteOnce
   gcePersistentDisk:
-    pdName: {{ .Values.GCP_gcePersistentDisk_pdName}}
+    pdName: {{ .Values.db.persistenceDisk.GCP_gcePersistentDisk_pdName}}
     fsType: ext4
   {{- end }}
 ---
@@ -46,11 +48,13 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
+      # AWS Provider
       {{- if eq .Values.cloudProvider "aws" }}
-      storage: {{ .Values.AWS_ElasticBlockStore_size }}
+      storage: {{ .Values.db.persistenceDisk.AWS_ElasticBlockStore_size }}
       {{- end }}
+      # GCP Provider
       {{- if eq .Values.cloudProvider "gcp" }}
-      storage: {{ .Values.GCP_gcePersistentDisk_size }}
+      storage: {{ .Values.db.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
 {{- end }}
 {{- end }}

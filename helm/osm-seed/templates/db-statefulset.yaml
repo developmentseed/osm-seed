@@ -43,7 +43,7 @@ spec:
             - name: PGUSER
               value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
             - name: PGDATA
-              value: {{ .Values.persistence.mountPath }}
+              value: {{ .Values.db.persistenceDisk.mountPath }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
           livenessProbe:
@@ -66,8 +66,8 @@ spec:
             periodSeconds: 5
           volumeMounts:
             - name: postgres-storage
-              mountPath: {{ .Values.persistence.mountPath }}
-              subPath: {{ .Values.persistence.subPath }}
+              mountPath: {{ .Values.db.persistenceDisk.mountPath }}
+              subPath: {{ .Values.db.persistenceDisk.subPath }}
           {{- if .Values.db.resources.enabled }}
           resources:
             requests:
@@ -79,7 +79,7 @@ spec:
           {{- end }}
       volumes:
         - name: postgres-storage
-        {{- if .Values.persistence.enabled }}
+        {{- if .Values.db.persistenceDisk.enabled }}
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-pv-claim
         {{- else }}

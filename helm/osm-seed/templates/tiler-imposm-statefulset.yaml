@@ -47,14 +47,20 @@ spec:
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM }}
           - name: TILER_IMPORT_PBF_URL
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL }}
-          - name: TILER_IMPORT_LIMIT
-            value: {{ .Values.tilerImposm.env.TILER_IMPORT_LIMIT }}
+          # - name: TILER_IMPORT_LIMIT
+          #   value: {{ .Values.tilerImposm.env.TILER_IMPORT_LIMIT }}
           - name: CLOUDPROVIDER
             value: {{ .Values.cloudProvider }}
-          - name: GCP_PROJECT
-            value: {{ .Values.GCP_PROJECT }}
-          - name: GCP_SERVICE_KEY
-            value: {{ .Values.GCP_SERVICE_KEY }}
+          # In case cloudProvider=aws
+          {{- if eq .Values.cloudProvider "aws" }}
+          - name: AWS_S3_BUCKET
+            value: {{ .Values.AWS_S3_BUCKET }}
+          {{- end }}
+          # In case cloudProvider=gcp
+          {{- if eq .Values.cloudProvider "gcp" }}
+          - name: GCP_STORAGE_BUCKET
+            value: {{ .Values.GCP_STORAGE_BUCKET }}
+          {{- end }}
         volumeMounts:
         - mountPath: {{ .Values.tilerImposm.persistenceDisk.mountPath }}
           name: tiler-imposm-storage

@@ -23,6 +23,20 @@ Required environment variables:
 - `TILER_IMPORT_PROM` e.g `osm` or `osmseed`
 - `TILER_IMPORT_PBF_URL` eg `http://download.geofabrik.de/south-america/peru-latest.osm.pbf`
 
+
+
+If you are setting up the variable TILER_IMPORT_PROM=`osmseed` you should fill following env variables according to which cloud provider you are going to use
+
+- `CLOUDPROVIDER`, eg. `aws` or `gcp`
+
+In case AWS:
+
+- `AWS_S3_BUCKET` e.g `s3://osm-seed-test`
+
+In case GCP:
+
+- `GCP_STORAGE_BUCKET` e.g `gs://osm-seed-test`
+
 Note: In case you use the `TILER_IMPORT_PROM`=`osmseed` you need to make public the minute replication files to update the DB with the recent changes.
 
 
