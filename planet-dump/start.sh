@@ -71,7 +71,7 @@ if [ $CLEAN_BACKUPS == "true" ]; then
 			sort -n >output
 		# Delete filtered files
 		while read file; do
-			gsutil rm $GCP_STORAGE_BUCKET/planet/full-history/history-latest--$file.pbf
+			gsutil rm $GCP_STORAGE_BUCKET/planet/full-history/history-latest-$file.pbf
 		done <output
 	fi
 fi
