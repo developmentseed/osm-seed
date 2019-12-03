@@ -1,10 +1,12 @@
 .env
 .env-tiler
+.env-overpass
 usa.values.yaml
 prod.values.yaml
 planet.values.yaml
 values.tiler.yaml
 values.*.yaml
+devseed.*.yaml
 *.values.yaml
 postgres-data/
 replication-job-data/
@@ -13,3 +15,4 @@ osm-processor-data/
 postgres-gis-data/
 tiler-imposm-data/
 tiler-server-data/
+overpass-data/
