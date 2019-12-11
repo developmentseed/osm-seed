@@ -174,7 +174,10 @@ services:
     env_file:
       - ./.env-tiler
   overpass-api:
-    image: wiktorn/overpass-api:0.7.55.6
+    image: osmseed-overpass-api:v1
+    build: 
+      context: ./overpass-api
+      dockerfile: Dockerfile
     ports:
       - "8082:80"
     volumes:
