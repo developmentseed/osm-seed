@@ -28,7 +28,7 @@ if [ $CLOUDPROVIDER == "aws" ]; then
 	echo "$AWS_S3_BUCKET/planet/full-history/$planetPBFFile" >>$stateFile
 	# Upload to S3
 	aws s3 cp $planetPBFFile $AWS_S3_BUCKET/planet/full-history/$planetPBFFile
-	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read
+	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile
 fi
 
 # Google Storage
