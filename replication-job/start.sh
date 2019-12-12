@@ -53,7 +53,7 @@ while true; do
 	# Google Storage
 	if [ $CLOUDPROVIDER == "gcp" ]; then
 		# Sync to GS, Need to test,if the files do not exist  in the folder it will remove into the bucket too.
-		gsutil rsync -r $workingDirectory $GCP_STORAGE_BUCKET$REPLICATION_FOLDER
+		gsutil -m rsync -r $workingDirectory $GCP_STORAGE_BUCKET$REPLICATION_FOLDER
 	fi
-	sleep 1m
+	sleep 30
 done
