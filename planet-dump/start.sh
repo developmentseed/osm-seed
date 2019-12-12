@@ -22,13 +22,18 @@ osmosis --read-apidb \
 	--write-pbf \
 	file=$planetPBFFile
 
+# Converting the tada to osm format for later usages
+osmosis --read-pbf file=$planetPBFFile --write-xml planet.osm
+bzip2 -f planet.osm
+
 # AWS
 if [ $CLOUDPROVIDER == "aws" ]; then
 	# Save the path file
 	echo "$AWS_S3_BUCKET/planet/full-history/$planetPBFFile" >>$stateFile
 	# Upload to S3
 	aws s3 cp $planetPBFFile $AWS_S3_BUCKET/planet/full-history/$planetPBFFile
-	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read
+	aws s3 cp planet.osm.bz2 $AWS_S3_BUCKET/planet/full-history/
+	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile
 fi
 
 # Google Storage
@@ -37,6 +42,7 @@ if [ $CLOUDPROVIDER == "gcp" ]; then
 	echo "$GCP_STORAGE_BUCKET/planet/full-history/$planetPBFFile" >>$stateFile
 	# Upload to GS
 	gsutil cp $planetPBFFile $GCP_STORAGE_BUCKET/planet/full-history/$planetPBFFile
+	gsutil cp planet.osm.bz2 $GCP_STORAGE_BUCKET/planet/full-history/planet.osm.bz2 
 	gsutil cp $stateFile $GCP_STORAGE_BUCKET/planet/full-history/$stateFile
 fi
 
