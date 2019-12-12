@@ -34,8 +34,7 @@ fi
 osmosis -q \
 	--replicate-apidb \
 	iterations=0 \
-	minInterval=10000 \
-	maxInterval=60000 \
+	minInterval=60000 \
 	host=$POSTGRES_HOST \
 	database=$POSTGRES_DB \
 	user=$POSTGRES_USER \
@@ -44,15 +43,16 @@ osmosis -q \
 	--write-replication \
 	workingDirectory=$workingDirectory &
 while true; do
-	echo "Sync bucket at ..." $AWS_S3_BUCKET$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
 	# AWS
 	if [ $CLOUDPROVIDER == "aws" ]; then
+		echo "Sync bucket at ..." $AWS_S3_BUCKET$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
 		# Sync to S3
 		aws s3 sync $workingDirectory $AWS_S3_BUCKET$REPLICATION_FOLDER
 	fi
 
 	# Google Storage
 	if [ $CLOUDPROVIDER == "gcp" ]; then
+		echo "Sync bucket at ..." $GCP_STORAGE_BUCKET$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
 		# Sync to GS, Need to test,if the files do not exist  in the folder it will remove into the bucket too.
 		gsutil rsync -r $workingDirectory $GCP_STORAGE_BUCKET$REPLICATION_FOLDER
 	fi
