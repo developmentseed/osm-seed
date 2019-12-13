@@ -11,10 +11,13 @@ RUN apt-get install -y \
     curl unzip \
     gdal-bin tar \
     bzip2 clang git \
-    default-jre default-jdk gradle
+    default-jre default-jdk gradle \
+    apt-transport-https ca-certificates gnupg
 RUN pip install awscli
-RUN curl -sSL https://sdk.cloud.google.com | bash
-RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+RUN apt-get update && apt-get install -y google-cloud-sdk
+
 # Install osmosis
 RUN git clone https://github.com/openstreetmap/osmosis.git
 WORKDIR osmosis
