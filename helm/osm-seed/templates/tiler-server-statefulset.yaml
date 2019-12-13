@@ -15,6 +15,7 @@ spec:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
       run: {{ .Release.Name }}-tiler-server
+  serviceName: tiler-server
   template:
     metadata:
       labels:
