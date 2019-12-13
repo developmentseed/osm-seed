@@ -25,13 +25,14 @@ RUN apt-get install -y nodejs
 
 # Fixing image_optim issues, installing a bush of libraries from : https://github.com/toy/image_optim#pngout-installation-optional
 RUN apt-get install -y advancecomp gifsicle jhead jpegoptim optipng
-RUN git clone --recursive https://github.com/kornelski/pngquant.git && \
+RUN git clone -b 2.12.2 https://github.com/kornelski/pngquant.git && \
     cd pngquant && \
     ./configure && \
     make && \
     make install
 RUN git clone https://github.com/tjko/jpeginfo.git && \
     cd jpeginfo && \
+    git checkout 743b1b15002f05298a0672e9d0f23ada240ababf && \
     ./configure && \
     make && \
     make strip && \
@@ -49,11 +50,11 @@ RUN apt-get install -y libxml2-dev libpqxx-dev libfcgi-dev \
     libboost-system-dev libboost-locale-dev libmemcached-dev \
     libcrypto++-dev automake autoconf libtool libyajl-dev
 ENV cgimap /tmp/openstreetmap-cgimap
-RUN git clone git://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
-RUN cd $cgimap &&\
-    ./autogen.sh &&\
-    ./configure &&\
-    make &&\
+RUN git clone -b v0.6.2 https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
+RUN cd $cgimap && \
+    ./autogen.sh && \
+    ./configure && \
+    make && \
     make install
 
 # Daemontools provides the `fghack` program required for running the `cgimap`
