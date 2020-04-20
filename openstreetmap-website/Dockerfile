@@ -15,9 +15,12 @@ RUN apt-get update
 RUN apt-get install -y ruby2.3 libruby2.3 ruby2.3-dev \
     libmagickwand-dev libxml2-dev libxslt1-dev \
     apache2 apache2-dev build-essential git \
+    libssl1.1 libssl-dev \
     # postgresql postgresql-contrib libpq-dev \
     libsasl2-dev imagemagick libffi-dev curl
 RUN gem2.3 install bundler
+
+RUN ln -s /usr/local/lib/libcrypto.so.1.0.0 /usr/lib/libcrypto.so.1.1
 
 # Install node for some images process dependencies
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
