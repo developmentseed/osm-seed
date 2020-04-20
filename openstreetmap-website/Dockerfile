@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ruby:2.3
 ENV workdir /var/www
 
 # Production OSM setup
@@ -6,7 +6,7 @@ ENV RAILS_ENV=production
 
 # Postgres dependecies
 RUN apt-get update
-RUN apt-get install -y wget
+RUN apt-get install -y wget apt-utils
 RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
 RUN apt-get update
@@ -15,7 +15,7 @@ RUN apt-get update
 RUN apt-get install -y ruby2.3 libruby2.3 ruby2.3-dev \
     libmagickwand-dev libxml2-dev libxslt1-dev \
     apache2 apache2-dev build-essential git \
-    postgresql postgresql-contrib libpq-dev \
+    # postgresql postgresql-contrib libpq-dev \
     libsasl2-dev imagemagick libffi-dev curl
 RUN gem2.3 install bundler
 
@@ -83,10 +83,11 @@ RUN /usr/sbin/passenger-memory-stats
 
 # Clone the openstreetmap-website
 RUN rm -rf $workdir
-RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
+RUN git clone https://github.com/Open-Historical-Map-Labs/ohm-website.git $workdir 
 WORKDIR $workdir
+RUN git checkout e301d5c6aae6b62db18f3f6789644b729182e935
 # gitsha 39f0b501e8cefea961447de9c8076e20fa3adbb4 at Jul 23, 2018
-RUN git checkout 39f0b501e8cefea961447de9c8076e20fa3adbb4
+# RUN git checkout 39f0b501e8cefea961447de9c8076e20fa3adbb4
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
@@ -109,6 +110,7 @@ RUN chmod 600 $workdir/config/database.yml $workdir/config/application.yml $work
 ADD config/action_mailer.rb config/initializers/action_mailer.rb
 
 # Precompile the website assets
+RUN bundle exec rake i18n:js:export
 RUN bundle exec rake assets:precompile --trace
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
