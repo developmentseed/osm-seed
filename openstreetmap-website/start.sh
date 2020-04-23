@@ -31,4 +31,5 @@ RAILS_ENV=production rake assets:precompile --trace
 bundle exec rails db:migrate
 
 # Start the app
-apachectl -k start -DFOREGROUND
+#apachectl -k start -DFOREGROUND
+bundle exec rails server -p 80
