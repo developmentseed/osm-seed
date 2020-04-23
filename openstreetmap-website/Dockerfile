@@ -35,10 +35,13 @@ ENV PATH /opt/rubies/ruby-2.4.1/bin:$PATH
 
 # Add options to gemrc
 RUN echo "gem: --no-document" > ~/.gemrc
-RUN apt-get -y update && apt-get -y upgrade
+RUN apt-get -y update && \
+    apt-get -y upgrade
 
 
 RUN gem install bundler
+
+RUN ln -s /usr/local/lib/libcrypto.so.1.0.0 /usr/lib/libcrypto.so.1.1
 
 # Install node for some images process dependencies
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
