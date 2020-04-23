@@ -35,7 +35,8 @@ ENV PATH /opt/rubies/ruby-2.4.1/bin:$PATH
 
 # Add options to gemrc
 RUN echo "gem: --no-document" > ~/.gemrc
-RUN apt-get -y update && apt-get -y upgrade
+RUN apt-get -y update && \
+    apt-get -y upgrade
 
 
 RUN gem install bundler
