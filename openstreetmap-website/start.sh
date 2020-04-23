@@ -25,10 +25,10 @@ until $(curl -sf -o /dev/null $SERVER_URL); do
 done &
 
 # Precompile again, to catch the env variables
-RAILS_ENV=production rake assets:precompile --trace
+RAILS_ENV=production bundle exec rake assets:precompile --trace
 
 # db:migrate 
-bundle exec rails db:migrate
+# bundle exec rails db:migrate
 
 # Start the app
 #apachectl -k start -DFOREGROUND

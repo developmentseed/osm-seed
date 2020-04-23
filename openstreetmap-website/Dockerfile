@@ -41,6 +41,8 @@ RUN apt-get -y update && \
 
 RUN gem install bundler
 
+RUN ln -s /usr/local/lib/libcrypto.so.1.0.0 /usr/lib/libcrypto.so.1.1
+
 # Install node for some images process dependencies
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
