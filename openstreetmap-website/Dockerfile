@@ -167,4 +167,3 @@ RUN chown -R www-data: /var/www
 ADD start.sh $workdir/start.sh
 
 CMD $workdir/start.sh
-
