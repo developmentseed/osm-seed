@@ -13,6 +13,7 @@ spec:
   selector:
     matchLabels:
       app:  {{ .Release.Name }}-tiler-imposm-statefulset
+  serviceName: {{ .Release.Name }}-tiler-imposm
   replicas: 1
   template:
     metadata:
