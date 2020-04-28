@@ -15,6 +15,7 @@ spec:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
       run: {{ .Release.Name }}-db
+  serviceName: {{ .Release.Name }}-db
   template:
     metadata:
       labels:
