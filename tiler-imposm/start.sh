@@ -64,10 +64,9 @@ function updateData(){
 function importData () {
     echo "Execute the missing functions"
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f postgis_helpers.sql
-    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f postgis_index.sql
     echo "Import Natural Earth"
     ./scripts/natural_earth.sh
-    echo "Impor OMS Land"
+    echo "Import OSM Land"
     ./scripts/osm_land.sh
     echo "Import PBF file"
 
@@ -93,7 +92,11 @@ function importData () {
     # -diff -cachedir $cachedir -diffdir $diffdir
     # Update the DB
     updateData
+
+    # These index will help speed up tegola tile generation
+    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f postgis_index.sql
 }
+
 
 echo "Connecting... to postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
 
