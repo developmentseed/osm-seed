@@ -1,6 +1,5 @@
 FROM golang:1.14.1-alpine3.11 AS build
 ENV VERSION="v0.8.1"
-
 RUN apk update
 RUN apk add musl-dev=1.1.24-r2 \
 	gcc=9.2.0-r4 \
@@ -9,26 +8,18 @@ RUN apk add musl-dev=1.1.24-r2 \
     postgresql \
     postgresql-contrib
 
-# Set up source for compilation
-RUN git clone https://github.com/go-spatial/tegola.git  /go/src/github.com/go-spatial/tegola
-
-# Build binary
-RUN cd /go/src/github.com/go-spatial/tegola/ \
-	&& go build -v -ldflags "-w -X github.com/go-spatial/tegola/cmd/tegola/cmd.Version=${VERSION}" -gcflags "-N -l" -o /opt/tegola \ 
+RUN mkdir -p /go/src/github.com/go-spatial/tegola
+RUN git clone https://github.com/go-spatial/tegola.git /go/src/github.com/go-spatial/tegola
+RUN cd /go/src/github.com/go-spatial/tegola && git checkout v0.8.1
+RUN cd /go/src/github.com/go-spatial/tegola/cmd/tegola \
+	&& go build -gcflags "-N -l" -o /opt/tegola \ 
 	&& chmod a+x /opt/tegola
-
-# Create minimal deployment image, just alpine & the binary
-FROM alpine:3.11
-
-RUN apk update \
-	&& apk add ca-certificates \
-	&& rm -rf /var/cache/apk/*
-
-COPY --from=build /opt/tegola /opt/
-WORKDIR /opt
 RUN ln -s /opt/tegola /usr/bin/tegola
 
+# Volumen
+ENV CACHEDATA /mnt/data
+RUN mkdir -p "$CACHEDATA" && chmod 777 "$CACHEDATA"
 VOLUME /mnt/data
-COPY ./config/config.toml /opt/tegola_config/config.toml
+COPY ./config/config.toml  /opt/tegola_config/config.toml
 COPY ./start.sh ./start.sh
 CMD ./start.sh
