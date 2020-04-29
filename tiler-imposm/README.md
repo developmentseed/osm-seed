@@ -20,7 +20,7 @@ Required environment variables:
 
  **Env variables to  import the files**
 
-- `TILER_IMPORT_PROM` e.g `osm` or `osmseed`
+- `TILER_IMPORT_FROM` e.g `osm` or `osmseed`
 - `TILER_IMPORT_PBF_URL` eg `http://download.geofabrik.de/south-america/peru-latest.osm.pbf`
 
 
