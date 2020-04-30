@@ -43,22 +43,19 @@ osmosis -q \
 	--write-replication \
 	workingDirectory=$workingDirectory &
 while true; do
-	echo "Sync bucket at ..." $AWS_S3_BUCKET$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
-
 	for file in $(find $workingDirectory/ -cmin -1); do
 		if [ -f "$file" ]; then
 			bucketFile=${file#*"$workingDirectory"}
-				# AWS
-				if [ $CLOUDPROVIDER == "aws" ]; then
-					echo "copy $file to $AWS_S3_BUCKET$REPLICATION_FOLDER$bucketFile"
-					aws s3 cp $file $AWS_S3_BUCKET$REPLICATION_FOLDER$bucketFile --acl public-read
-				fi
-				# Google Storage
-				if [ $CLOUDPROVIDER == "gcp" ]; then
-					echo "copy $file to $GCP_STORAGE_BUCKET$REPLICATION_FOLDER$bucketFile"
-					gsutil cp -a public-read $file $GCP_STORAGE_BUCKET$REPLICATION_FOLDER$bucketFile
-				fi
+			echo $(date +%F_%H:%M:%S) ": uploading ..." $file
+			# AWS
+			if [ $CLOUDPROVIDER == "aws" ]; then
+				aws s3 cp $file $AWS_S3_BUCKET$REPLICATION_FOLDER$bucketFile --acl public-read
+			fi
+			# Google Storage
+			if [ $CLOUDPROVIDER == "gcp" ]; then
+				gsutil cp -a public-read $file $GCP_STORAGE_BUCKET$REPLICATION_FOLDER$bucketFile
+			fi
 		fi
 	done
-	sleep 1m
+	sleep 30s
 done
