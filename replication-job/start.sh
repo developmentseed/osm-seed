@@ -44,16 +44,21 @@ osmosis -q \
 	workingDirectory=$workingDirectory &
 while true; do
 	echo "Sync bucket at ..." $AWS_S3_BUCKET$REPLICATION_FOLDER $(date +%F_%H-%M-%S)
-	# AWS
-	if [ $CLOUDPROVIDER == "aws" ]; then
-		# Sync to S3
-		aws s3 sync $workingDirectory $AWS_S3_BUCKET$REPLICATION_FOLDER
-	fi
 
-	# Google Storage
-	if [ $CLOUDPROVIDER == "gcp" ]; then
-		# Sync to GS, Need to test,if the files do not exist  in the folder it will remove into the bucket too.
-		gsutil rsync -r $workingDirectory $GCP_STORAGE_BUCKET$REPLICATION_FOLDER
-	fi
+	for file in $(find $workingDirectory/ -cmin -1); do
+		if [ -f "$file" ]; then
+			bucketFile=${file#*"$workingDirectory"}
+				# AWS
+				if [ $CLOUDPROVIDER == "aws" ]; then
+					echo "copy $file to $AWS_S3_BUCKET$REPLICATION_FOLDER$bucketFile"
+					aws s3 cp $file $AWS_S3_BUCKET$REPLICATION_FOLDER$bucketFile --acl public-read
+				fi
+				# Google Storage
+				if [ $CLOUDPROVIDER == "gcp" ]; then
+					echo "copy $file to $GCP_STORAGE_BUCKET$REPLICATION_FOLDER$bucketFile"
+					gsutil cp -a public-read $file $GCP_STORAGE_BUCKET$REPLICATION_FOLDER$bucketFile
+				fi
+		fi
+	done
 	sleep 1m
 done
