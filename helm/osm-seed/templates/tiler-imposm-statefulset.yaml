@@ -48,6 +48,10 @@ spec:
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM }}
           - name: TILER_IMPORT_PBF_URL
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL }}
+          - name: REPLICATION_URL
+            value: {{ .Values.tilerImposm.env.REPLICATION_URL }}
+          - name: SEQUENCE_NUMBER
+            value: {{ .Values.tilerImposm.env.SEQUENCE_NUMBER }}
           # - name: TILER_IMPORT_LIMIT
           #   value: {{ .Values.tilerImposm.env.TILER_IMPORT_LIMIT }}
           - name: CLOUDPROVIDER
