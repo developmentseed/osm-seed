@@ -51,7 +51,7 @@ spec:
           - name: REPLICATION_URL
             value: {{ .Values.tilerImposm.env.REPLICATION_URL }}
           - name: SEQUENCE_NUMBER
-            value: {{ .Values.tilerImposm.env.SEQUENCE_NUMBER }}
+            value: {{ .Values.tilerImposm.env.SEQUENCE_NUMBER | quote}}
           # - name: TILER_IMPORT_LIMIT
           #   value: {{ .Values.tilerImposm.env.TILER_IMPORT_LIMIT }}
           - name: CLOUDPROVIDER
