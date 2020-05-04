@@ -16,7 +16,7 @@ mkdir -p $diffdir
 # importData section because it need run just one and  for this test we already have a DB
 
 echo "timestamp=0001-01-01T00\:00\:00Z
-sequenceNumber=-149721131
+sequenceNumber=$SEQUENCE_NUMBER
 replicationUrl=$REPLICATION_URL" > $diffdir/last.state.txt
 
 # Create config file to set variable  for imposm
