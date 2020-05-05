@@ -1,0 +1,62 @@
+{{- if .Values.fullHistory.enabled -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-full-history-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: full-history-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ quote .Values.fullHistory.schedule }}
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-full-history-job
+            image: {{ .Values.fullHistory.image }}:{{ .Values.osmSeedVersion }}
+            command: ['./start.sh']
+            {{- if .Values.fullHistory.resources.enabled }}   
+            resources:
+              requests:
+                memory: {{ .Values.fullHistory.resources.requests.memory }}
+                cpu: {{ .Values.fullHistory.resources.requests.cpu }}
+              limits:
+                memory: {{ .Values.fullHistory.resources.limits.memory }}
+                cpu: {{ .Values.fullHistory.resources.limits.cpu }}
+            {{- end }}
+            env:
+              - name: POSTGRES_HOST
+                value: {{ .Release.Name }}-db
+              - name: POSTGRES_DB
+                value: {{ .Values.db.env.POSTGRES_DB }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              - name: POSTGRES_USER
+                value: {{ .Values.db.env.POSTGRES_USER }}
+              - name: CLOUDPROVIDER
+                value: {{ .Values.cloudProvider }}
+              # In case cloudProvider=aws
+              {{- if eq .Values.cloudProvider "aws" }}
+              - name: AWS_S3_BUCKET
+                value: {{ .Values.AWS_S3_BUCKET }}
+              {{- end }}
+              # In case cloudProvider=gcp
+              {{- if eq .Values.cloudProvider "gcp" }}
+              - name: GCP_STORAGE_BUCKET
+                value: {{ .Values.GCP_STORAGE_BUCKET }}
+              {{- end }}
+              # Memory optimization for osmosis
+              {{- if .Values.fullHistory.resources.enabled }}   
+              - name: MEMORY_JAVACMD_OPTIONS
+                value: {{ .Values.fullHistory.resources.requests.memory | default "2Gi" | quote}}
+              {{- end }}
+          restartPolicy: Never
+      backoffLimit: 3
+{{- end }}
