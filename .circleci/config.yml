@@ -357,6 +357,48 @@ jobs:
             docker tag osm-processor developmentseed/osmseed-osm-processor:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-osm-processor:${VERSION}
+  full-history:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - caches/full-history.tar
+
+      - run:
+          name: Load docker image cache
+          command: |
+            docker load -i caches/full-history.tar || true
+      - run:
+          name: Build application docker image
+          command: |
+            docker build --cache-from=full-history -t full-history full-history/
+      - run:
+          name: Save docker image cache
+          command: |
+            mkdir -p caches
+            docker save -o caches/full-history.tar full-history
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - caches/full-history.tar
+
+      - deploy:
+          name: Push docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
+              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
+            else
+              VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
+            fi
+            docker tag full-history developmentseed/osmseed-full-history:${VERSION}
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push developmentseed/osmseed-full-history:${VERSION}
   tiler-db:
       docker:
         - image: docker:17.05.0-ce-git
