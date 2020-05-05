@@ -38,6 +38,7 @@ In case GCP:
 ```
 docker run \
 --env-file ./../.env \
+-v ${PWD}:/app \
 --network osm-seed_default \
 -it osmseed-planet-dump:v1
 ```
