@@ -12,6 +12,13 @@ mkdir -p $cachedir
 diffdir="/mnt/data/diff"
 mkdir -p $diffdir
 
+# Creating last.state.text #note: this line should be changed to 
+# importData section because it need run just one and  for this test we already have a DB
+
+echo "timestamp=0001-01-01T00\:00\:00Z
+sequenceNumber=$SEQUENCE_NUMBER
+replicationUrl=$REPLICATION_URL" > $diffdir/last.state.txt
+
 # Create config file to set variable  for imposm
 echo "{" > config.json
 echo "\"cachedir\": \"$cachedir\","  >> config.json
