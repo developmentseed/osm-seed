@@ -7,35 +7,37 @@ else
 	memory="${MEMORY_JAVACMD_OPTIONS//i/}"
 	echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" >~/.osmosis
 fi
-# Read the DB and create the planet osm file
+
+# Fixing name for file
 date=$(date '+%y%m%d_%H%M')
-planetPBFFile=planet-${date}.osm.pbf
+fullHistoryFile=history-${date}.osm.bz2
+# State file
 stateFile="state.txt"
 
-# Creating the replication file
-osmosis --read-apidb \
+# Creating full history
+osmosis --read-apidb-change \
 	host=$POSTGRES_HOST \
 	database=$POSTGRES_DB \
 	user=$POSTGRES_USER \
 	password=$POSTGRES_PASSWORD \
 	validateSchemaVersion=no \
-	--write-pbf \
-	file=$planetPBFFile
+	readFullHistory \
+  	--write-xml-change \
+	compressionMethod=bzip2 \
+	$fullHistoryFile
 
 # AWS
 if [ $CLOUDPROVIDER == "aws" ]; then
-	# Save the path file
-	echo "https://$AWS_S3_BUCKET.s3.amazonaws.com/planet/$planetPBFFile" > $stateFile
+	echo "https://$AWS_S3_BUCKET.s3.amazonaws.com/planet/full-history/$fullHistoryFile" > $stateFile
 	# Upload to S3
-	aws s3 cp $planetPBFFile $AWS_S3_BUCKET/planet/full-history/$planetPBFFile --acl public-read 
-	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read
+	aws s3 cp $fullHistoryFile $AWS_S3_BUCKET/planet/full-history/$fullHistoryFile --acl public-read 
+	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read 
 fi
 
 # Google Storage
 if [ $CLOUDPROVIDER == "gcp" ]; then
-	# Save the path file
-	echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/planet/$planetPBFFile" > $stateFile
+	echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/planet/full-history/$fullHistoryFile" > $stateFile
 	# Upload to GS
-	gsutil cp -a public-read $planetPBFFile $GCP_STORAGE_BUCKET/planet/full-history/$planetPBFFile
+	gsutil cp -a public-read $fullHistoryFile $GCP_STORAGE_BUCKET/planet/full-history/$fullHistoryFile
 	gsutil cp -a public-read $stateFile $GCP_STORAGE_BUCKET/planet/full-history/$stateFile
 fi

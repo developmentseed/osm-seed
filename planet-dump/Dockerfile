@@ -25,5 +25,5 @@ RUN tar -xvzf "$PWD"/package/build/distribution/*.tgz -C "$PWD"/dist/
 RUN ln -s "$PWD"/dist/bin/osmosis /usr/bin/osmosis
 RUN osmosis --version 2>&1 | grep "Osmosis Version"
 WORKDIR $workdir
-COPY ./start.sh .
+COPY ./start.sh $workdir
 CMD ./start.sh
