@@ -11,6 +11,10 @@ fi
 # Fixing name for file
 date=$(date '+%y%m%d_%H%M')
 fullHistoryFile=history-${date}.osm.bz2
+# In case overwrite the file
+if [ $OVERWRITE_FHISTORY_FILE == "yes" ]; then
+	fullHistoryFile=history-latest.osm.bz2
+fi
 # State file
 stateFile="state.txt"
 
@@ -21,7 +25,7 @@ osmosis --read-apidb-change \
 	user=$POSTGRES_USER \
 	password=$POSTGRES_PASSWORD \
 	validateSchemaVersion=no \
-	readFullHistory \
+	readFullHistory=yes \
   	--write-xml-change \
 	compressionMethod=bzip2 \
 	$fullHistoryFile

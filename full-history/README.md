@@ -24,6 +24,11 @@ In case GCP:
 
 - `GCP_STORAGE_BUCKET` e.g `gs://osm-seed-test`
 
+By default, the container create a new *.osm.bz2 file, if you want to overwrite the same file as `history-latest.osm.bz2` set the following env var 👇;
+
+- `OVERWRITE_FHISTORY_FILE=yes`
+
+
 #### Building the container
 
 ```sh
@@ -36,7 +41,7 @@ In case GCP:
 ```sh
 docker run \
 --env-file ./../.env \
--v ${PWD}:/app \
+-v ${PWD}:/mnt/data \
 --network osm-seed_default \
 -it full-history:v1
 ```

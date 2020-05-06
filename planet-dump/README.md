@@ -24,6 +24,10 @@ In case GCP:
 
 - `GCP_STORAGE_BUCKET` e.g `gs://osm-seed-test`
 
+By default, the container create a new *.osm.bz2 file, if you want to overwrite the same file as `planet-latest.osm.pbf` set the following env var 👇;
+
+- `OVERWRITE_PLANET_FILE=yes`
+
 
 #### Building the container
 
@@ -38,7 +42,7 @@ In case GCP:
 ```
 docker run \
 --env-file ./../.env \
--v ${PWD}:/app \
+-v ${PWD}:/mnt/data \
 --network osm-seed_default \
 -it osmseed-planet-dump:v1
 ```

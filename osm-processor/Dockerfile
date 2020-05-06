@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
-ENV workdir /app
-RUN apt-get update
+ENV workdir /mnt/data
+RUN apt-get -y update
 RUN apt-get -y install \
     build-essential \
     libboost-program-options-dev \
@@ -13,8 +13,31 @@ RUN apt-get -y install \
     python-pip \
     curl \
     unzip \
-    wget
+    wget \
+    software-properties-common \
+    python-software-properties \
+    libz-dev \
+    zlib1g-dev \
+    gdal-bin \
+    tar \
+    bzip2 \
+    clang \
+    default-jre \
+    default-jdk \
+    gradle \
+    apt-utils
 
+# Install osmosis
+RUN git clone https://github.com/openstreetmap/osmosis.git
+WORKDIR osmosis
+RUN git checkout 9cfb8a06d9bcc948f34a6c8df31d878903d529fc
+RUN mkdir "$PWD"/dist
+RUN ./gradlew assemble
+RUN tar -xvzf "$PWD"/package/build/distribution/*.tgz -C "$PWD"/dist/
+RUN ln -s "$PWD"/dist/bin/osmosis /usr/bin/osmosis
+RUN osmosis --version 2>&1 | grep "Osmosis Version"
+
+# Install osmium-tool
 RUN git clone https://github.com/mapbox/protozero
 RUN cd protozero && git checkout 23d48fd2a441c6e3b2852ff84a0ba398e48f74be && mkdir build && cd build && cmake .. && make && make install
 RUN git clone https://github.com/osmcode/libosmium
@@ -27,6 +50,3 @@ RUN curl -sSL https://sdk.cloud.google.com | bash
 RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
 
 WORKDIR $workdir
-RUN mkdir data
-COPY ./start.sh .
-CMD ./start.sh
