@@ -24,7 +24,8 @@ RUN apt-get -y install \
     clang \
     default-jre \
     default-jdk \
-    gradle
+    gradle \
+    apt-utils
 
 # Install osmosis
 RUN git clone https://github.com/openstreetmap/osmosis.git
