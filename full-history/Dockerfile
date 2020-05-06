@@ -1,4 +1,4 @@
-FROM developmentseed/osmseed-planet-dump:ohm-afd8b8c
-WORKDIR /app
+FROM developmentseed/osmseed-osm-processor:latest
+WORKDIR /mnt/data
 COPY ./start.sh .
 CMD ./start.sh

@@ -29,7 +29,10 @@ if [ ! -f $workingDirectory/state.txt ]; then
 			gsutil cp $GCP_STORAGE_BUCKET$REPLICATION_FOLDER/state.txt $workingDirectory/state.txt
 		fi
 	fi
+	# In case the state.txt does not exist anywhere, lets create the folder data.
+	 mkdir -p $workingDirectory
 fi
+
 # Creating the replication file
 osmosis -q \
 	--replicate-apidb \
@@ -46,7 +49,7 @@ while true; do
 	for file in $(find $workingDirectory/ -cmin -1); do
 		if [ -f "$file" ]; then
 			bucketFile=${file#*"$workingDirectory"}
-			echo $(date +%F_%H:%M:%S) ": uploading ..." $file
+			echo $(date +%F_%H:%M:%S)": New files..." $file
 			# AWS
 			if [ $CLOUDPROVIDER == "aws" ]; then
 				aws s3 cp $file $AWS_S3_BUCKET$REPLICATION_FOLDER$bucketFile --acl public-read

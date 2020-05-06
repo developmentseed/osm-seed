@@ -10,6 +10,11 @@ fi
 # Read the DB and create the planet osm file
 date=$(date '+%y%m%d_%H%M')
 planetPBFFile=planet-${date}.osm.pbf
+# In case overwrite the file
+if [ $OVERWRITE_PLANET_FILE == "yes" ]; then
+	planetPBFFile=planet-latest.osm.pbf
+fi
+
 stateFile="state.txt"
 
 # Creating the replication file

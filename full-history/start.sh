@@ -11,6 +11,10 @@ fi
 # Fixing name for file
 date=$(date '+%y%m%d_%H%M')
 fullHistoryFile=history-${date}.osm.bz2
+# In case overwrite the file
+if [ $OVERWRITE_FHISTORY_FILE == "yes" ]; then
+	fullHistoryFile=history-latest.osm.bz2
+fi
 # State file
 stateFile="state.txt"
 
