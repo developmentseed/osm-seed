@@ -22,172 +22,172 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     env_file: 
       - ./.env
-  planet-dump:
-    image: osmseed-planet-dump:v1
-    build: 
-      context: ./planet-dump
-      dockerfile: Dockerfile
-    depends_on:
-      - web
-      - db
-    volumes:
-      - ./planet-dump-data:/app
-    command: >
-      /bin/bash -c "
-      echo Sleep the planet-dump for a while!;
-      sleep 40;
-      echo Creating the planet-dump!;
-      ./start.sh"
-    env_file: 
-      - ./.env
-  db-backup-restore:
-    image: osmseed-db-backup-restore:v1
-    build: 
-      context: ./db-backup-restore
-      dockerfile: Dockerfile
-    depends_on:
-      - web
-      - db
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while!;
-      sleep 20;
-      echo Building backup!;
-      ./start.sh"
-    env_file: 
-      - ./.env
-  id-editor:
-    image: osmseed-id-editor:v1
-    build: 
-      context: ./id-editor
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    depends_on:
-      - web
-      - db
-    env_file: 
-      - ./.env
-  replication-job:
-    image: osmseed-replication-job:v1
-    build:
-      context: ./replication-job
-      dockerfile: Dockerfile
-    volumes:
-      - ./replication-job-data:/app/data
-    depends_on:
-      - web
-      - db
-    command: >
-      /bin/bash -c "
-      echo Sleep the replication-job for a while!;
-      sleep 40;
-      echo Creating the replication-job!;
-      ./start.sh"
-    env_file:
-      - ./.env
-  populate-apidb:
-    image: osmseed-populate-apidb:v1
-    build:
-      context: ./populate-apidb
-      dockerfile: Dockerfile
-    volumes:
-      - ./populate-apidb-data:/app/data
-    depends_on:
-      - web
-      - db
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while populate-apidb!;
-      sleep 70s;
-      echo Starting populate-apidb!;
-      ./start.sh"
-    env_file:
-      - ./.env
-  osm-processor:
-    image: osmseed-osm-processor:v1
-    build:
-      context: ./osm-processor
-      dockerfile: Dockerfile
-    env_file:
-      - ./.env
-  full-history:
-    image: osmseed-full-history:v1
-    build:
-      context: ./full-history
-      dockerfile: Dockerfile
-    depends_on:
-      - web
-      - db
-    volumes:
-      - ./full-history-data:/mnt/data
-    command: >
-      /bin/bash -c "
-      echo Sleep full-history for a while!;
-      sleep 40;
-      echo Starting full-history!;
-      ./start.sh"
-    env_file:
-      - ./.env
-  ##=========================================================================
-  ## OMS-SEED-TILER section
-  ##=========================================================================
-  tiler-db:
-    image: osmseed-tiler-db:v1
-    build: 
-      context: ./tiler-db
-      dockerfile: Dockerfile
-    ports:
-      -  "5433:5432"
-    volumes:
-      - ./postgres-gis-data:/var/lib/postgresql/data
-    env_file:
-      - ./.env-tiler
-  tiler-imposm:
-    image: osmseed-tiler-imposm:v1
-    build: 
-      context: ./tiler-imposm
-      dockerfile: Dockerfile
-    volumes:
-      - ./tiler-imposm-data:/mnt/data
-    depends_on:
-      - tiler-db
-    env_file: 
-      - ./.env-tiler
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while!;
-      sleep 20;
-      echo starting imposm!;
-      ./start.sh"
-  tiler-server:
-    image: osmseed-tiler-server:v1
-    build: 
-      context: ./tiler-server
-      dockerfile: Dockerfile
-    volumes:
-      - ./tiler-server-data:/mnt/data
-    depends_on:
-      - tiler-db
-      - tiler-imposm
-    ports:
-      - "9090:9090"
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while!;
-      sleep 100;
-      echo Starting tiles server!;
-      ./start.sh"
-    env_file:
-      - ./.env-tiler
-  tiler-visor:
-    image: osmseed-tiler-visor:v1
-    build: 
-      context: ./tiler-visor
-      dockerfile: Dockerfile
-    depends_on:
-      - tiler-server
-    ports:
-      - "8081:80"
-    env_file:
-      - ./.env-tiler
+  # planet-dump:
+  #   image: osmseed-planet-dump:v1
+  #   build: 
+  #     context: ./planet-dump
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - web
+  #     - db
+  #   volumes:
+  #     - ./planet-dump-data:/app
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep the planet-dump for a while!;
+  #     sleep 40;
+  #     echo Creating the planet-dump!;
+  #     ./start.sh"
+  #   env_file: 
+  #     - ./.env
+  # db-backup-restore:
+  #   image: osmseed-db-backup-restore:v1
+  #   build: 
+  #     context: ./db-backup-restore
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - web
+  #     - db
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while!;
+  #     sleep 20;
+  #     echo Building backup!;
+  #     ./start.sh"
+  #   env_file: 
+  #     - ./.env
+  # id-editor:
+  #   image: osmseed-id-editor:v1
+  #   build: 
+  #     context: ./id-editor
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:80"
+  #   depends_on:
+  #     - web
+  #     - db
+  #   env_file: 
+  #     - ./.env
+  # replication-job:
+  #   image: osmseed-replication-job:v1
+  #   build:
+  #     context: ./replication-job
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./replication-job-data:/app/data
+  #   depends_on:
+  #     - web
+  #     - db
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep the replication-job for a while!;
+  #     sleep 40;
+  #     echo Creating the replication-job!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env
+  # populate-apidb:
+  #   image: osmseed-populate-apidb:v1
+  #   build:
+  #     context: ./populate-apidb
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./populate-apidb-data:/app/data
+  #   depends_on:
+  #     - web
+  #     - db
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while populate-apidb!;
+  #     sleep 70s;
+  #     echo Starting populate-apidb!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env
+  # osm-processor:
+  #   image: osmseed-osm-processor:v1
+  #   build:
+  #     context: ./osm-processor
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./.env
+  # full-history:
+  #   image: osmseed-full-history:v1
+  #   build:
+  #     context: ./full-history
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - web
+  #     - db
+  #   volumes:
+  #     - ./full-history-data:/mnt/data
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep full-history for a while!;
+  #     sleep 40;
+  #     echo Starting full-history!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env
+  # #=========================================================================
+  # # OMS-SEED-TILER section
+  # #=========================================================================
+  # tiler-db:
+  #   image: osmseed-tiler-db:v1
+  #   build: 
+  #     context: ./tiler-db
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     -  "5433:5432"
+  #   volumes:
+  #     - ./postgres-gis-data:/var/lib/postgresql/data
+  #   env_file:
+  #     - ./.env-tiler
+  # tiler-imposm:
+  #   image: osmseed-tiler-imposm:v1
+  #   build: 
+  #     context: ./tiler-imposm
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./tiler-imposm-data:/mnt/data
+  #   depends_on:
+  #     - tiler-db
+  #   env_file: 
+  #     - ./.env-tiler
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while!;
+  #     sleep 20;
+  #     echo starting imposm!;
+  #     ./start.sh"
+  # tiler-server:
+  #   image: osmseed-tiler-server:v1
+  #   build: 
+  #     context: ./tiler-server
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./tiler-server-data:/mnt/data
+  #   depends_on:
+  #     - tiler-db
+  #     - tiler-imposm
+  #   ports:
+  #     - "9090:9090"
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while!;
+  #     sleep 100;
+  #     echo Starting tiles server!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env-tiler
+  # tiler-visor:
+  #   image: osmseed-tiler-visor:v1
+  #   build: 
+  #     context: ./tiler-visor
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - tiler-server
+  #   ports:
+  #     - "8081:80"
+  #   env_file:
+  #     - ./.env-tiler
