@@ -42,8 +42,8 @@ spec:
                 value: {{ .Values.db.env.POSTGRES_USER }}
               - name: CLOUDPROVIDER
                 value: {{ .Values.cloudProvider }}
-              - name: CLEAN_BACKUPS
-                value: {{ quote .Values.planetDump.env.CLEAN_BACKUPS }}
+              - name: OVERWRITE_PLANET_FILE
+                value: {{ quote .Values.planetDump.env.OVERWRITE_PLANET_FILE }}
               # In case cloudProvider=aws
               {{- if eq .Values.cloudProvider "aws" }}
               - name: AWS_S3_BUCKET
