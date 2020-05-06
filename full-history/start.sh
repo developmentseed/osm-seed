@@ -25,7 +25,7 @@ osmosis --read-apidb-change \
 	user=$POSTGRES_USER \
 	password=$POSTGRES_PASSWORD \
 	validateSchemaVersion=no \
-	readFullHistory \
+	readFullHistory=yes \
   	--write-xml-change \
 	compressionMethod=bzip2 \
 	$fullHistoryFile
