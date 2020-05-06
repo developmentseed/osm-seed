@@ -40,6 +40,8 @@ spec:
                 value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
+              - name: OVERWRITE_FHISTORY_FILE
+                value: {{ .Values.fullHistory.env.OVERWRITE_FHISTORY_FILE }}
               - name: CLOUDPROVIDER
                 value: {{ .Values.cloudProvider }}
               # In case cloudProvider=aws
