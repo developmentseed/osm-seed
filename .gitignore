@@ -13,3 +13,7 @@ osm-processor-data/
 postgres-gis-data/
 tiler-imposm-data/
 tiler-server-data/
+data/
+*.osm
+*.pbf
+*.bz2

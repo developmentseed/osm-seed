@@ -36,7 +36,7 @@ In case GCP:
 ```sh
 docker run \
 --env-file ./../.env \
--v ${PWD}:/app \
+-v ${PWD}:/mnt/data \
 --network osm-seed_default \
 -it full-history:v1
 ```
