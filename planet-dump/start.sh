@@ -11,7 +11,7 @@ fi
 date=$(date '+%y%m%d_%H%M')
 planetPBFFile=planet-${date}.osm.pbf
 # In case overwrite the file
-if [ $OVERWRITE_PLANET_FILE == "yes" ]; then
+if [ "$OVERWRITE_PLANET_FILE" == "true" ]; then
 	planetPBFFile=planet-latest.osm.pbf
 fi
 
