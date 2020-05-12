@@ -86,4 +86,8 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+      {{- if .Values.db.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
+      {{- end }}
 {{- end }}
