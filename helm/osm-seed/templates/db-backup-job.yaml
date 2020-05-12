@@ -1,4 +1,4 @@
-{{- if .Values.dbbackup.enabled -}}
+{{- if .Values.dbBackupRestore.enabled -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -9,25 +9,27 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: {{ quote .Values.dbbackup.schedule }}
+  schedule: {{ quote .Values.dbBackupRestore.schedule }}
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
+  startingDeadlineSeconds: 100
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
         spec:
           containers:
           - name: {{ .Release.Name }}-db-backup-job
-            image: {{ .Values.dbbackup.image }}:{{ .Values.osmSeedVersion }}
+            image: {{ .Values.dbBackupRestore.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
-            {{- if .Values.dbbackup.resources.enabled }}
+            {{- if .Values.dbBackupRestore.resources.enabled }}
             resources:
               requests:
-                memory: {{ .Values.dbbackup.resources.requests.memory }}
-                cpu: {{ .Values.dbbackup.resources.requests.cpu }}
+                memory: {{ .Values.dbBackupRestore.resources.requests.memory }}
+                cpu: {{ .Values.dbBackupRestore.resources.requests.cpu }}
               limits:
-                memory: {{ .Values.dbbackup.resources.limits.memory }}
-                cpu: {{ .Values.dbbackup.resources.limits.cpu }}
+                memory: {{ .Values.dbBackupRestore.resources.limits.memory }}
+                cpu: {{ .Values.dbBackupRestore.resources.limits.cpu }}
             {{- end }}
             env:
               - name: POSTGRES_HOST
@@ -39,11 +41,11 @@ spec:
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
               - name: DB_ACTION
-                value: {{ .Values.dbbackup.env.DB_ACTION }}
+                value: {{ .Values.dbBackupRestore.env.DB_ACTION }}
               - name: RESTORE_URL_FILE
-                value: {{.Values.dbbackup.env.RESTORE_URL_FILE}}
+                value: {{.Values.dbBackupRestore.env.RESTORE_URL_FILE}}
               - name: CLEAN_BACKUPS
-                value: {{ quote .Values.dbbackup.env.CLEAN_BACKUPS }}
+                value: {{ quote .Values.dbBackupRestore.env.CLEAN_BACKUPS }}
               - name: CLOUDPROVIDER
                 value: {{ .Values.cloudProvider }}
               # In case cloudProvider=aws
@@ -57,4 +59,8 @@ spec:
                 value: {{ .Values.GCP_STORAGE_BUCKET }}
               {{- end }}
           restartPolicy: OnFailure
+          {{- if .Values.dbBackupRestore.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.dbBackupRestore.nodeSelector.label_key }} : {{ .Values.dbBackupRestore.nodeSelector.label_value }}
+          {{- end }}
 {{- end }}
