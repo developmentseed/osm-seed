@@ -33,32 +33,43 @@ if [ ! -f $workingDirectory/state.txt ]; then
 	 mkdir -p $workingDirectory
 fi
 
-# Creating the replication file
-osmosis -q \
-	--replicate-apidb \
-	iterations=0 \
-	minInterval=60000 \
-	host=$POSTGRES_HOST \
-	database=$POSTGRES_DB \
-	user=$POSTGRES_USER \
-	password=$POSTGRES_PASSWORD \
-	validateSchemaVersion=no \
-	--write-replication \
-	workingDirectory=$workingDirectory &
-while true; do
-	for file in $(find $workingDirectory/ -cmin -1); do
-		if [ -f "$file" ]; then
-			bucketFile=${file#*"$workingDirectory"}
-			echo $(date +%F_%H:%M:%S)": New files..." $file
-			# AWS
-			if [ $CLOUDPROVIDER == "aws" ]; then
-				aws s3 cp $file $AWS_S3_BUCKET$REPLICATION_FOLDER$bucketFile --acl public-read
+# Creating the replication files
+function generateReplication () {
+	osmosis -q \
+		--replicate-apidb \
+		iterations=0 \
+		minInterval=60000 \
+		host=$POSTGRES_HOST \
+		database=$POSTGRES_DB \
+		user=$POSTGRES_USER \
+		password=$POSTGRES_PASSWORD \
+		validateSchemaVersion=no \
+		--write-replication \
+		workingDirectory=$workingDirectory &
+	while true; do
+		for file in $(find $workingDirectory/ -cmin -1); do
+			if [ -f "$file" ]; then
+				bucketFile=${file#*"$workingDirectory"}
+				echo $(date +%F_%H:%M:%S)": New files..." $file
+				# AWS
+				if [ $CLOUDPROVIDER == "aws" ]; then
+					aws s3 cp $file $AWS_S3_BUCKET$REPLICATION_FOLDER$bucketFile --acl public-read
+				fi
+				# Google Storage
+				if [ $CLOUDPROVIDER == "gcp" ]; then
+					gsutil cp -a public-read $file $GCP_STORAGE_BUCKET$REPLICATION_FOLDER$bucketFile
+				fi
 			fi
-			# Google Storage
-			if [ $CLOUDPROVIDER == "gcp" ]; then
-				gsutil cp -a public-read $file $GCP_STORAGE_BUCKET$REPLICATION_FOLDER$bucketFile
-			fi
-		fi
+		done
+		sleep 30s
 	done
-	sleep 30s
+}
+
+# Check if Postgres is ready
+flag=true
+while "$flag" = true; do
+    pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
+        # Change flag to false to stop ping the DB
+        flag=false
+        generateReplication
 done
