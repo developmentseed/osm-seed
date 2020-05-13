@@ -10,8 +10,8 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   schedule: {{ quote .Values.dbBackupRestore.schedule }}
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
   startingDeadlineSeconds: 100
   concurrencyPolicy: Forbid
   jobTemplate:
@@ -51,7 +51,7 @@ spec:
               # In case cloudProvider=aws
               {{- if eq .Values.cloudProvider "aws" }}
               - name: AWS_S3_BUCKET
-                value: {{ .Values.dbBackupRestore.AWS_S3_BUCKET }}
+                value: {{ .Values.dbBackupRestore.env.AWS_S3_BUCKET }}
               {{- end }}
               # In case cloudProvider=gcp
               {{- if eq .Values.cloudProvider "gcp" }}
