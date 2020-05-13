@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 export PGPASSWORD=$POSTGRES_PASSWORD
-date=$(date '+%Y-%m-%d:%H:%M')
-backupFile=osm-seed-${date}.sql.gz
+
+date=$(date '+%y%m%d_%H%M')
+backupFile=osmseed-${date}.sql.gz
 stateFile="state.txt"
 restoreFile="backup.sql.gz"
 
 # Backing up DataBase
 if [ "$DB_ACTION" == "backup" ]; then
 	# Backup database and make maximum compression at the slowest speed
-	# --quote-all-identifiers
 	pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB | gzip -9 >$backupFile
 
 	# AWS
@@ -16,7 +16,7 @@ if [ "$DB_ACTION" == "backup" ]; then
 		# Upload to S3
 		aws s3 cp $backupFile $AWS_S3_BUCKET/database/$backupFile
 		# The file state.txt contain the latest version of DB path
-		echo "$AWS_S3_BUCKET/database/$backupFile" >$stateFile
+		echo "$AWS_S3_BUCKET/database/$backupFile" > $stateFile
 		aws s3 cp $stateFile $AWS_S3_BUCKET/database/$stateFile
 	fi
 
