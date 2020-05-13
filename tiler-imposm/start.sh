@@ -12,13 +12,6 @@ mkdir -p $cachedir
 diffdir="/mnt/data/diff"
 mkdir -p $diffdir
 
-# Creating last.state.text #note: this line should be changed to 
-# importData section because it need run just one and  for this test we already have a DB
-
-echo "timestamp=0001-01-01T00\:00\:00Z
-sequenceNumber=$SEQUENCE_NUMBER
-replicationUrl=$REPLICATION_URL" > $diffdir/last.state.txt
-
 # Create config file to set variable  for imposm
 echo "{" > config.json
 echo "\"cachedir\": \"$cachedir\","  >> config.json
@@ -51,6 +44,11 @@ function getData () {
 }
 
 function updateData(){
+    # Before updating lets overWrite the last.state.txt file
+    echo "timestamp=0001-01-01T00\:00\:00Z
+    sequenceNumber=$SEQUENCE_NUMBER
+    replicationUrl=$REPLICATION_URL" > $diffdir/last.state.txt
+
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
         imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &
         while true
@@ -97,11 +95,12 @@ function importData () {
     -config config.json \
     -deployproduction
     # -diff -cachedir $cachedir -diffdir $diffdir
-    # Update the DB
-    updateData
 
     # These index will help speed up tegola tile generation
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f postgis_index.sql
+
+    # Update the DB
+    updateData
 }
 
 
