@@ -12,7 +12,7 @@ RUN apt-get update && \
     libsqlite3-dev sqlite3 libmagickwand-dev libxml2-dev libxslt1-dev \
     openssh-server openssh-client \
     apache2 apache2-dev \
-    libsasl2-dev imagemagick libffi-dev curl &&\
+    libsasl2-dev imagemagick libffi-dev postgresql-client curl &&\
     # Cleanup
     apt-get clean && \
     cd /var/lib/apt/lists && rm -fr *Release* *Sources* *Packages* && \
@@ -116,6 +116,10 @@ RUN echo "gem 'therubyracer'" >> Gemfile
 
 # Install app dependencies
 RUN bundle update listen && bundle install
+
+# update vendored iD
+RUN rm -rf vendor/assets/iD
+RUN vendorer
 
 # Configure database.yml, application.yml and secrets.yml
 ADD config/database.yml $workdir/config/database.yml
