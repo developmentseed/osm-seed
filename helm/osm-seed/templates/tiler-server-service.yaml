@@ -11,6 +11,10 @@ metadata:
   {{- if eq .Values.cloudProvider "aws" }}
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+    {{- if eq .Values.AWS_SSL_ARN }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    {{ -end }}
   {{- end }}
 spec:
   # In case cloudProvider=aws
@@ -34,6 +38,13 @@ spec:
       targetPort: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
       protocol: TCP
       name: http
+  {{- if .Values.AWS_SSL_ARN }} #FIXME: make generic
+    - port: 443
+      targetPort: http
+      protocol: TCP
+      name: https      
+  {{ -end }}
+  
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
