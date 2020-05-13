@@ -59,6 +59,10 @@ spec:
               - name: MEMORY_JAVACMD_OPTIONS
                 value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}
-          restartPolicy: Never
+          restartPolicy: OnFailure
+          {{- if .Values.planetDump.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.planetDump.nodeSelector.label_key }} : {{ .Values.planetDump.nodeSelector.label_value }}
+          {{- end }}
       backoffLimit: 3
 {{- end }}

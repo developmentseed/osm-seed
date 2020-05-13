@@ -78,5 +78,9 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+      {{- if .Values.tilerImposm.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.tilerImposm.nodeSelector.label_key }} : {{ .Values.tilerImposm.nodeSelector.label_value }}
+      {{- end }}
 {{- end }}
 {{- end }}

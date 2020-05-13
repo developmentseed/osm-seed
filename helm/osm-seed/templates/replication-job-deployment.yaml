@@ -59,4 +59,8 @@ spec:
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.replicationJob.resources.requests.memory | default "2Gi" | quote}}
             {{- end }}
+      {{- if .Values.replicationJob.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.replicationJob.nodeSelector.label_key }} : {{ .Values.replicationJob.nodeSelector.label_value }}
+      {{- end }}
 {{- end }}

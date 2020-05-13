@@ -35,6 +35,7 @@ if [ "$DB_ACTION" == "restore" ]; then
 	# AWS
 	wget -O $restoreFile $RESTORE_URL_FILE
 	gunzip <$restoreFile | psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB
+	echo " Import data to  $POSTGRES_DB has finished ..."
 fi
 
 # This part of the code will clean the backups that have an aging of more than a week,
