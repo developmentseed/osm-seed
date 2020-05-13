@@ -84,4 +84,8 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+      {{- if .Values.tilerServer.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.tilerServer.nodeSelector.label_key }} : {{ .Values.tilerServer.nodeSelector.label_value }}
+      {{- end }}
 {{- end }}

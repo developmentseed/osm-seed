@@ -40,4 +40,8 @@ spec:
               value: {{ .Values.populateApidb.resources.requests.memory  | default "4Gi" | quote}}
             {{- end }}
         restartPolicy: Never
+        {{- if .Values.populateApidb.nodeSelector.enabled }}
+        nodeSelector:
+          {{ .Values.populateApidb.nodeSelector.label_key }} : {{ .Values.populateApidb.nodeSelector.label_value }}
+        {{- end }}
 {{- end }}
