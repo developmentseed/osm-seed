@@ -45,8 +45,15 @@ RUN cd libosmium && git checkout a1f88fe44b01863a1ac84efccff54b98bb2dc886 && mkd
 RUN git clone https://github.com/osmcode/osmium-tool
 RUN cd osmium-tool && git checkout ddbcb44f3ec0c1a8d729e69e3cee40d25f5a00b4 && mkdir build && cd build && cmake .. && make && make install
 
+# Install AWS and GCP cli
 RUN pip install awscli
 RUN curl -sSL https://sdk.cloud.google.com | bash
 RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
+
+# Install postgresql-client
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" | tee  /etc/apt/sources.list.d/pgdg.list'
+RUN apt-get update
+RUN apt-get install -y postgresql-client
 
 WORKDIR $workdir
