@@ -59,6 +59,10 @@ spec:
               - name: MEMORY_JAVACMD_OPTIONS
                 value: {{ .Values.fullHistory.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}
-          restartPolicy: Never
+          restartPolicy: OnFailure
+          {{- if .Values.fullHistory.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.fullHistory.nodeSelector.label_key }} : {{ .Values.fullHistory.nodeSelector.label_value }}
+          {{- end }}
       backoffLimit: 3
 {{- end }}
