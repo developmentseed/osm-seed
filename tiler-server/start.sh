@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+imposm3_expire_dir=/mnt/data/imposm3_expire_dir
+mkdir -p $imposm3_expire_dir
+
 set -e
 flag=true
 while "$flag" = true; do
