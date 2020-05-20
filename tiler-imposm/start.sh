@@ -11,6 +11,8 @@ cachedir="/mnt/data/cachedir"
 mkdir -p $cachedir
 diffdir="/mnt/data/diff"
 mkdir -p $diffdir
+imposm3_expire_dir="/mnt/data/imposm3_expire_dir"
+mkdir -p $imposm3_expire_dir
 
 # Create config file to set variable  for imposm
 echo "{" > config.json
@@ -45,20 +47,28 @@ function getData () {
 }
 
 function updateData(){
-    # Before updating lets overWrite the last.state.txt file
-    echo "timestamp=0001-01-01T00\:00\:00Z
-    sequenceNumber=$SEQUENCE_NUMBER
-    replicationUrl=$REPLICATION_URL" > $diffdir/last.state.txt
+    # Verify if last.state.txt exist
+    if [ -f "$diffdir/last.state.txt" ]; then
+        echo "Exist... $diffdir/last.state.txt"        
+    else 
+        # OverWrite the last.state.txt file with REPLICATION_URL and sequenceNumber=0
+        echo "timestamp=0001-01-01T00\:00\:00Z 
+        sequenceNumber=0
+        replicationUrl=$REPLICATION_URL" > $diffdir/last.state.txt
+    fi
 
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
-        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir &
+        imposm run -config config.json \
+        -cachedir $cachedir \
+        -diffdir $diffdir \
+        -expiretiles-dir $imposm3_expire_dir &
         while true
         do 
             echo "Updating...$(date +%F_%H-%M-%S)"
             sleep 1m
         done
     else
-        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir -limitto /mnt/data/$limitFile &
+        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir -limitto /mnt/data/$limitFile -expiretiles-dir $imposm3_expire_dir &
         while true
         do 
             echo "Updating...$(date +%F_%H-%M-%S)"
@@ -71,9 +81,9 @@ function importData () {
     echo "Execute the missing functions"
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f postgis_helpers.sql
     echo "Import Natural Earth"
-    ./scripts/natural_earth.sh
+    # ./scripts/natural_earth.sh
     echo "Import OSM Land"
-    ./scripts/osm_land.sh
+    # ./scripts/osm_land.sh
     echo "Import PBF file"
 
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
@@ -114,7 +124,8 @@ while "$flag" = true; do
         hasData=$(psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" \
         -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" | sed -n 3p | sed 's/ //g')
         # After import there are more than 70 tables
-        if [ $hasData  \> 70 ]; then
+        
+        if [ $hasData  \> 5 ]; then
             echo "Update the DB with osm data"
             updateData
         else
