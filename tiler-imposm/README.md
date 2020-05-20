@@ -54,5 +54,17 @@ Note: In case you use the `TILER_IMPORT_PROM`=`osmseed` you need to make public 
     docker run \
     --env-file ./../.env-tiler \
     --network osm-seed_default \
-    -t osmseed-tiler-imposm:v1  
+    -v ${PWD}:/mnt/data \
+    -t osmseed-tiler-imposm:v1 
+```
+
+
+#### Access the container
+
+```
+    docker run \
+    --env-file ./../.env-tiler \
+    --network osm-seed_default \
+    -v ${PWD}:/mnt/data \
+    -it osmseed-tiler-imposm:v1 bash
 ```
