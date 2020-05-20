@@ -81,9 +81,9 @@ function importData () {
     echo "Execute the missing functions"
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f postgis_helpers.sql
     echo "Import Natural Earth"
-    # ./scripts/natural_earth.sh
+    ./scripts/natural_earth.sh
     echo "Import OSM Land"
-    # ./scripts/osm_land.sh
+    ./scripts/osm_land.sh
     echo "Import PBF file"
 
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
@@ -125,7 +125,7 @@ while "$flag" = true; do
         -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" | sed -n 3p | sed 's/ //g')
         # After import there are more than 70 tables
         
-        if [ $hasData  \> 5 ]; then
+        if [ $hasData  \> 70 ]; then
             echo "Update the DB with osm data"
             updateData
         else
