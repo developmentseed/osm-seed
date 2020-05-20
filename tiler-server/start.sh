@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
+set -e
+flag=true
+
 imposm3_expire_dir=/mnt/data/imposm3_expire_dir
 mkdir -p $imposm3_expire_dir
 
-set -e
-flag=true
 while "$flag" = true; do
   pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
   flag=false
