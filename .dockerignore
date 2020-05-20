@@ -1,0 +1,27 @@
+# ignore .git and .cache folders
+.git
+.cache
+tiler-imposm/
+postgres-gis-data/
+postgres-data/
+planet-dump/
+openstreetmap-website/
+helm/
+replication-job/
+populate-apidb/
+osm-processor/
+full-history/
+tiler-db/
+tiler-server/
+db/
+id-editor/
+tiler-visor/
+package.json
+db-backup-restore/
+
+# ignore all *.class files in all folders, including build root
+**/*.json
+
+# ignore all markdown files (md) beside all README*.md
+*.md
+!README*.md
