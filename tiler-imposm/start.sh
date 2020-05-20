@@ -17,7 +17,8 @@ echo "{" > config.json
 echo "\"cachedir\": \"$cachedir\","  >> config.json
 echo "\"diffdir\": \"$diffdir\","  >> config.json
 echo "\"connection\": \"postgis://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB\"," >> config.json
-echo "\"mapping\": \"imposm3.json\""  >> config.json
+echo "\"mapping\": \"imposm3.json\","  >> config.json
+echo "\"replication_url\": \"$REPLICATION_URL\""  >> config.json
 echo "}" >> config.json
 
 function getData () {
