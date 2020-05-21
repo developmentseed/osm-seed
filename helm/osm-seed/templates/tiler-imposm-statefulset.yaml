@@ -52,8 +52,8 @@ spec:
             value: {{ .Values.tilerImposm.env.REPLICATION_URL }}
           - name: SEQUENCE_NUMBER
             value: {{ .Values.tilerImposm.env.SEQUENCE_NUMBER | quote}}
-          # - name: TILER_IMPORT_LIMIT
-          #   value: {{ .Values.tilerImposm.env.TILER_IMPORT_LIMIT }}
+          - name: OVERWRITE_STATE
+            value: {{ quote .Values.tilerImposm.env.OVERWRITE_STATE }}
           - name: CLOUDPROVIDER
             value: {{ .Values.cloudProvider }}
           # In case cloudProvider=aws
