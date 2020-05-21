@@ -17,3 +17,8 @@ data/
 *.osm
 *.pbf
 *.bz2
+
+tiler-imposm/config.json
+tiler-imposm/cachedir/
+tiler-imposm/diff/
+tiler-imposm/imposm3_expire_dir

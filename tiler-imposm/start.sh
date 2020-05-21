@@ -1,30 +1,29 @@
 #!/bin/bash
 set -e
-mkdir -p /tmp
 stateFile="state.txt"
 PBFFile="osm.pbf"
 limitFile="limitFile.geojson"
-flag=true
 
 # directories to keep the imposm's cache for updating the db
-cachedir="/mnt/data/cachedir"
+workDir=/mnt/data
+cachedir=$workDir/cachedir
 mkdir -p $cachedir
-diffdir="/mnt/data/diff"
+diffdir=$workDir/diff
 mkdir -p $diffdir
-imposm3_expire_dir="/mnt/data/imposm3_expire_dir"
+imposm3_expire_dir=$workDir/imposm3_expire_dir
 mkdir -p $imposm3_expire_dir
 
 # Create config file to set variable  for imposm
-echo "{" > config.json
-echo "\"cachedir\": \"$cachedir\","  >> config.json
-echo "\"diffdir\": \"$diffdir\","  >> config.json
-echo "\"connection\": \"postgis://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB\"," >> config.json
-echo "\"mapping\": \"imposm3.json\","  >> config.json
-echo "\"replication_url\": \"$REPLICATION_URL\""  >> config.json
-echo "}" >> config.json
+echo "{" > $workDir/config.json
+echo "\"cachedir\": \"$cachedir\","  >> $workDir/config.json
+echo "\"diffdir\": \"$diffdir\","  >> $workDir/config.json
+echo "\"connection\": \"postgis://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB\"," >> $workDir/config.json
+echo "\"mapping\": \"$workDir/config/imposm3.json\","  >> $workDir/config.json
+echo "\"replication_url\": \"$REPLICATION_URL\""  >> $workDir/config.json
+echo "}" >> $workDir/config.json
 
 function getData () {
-    # Import from pubic url, ussualy it come from osm
+    # Import from pubic url, usualy it come from osm
     if [ $TILER_IMPORT_FROM == "osm" ]; then 
         wget $TILER_IMPORT_PBF_URL -O $PBFFile
     fi
@@ -50,7 +49,7 @@ function updateData(){
     if [ "$OVERWRITE_STATE" = "true" ]; then
         rm $diffdir/last.state.txt
     fi
-
+    
     # Verify if last.state.txt exist
     if [ -f "$diffdir/last.state.txt" ]; then
         echo "Exist... $diffdir/last.state.txt"        
@@ -62,17 +61,14 @@ function updateData(){
     fi
 
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
-        imposm run -config config.json \
-        -cachedir $cachedir \
-        -diffdir $diffdir \
-        -expiretiles-dir $imposm3_expire_dir &
+        imposm run -config $workDir/config.json -expiretiles-dir $imposm3_expire_dir &
         while true
         do 
             echo "Updating...$(date +%F_%H-%M-%S)"
             sleep 1m
         done
     else
-        imposm run -config config.json -cachedir $cachedir -diffdir $diffdir -limitto /mnt/data/$limitFile -expiretiles-dir $imposm3_expire_dir &
+        imposm run -config $workDir/config.json -cachedir $cachedir -diffdir $diffdir -limitto $workDir/$limitFile -expiretiles-dir $imposm3_expire_dir &
         while true
         do 
             echo "Updating...$(date +%F_%H-%M-%S)"
@@ -83,36 +79,36 @@ function updateData(){
 
 function importData () {
     echo "Execute the missing functions"
-    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f postgis_helpers.sql
+    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f $workDir/config/postgis_helpers.sql
     echo "Import Natural Earth"
-    ./scripts/natural_earth.sh
+    ./$workDir/scripts/natural_earth.sh
     echo "Import OSM Land"
-    ./scripts/osm_land.sh
+    ./$workDir/scripts/osm_land.sh
     echo "Import PBF file"
 
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
         imposm import \
-        -config config.json \
+        -config $workDir/config.json \
         -read $PBFFile \
         -write \
         -diff -cachedir $cachedir -diffdir $diffdir
     else
-        wget $TILER_IMPORT_LIMIT -O /mnt/data/$limitFile
+        wget $TILER_IMPORT_LIMIT -O $workDir/$limitFile
         imposm import \
-        -config config.json \
+        -config $workDir/config.json \
         -read $PBFFile \
         -write \
         -diff -cachedir $cachedir -diffdir $diffdir \
-        -limitto /mnt/data/$limitFile
+        -limitto $workDir/$limitFile
     fi
 
     imposm import \
-    -config config.json \
+    -config $workDir/config.json \
     -deployproduction
     # -diff -cachedir $cachedir -diffdir $diffdir
 
     # These index will help speed up tegola tile generation
-    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f postgis_index.sql
+    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f $workDir/config/postgis_index.sql
 
     # Update the DB
     updateData
@@ -120,7 +116,7 @@ function importData () {
 
 
 echo "Connecting... to postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
-
+flag=true
 while "$flag" = true; do
     pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
         # Change flag to false to stop ping the DB

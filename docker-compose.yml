@@ -24,11 +24,10 @@ services:
       - ./.env
   planet-dump:
     image: osmseed-planet-dump:v1
-    build: 
+    build:
       context: ./planet-dump
       dockerfile: Dockerfile
     depends_on:
-      - web
       - db
     volumes:
       - ./planet-dump-data:/app
@@ -46,7 +45,6 @@ services:
       context: ./db-backup-restore
       dockerfile: Dockerfile
     depends_on:
-      - web
       - db
     command: >
       /bin/bash -c "
@@ -74,9 +72,8 @@ services:
       context: ./replication-job
       dockerfile: Dockerfile
     volumes:
-      - ./replication-job-data:/app/data
+      - ./replication-job:/mnt/data
     depends_on:
-      - web
       - db
     command: >
       /bin/bash -c "
@@ -94,7 +91,6 @@ services:
     volumes:
       - ./populate-apidb-data:/app/data
     depends_on:
-      - web
       - db
     command: >
       /bin/bash -c "
@@ -129,9 +125,9 @@ services:
       ./start.sh"
     env_file:
       - ./.env
-  #=========================================================================
-  # OMS-SEED-TILER section
-  #=========================================================================
+  # #=========================================================================
+  # # OMS-SEED-TILER section
+  # #=========================================================================
   tiler-db:
     image: osmseed-tiler-db:v1
     build: 
