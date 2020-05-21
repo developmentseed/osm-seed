@@ -37,10 +37,10 @@ RUN pip install awscli \
     && rm -rf /var/cache/apk/* \
     && apk --purge -v del py-pip
 
+RUN apk add --update coreutils jq && rm -rf /var/cache/apk/*
+
 # Volumen
 VOLUME /mnt/data
 COPY ./config/config.toml  /opt/tegola_config/config.toml
 COPY ./start.sh ./start.sh
 CMD ./start.sh
-
-# FROM developmentseed/osmseed-osm-processor:ohm-7dd7b8a
