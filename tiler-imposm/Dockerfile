@@ -54,12 +54,9 @@ RUN go get github.com/omniscale/imposm3
 RUN go install github.com/omniscale/imposm3/cmd/imposm
 RUN cp $GOPATH/bin/imposm /usr/bin/imposm
 
-VOLUME /mnt/data
 WORKDIR /mnt/data
-RUN mkdir config
-COPY ./config/imposm3.json config/imposm3.json
-COPY ./config/postgis_helpers.sql config/postgis_helpers.sql
-COPY ./config/postgis_index.sql config/postgis_index.sql
-COPY start.sh start.sh
+WORKDIR /osm
+COPY config config
 COPY scripts scripts
+COPY start.sh start.sh
 CMD ./start.sh

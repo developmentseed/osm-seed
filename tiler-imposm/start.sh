@@ -13,6 +13,8 @@ mkdir -p $diffdir
 imposm3_expire_dir=$workDir/imposm3_expire_dir
 mkdir -p $imposm3_expire_dir
 
+# Setting directory
+settingDir=/osm
 # Folder to store the imposm expider files in s3 or gs
 IMPOSM_FOLDER=imposm
 
@@ -99,11 +101,11 @@ function updateData(){
 
 function importData () {
     echo "Execute the missing functions"
-    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f $workDir/config/postgis_helpers.sql
+    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f config/postgis_helpers.sql
     echo "Import Natural Earth"
-    ./$workDir/scripts/natural_earth.sh
+    ./scripts/natural_earth.sh
     echo "Import OSM Land"
-    ./$workDir/scripts/osm_land.sh
+    ./scripts/osm_land.sh
     echo "Import PBF file"
 
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
@@ -128,7 +130,7 @@ function importData () {
     # -diff -cachedir $cachedir -diffdir $diffdir
 
     # These index will help speed up tegola tile generation
-    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f $workDir/config/postgis_index.sql
+    psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f config/postgis_index.sql
 
     # Update the DB
     updateData
