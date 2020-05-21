@@ -39,7 +39,7 @@ function generateReplication () {
 		--replicate-apidb \
 		iterations=0 \
 		minInterval=60000 \
-		# maxInterval=60000 \
+		maxInterval=120000 \
 		host=$POSTGRES_HOST \
 		database=$POSTGRES_DB \
 		user=$POSTGRES_USER \
