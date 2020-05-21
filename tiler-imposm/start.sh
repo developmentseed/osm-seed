@@ -53,14 +53,15 @@ function getData () {
 function uploadExpiredFiles(){
 		for file in $(find $imposm3_expire_dir -cmin -1); do
 			if [ -f "$file" ]; then
+                bucketFile=${file#*"$workDir"}
 				echo $(date +%F_%H:%M:%S)": New file..." $file
 				# AWS
 				if [ "$CLOUDPROVIDER" == "aws" ]; then
-				    aws s3 cp $file ${AWS_S3_BUCKET}/${IMPOSM_FOLDER}/${file} --acl public-read
+				    aws s3 cp $file ${AWS_S3_BUCKET}${IMPOSM_FOLDER}${bucketFile} --acl public-read
 				fi
 				# Google Storage
 				if [ "$CLOUDPROVIDER" == "gcp" ]; then
-			        gsutil cp -a public-read $file ${GCP_STORAGE_BUCKET}/${IMPOSM_FOLDER}/${file}
+			        gsutil cp -a public-read $file ${GCP_STORAGE_BUCKET}${IMPOSM_FOLDER}${bucketFile}
 				fi
 			fi
 		done
