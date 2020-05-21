@@ -47,6 +47,10 @@ function getData () {
 }
 
 function updateData(){
+    if [ "$OVERWRITE_STATE" = "true" ]; then
+        rm $diffdir/last.state.txt
+    fi
+
     # Verify if last.state.txt exist
     if [ -f "$diffdir/last.state.txt" ]; then
         echo "Exist... $diffdir/last.state.txt"        
