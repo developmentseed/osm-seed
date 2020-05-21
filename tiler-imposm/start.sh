@@ -57,7 +57,7 @@ function uploadExpiredFiles(){
         stateFile=$imposm3_expire_state_dir/expired_${dateStr}.txt
         bucketStateFile=${stateFile#*"$workDir"}
         
-        for file in $(find $imposm3_expire_dir -type f -cmin -200); do
+        for file in $(find $imposm3_expire_dir -type f -cmin -1); do
             bucketFile=${file#*"$workDir"}
             echo $(date +%F_%H:%M:%S)": New file..." $file
             echo $file >> $stateFile

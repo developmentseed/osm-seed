@@ -9,7 +9,7 @@ IMPOSM3_EXPIRE_PURGED=/mnt/data/imposm3_expire_dir_purged
 mkdir -p $IMPOSM3_EXPIRE_PURGED
 
 function purgeCache(){
-  
+  echo "Purge cache..."
 }
 
 while "$flag" = true; do
