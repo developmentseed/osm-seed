@@ -16,10 +16,31 @@ RUN cd /go/src/github.com/go-spatial/tegola/cmd/tegola \
 	&& chmod a+x /opt/tegola
 RUN ln -s /opt/tegola /usr/bin/tegola
 
+RUN apk add --update \
+    python \
+    py-pip \
+    py-cffi \
+    py-cryptography \
+  && pip install --upgrade pip \
+  && apk add --virtual build-deps \
+    gcc \
+    libffi-dev \
+    python-dev \
+    linux-headers \
+    musl-dev \
+    openssl-dev
+
+# Install aws-cli and  gsutil
+RUN pip install awscli \
+    && pip install gsutil \
+    && apk del build-deps \
+    && rm -rf /var/cache/apk/* \
+    && apk --purge -v del py-pip
+
 # Volumen
-ENV CACHEDATA /mnt/data
-RUN mkdir -p "$CACHEDATA" && chmod 777 "$CACHEDATA"
 VOLUME /mnt/data
 COPY ./config/config.toml  /opt/tegola_config/config.toml
 COPY ./start.sh ./start.sh
 CMD ./start.sh
+
+# FROM developmentseed/osmseed-osm-processor:ohm-7dd7b8a
