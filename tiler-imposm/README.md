@@ -58,7 +58,6 @@ Note: In case you use the `TILER_IMPORT_PROM`=`osmseed` you need to make public 
     -t osmseed-tiler-imposm:v1 
 ```
 
-
 #### Access the container
 
 ```
