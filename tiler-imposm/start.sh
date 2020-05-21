@@ -23,7 +23,7 @@ echo "{" > $workDir/config.json
 echo "\"cachedir\": \"$cachedir\","  >> $workDir/config.json
 echo "\"diffdir\": \"$diffdir\","  >> $workDir/config.json
 echo "\"connection\": \"postgis://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB\"," >> $workDir/config.json
-echo "\"mapping\": \"$workDir/config/imposm3.json\","  >> $workDir/config.json
+echo "\"mapping\": \"config/imposm3.json\","  >> $workDir/config.json
 echo "\"replication_url\": \"$REPLICATION_URL\""  >> $workDir/config.json
 echo "}" >> $workDir/config.json
 
