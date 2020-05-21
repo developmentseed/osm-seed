@@ -13,6 +13,9 @@ mkdir -p $diffdir
 imposm3_expire_dir=$workDir/imposm3_expire_dir
 mkdir -p $imposm3_expire_dir
 
+# Folder to store the imposm expider files in s3 or gs
+IMPOSM_FOLDER=imposm
+
 # Create config file to set variable  for imposm
 echo "{" > $workDir/config.json
 echo "\"cachedir\": \"$cachedir\","  >> $workDir/config.json
@@ -45,11 +48,26 @@ function getData () {
     fi
 }
 
+function uploadExpiredFiles(){
+		for file in $(find $imposm3_expire_dir -cmin -1); do
+			if [ -f "$file" ]; then
+				echo $(date +%F_%H:%M:%S)": New file..." $file
+				# AWS
+				if [ "$CLOUDPROVIDER" == "aws" ]; then
+				    aws s3 cp $file ${AWS_S3_BUCKET}/${IMPOSM_FOLDER}/${file} --acl public-read
+				fi
+				# Google Storage
+				if [ "$CLOUDPROVIDER" == "gcp" ]; then
+			        gsutil cp -a public-read $file ${GCP_STORAGE_BUCKET}/${IMPOSM_FOLDER}/${file}
+				fi
+			fi
+		done
+}
+
 function updateData(){
     if [ "$OVERWRITE_STATE" = "true" ]; then
         rm $diffdir/last.state.txt
     fi
-    
     # Verify if last.state.txt exist
     if [ -f "$diffdir/last.state.txt" ]; then
         echo "Exist... $diffdir/last.state.txt"        
@@ -65,13 +83,15 @@ function updateData(){
         while true
         do 
             echo "Updating...$(date +%F_%H-%M-%S)"
+            uploadExpiredFiles
             sleep 1m
         done
     else
-        imposm run -config $workDir/config.json -cachedir $cachedir -diffdir $diffdir -limitto $workDir/$limitFile -expiretiles-dir $imposm3_expire_dir &
+        imposm run -config $workDir/config.json -limitto $workDir/$limitFile -expiretiles-dir $imposm3_expire_dir &
         while true
         do 
             echo "Updating...$(date +%F_%H-%M-%S)"
+            uploadExpiredFiles
             sleep 1m
         done
     fi
