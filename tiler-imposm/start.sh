@@ -12,11 +12,12 @@ diffdir=$workDir/diff
 mkdir -p $diffdir
 imposm3_expire_dir=$workDir/imposm3_expire_dir
 mkdir -p $imposm3_expire_dir
-
+imposm3_expire_state_dir=$workDir/imposm3_expire_state
+mkdir -p $imposm3_expire_state_dir
 # Setting directory
 settingDir=/osm
 # Folder to store the imposm expider files in s3 or gs
-IMPOSM_FOLDER=imposm
+BUCKET_IMPOSM_FOLDER=imposm
 
 # Create config file to set variable  for imposm
 echo "{" > $workDir/config.json
@@ -51,20 +52,35 @@ function getData () {
 }
 
 function uploadExpiredFiles(){
-		for file in $(find $imposm3_expire_dir -cmin -1); do
-			if [ -f "$file" ]; then
-                bucketFile=${file#*"$workDir"}
-				echo $(date +%F_%H:%M:%S)": New file..." $file
-				# AWS
-				if [ "$CLOUDPROVIDER" == "aws" ]; then
-				    aws s3 cp $file ${AWS_S3_BUCKET}${IMPOSM_FOLDER}${bucketFile} --acl public-read
-				fi
-				# Google Storage
-				if [ "$CLOUDPROVIDER" == "gcp" ]; then
-			        gsutil cp -a public-read $file ${GCP_STORAGE_BUCKET}${IMPOSM_FOLDER}${bucketFile}
-				fi
-			fi
-		done
+        # create statte file
+        dateStr=$(date '+%y%m%d%H%M%S')
+        stateFile=$imposm3_expire_state_dir/expired_${dateStr}.txt
+        bucketStateFile=${stateFile#*"$workDir"}
+        
+        for file in $(find $imposm3_expire_dir -type f -cmin -200); do
+            bucketFile=${file#*"$workDir"}
+            echo $(date +%F_%H:%M:%S)": New file..." $file
+            echo $file >> $stateFile
+            # AWS
+            if [ "$CLOUDPROVIDER" == "aws" ]; then
+                aws s3 cp $file ${AWS_S3_BUCKET}/${BUCKET_IMPOSM_FOLDER}${bucketFile} --acl public-read
+            fi
+            # Google Storage
+            if [ "$CLOUDPROVIDER" == "gcp" ]; then
+                gsutil cp -a public-read $file ${GCP_STORAGE_BUCKET}${BUCKET_IMPOSM_FOLDER}${bucketFile}
+            fi
+        done
+        # Upload state File
+        if [[ -f "$stateFile" ]]; then
+            # AWS
+            if [ "$CLOUDPROVIDER" == "aws" ]; then
+                aws s3 cp $stateFile ${AWS_S3_BUCKET}/${BUCKET_IMPOSM_FOLDER}${bucketStateFile} --acl public-read
+            fi
+            # Google Storage
+            if [ "$CLOUDPROVIDER" == "gcp" ]; then
+                gsutil cp -a public-read $stateFile ${GCP_STORAGE_BUCKET}${BUCKET_IMPOSM_FOLDER}${bucketStateFile}
+            fi
+        fi
 }
 
 function updateData(){
