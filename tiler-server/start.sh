@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-workDir=/mnt/dat
+workDir=/mnt/data
 imposm3_expire_dir=$workDir/imposm/imposm3_expire_dir
 mkdir -p $imposm3_expire_dir
 imposm3_expire_purged=$workDir/imposm3_expire_dir_purged
@@ -23,12 +23,12 @@ function purgeCache(){
     do
       aws s3 cp ${AWS_S3_BUCKET}/${tileFile} $workDir/${tileFile}
       # Purge
-      tegola --config=/opt/tegola_config/config.toml cache purge --tile-list=$workDir/${tileFile} --tile-name-format="/zxy" --min-zoom 0 --max-zoom 20  --overwrite
-      err=$?
-      if [[ $err != "0" ]]; then
-        #error
-        echo "tegola exited with error code $err"
-      fi
+      echo tegola --config=/opt/tegola_config/config.toml cache purge --tile-list=$workDir/${tileFile} --tile-name-format="/zxy" --min-zoom 0 --max-zoom 20  --overwrite
+      # err=$?
+      # if [[ $err != "0" ]]; then
+      #   #error
+      #   echo "tegola exited with error code $err"
+      # fi
     done < list_expired.list
   fi
 }
