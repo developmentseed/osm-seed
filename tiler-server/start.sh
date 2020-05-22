@@ -2,14 +2,30 @@
 set -e
 flag=true
 
-IMPOSM3_EXPIRE_DIR=/mnt/data/imposm3_expire_dir
-mkdir -p $IMPOSM3_EXPIRE_DIR
+imposm3_expire_dir=/mnt/data/imposm3_expire_dir
+mkdir -p $imposm3_expire_dir
 
-IMPOSM3_EXPIRE_PURGED=/mnt/data/imposm3_expire_dir_purged
-mkdir -p $IMPOSM3_EXPIRE_PURGED
+imposm3_expire_purged=/mnt/data/imposm3_expire_dir_purged
+mkdir -p $imposm3_expire_purged
 
 function purgeCache(){
   echo "Purge cache..."
+  # Get S3 tiles files from the last 1 minute 
+  # TODO, Set the time apgo in ENV vars
+  DATE=$(date -d '-1 min' +'%m/%d/%Y %H:%M:%S')
+  if [ "$CLOUDPROVIDER" == "aws" ]; then
+    aws s3api list-objects-v2 \
+    --bucket planet.openhistoricalmap.org \
+    --query "Contents[?LastModified>'$DATE']" > last_upload_files.json
+    # Filter tiles with extencion .tiles
+    cat last_upload_files.json | jq -c '[ .[] | select( .Key | contains(".tiles")) ]' | jq '.[].Key' > list_expired.list
+    # Download tiles
+    while IFS= read -r tileFile
+    do
+      aws s3 cp ${AWS_S3_BUCKET}/${tileFile} $imposm3_expire_dir
+    done < list_expired.list
+    # Purge
+  fi
 }
 
 while "$flag" = true; do
