@@ -22,3 +22,4 @@ tiler-imposm/config.json
 tiler-imposm/cachedir/
 tiler-imposm/diff/
 tiler-imposm/imposm3_expire_dir
+tiler-server/imposm/
