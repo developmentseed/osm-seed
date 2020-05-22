@@ -41,6 +41,10 @@ RUN apk add --update coreutils jq && rm -rf /var/cache/apk/*
 
 # Volumen
 VOLUME /mnt/data
+# Copy config and  exec files
 COPY ./config/config.toml  /opt/tegola_config/config.toml
-COPY ./start.sh ./start.sh
-CMD ./start.sh
+COPY ./start.sh .
+COPY ./expire-watcher.sh .
+COPY ./seed-by-diffs.sh .
+COPY ./tile_cache_downloader.sh .
+CMD ./start.sh & ./tile_cache_downloader & ./expire-watcher.sh
