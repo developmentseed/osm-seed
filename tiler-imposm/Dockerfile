@@ -1,8 +1,8 @@
-FROM ubuntu:14.04
-ENV GOPATH /usr/bin
+FROM ubuntu:16.04
+
 RUN apt-get -y update
 RUN apt-get install -y \
-    build-essential \
+     \
     g++ \
     git-core \
     libboost-dev \
@@ -23,37 +23,55 @@ RUN apt-get install -y \
     curl \
     wget \
     unzip \
-    python-pip \
-    software-properties-common \
-    python-software-properties \
-    python-cffi musl-dev \
-    postgresql \
-    postgresql-contrib
+    software-properties-common
 
-# Install awscli  and gsutil  to get the pbf file
-RUN pip install awscli
-RUN curl -sSL https://sdk.cloud.google.com | bash
-RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
+# Install python
+RUN add-apt-repository ppa:deadsnakes/ppa \
+        && apt-get update && \
+        apt-get update -y  && \
+        apt-get install -y build-essential python3.6 python3.6-dev python3-pip && \
+        apt-get install -y git  && \
+        # update pip
+        python3.6 -m pip install pip --upgrade && \
+        python3.6 -m pip install wheel
+
+# Install postgresql-client
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+    && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" | tee  /etc/apt/sources.list.d/pgdg.list' \
+    && apt-get update && apt-get install -y postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 # Gdal is required to process the natural earth files
-RUN add-apt-repository ppa:ubuntugis/ppa
-RUN apt-get -y update
-RUN apt-get install -y gdal-bin
+RUN add-apt-repository ppa:ubuntugis/ppa \
+    && apt-get -y update \
+    && apt-get install -y gdal-bin \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install go
-RUN add-apt-repository ppa:gophers/archive
-RUN apt-get -y update
-RUN apt-get install -y golang-1.10-go
-RUN cp /usr/lib/go-1.10/bin/go /usr/bin/go
-RUN cp /usr/lib/go-1.10/bin/gofmt /usr/bin/gofmt
+RUN add-apt-repository ppa:gophers/archive \
+    && apt-get -y update \
+    && apt-get install -y golang-1.10-go \
+    && cp /usr/lib/go-1.10/bin/go /usr/bin/go \
+    && cp /usr/lib/go-1.10/bin/gofmt /usr/bin/gofmt
 
 # Install imposm
+ENV GOPATH /usr/bin
 RUN mkdir -p go
 WORKDIR /go
 RUN export GOPATH=`pwd`
 RUN go get github.com/omniscale/imposm3
 RUN go install github.com/omniscale/imposm3/cmd/imposm
 RUN cp $GOPATH/bin/imposm /usr/bin/imposm
+
+# Install awscli  and gsutil  to get the pbf file
+RUN pip3 install -U setuptools
+RUN pip3 install awscli
+RUN pip3 install gsutil
+
+
+ENV IMPOSMDATA /mnt/data
+RUN mkdir -p "$IMPOSMDATA" && chmod 777 "$IMPOSMDATA"
+VOLUME /mnt/data
 
 WORKDIR /mnt/data
 WORKDIR /osm
