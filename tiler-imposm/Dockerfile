@@ -26,7 +26,9 @@ RUN apt-get install -y \
     python-pip \
     software-properties-common \
     python-software-properties \
-    python-cffi musl-dev
+    python-cffi musl-dev \
+    postgresql \
+    postgresql-contrib
 
 # Install awscli  and gsutil  to get the pbf file
 RUN pip install awscli
