@@ -72,6 +72,18 @@ spec:
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
             - name: TILER_CACHE_MAX_ZOOM
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
+            - name: CLOUDPROVIDER
+              value: {{ .Values.cloudProvider }}
+            # In case cloudProvider=aws
+            {{- if eq .Values.cloudProvider "aws" }}
+            - name: AWS_S3_BUCKET
+              value: {{ .Values.AWS_S3_BUCKET }}
+            {{- end }}
+            # In case cloudProvider=gcp
+            {{- if eq .Values.cloudProvider "gcp" }}
+            - name: GCP_STORAGE_BUCKET
+              value: {{ .Values.GCP_STORAGE_BUCKET }}
+            {{- end }}
           volumeMounts:
           - mountPath: /mnt/data
             name: tiler-server-storage
