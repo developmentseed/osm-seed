@@ -18,15 +18,15 @@ completed_dir=$workDir/imposm/imposm3_expire_purged
 mkdir -p $completed_dir
 
 # assert no other jobs are running
-if [[ -f $queued_jobs ]]; then
-  exit
-else
-  touch $queued_jobs
-  if [[ ! $? ]]; then
-    rm $queued_jobs
-    exit
-  fi
-fi
+# if [[ -f $queued_jobs ]]; then
+#   exit
+# else
+#   touch $queued_jobs
+#   if [[ ! $? ]]; then
+#     rm $queued_jobs
+#     exit
+#   fi
+# fi
 
 
 # files newer than this amount of seconds will
@@ -62,4 +62,4 @@ for f in $imp_list; do
 done
 
 echo "finished seeding"
-# rm $queued_jobs
+rm $queued_jobs
