@@ -39,6 +39,9 @@ for f in $imp_list; do
     echo "$f" >> $queued_jobs
 done
 
+# Sort the files and set unique rows
+sort -u $queued_jobs > $workDir/imposm/tmp.list && mv $workDir/imposm/tmp.list $queued_jobs
+
 for f in $imp_list; do
     echo "seeding from $f"
     echo tegola cache purge \
