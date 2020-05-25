@@ -32,7 +32,9 @@ RUN apk add --update \
 
 # Install aws-cli and  gsutil
 RUN pip install awscli \
-    && pip install gsutil \
+    && pip install gsutil
+
+RUN pip install mercantile \
     && apk del build-deps \
     && rm -rf /var/cache/apk/* \
     && apk --purge -v del py-pip
@@ -43,6 +45,7 @@ RUN apk add --update coreutils jq && rm -rf /var/cache/apk/*
 VOLUME /mnt/data
 # Copy config and  exec files
 COPY ./config/config.toml  /opt/tegola_config/config.toml
+COPY ./tile2bounds.py .
 COPY ./start.sh .
 COPY ./expire-watcher.sh .
 COPY ./seed-by-diffs.sh .
