@@ -44,22 +44,28 @@ sort -u $queued_jobs > $workDir/imposm/tmp.list && mv $workDir/imposm/tmp.list $
 
 for f in $imp_list; do
     echo "seeding from $f"
-    echo tegola cache purge \
-    --config=/opt/tegola_config/config.toml \
-    --min-zoom 0 --max-zoom 20 \
-    tile-list="$(cat $f)"
-
-    tegola cache purge \
-    --config=/opt/tegola_config/config.toml \
-    --min-zoom 0 --max-zoom 20 \
-    tile-list="$(cat $f)"
-    err=$?
-    if [[ $err != "0" ]]; then
-        #error
-        echo "tegola exited with error code $err"
-        # rm $queued_jobs
-        exit
-    fi
+    # Read each line of the tiles file
+    while IFS= read -r tile
+    do
+        echo tegola cache purge \
+        --config=/opt/tegola_config/config.toml \
+        --min-zoom=0 --max-zoom=20 \
+        --bounds="$(python tile2bounds.py $tile)" \
+        tile-name=$tile
+        
+        tegola cache purge \
+        --config=/opt/tegola_config/config.toml \
+        --min-zoom=0 --max-zoom=20 \
+        --bounds="$(python tile2bounds.py $tile)" \
+        tile-name=$tile
+        err=$?
+        if [[ $err != "0" ]]; then
+            #error
+            echo "tegola exited with error code $err"
+            # rm $queued_jobs
+            exit
+        fi
+    done < "$f"
     echo "$f" >> $completed_jobs
     mv $f $completed_dir
 done
