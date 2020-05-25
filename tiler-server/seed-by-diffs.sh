@@ -47,16 +47,17 @@ for f in $imp_list; do
     # Read each line of the tiles file
     while IFS= read -r tile
     do
+        bounds="$(python tile2bounds.py $tile)"
         echo tegola cache purge \
         --config=/opt/tegola_config/config.toml \
         --min-zoom=0 --max-zoom=20 \
-        --bounds="$(python tile2bounds.py $tile)" \
+        --bounds=$bounds \
         tile-name=$tile
         
         tegola cache purge \
         --config=/opt/tegola_config/config.toml \
         --min-zoom=0 --max-zoom=20 \
-        --bounds="$(python tile2bounds.py $tile)" \
+        --bounds=$bounds \
         tile-name=$tile
         err=$?
         if [[ $err != "0" ]]; then
