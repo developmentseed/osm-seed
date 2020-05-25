@@ -19,12 +19,10 @@ mkdir -p $completed_dir
 
 # assert no other jobs are running
 if [[ -f $queued_jobs ]]; then
-  echo "$queued_jobs exists, is another seed process running?"
   exit
 else
   touch $queued_jobs
   if [[ ! $? ]]; then
-    echo "error writing queue list, exiting"
     rm $queued_jobs
     exit
   fi
