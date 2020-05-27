@@ -8,7 +8,6 @@ sum="not a sum"
 while true ; do
   new_sum=`ls $IMPOSM3_EXPIRE | md5sum`
   if [ "$sum" != "$new_sum" ]; then
-    echo "Starting... ./seed-by-diffs.sh"
     ./seed-by-diffs.sh
   else
     sleep 1

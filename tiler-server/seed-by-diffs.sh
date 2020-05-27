@@ -18,7 +18,7 @@ mkdir -p $completed_dir
 
 
 # List files in expire_dir
-imp_list=`find $expire_dir -type f`
+imp_list=`find $expire_dir -name '*.tiles' -type f`
 
 for f in $imp_list; do
     echo "$f" >> $queued_jobs
