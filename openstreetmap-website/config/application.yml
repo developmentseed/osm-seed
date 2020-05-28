@@ -8,10 +8,10 @@ defaults: &defaults
   attribution_url: "http://www.openstreetmap.org/copyright"
   license_url: "http://opendatacommons.org/licenses/odbl/1-0/"
   # Support email address
-  support_email: osmseed-test@developmentseed.org
+  support_email: "MAILER_SENDER_EMAIL"
   # Sender addresses for emails
-  email_from: "OpenStreetMap <osmseed-test@developmentseed.org>"
-  email_return_path: "osmseed-test@developmentseed.org"
+  email_from: "MAILER_SENDER_NAME <MAILER_SENDER_EMAIL>"
+  email_return_path: "MAILER_SENDER_EMAIL"
   # API version
   api_version: "0.6"
   # Application status - possible values are:

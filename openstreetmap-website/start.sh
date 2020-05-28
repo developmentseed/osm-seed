@@ -16,7 +16,8 @@ sed -i -e 's/server_url: "localhost"/server_url: "'$SERVER_URL'"/g' $workdir/con
 sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/application.yml
 
 # Setting up the email
-sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_USERNAME'/g' $workdir/config/application.yml
+sed -i -e 's/MAILER_SENDER_EMAIL/'$MAILER_SENDER_EMAIL'/g' $workdir/config/application.yml
+sed -i -e 's/MAILER_SENDER_NAME/'$MAILER_SENDER_NAME'/g' $workdir/config/application.yml
 
 # Set up iD key
 sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/application.yml
