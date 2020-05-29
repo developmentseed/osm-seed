@@ -16,7 +16,7 @@ sed -i -e 's/server_url: "localhost"/server_url: "'$SERVER_URL'"/g' $workdir/con
 sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/application.yml
 
 # Setting up the email
-sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_USERNAME'/g' $workdir/config/application.yml
+sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_FROM'/g' $workdir/config/application.yml
 
 # Set up iD key
 sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/application.yml
@@ -42,3 +42,6 @@ psql $DATABASE_URL -c "INSERT INTO client_applications VALUES('1','iD','$OSM_id_
 # Start the app
 #apachectl -k start -DFOREGROUND
 bundle exec rails server -p 80
+
+# Start the delayed jobs queue worker
+bundle exec rake jobs:work

@@ -10,7 +10,7 @@ defaults: &defaults
   # Support email address
   support_email: osmseed-test@developmentseed.org
   # Sender addresses for emails
-  email_from: "OpenStreetMap <osmseed-test@developmentseed.org>"
+  email_from: "OpenHistoricalMap <osmseed-test@developmentseed.org>"
   email_return_path: "osmseed-test@developmentseed.org"
   # API version
   api_version: "0.6"
