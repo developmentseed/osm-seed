@@ -40,9 +40,7 @@ psql $DATABASE_URL -c "INSERT INTO users (email, id, pass_crypt, creation_time, 
 
 psql $DATABASE_URL -c "INSERT INTO client_applications VALUES('1','iD','$OSM_id_website',null,'$OSM_id_website','$OSM_id_key','$OSM_id_secret',0,now(),now(),'t','t','t','t','t','t','t') ON CONFLICT (id) DO NOTHING;"
 
-# Start the app
-#apachectl -k start -DFOREGROUND
-bundle exec rails server -p 80
 
 # Start the delayed jobs queue worker
-bundle exec rake jobs:work
+# Start the app
+bundle exec rake jobs:work & bundle exec rails server -p 80
