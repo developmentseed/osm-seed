@@ -108,7 +108,7 @@ RUN /usr/sbin/passenger-memory-stats
 RUN rm -rf $workdir
 RUN git clone https://github.com/Open-Historical-Map-Labs/ohm-website.git $workdir
 WORKDIR $workdir
-RUN git checkout 82cb1d770c64ab1fd7b6855598f0d8751567120e
+RUN git checkout copy-updates-2020
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
