@@ -108,9 +108,9 @@ RUN /usr/sbin/passenger-memory-stats
 
 # Clone the openstreetmap-website
 RUN rm -rf $workdir
-RUN git clone https://github.com/Open-Historical-Map-Labs/ohm-website.git $workdir
+RUN git clone -b copy-updates-2020 https://github.com/Open-Historical-Map-Labs/ohm-website.git $workdir
 WORKDIR $workdir
-RUN git checkout copy-updates-2020
+# RUN git checkout copy-updates-2020
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
