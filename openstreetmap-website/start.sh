@@ -46,4 +46,5 @@ psql $DATABASE_URL -c "INSERT INTO client_applications VALUES('1','iD','$OSM_id_
 
 # Start the delayed jobs queue worker
 # Start the app
-bundle exec rake jobs:work & bundle exec rails server -p 80
+
+bundle exec rake jobs:work & apachectl -k start -DFOREGROUND
