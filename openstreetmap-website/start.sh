@@ -18,6 +18,9 @@ sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $w
 # Setting up the email
 sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_FROM'/g' $workdir/config/application.yml
 
+# Set up overpass URL
+sed -i -e 's///overpass-api.de/api/interpreter'$OVERPASS_URL'/g' $workdir/config/application.yml
+
 # Set up iD key
 sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/application.yml
 
