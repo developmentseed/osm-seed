@@ -30,11 +30,15 @@ RUN cd /tmp &&\
   rm -rf ruby-2.4.1 &&\
   rm -rf ruby-2.4.1.tar.gz
 
-# Add Ruby binaries to $PATH
-ENV PATH /opt/rubies/ruby-2.4.1/bin:$PATH
+# Add Ruby binaries and gem to $PATH 
+ENV PATH /usr/local/bin/:$PATH
+ENV WORK_ROOT /var
+ENV GEM_HOME $WORK_ROOT/.gem/ruby
+ENV GEM_PATH $GEM_HOME
+ENV PATH $PATH:$GEM_PATH/bin
 
 # Add options to gemrc
-RUN echo "gem: --no-document" > ~/.gemrc
+RUN echo "gem: --no-document" > $WORK_ROOT/.gemrc
 RUN apt-get -y update && \
     apt-get -y upgrade
 
@@ -113,6 +117,8 @@ RUN git checkout 1d2e22f5221454bd8b563f94f2f272e5fc4163c5
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
 RUN echo "gem 'therubyracer'" >> Gemfile
+
+RUN gem install nokogiri -- --use-system-libraries
 
 # Install app dependencies
 RUN bundle update listen && bundle install
