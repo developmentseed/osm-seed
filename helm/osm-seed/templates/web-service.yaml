@@ -14,6 +14,7 @@ metadata:
     {{- if .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
     {{- end }}
   {{- end }}
 spec:
@@ -39,7 +40,7 @@ spec:
     - port: 443
       targetPort: http
       protocol: TCP
-      name: https      
+      name: https
   {{- end }}
   
   selector:
