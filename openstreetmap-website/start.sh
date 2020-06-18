@@ -18,9 +18,6 @@ sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $w
 # Setting up the email
 sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_FROM'/g' $workdir/config/application.yml
 
-# Set up overpass URL
-sed -i -e 's///overpass-api.de/api/interpreter'$OVERPASS_URL'/g' $workdir/config/application.yml
-
 # Set up iD key
 sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/application.yml
 
@@ -35,13 +32,6 @@ RAILS_ENV=production rake assets:precompile --trace
 
 # db:migrate
 bundle exec rails db:migrate
-
-# Add the iD key
-DATABASE_URL="postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
-psql $DATABASE_URL -c "INSERT INTO users (email, id, pass_crypt, creation_time, display_name) VALUES('placeholder@example.com',0,'PLACEHOLDER',now(),'PLACEHOLDER') ON CONFLICT (email) DO NOTHING;"
-
-psql $DATABASE_URL -c "INSERT INTO client_applications VALUES('1','iD','$OSM_id_website',null,'$OSM_id_website','$OSM_id_key','$OSM_id_secret',0,now(),now(),'t','t','t','t','t','t','t') ON CONFLICT (id) DO NOTHING;"
-
 
 # Start the delayed jobs queue worker
 # Start the app

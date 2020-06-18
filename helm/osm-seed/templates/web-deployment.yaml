@@ -67,8 +67,6 @@ spec:
               value: {{ quote .Values.web.env.MAILER_FROM }}
             - name: OSM_id_key
               value: {{ .Values.web.env.OSM_id_key }}
-            - name: OVERPASS_URL
-              value: {{ .Values.web.env.OVERPASS_URL }}
             # Set domain name or pod ip  
               {{- if .Values.domain.enabled }}
             - name: SERVER_URL
