@@ -92,7 +92,7 @@ defaults: &defaults
     # with a vt or kh endpoint, and x, y and z query parameters
     - ".*\\.google(apis)?\\..*/(vt|kh)[\\?/].*([xyz]=.*){3}.*"
   # URL of Overpass instance to use for feature queries
-  overpass_url: "//overpass-api.de/api/interpreter"
+  overpass_url: "//overpass-api.openhistoricalmap.org/api/interpreter"
   # Routing endpoints
   graphhopper_url: "//graphhopper.com/api/1/route"
   mapquest_directions_url: "//open.mapquestapi.com/directions/v2/route"
