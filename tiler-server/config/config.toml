@@ -169,6 +169,12 @@ max_connections = 40
 	id_fieldname = "id"
 	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type, tags->'start_date' as start_date, tags->'end_date' as end_date, isodatetodecimaldate(pad_date(tags->'start_date', 'start')) AS start_decdate, isodatetodecimaldate(pad_date(tags->'end_date', 'end')) AS end_decdate FROM osm_amenity_points WHERE geometry && !BBOX!"
 
+	[[providers.layers]]
+	name = "place_points"
+	geometry_fieldname = "geometry"
+	id_fieldname = "id"
+	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type, tags->'start_date' as start_date, tags->'end_date' as end_date, isodatetodecimaldate(pad_date(tags->'start_date', 'start')) AS start_decdate, isodatetodecimaldate(pad_date(tags->'end_date', 'end')) AS end_decdate FROM osm_place_points WHERE geometry && !BBOX!"
+
 	# Other (Man Made, Historic, Military, Power, Barrier etc)
 	[[providers.layers]]
 	name = "other_points"
@@ -636,6 +642,13 @@ center = [-74.275329586789, -12.153492567373, 8.0] # optional center value. part
 	name = "amenity_points"
 	provider_layer = "osm.amenity_points"
 	min_zoom = 14
+	max_zoom = 20
+
+	# Place Points
+	[[maps.layers]]
+	name = "place_points"
+	provider_layer = "osm.place_points"
+	min_zoom = 1
 	max_zoom = 20
 
 	# Other Points
