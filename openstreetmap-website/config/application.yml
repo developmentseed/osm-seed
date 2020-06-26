@@ -10,8 +10,8 @@ defaults: &defaults
   # Support email address
   support_email: "MAILER_SENDER_EMAIL"
   # Sender addresses for emails
-  email_from: "MAILER_SENDER_NAME <MAILER_SENDER_EMAIL>"
-  email_return_path: "MAILER_SENDER_EMAIL"
+  email_from: "openstreeetmap <osmseed-test@developmentseed.org>"
+  email_return_path: "osmseed-test@developmentseed.org"
   # API version
   api_version: "0.6"
   # Application status - possible values are:
@@ -73,7 +73,7 @@ defaults: &defaults
   # Enable legacy OAuth 1.0 support
   oauth_10_support: true
   # URL of Nominatim instance to use for geocoding
-  nominatim_url: "//nominatim.openhistoricalmap.org/"
+  nominatim_url: "//nominatim.openstreeetmap.org/"
   # Default editor
   default_editor: "id"
   # OAuth consumer key for Potlatch 2
@@ -92,7 +92,7 @@ defaults: &defaults
     # with a vt or kh endpoint, and x, y and z query parameters
     - ".*\\.google(apis)?\\..*/(vt|kh)[\\?/].*([xyz]=.*){3}.*"
   # URL of Overpass instance to use for feature queries
-  overpass_url: "//overpass-api.openhistoricalmap.org/api/interpreter"
+  overpass_url: "//overpass-api.openstreeetmap.org/api/interpreter"
   # Routing endpoints
   graphhopper_url: "//graphhopper.com/api/1/route"
   mapquest_directions_url: "//open.mapquestapi.com/directions/v2/route"
