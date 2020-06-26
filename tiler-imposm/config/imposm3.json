@@ -827,6 +827,79 @@
                     "__any__"
                 ]
             }
-        }
+        },
+        "relation_members": {
+            "type": "relation_member",
+            "fields": [
+              {
+                "name": "osm_id",
+                "type": "id"
+              },
+              {
+                "name": "member",
+                "type": "member_id"
+              },
+              {
+                "name": "index",
+                "type": "member_index"
+              },
+              {
+                "name": "role",
+                "type": "member_role"
+              },
+              {
+                "name": "type",
+                "type": "member_type"
+              },
+              {
+                "name": "geometry",
+                "type": "geometry"
+              },
+              {
+                "name": "relname",
+                "key": "name",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "key": "name",
+                "type": "string",
+                "from_member": true
+              }
+            ],
+            "mapping": {
+              "__any__": [
+                "__any__"
+              ]
+            }
+          },
+          "relations": {
+            "type": "relation",
+            "fields": [
+              {
+                "name": "osm_id",
+                "type": "id"
+              },
+              {
+                "key": "type",
+                "name": "type",
+                "type": "string"
+              },
+              {
+                "key": "name",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "tags",
+                "type": "hstore_tags"
+              }
+            ],
+            "mapping": {
+              "__any__": [
+                "__any__"
+              ]
+            }
+          }
     }
 }
