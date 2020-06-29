@@ -36,5 +36,5 @@ bundle exec rails db:migrate
 
 # Start the delayed jobs queue worker
 # Start the app
-
-bundle exec rake jobs:work & apachectl -k start -DFOREGROUND
+# bundle exec rake jobs:work &
+apachectl -k start -DFOREGROUND
