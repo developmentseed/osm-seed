@@ -144,7 +144,7 @@ ADD config/action_mailer.rb config/initializers/action_mailer.rb
 RUN apt-get install -y tzdata
 # gem install tzinfo-data
 
-# RUN bundle exec rake assets:precompile --trace
+RUN bundle exec rake assets:precompile --trace
 RUN bundle exec rake i18n:js:export --trace
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
