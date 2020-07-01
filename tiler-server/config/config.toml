@@ -159,6 +159,7 @@ max_connections = 40
 	[[providers.layers]]
 	name = "transport_associated_streets"
 	geometry_fieldname = "geometry"
+	geometry_type = "LineString"
 	id_fieldname = "id"
 	sql = "SELECT ST_AsBinary(m.geometry) AS geometry, m.member, r.osm_id, m.name, m.relname, m.index, r.type, r.tags->'start_date' as start_date, r.tags->'end_date' as end_date, isodatetodecimaldate(pad_date(r.tags->'start_date', 'start')) AS start_decdate, isodatetodecimaldate(pad_date(r.tags->'end_date', 'end')) AS end_decdate FROM osm_relations r, osm_relation_members m WHERE r.osm_id=m.osm_id and r.type='associatedStreet' and geometry && !BBOX!"
 
