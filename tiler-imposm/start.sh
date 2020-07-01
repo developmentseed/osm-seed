@@ -163,8 +163,8 @@ while "$flag" = true; do
         hasData=$(psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" \
         -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" | sed -n 3p | sed 's/ //g')
         # After import there are more than 70 tables
-        
-        if [ $hasData  \> 70 ]; then
+
+        if [ $hasData -gt 70 ]; then
             echo "Update the DB with osm data"
             updateData
         else
