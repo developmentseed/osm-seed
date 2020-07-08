@@ -112,6 +112,7 @@ RUN /usr/sbin/passenger-memory-stats
 
 # Clone the openstreetmap-website
 RUN rm -rf $workdir
+RUN echo 'Bust the docker cache'
 RUN git clone https://github.com/OpenHistoricalMap/ohm-website.git $workdir
 WORKDIR $workdir
 RUN git checkout 06d76cd90033ef34f48a61c2a428931f0de8840d
