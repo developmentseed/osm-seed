@@ -112,10 +112,9 @@ RUN /usr/sbin/passenger-memory-stats
 
 # Clone the openstreetmap-website
 RUN rm -rf $workdir
-RUN echo 'Bust the docker cache'
 RUN git clone https://github.com/OpenHistoricalMap/ohm-website.git $workdir
 WORKDIR $workdir
-RUN git checkout 06d76cd90033ef34f48a61c2a428931f0de8840d
+RUN git checkout 2c096fc975116a1e71ec6a4cbd53539fcaa985cb
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
