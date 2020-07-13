@@ -21,19 +21,30 @@ sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_FROM'/g' $workdir/config/
 # Set up iD key
 sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/application.yml
 
-# Print the log while compiling the assets
-until $(curl -sf -o /dev/null $SERVER_URL); do
-    echo "Waiting to start rails ports server..."
-    sleep 2
-done &
 
-# Precompile again, to catch the env variables
-# RAILS_ENV=production rake assets:precompile --trace
 
-# db:migrate
-bundle exec rails db:migrate
+# Check if DB is already up
 
-# Start the delayed jobs queue worker
-# Start the app
-# bundle exec rake jobs:work &
-apachectl -k start -DFOREGROUND
+flag=true
+while "$flag" = true; do
+  pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
+  flag=false
+  # Print the log while compiling the assets
+  until $(curl -sf -o /dev/null $SERVER_URL); do
+      echo "Waiting to start rails ports server..."
+      sleep 2
+  done &
+
+  # Precompile again, to catch the env variables
+  # RAILS_ENV=production rake assets:precompile --trace
+
+  # db:migrate
+  bundle exec rails db:migrate
+
+  # Start the delayed jobs queue worker
+  # bundle exec rake jobs:work
+  # Start the app
+  apachectl -k start -DFOREGROUND
+done
+
+
