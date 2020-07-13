@@ -73,7 +73,7 @@ defaults: &defaults
   # Enable legacy OAuth 1.0 support
   oauth_10_support: true
   # URL of Nominatim instance to use for geocoding
-  nominatim_url: "//nominatim.openstreeetmap.org/"
+  nominatim_url: "http//nominatim.openstreeetmap.org/"
   # Default editor
   default_editor: "id"
   # OAuth consumer key for Potlatch 2
