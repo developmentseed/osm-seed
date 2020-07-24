@@ -45,7 +45,7 @@ Before to start the api, you should first create the [api-db](https://github.com
 ```
     docker run \
     --env-file ./../.env \
-    --network osm_network \
+    --network osm-seed_default \
     -p "80:80" \
     -h localhost \
     -t osmseed-openstreetmap-website:v1
