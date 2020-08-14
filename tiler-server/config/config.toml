@@ -478,23 +478,33 @@ center = [-74.275329586789, -12.153492567373, 8.0] # optional center value. part
 	name = "land_ohm"
 	provider_layer = "osm.admin_boundaries_8-12"
 	min_zoom = 0
+	max_zoom = 6
+
+	[[maps.layers]]
+	name = "land_ohm"
+	provider_layer = "osm.admin_boundaries_8-12"
+	dont_simplify = true
+	min_zoom = 7
 	max_zoom = 12
 
 	[[maps.layers]]
 	name = "land_ohm"
 	provider_layer = "osm.admin_boundaries_13-20"
+	dont_simplify = true
 	min_zoom = 13
 	max_zoom = 20
 
 	[[maps.layers]]
 	name = "admin_lines"
 	provider_layer = "osm.admin_boundaries_8-12"
+	dont_simplify = true
 	min_zoom = 8
 	max_zoom = 12
 
 	[[maps.layers]]
 	name = "admin_lines"
 	provider_layer = "osm.admin_boundaries_13-20"
+	dont_simplify = true
 	min_zoom = 13
 	max_zoom = 20
 
