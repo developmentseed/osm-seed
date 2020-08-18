@@ -2,7 +2,7 @@ FROM golang:1.14.1-alpine3.11 AS build
 ENV VERSION="v0.8.1"
 RUN apk update
 RUN apk add musl-dev=1.1.24-r2 \
-	gcc=9.2.0-r4 \
+	gcc-9.3.0-r0 \
     bash \
     git \
     postgresql \
