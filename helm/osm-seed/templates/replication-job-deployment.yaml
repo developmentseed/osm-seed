@@ -63,5 +63,5 @@ spec:
       nodeSelector:
         {{ .Values.replicationJob.nodeSelector.label_key }} : {{ .Values.replicationJob.nodeSelector.label_value }}
       {{- end }}
-      restartPolicy: OnFailure
+      restartPolicy: Always
 {{- end }}
