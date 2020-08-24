@@ -12,6 +12,7 @@ wget $URL_FILE_TO_IMPORT
 file=$(basename $URL_FILE_TO_IMPORT)
 
 function importData () {
+    # ADDED: populateCurrentTables=yes
     # In case the import file is a PBF
     if [ ${file: -4} == ".pbf" ]; then
         pbfFile=$file
@@ -23,7 +24,8 @@ function importData () {
         database=$POSTGRES_DB \
         user=$POSTGRES_USER \
         password=$POSTGRES_PASSWORD \
-        validateSchemaVersion=no
+        validateSchemaVersion=no \
+        populateCurrentTables=yes
     else
         # In case the file is .osm
         # Extract the osm file
@@ -37,7 +39,8 @@ function importData () {
         database=$POSTGRES_DB \
         user=$POSTGRES_USER \
         password=$POSTGRES_PASSWORD \
-        validateSchemaVersion=no
+        validateSchemaVersion=no \
+        populateCurrentTables=yes
     fi
 }
 

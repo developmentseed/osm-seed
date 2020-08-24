@@ -28,12 +28,12 @@ Required environment variables:
   --env-file ./../.env-tiler \
   --network osm-seed_default \
   -v $(pwd)/../postgres-gis-data:/var/lib/postgresql/data \
-  -p "5433:5432" \
+  -p "5432:5432" \
   -t osmseed-tiler-db:v1
 ```
 
 ### Test DB connection
 
 ```
-psql -h 0.0.0.0 -p 5433 -d tiler-db -U postgres --password
+psql -h tiler-db -p 5432 -d tiler-osm -U postgres --password
 ```

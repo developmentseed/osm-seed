@@ -59,7 +59,7 @@ RUN mkdir -p "$IMPOSMDATA" && chmod 777 "$IMPOSMDATA"
 VOLUME /mnt/data
 
 WORKDIR /osm
-COPY ./config/imposm3.json imposm3.json
+COPY ./config/${IMPOSM_MAPPING_FILE} ${IMPOSM_MAPPING_FILE}
 COPY ./config/postgis_helpers.sql postgis_helpers.sql
 COPY ./config/postgis_index.sql postgis_index.sql
 COPY start.sh start.sh

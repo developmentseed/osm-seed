@@ -6,18 +6,20 @@ services:
       context: ./openstreetmap-website
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "8005:80"
     env_file: 
       - ./.env
+      - ./.env-tiler
     depends_on:
       - db
+      - tiler-renderer
   db:
     image: osmseed-db:v1
     build:
       context: ./db
       dockerfile: Dockerfile
     ports:
-      - "5432:5432"
+      - "5435:5432"
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
     env_file: 
@@ -52,18 +54,6 @@ services:
       sleep 20;
       echo Building backup!;
       ./start.sh"
-    env_file: 
-      - ./.env
-  id-editor:
-    image: osmseed-id-editor:v1
-    build: 
-      context: ./id-editor
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    depends_on:
-      - web
-      - db
     env_file: 
       - ./.env
   replication-job:
@@ -122,7 +112,7 @@ services:
     ports:
       -  "5433:5432"
     volumes:
-      - ./postgres-gis-data:/var/lib/postgresql/data
+      - ./postgres-gis-osm2pgsql-data:/var/lib/postgresql/data
     env_file:
       - ./.env-tiler
   tiler-imposm:
@@ -133,7 +123,7 @@ services:
     volumes:
       - ./tiler-imposm-data:/mnt/data
     depends_on:
-      - tiler-db
+      - tegola-tiler-db
     env_file: 
       - ./.env-tiler
     command: >
@@ -150,26 +140,57 @@ services:
     volumes:
       - ./tiler-server-data:/mnt/data
     depends_on:
-      - tiler-db
+      - tegola-tiler-db
       - tiler-imposm
     ports:
       - "9090:9090"
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while!;
-      sleep 100;
-      echo Starting tiles server!;
-      ./start.sh"
     env_file:
       - ./.env-tiler
-  tiler-visor:
-    image: osmseed-tiler-visor:v1
-    build: 
-      context: ./tiler-visor
-      dockerfile: Dockerfile
-    depends_on:
-      - tiler-server
+##=========================================================================
+## ADDED BY AMIT SECTION
+##=========================================================================
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:4.24
+    environment:
+        PGADMIN_DEFAULT_EMAIL: postgres@email.com
+        PGADMIN_DEFAULT_PASSWORD: password
     ports:
-      - "8081:80"
+        - "5052:80"
+  tiler-renderer:
+    image: osmseed-tiler-renderer:v1
+    build: 
+      context: ./tiler-renderer
+      dockerfile: Dockerfile
+    ports:
+        - 1337:80
+    depends_on:
+      - tiler-db
+    volumes:
+      - expired-tiles:${EXPIRED_DIR}
     env_file:
       - ./.env-tiler
+  tegola-tiler-db:
+    image: osmseed-tegola-tiler-db:v1
+    build: 
+      context: ./tegola-tiler-db
+      dockerfile: Dockerfile
+    ports:
+      -  "5434:5432"
+    volumes:
+      - ./postgres-gis-imposm-data:/var/lib/postgresql/tegola-tiler-data
+    env_file:
+      - ./.env-tiler
+  tiler-osm2pgsql:
+    image: osmseed-tiler-osm2pgsql:v1
+    build: 
+      context: ./tiler-osm2pgsql
+      dockerfile: Dockerfile
+    volumes:
+      - ./replication-job-data:${REPLICATION_DIR}
+      - expired-tiles:${EXPIRED_DIR}
+    env_file:
+      - ./.env-tiler
+
+volumes:
+  expired-tiles:

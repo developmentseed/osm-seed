@@ -15,6 +15,10 @@ production:
 sed -i -e 's/server_url: "localhost"/server_url: "'$SERVER_URL'"/g' $workdir/config/application.yml
 sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/application.yml
 
+# Configure the tiler source
+sed -i -e 's/https:\/\/[a-c].tile.openstreetmap.org/http:\/\/'$MOD_TILE_HOST':'$MOD_TILE_PORT'\/'$MOD_TILE_PATH'/g' $workdir/vendor/assets/openlayers/OpenStreetMap.js
+sed -i -e 's/https:\/\/{s}.tile.openstreetmap.org/http:\/\/'$MOD_TILE_HOST':'$MOD_TILE_PORT'\/'$MOD_TILE_PATH'/g' $workdir/vendor/assets/leaflet/leaflet.osm.js
+
 # Setting up the email
 sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_USERNAME'/g' $workdir/config/application.yml
 

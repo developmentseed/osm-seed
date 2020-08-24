@@ -16,11 +16,11 @@ aws_secret_access_key = "${TILER_CACHE_AWS_SECRET_ACCESS_KEY}"
 [[providers]]
 name = "osm"
 type = "postgis"
-host = "${POSTGRES_HOST}"
+host = "${TEGOLA_POSTGRES_HOST}"
 port = 5432
-database = "${POSTGRES_DB}"
-user = "${POSTGRES_USER}"
-password = "${POSTGRES_PASSWORD}"
+database = "${TEGOLA_POSTGRES_DB}"
+user = "${TEGOLA_POSTGRES_USER}"
+password = "${TEGOLA_POSTGRES_PASSWORD}"
 srid = 3857
 max_connections = 40
 
@@ -202,11 +202,11 @@ max_connections = 40
 [[providers]]
 name = "ne"
 type = "postgis"
-host = "${POSTGRES_HOST}"
+host = "${TEGOLA_POSTGRES_HOST}"
 port = 5432
-database = "${POSTGRES_DB}"
-user = "${POSTGRES_USER}"
-password = "${POSTGRES_PASSWORD}"
+database = "${TEGOLA_POSTGRES_DB}"
+user = "${TEGOLA_POSTGRES_USER}"
+password = "${TEGOLA_POSTGRES_PASSWORD}"
 srid = 3857
 max_connections = 40
 

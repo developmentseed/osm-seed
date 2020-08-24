@@ -1,0 +1,7 @@
+- tiler-renderer apache2 sometimes not running
+- tiler-osm2pgsql hasData function to determine if db is empty
+- tiler-osm2pgsql handle multiple replication files (https://github.com/openstreetmap/osm2pgsql/issues/1167)
+- tiler-osm2pgsql work with merged minute\hour\day replication dirs
+- tiler-imposm update mechanism
+- tiles render best min/max/touch arguments: "You could set it so that the lower zoom levels are also rerendered or deleted, but there is a great risk that they will be expired on *every* update, since they cover such a large area. It's better to approach tile expire of the low zooms another way. For example, you could delete or rerender them on a fixed schedule, once every day or week, or whatever works for your map and data."
+- renderd.conf sed to env-tiler MOD_TILE configuration

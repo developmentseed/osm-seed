@@ -67,7 +67,7 @@ db:
     # AWS_ElasticBlockStore_volumeID : vol-1234bcd
     # AWS_ElasticBlockStore_size: 500Gi
     # In case cloudProvider: gcp
-    GCP_gcePersistentDisk_pdName: osmseed-disk-api-db-v1
+    GCP_gcePersistentDisk_pdName: osmseed-disk-api-db
     GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
@@ -232,7 +232,7 @@ tilerDb:
     # AWS_ElasticBlockStore_volumeID : vol-1234bcd
     # AWS_ElasticBlockStore_size: 500Gi
     # In case cloudProvider: gcp
-    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-db-v2
+    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-db
     GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
@@ -261,7 +261,7 @@ tilerImposm:
     # AWS_ElasticBlockStore_volumeID : vol-1234bcd
     # AWS_ElasticBlockStore_size: 500Gi
     # In case cloudProvider: gcp
-    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-imposm-v2
+    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-imposm
     GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
@@ -300,7 +300,7 @@ tilerServer:
     # AWS_ElasticBlockStore_volumeID : vol-1234bcd
     # AWS_ElasticBlockStore_size: 500Gi
     # In case cloudProvider: gcp
-    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-server-v2
+    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-server
     GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false

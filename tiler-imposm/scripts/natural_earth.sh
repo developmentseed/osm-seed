@@ -42,11 +42,11 @@ while getopts ":c:dv" flag; do
 done
 
 # database connection variables
-DB_NAME=$POSTGRES_DB
-DB_HOST=$POSTGRES_HOST
-DB_PORT=$POSTGRES_PORT
-DB_USER=$POSTGRES_USER
-DB_PW=$POSTGRES_PASSWORD
+DB_NAME=$TEGOLA_POSTGRES_DB
+DB_HOST=$TEGOLA_POSTGRES_HOST
+DB_PORT=$TEGOLA_POSTGRES_PORT
+DB_USER=$TEGOLA_POSTGRES_USER
+DB_PW=$TEGOLA_POSTGRES_PASSWORD
 
 # Check if we're using a config file
 if [[ -r $CONFIG_FILE ]]; then source $CONFIG_FILE
@@ -58,74 +58,74 @@ psql "dbname='postgres' host='$DB_HOST' port='$DB_PORT' user='$DB_USER' password
 
 # array of natural earth dataset URLs
  dataurls=(
-    "http://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_0_boundary_lines_land.zip"
-    "http://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_0_countries.zip"
-    "http://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_1_states_provinces_lines.zip"
-    "http://naciscdn.org/naturalearth/110m/cultural/ne_110m_populated_places.zip"
-    "http://naciscdn.org/naturalearth/110m/physical/ne_110m_coastline.zip"
-    "http://naciscdn.org/naturalearth/110m/physical/ne_110m_geography_marine_polys.zip"
-    "http://naciscdn.org/naturalearth/110m/physical/ne_110m_geography_regions_polys.zip"
-    "http://naciscdn.org/naturalearth/110m/physical/ne_110m_rivers_lake_centerlines.zip"
-    "http://naciscdn.org/naturalearth/110m/physical/ne_110m_lakes.zip"
-    "http://naciscdn.org/naturalearth/110m/physical/ne_110m_glaciated_areas.zip"
-    "http://naciscdn.org/naturalearth/110m/physical/ne_110m_land.zip"
-    "http://naciscdn.org/naturalearth/110m/physical/ne_110m_ocean.zip"
-    "http://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_boundary_lines_land.zip"
-    "http://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_boundary_lines_disputed_areas.zip"
-    "http://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_boundary_lines_maritime_indicator.zip"
-    "http://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_countries.zip"
-    "http://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_map_subunits.zip"
-    "http://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_1_states_provinces_lakes.zip" 
-    "http://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_1_states_provinces_lines.zip"
-    "http://naciscdn.org/naturalearth/50m/cultural/ne_50m_populated_places.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_geographic_lines.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_coastline.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_antarctic_ice_shelves_lines.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_antarctic_ice_shelves_polys.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_geography_marine_polys.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_geography_regions_elevation_points.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_geography_regions_polys.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_rivers_lake_centerlines_scale_rank.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_rivers_lake_centerlines.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_lakes.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_glaciated_areas.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_land.zip"
-    "http://naciscdn.org/naturalearth/50m/physical/ne_50m_ocean.zip"
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_land.zip" 
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_disputed_areas.zip" 
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_parks_and_protected_lands.zip" 
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_map_units.zip" 
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_maritime_indicator.zip"
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_label_points.zip"
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_countries.zip" 
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_map_subunits.zip"
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_label_points.zip"   
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces_lines.zip" 
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_populated_places.zip" 
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_roads.zip" 
-    "http://naciscdn.org/naturalearth/10m/cultural/ne_10m_urban_areas.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_geographic_lines.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_coastline.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_antarctic_ice_shelves_lines.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_antarctic_ice_shelves_polys.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_geography_marine_polys.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_geography_regions_elevation_points.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_geography_regions_points.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_geography_regions_polys.zip"
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_north_america.zip"
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_europe.zip"
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_lake_centerlines_scale_rank.zip"     
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_lake_centerlines.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_playas.zip"
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_reefs.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes_historic.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes_north_america.zip"
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes_europe.zip"
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_glaciated_areas.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip"
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_minor_islands.zip" 
-    "http://naciscdn.org/naturalearth/10m/physical/ne_10m_ocean.zip"
+    "https://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_0_boundary_lines_land.zip"
+    "https://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_0_countries.zip"
+    "https://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_1_states_provinces_lines.zip"
+    "https://naciscdn.org/naturalearth/110m/cultural/ne_110m_populated_places.zip"
+    "https://naciscdn.org/naturalearth/110m/physical/ne_110m_coastline.zip"
+    "https://naciscdn.org/naturalearth/110m/physical/ne_110m_geography_marine_polys.zip"
+    "https://naciscdn.org/naturalearth/110m/physical/ne_110m_geography_regions_polys.zip"
+    "https://naciscdn.org/naturalearth/110m/physical/ne_110m_rivers_lake_centerlines.zip"
+    "https://naciscdn.org/naturalearth/110m/physical/ne_110m_lakes.zip"
+    "https://naciscdn.org/naturalearth/110m/physical/ne_110m_glaciated_areas.zip"
+    "https://naciscdn.org/naturalearth/110m/physical/ne_110m_land.zip"
+    "https://naciscdn.org/naturalearth/110m/physical/ne_110m_ocean.zip"
+    "https://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_boundary_lines_land.zip"
+    "https://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_boundary_lines_disputed_areas.zip"
+    "https://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_boundary_lines_maritime_indicator.zip"
+    "https://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_countries.zip"
+    "https://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_map_subunits.zip"
+    "https://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_1_states_provinces_lakes.zip" 
+    "https://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_1_states_provinces_lines.zip"
+    "https://naciscdn.org/naturalearth/50m/cultural/ne_50m_populated_places.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_geographic_lines.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_coastline.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_antarctic_ice_shelves_lines.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_antarctic_ice_shelves_polys.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_geography_marine_polys.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_geography_regions_elevation_points.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_geography_regions_polys.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_rivers_lake_centerlines_scale_rank.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_rivers_lake_centerlines.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_lakes.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_glaciated_areas.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_land.zip"
+    "https://naciscdn.org/naturalearth/50m/physical/ne_50m_ocean.zip"
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_land.zip" 
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_disputed_areas.zip" 
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_parks_and_protected_lands.zip" 
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_map_units.zip" 
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_maritime_indicator.zip"
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_label_points.zip"
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_countries.zip" 
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_map_subunits.zip"
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_label_points.zip"   
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces_lines.zip" 
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_populated_places.zip" 
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_roads.zip" 
+    "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_urban_areas.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_geographic_lines.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_coastline.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_antarctic_ice_shelves_lines.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_antarctic_ice_shelves_polys.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_geography_marine_polys.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_geography_regions_elevation_points.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_geography_regions_points.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_geography_regions_polys.zip"
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_north_america.zip"
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_europe.zip"
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_lake_centerlines_scale_rank.zip"     
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_lake_centerlines.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_playas.zip"
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_reefs.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes_historic.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes_north_america.zip"
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes_europe.zip"
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_glaciated_areas.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip"
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_minor_islands.zip" 
+    "https://naciscdn.org/naturalearth/10m/physical/ne_10m_ocean.zip"
 )
 
 # remove old database if -d flag is set and create a new one
@@ -143,7 +143,7 @@ for i in "${!dataurls[@]}"; do
 	url=${dataurls[$i]}
 
 	echo "fetching $url";
-	curl $url > $i.zip;
+	curl -L $url > $i.zip;
 	unzip $i -d $i
 
 	# support for archives with more than one shapefile

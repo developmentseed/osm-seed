@@ -1,6 +1,6 @@
 # Tiler imposm
 
-This container is responsible to import the replication PBF files from osm-seed or OSM planet dump into the `tiler-db`
+This container is responsible to import the replication PBF files from osm-seed or OSM planet dump into the `tegola-tiler-db`
 
 If we are running the container for the first time the container will import the [OSM Land](http://data.openstreetmapdata.com/land-polygons-split-3857.zip) and [Natural Earth dataset](http://nacis.org/initiatives/natural-earth) and [osm-land] files into the data bases. [Check more here](https://github.com/go-spatial/tegola-osm#import-the-osm-land-and-natural-earth-dataset-requires-gdal-natural-earth-can-be-skipped-if-youre-only-interested-in-osm).
 
@@ -10,7 +10,7 @@ If we are running the container for the first time the container will import the
 
 Required environment variables:
 
- **Env variables to connect to the db-tiler**
+ **Env variables to connect to the tegola-tiler-db**
 
 - `POSTGRES_HOST` e.g `tiler-db`
 - `POSTGRES_DB` e.g `tiler-osm`
@@ -20,8 +20,10 @@ Required environment variables:
 
  **Env variables to  import the files**
 
-- `TILER_IMPORT_PROM` e.g `osm` or `osmseed`
-- `TILER_IMPORT_PBF_URL` eg `http://download.geofabrik.de/south-america/peru-latest.osm.pbf`
+- `TILER_IMPORT_FROM` e.g `osm` or `osmseed`
+- `IMPOSM_IMPORT_PBF_URL` eg `http://download.geofabrik.de/south-america/peru-latest.osm.pbf`
+- `TILER_IMPORT_LIMIT` geojson url
+- `IMPOSM_MAPPING_FILE` imposm yaml\json mapping file. the `tegola-tiler-db` will be mapped according to
 
 
 

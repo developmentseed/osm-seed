@@ -19,11 +19,11 @@ while getopts ":c:v" flag; do
 done
 
 # database connection variables
-DB_NAME=$POSTGRES_DB
-DB_HOST=$POSTGRES_HOST
-DB_PORT=$POSTGRES_PORT
-DB_USER=$POSTGRES_USER
-DB_PW=$POSTGRES_PASSWORD
+DB_NAME=$TEGOLA_POSTGRES_DB
+DB_HOST=$TEGOLA_POSTGRES_HOST
+DB_PORT=$TEGOLA_POSTGRES_PORT
+DB_USER=$TEGOLA_POSTGRES_USER
+DB_PW=$TEGOLA_POSTGRES_PASSWORD
 
 # Check if we're using a config file
 if [[ -r $CONFIG_FILE ]]; then source $CONFIG_FILE
@@ -35,7 +35,7 @@ psql "dbname='postgres' host='$DB_HOST' port='$DB_PORT' user='$DB_USER' password
 
 # array of natural earth dataset URLs
  dataurls=(
-	"http://data.openstreetmapdata.com/land-polygons-split-3857.zip"
+	"https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip"
 )
 
 psql "dbname='postgres' host='$DB_HOST' port='$DB_PORT' user='$DB_USER' password='$DB_PW'" -c "DROP TABLE IF EXISTS land_polygons"
@@ -45,7 +45,7 @@ for i in "${!dataurls[@]}"; do
 	url=${dataurls[$i]}
 
 	echo "fetching $url";
-	curl $url > $i.zip;
+	curl -L $url > $i.zip;
 	unzip $i -d $i
 
 	shape_file=$(find $i -type f -name "*.shp")
