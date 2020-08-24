@@ -2,7 +2,7 @@ FROM golang:1.14.1-alpine3.11 AS build
 ENV VERSION="v0.8.1"
 RUN apk update
 RUN apk add musl-dev=1.1.24-r2 \
-	gcc=9.2.0-r4 \
+	gcc \
     bash \
     git \
     postgresql \
@@ -10,7 +10,7 @@ RUN apk add musl-dev=1.1.24-r2 \
 
 RUN mkdir -p /go/src/github.com/go-spatial/tegola
 RUN git clone https://github.com/go-spatial/tegola.git /go/src/github.com/go-spatial/tegola
-RUN cd /go/src/github.com/go-spatial/tegola && git checkout v0.8.1
+RUN cd /go/src/github.com/go-spatial/tegola && git checkout v0.11.2
 RUN cd /go/src/github.com/go-spatial/tegola/cmd/tegola \
 	&& go build -gcflags "-N -l" -o /opt/tegola \ 
 	&& chmod a+x /opt/tegola
