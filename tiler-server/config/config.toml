@@ -476,14 +476,8 @@ center = [-74.275329586789, -12.153492567373, 8.0] # optional center value. part
 	[[maps.layers]]
 	name = "land_ohm"
 	provider_layer = "osm.admin_boundaries_8-12"
-	min_zoom = 0
-	max_zoom = 3
-
-	[[maps.layers]]
-	name = "land_ohm"
-	provider_layer = "osm.admin_boundaries_8-12"
 	dont_simplify = true
-	min_zoom = 4
+	min_zoom = 0
 	max_zoom = 12
 
 	[[maps.layers]]
