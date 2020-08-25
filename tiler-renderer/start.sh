@@ -1,9 +1,9 @@
 #!/bin/bash
-export PGHOST=$POSTGRES_HOST
-export PGPORT=$POSTGRES_PORT
-export PGDATABASE=$POSTGRES_DB
-export PGUSER=$POSTGRES_USER
-export PGPASSWORD=$POSTGRES_PASSWORD
+export PGHOST=$POSTGRES_TILER_HOST
+export PGPORT=$POSTGRES_TILER_PORT
+export PGDATABASE=$POSTGRES_TILER_DB
+export PGUSER=$POSTGRES_TILER_USER
+export PGPASSWORD=$POSTGRES_TILER_PASSWORD
 expiredDirectory=$EXPIRED_DIR
 
 function renderData () {
@@ -57,7 +57,7 @@ function parseIntegerToDirectoryNumber () {
 
 function getExternalData () {
     echo "getting external data"
-    PGPASSWORD=$POSTGRES_PASSWORD /src/openstreetmap-carto/scripts/get-external-data.py -H $POSTGRES_HOST -d $POSTGRES_DB -p $POSTGRES_PORT -U $POSTGRES_USER -c /src/openstreetmap-carto/external-data.yml
+    PGPASSWORD=$POSTGRES_TILER_PASSWORD /src/openstreetmap-carto/scripts/get-external-data.py -H $POSTGRES_TILER_HOST -d $POSTGRES_TILER_DB -p 5432 -U $POSTGRES_TILER_USER -c /src/openstreetmap-carto/external-data.yml
 }
 
 getExternalData

@@ -80,8 +80,8 @@ if [ "$1" = 'postgres' ]; then
 		# check password first so we can output the warning before postgres
 		# messes it up
 		file_env 'POSTGRES_PASSWORD'
-		if [ "$POSTGRES_PASSWORD" ]; then
-			pass="PASSWORD '$POSTGRES_PASSWORD'"
+		if [ "$POSTGRES_TILER_PASSWORD" ]; then
+			pass="PASSWORD '$POSTGRES_TILER_PASSWORD'"
 			authMethod=md5
 		else
 			# The - option suppresses leading tabs but *not* spaces. :)
@@ -116,28 +116,28 @@ if [ "$1" = 'postgres' ]; then
 			-w start
 
 		file_env 'POSTGRES_USER' 'postgres'
-		file_env 'POSTGRES_DB' "$POSTGRES_USER"
+		file_env 'POSTGRES_DB' "$POSTGRES_TILER_USER"
 
 		psql=( psql -v ON_ERROR_STOP=1 )
-
-		if [ "$POSTGRES_DB" != 'postgres' ]; then
+		
+		if [ "$POSTGRES_TILER_DB" != 'postgres' ]; then
 			"${psql[@]}" --username postgres <<-EOSQL
-				CREATE DATABASE "$POSTGRES_DB" ;
+				CREATE DATABASE "$POSTGRES_TILER_DB" ;
 			EOSQL
 			echo
 		fi
 
-		if [ "$POSTGRES_USER" = 'postgres' ]; then
+		if [ "$POSTGRES_TILER_USER" = 'postgres' ]; then
 			op='ALTER'
 		else
 			op='CREATE'
 		fi
 		"${psql[@]}" --username postgres <<-EOSQL
-			$op USER "$POSTGRES_USER" WITH SUPERUSER $pass ;
+			$op USER "$POSTGRES_TILER_USER" WITH SUPERUSER $pass ;
 		EOSQL
 		echo
 
-		psql+=( --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" )
+		psql+=( --username "$POSTGRES_TILER_USER" --dbname "$POSTGRES_TILER_DB" )
 
 		echo
 		for f in /docker-entrypoint-initdb.d/*; do

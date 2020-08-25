@@ -170,6 +170,7 @@ services:
       - expired-tiles:${EXPIRED_DIR}
     env_file:
       - ./.env-tiler
+      - ./.env
   tegola-tiler-db:
     image: osmseed-tegola-tiler-db:v1
     build: 
@@ -191,6 +192,7 @@ services:
       - expired-tiles:${EXPIRED_DIR}
     env_file:
       - ./.env-tiler
+      - ./.env
 
 volumes:
   expired-tiles:

@@ -2,11 +2,11 @@
 set -e
 PBFFile="osm.pbf"
 flag=true
-export PGHOST=$POSTGRES_HOST
-export PGPORT=$POSTGRES_PORT
-export PGDATABASE=$POSTGRES_DB
-export PGUSER=$POSTGRES_USER
-export PGPASSWORD=$POSTGRES_PASSWORD
+export PGHOST=$POSTGRES_TILER_HOST
+export PGPORT=$POSTGRES_TILER_PORT
+export PGDATABASE=$POSTGRES_TILER_DB
+export PGUSER=$POSTGRES_TILER_USER
+export PGPASSWORD=$POSTGRES_TILER_PASSWORD
 replicationDirectory=$REPLICATION_DIR
 expiredDirectory=$EXPIRED_DIR
 lastAppend=0
@@ -14,7 +14,7 @@ lastAppend=0
 function getData () {
     # Import from pubic url, ussualy it come from osm
     if [ -n "$OSM2PGSQL_IMPORT_PBF_URL" ]; then
-    echo "getting pbf file"
+        echo "getting pbf file"
         wget $OSM2PGSQL_IMPORT_PBF_URL -O $PBFFile
     fi
 }
@@ -104,17 +104,17 @@ function addOrUpdateToFile () {
 }
 
 while "$flag" = true; do
-    echo "trying to connect to $POSTGRES_HOST..."
-    pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
+    echo "trying to connect to $POSTGRES_TILER_HOST..."
+    pg_isready -h $POSTGRES_TILER_HOST -p 5432 >/dev/null 2>&2 || continue
 
         # Change flag to false to stop ping the DB
         flag=false
-        hasData=$(psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" \
+        hasData=$(psql "postgresql://$POSTGRES_TILER_USER:$POSTGRES_TILER_PASSWORD@$POSTGRES_TILER_HOST/$POSTGRES_TILER_DB" \
         -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" | sed -n 3p | sed 's/ //g')
         echo $hasData
 
         # has 5 by default
-        if [ $hasData  \> 14 ]; then
+        if [ $hasData  -gt 5 ]; then
             updateData
         else
             getData

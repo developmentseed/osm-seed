@@ -6,11 +6,11 @@ PostGIS database container to store the osm-seed or osm data for tiling.
 
 Required environment variables:
 
-- `POSTGRES_HOST` e.g `tiler-db`
-- `POSTGRES_DB` e.g `tiler-osm`
-- `POSTGRES_PORT` e.g `5432`
-- `POSTGRES_USER` e.g `postgres`
-- `POSTGRES_PASSWORD` e.g `1234`
+- `POSTGRES_TILER_HOST` e.g `tiler-db`
+- `POSTGRES_TILER_DB` e.g `tiler-osm`
+- `POSTGRES_TILER_PORT` e.g `5432`
+- `POSTGRES_TILER_USER` e.g `postgres`
+- `POSTGRES_TILER_PASSWORD` e.g `1234`
 
 
 #### Building the container
