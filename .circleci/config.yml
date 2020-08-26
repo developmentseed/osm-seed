@@ -11,7 +11,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+            - v1-{{ checksum "openstreetmap-website/Dockerfile" }}
           paths:
             - caches/web.tar
 
@@ -32,7 +32,7 @@ jobs:
             docker save -o caches/web.tar web
 
       - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
+          key: v1-{{ checksum "openstreetmap-website/Dockerfile" }}
           paths:
             - caches/web.tar
 
@@ -57,7 +57,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+            - v1-{{ checksum "db/Dockerfile" }}
           paths:
             - caches/db.tar
 
@@ -78,7 +78,7 @@ jobs:
             docker save -o caches/db.tar db
 
       - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
+          key: v1-{{ checksum db/Dockerfile }}
           paths:
             - caches/db.tar
 
@@ -103,7 +103,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+            - v1-{{ checksum "planet-dump/Dockerfile" }}
           paths:
             - caches/planet-dump.tar
 
@@ -124,7 +124,7 @@ jobs:
             docker save -o caches/planet-dump.tar planet-dump
 
       - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
+          key: v1-{{ checksum "planet-dump/Dockerfile" }}
           paths:
             - caches/planet-dump.tar
 
@@ -149,7 +149,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+            - v1-{{ checksum "db-backup-restore/Dockerfile" }}
           paths:
             - caches/db-backup-restore.tar
 
@@ -170,7 +170,7 @@ jobs:
             docker save -o caches/db-backup-restore.tar db-backup-restore
 
       - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
+          key: v1-{{ checksum "db-backup-restore/Dockerfile" }}
           paths:
             - caches/db-backup-restore.tar
 
@@ -186,51 +186,6 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-backup-restore:${VERSION}
 
-  id-editor:
-    docker:
-      - image: docker:17.05.0-ce-git
-    steps:
-      - checkout
-      - setup_remote_docker
-
-      - restore_cache:
-          keys:
-            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
-          paths:
-            - caches/id-editor.tar
-
-      - run:
-          name: Load docker image cache
-          command: |
-            docker load -i caches/id-editor.tar || true
-
-      - run:
-          name: Build application docker image
-          command: |
-            docker build --cache-from=id-editor -t id-editor id-editor/
-
-      - run:
-          name: Save docker image cache
-          command: |
-            mkdir -p caches
-            docker save -o caches/id-editor.tar id-editor
-
-      - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
-          paths:
-            - caches/id-editor.tar
-
-      - deploy:
-          name: Push docker image
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "${PRODUCTION_BRANCH}" ]; then
-              VERSION=$(grep -m1 version package.json | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-            else
-              VERSION="$(echo $CIRCLE_BRANCH | sed 's/\//\-/g')-$(echo $CIRCLE_SHA1 | cut -c -7)"
-            fi
-            docker tag id-editor developmentseed/osmseed-id-editor:${VERSION}
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push developmentseed/osmseed-id-editor:${VERSION}
   replication-job:
       docker:
         - image: docker:17.05.0-ce-git
@@ -240,7 +195,7 @@ jobs:
 
         - restore_cache:
             keys:
-              - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+              - v1-{{ checksum "replication-job/Dockerfile" }}
             paths:
               - caches/replication-job.tar
 
@@ -258,7 +213,7 @@ jobs:
               mkdir -p caches
               docker save -o caches/replication-job.tar replication-job
         - save_cache:
-            key: v1-{{ .Branch }}-{{ epoch }}
+            key: v1-{{ checksum "replication-job/Dockerfile" }}
             paths:
               - caches/replication-job.tar
 
@@ -273,6 +228,7 @@ jobs:
               docker tag replication-job developmentseed/osmseed-replication-job:${VERSION}
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker push developmentseed/osmseed-replication-job:${VERSION}
+
   populate-apidb:
     docker:
       - image: docker:17.05.0-ce-git
@@ -282,7 +238,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+            - v1-{{ checksum "populate-apidb/Dockerfile" }}
           paths:
             - caches/populate-apidb.tar
 
@@ -300,7 +256,7 @@ jobs:
             mkdir -p caches
             docker save -o caches/populate-apidb.tar populate-apidb
       - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
+          key: v1-{{ checksum "populate-apidb/Dockerfile" }}
           paths:
             - caches/populate-apidb.tar
 
@@ -315,6 +271,7 @@ jobs:
             docker tag populate-apidb developmentseed/osmseed-populate-apidb:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-populate-apidb:${VERSION}
+
   osm-processor:
     docker:
       - image: docker:17.05.0-ce-git
@@ -324,7 +281,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-{{ .Branch }} #FIXME: not sure this is the best key to use
+            - v1-{{ checksum "osm-processor/Dockerfile" }} #FIXME: not sure this is the best key to use
           paths:
             - caches/osm-processor.tar
 
@@ -342,7 +299,7 @@ jobs:
             mkdir -p caches
             docker save -o caches/osm-processor.tar osm-processor
       - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
+          key: v1-{{ checksum "osm-processor/Dockerfile" }}
           paths:
             - caches/osm-processor.tar
 
@@ -357,6 +314,7 @@ jobs:
             docker tag osm-processor developmentseed/osmseed-osm-processor:${VERSION}
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push developmentseed/osmseed-osm-processor:${VERSION}
+            
   tiler-db:
       docker:
         - image: docker:17.05.0-ce-git
@@ -366,7 +324,7 @@ jobs:
 
         - restore_cache:
             keys:
-              - v1-{{ .Branch }}
+              - v1-{{ checksum "tiler-db/Dockerfile" }}
             paths:
               - caches/tiler-db.tar
 
@@ -384,7 +342,7 @@ jobs:
               mkdir -p caches
               docker save -o caches/tiler-db.tar tiler-db
         - save_cache:
-            key: v1-{{ .Branch }}-{{ epoch }}
+            key: v1-{{ checksum "tiler-db/Dockerfile" }}
             paths:
               - caches/tiler-db.tar
 
@@ -399,6 +357,7 @@ jobs:
               docker tag tiler-db developmentseed/osmseed-tiler-db:${VERSION}
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker push developmentseed/osmseed-tiler-db:${VERSION}
+
   tiler-imposm:
       docker:
         - image: docker:17.05.0-ce-git
@@ -408,7 +367,7 @@ jobs:
 
         - restore_cache:
             keys:
-              - v1-{{ .Branch }}
+              - v1-{{ checksum "tiler-imposm/Dockerfile" }}
             paths:
               - caches/tiler-imposm.tar
 
@@ -426,7 +385,7 @@ jobs:
               mkdir -p caches
               docker save -o caches/tiler-imposm.tar tiler-imposm
         - save_cache:
-            key: v1-{{ .Branch }}-{{ epoch }}
+            key: v1-{{ checksum "tiler-imposm/Dockerfile" }}
             paths:
               - caches/tiler-imposm.tar
 
@@ -441,6 +400,7 @@ jobs:
               docker tag tiler-imposm developmentseed/osmseed-tiler-imposm:${VERSION}
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker push developmentseed/osmseed-tiler-imposm:${VERSION}
+
   tiler-server:
       docker:
         - image: docker:17.05.0-ce-git
@@ -450,7 +410,7 @@ jobs:
 
         - restore_cache:
             keys:
-              - v1-{{ .Branch }}
+              - v1-{{ checksum "tiler-server/Dockerfile" }}
             paths:
               - caches/tiler-server.tar
 
@@ -468,7 +428,7 @@ jobs:
               mkdir -p caches
               docker save -o caches/tiler-server.tar tiler-server
         - save_cache:
-            key: v1-{{ .Branch }}-{{ epoch }}
+            key: v1-{{ checksum "tiler-server/Dockerfile" }}
             paths:
               - caches/tiler-server.tar
 
@@ -483,6 +443,7 @@ jobs:
               docker tag tiler-server developmentseed/osmseed-tiler-server:${VERSION}
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker push developmentseed/osmseed-tiler-server:${VERSION}
+
   tiler-visor:
       docker:
         - image: docker:17.05.0-ce-git
@@ -492,7 +453,7 @@ jobs:
 
         - restore_cache:
             keys:
-              - v1-{{ .Branch }}
+              - v1-{{ checksum "tiler-visor/Dockerfile" }}
             paths:
               - caches/tiler-visor.tar
 
@@ -510,7 +471,7 @@ jobs:
               mkdir -p caches
               docker save -o caches/tiler-visor.tar tiler-visor
         - save_cache:
-            key: v1-{{ .Branch }}-{{ epoch }}
+            key: v1-{{ checksum "tiler-visor/Dockerfile" }}
             paths:
               - caches/tiler-visor.tar
 
