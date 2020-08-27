@@ -7,4 +7,5 @@ charts:
 
     images:
       openstreetmap-website:
+        imageName: developmentseed/osmseed-web
         valuesPath: web.image
