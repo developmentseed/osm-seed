@@ -90,7 +90,11 @@ db:
 # ====================================================================================================
 web:
   enabled: true
-  image: 'developmentseed/osmseed-web'
+  # image: 'developmentseed/osmseed-web'
+  image:
+    name: 'developmentseed/osmseed-openstreetmap-website'
+    tag: '0.1.0'
+
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -206,7 +210,7 @@ populateApidb:
 osmProcessor:
   enabled: false
   image: 'developmentseed/osmseed-osm-processor'
-  env: 
+  env:
     URL_FILE_TO_PROCESS: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
     OSM_FILE_ACTION: simple_pbf
   resources:
