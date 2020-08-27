@@ -112,7 +112,7 @@ RUN /usr/sbin/passenger-memory-stats
 RUN rm -rf $workdir
 RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
 WORKDIR $workdir
-RUN git checkout master
+# RUN git checkout master
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
