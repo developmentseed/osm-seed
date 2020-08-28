@@ -6,6 +6,26 @@ charts:
     #   published: https://jupyterhub.github.io/helm-chart
 
     images:
-      openstreetmap-website:
-        imageName: developmentseed/osmseed-web
+      web:
         valuesPath: web.image
+      db:
+        valuesPath: db.image
+      backup-restore:
+        valuesPath: dbbackup.image
+      planet-dump:
+        valuesPath: planetDump.image
+      replication-job:
+        valuesPath: replicationJob.image
+      populate-apidb:
+        valuesPath: populateApidb.image
+      osm-processor:
+        valuesPath: osmProcessor.image
+      tiler-db:
+        valuesPath: tilerDb.image
+      tiler-imposm:
+        valuesPath: tilerImposm.image
+      tiler-server:
+        valuesPath: tilerServer.image
+      # tiler-visor:
+      #   valuesPath: tilerVisor.image
+      
