@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-web
-          image: "{{ .Values.web.image }}:{{ .Values.osmSeedVersion }}"
+          image: "{{ .Values.web.image.name }}:{{ .Values.web.image.tag }}"
           ports:
             - name: http
               containerPort: 80

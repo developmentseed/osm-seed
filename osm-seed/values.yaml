@@ -60,7 +60,9 @@ domain:
 # ====================================================================================================
 db:
   enabled: true
-  image: 'developmentseed/osmseed-db'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
@@ -91,10 +93,10 @@ db:
 web:
   enabled: true
   # image: 'developmentseed/osmseed-web'
-  image:
-    name: 'developmentseed/osmseed-openstreetmap-website'
-    tag: '0.1.0'
-
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
+    
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -117,7 +119,9 @@ web:
 # ====================================================================================================
 dbbackup:
   enabled: false
-  image: 'developmentseed/osmseed-backup-restore'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
@@ -136,7 +140,9 @@ dbbackup:
 # ====================================================================================================
 planetDump:
   enabled: true
-  image: 'developmentseed/osmseed-planet-dump'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true
@@ -149,35 +155,15 @@ planetDump:
       memory: "16Gi"
       cpu: "4"
 
-# ====================================================================================================
-# Variables for id-editor
-# ====================================================================================================
-idEditor:
-  enabled: true
-  image: 'developmentseed/osmseed-id-editor'
-  replicaCount: 1
-  # Set staticIp, if you are using cloudProvider=gcp
-  staticIp: 35.247.6.238
-  env:
-    ID_EDITOR_PORT: 8080
-    OSM_API_PROTOCOL: http
-    OSM_API_DOMAIN: 35.247.6.238
-    OAUTH_CONSUMER_KEY: bG1FdkcQdHEqAGAyKRdVjDvuBJcDqXNezAm7dz4j
-    OAUTH_SECRET: joAzZnXS0juPz3eFIJYDUllgpfR0iICZaUmJCmRz
-  resources:
-    enabled: false
-    requests:
-      memory: "300Mi"
-      cpu: "0.4"
-    limits:
-      memory: "400Mi"
-      cpu: "0.5"
+
 # ====================================================================================================
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
 replicationJob:
   enabled: true
-  image: 'developmentseed/osmseed-replication-job'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   resources:
     enabled: false
     requests:
@@ -192,7 +178,9 @@ replicationJob:
 # ====================================================================================================
 populateApidb:
   enabled: false
-  image: 'developmentseed/osmseed-populate-apidb'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
   resources:
@@ -209,7 +197,9 @@ populateApidb:
 # ====================================================================================================
 osmProcessor:
   enabled: false
-  image: 'developmentseed/osmseed-osm-processor'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     URL_FILE_TO_PROCESS: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
     OSM_FILE_ACTION: simple_pbf
@@ -227,7 +217,9 @@ osmProcessor:
 # ====================================================================================================
 tilerDb:
   enabled: true
-  image: 'developmentseed/osmseed-tiler-db'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
@@ -259,7 +251,9 @@ tilerDb:
 # ====================================================================================================
 tilerImposm:
   enabled: false
-  image: 'developmentseed/osmseed-tiler-imposm'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -288,7 +282,9 @@ tilerImposm:
 # ====================================================================================================
 tilerServer:
   enabled: false
-  image: 'developmentseed/osmseed-tiler-server'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -327,7 +323,9 @@ tilerServer:
 # ====================================================================================================
 tilerVisor:
   enabled: false
-  image: 'developmentseed/osmseed-tiler-visor'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
