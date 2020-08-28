@@ -42,6 +42,7 @@ spec:
       protocol: TCP
       name: https
   {{- end }}
+  sessionAffinity: ClientIP
   
   selector:
     app: {{ template "osm-seed.name" . }}
