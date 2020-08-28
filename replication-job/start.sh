@@ -9,7 +9,6 @@ else
 fi
 
 workingDirectory="data"
-
 # Check if state.txt exist in the workingDirectory,
 # in case the file does not exist locally and does not exist in the cloud the replication will start from 0
 if [ ! -f $workingDirectory/state.txt ]; then
@@ -35,6 +34,7 @@ fi
 
 # Creating the replication files
 function generateReplication () {
+	flag_=true
 	osmosis -q \
 		--replicate-apidb \
 		iterations=0 \
@@ -47,7 +47,7 @@ function generateReplication () {
 		validateSchemaVersion=no \
 		--write-replication \
 		workingDirectory=$workingDirectory &
-	while true; do
+	while "$flag_" = true; do
 		for file in $(find $workingDirectory/ -cmin -1); do
 			if [ -f "$file" ]; then
 				bucketFile=${file#*"$workingDirectory"}
@@ -62,8 +62,12 @@ function generateReplication () {
 				fi
 			fi
 		done
+		# In case the DB not response exit the whole process
+		pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || flag_=false
 		sleep 30s
 	done
+	# Exit if the previous process has completed
+	exit
 }
 
 # Check if Postgres is ready
