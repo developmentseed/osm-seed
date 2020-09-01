@@ -18,17 +18,17 @@ RUN apt-get update && \
     cd /var/lib/apt/lists && rm -fr *Release* *Sources* *Packages* && \
     truncate -s 0 /var/log/*log
 
-# Install Ruby 2.4.1
+# Install Ruby 2.6.6
 RUN cd /tmp &&\
-  wget -O ruby-2.4.1.tar.gz https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.1.tar.gz &&\
-  tar -xzvf ruby-2.4.1.tar.gz &&\
-  cd ruby-2.4.1/ &&\
+  wget -O ruby-2.6.6.tar.gz https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.6.tar.gz &&\
+  tar -xzvf ruby-2.6.6.tar.gz &&\
+  cd ruby-2.6.6/ &&\
   ./configure &&\
   make &&\
   make install &&\
   cd /tmp &&\
-  rm -rf ruby-2.4.1 &&\
-  rm -rf ruby-2.4.1.tar.gz
+  rm -rf ruby-2.6.6 &&\
+  rm -rf ruby-2.6.6.tar.gz
 
 # Add Ruby binaries and gem to $PATH 
 ENV PATH /usr/local/bin/:$PATH
