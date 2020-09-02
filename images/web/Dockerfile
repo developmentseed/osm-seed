@@ -12,6 +12,7 @@ RUN apt-get update && \
     libsqlite3-dev sqlite3 libmagickwand-dev libxml2-dev libxslt1-dev \
     openssh-server openssh-client \
     apache2 apache2-dev \
+    libarchive13 libarchive-dev \
     libsasl2-dev imagemagick libffi-dev postgresql-client curl &&\
     # Cleanup
     apt-get clean && \
