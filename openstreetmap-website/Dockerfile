@@ -112,6 +112,7 @@ RUN /usr/sbin/passenger-memory-stats
 
 # Clone the openstreetmap-website
 RUN rm -rf $workdir
+RUN echo 'clone the repo'
 RUN git clone https://github.com/OpenHistoricalMap/ohm-website.git $workdir
 WORKDIR $workdir
 RUN git checkout 283d7ea5214814249bd01ed836c1adb2883217fa
