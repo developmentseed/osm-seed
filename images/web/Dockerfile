@@ -47,7 +47,7 @@ RUN apt-get -y update && \
 RUN gem install bundler
 
 # Install node for some images process dependencies
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
 # Fixing image_optim issues, installing a bush of libraries from : https://github.com/toy/image_optim#pngout-installation-optional
@@ -117,12 +117,13 @@ WORKDIR $workdir
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
-RUN echo "gem 'therubyracer'" >> Gemfile
+RUN echo "gem 'mini_racer'" >> Gemfile
 
 RUN gem install nokogiri -- --use-system-libraries
 
 # Install app dependencies
-RUN bundle update listen && bundle install
+RUN bundle install
+RUN gem install rake
 
 # update vendored iD
 RUN rm -rf vendor/assets/iD
@@ -130,13 +131,15 @@ RUN vendorer
 
 # Configure database.yml, application.yml and secrets.yml
 ADD config/database.yml $workdir/config/database.yml
-ADD config/application.yml $workdir/config/application.yml
+RUN touch $workdir/config/settings.local.yml
+
+# ADD config/application.yml $workdir/config/application.yml
 RUN echo "#session key \n\
 production: \n\
   secret_key_base: $(bundle exec rake secret)" > $workdir/config/secrets.yml
 
 # Protect sensitive information
-RUN chmod 600 $workdir/config/database.yml $workdir/config/application.yml $workdir/config/secrets.yml
+RUN chmod 600 $workdir/config/database.yml $workdir/config/secrets.yml
 
 # Configure ActionMailer SMTP settings, Replace config/initializers/action_mailer.rb with out configurations
 ADD config/action_mailer.rb config/initializers/action_mailer.rb
@@ -145,8 +148,10 @@ ADD config/action_mailer.rb config/initializers/action_mailer.rb
 RUN apt-get install -y tzdata
 # gem install tzinfo-data
 
-RUN bundle exec rake assets:precompile --trace
-RUN bundle exec rake i18n:js:export --trace
+RUN npm install yarn -g
+RUN bundle exec rake yarn:install
+RUN bundle exec rake i18n:js:export
+RUN bundle exec rake assets:precompile
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
 RUN ln -s /tmp /var/www/tmp
@@ -167,7 +172,6 @@ RUN sed -e 's/RewriteRule ^(.*)/#RewriteRule ^(.*)/' \
 RUN chmod 644 /etc/apache2/sites-available/cgimap.conf
 RUN a2ensite cgimap
 RUN apache2ctl configtest
-RUN npm install yarn -g
 
 # Set Permissions for www-data
 RUN chown -R www-data: /var/www
