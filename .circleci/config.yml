@@ -572,13 +572,13 @@ workflows:
   version: 2
   build_and_push:
     jobs:
-      # - web
-      # - db
-      # - planet-dump
-      # - db-backup-restore
-      # - replication-job
-      # - populate-apidb
-      # - tiler-db
-      # - tiler-imposm
-      # - tiler-server
+      - web
+      - db
+      - planet-dump
+      - db-backup-restore
+      - replication-job
+      - populate-apidb
+      - tiler-db
+      - tiler-imposm
+      - tiler-server
       - tasking-manager-api
