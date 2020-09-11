@@ -168,3 +168,19 @@ services:
       - ./.env-tiler
   memcached:
     image: memcached
+  tasking-manager-api:
+    image: osmseed-tasking-manager-api:v1
+    build:
+      context: ./tasking-manager-api
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env-tasking-manager
+  tasking-manager-frontend:
+    image: osmseed-tasking-manager-frontend:v1
+    build:
+      context: ./tasking-manager-frontend
+      dockerfile: Dockerfile
+      args:
+        TM_APP_API_URL: 'http://127.0.0.1:5000'
+    env_file:
+      - ./.env-tasking-manager
