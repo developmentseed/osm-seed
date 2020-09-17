@@ -1,4 +1,4 @@
-{{- if .Values.tasking-manager-api.enabled -}}
+{{- if .Values.tmApi.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -25,7 +25,7 @@ spec:
   # In case cloudProvider=gcp
   {{- if eq .Values.cloudProvider "gcp" }}
   type: LoadBalancer
-  loadBalancerIP : {{ .Values.tasking-manager-api.staticIp }}
+  loadBalancerIP : {{ .Values.tmApi.staticIp }}
   {{- end }}
   # In case cloudProvider=minikube
   {{- if eq .Values.cloudProvider "minikube" }}
