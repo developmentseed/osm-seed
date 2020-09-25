@@ -8,8 +8,8 @@ ENV workdir /usr/src/app
 
 RUN echo 'bust cache'
 RUN git clone https://github.com/OpenHistoricalMap/tasking-manager.git $workdir
-RUN git checkout d94ea226e2142da7e2b4b33755ab12ce41797458
 WORKDIR $workdir
+RUN git checkout d94ea226e2142da7e2b4b33755ab12ce41797458
 
 # Setup backend dependencies
 RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev libffi-dev geos-dev proj-util proj-dev make
