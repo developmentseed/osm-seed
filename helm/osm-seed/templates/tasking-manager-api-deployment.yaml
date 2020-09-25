@@ -55,6 +55,8 @@ spec:
               value: {{ .Values.tmApi.env.POSTGRES_USER }}
             - name: POSTGRES_PORT
               value: {{ .Values.tmApi.env.POSTGRES_PORT | quote }}
+            - name: TM_DB
+              value: {{ printf "postgresql://%s:%s@%s/%s" .Values.tmApi.env.POSTGRES_USER .Values.tmApi.env.POSTGRES_PASSWORD .Values.tmApi.env.POSTGRES_HOST .Values.tmApi.env.POSTGRES_DB }}
             - name: TM_ORG_NAME
               value: {{ .Values.tmApi.env.TM_ORG_NAME }}
             - name: TM_ORG_CODE
@@ -87,6 +89,8 @@ spec:
               value: {{ quote .Values.tmApi.env.TM_SECRET }}
             - name: TM_CONSUMER_SECRET
               value: {{ quote .Values.tmApi.env.TM_CONSUMER_SECRET }}
+            - name: TM_CONSUMER_KEY
+              value: {{ quote .Values.tmApi.env.TM_CONSUMER_KEY }}
             - name: TM_EMAIL_FROM_ADDRESS
               value: {{ quote .Values.tmApi.env.TM_EMAIL_FROM_ADDRESS }}
             - name: TM_EMAIL_CONTACT_ADDRESS
@@ -103,6 +107,8 @@ spec:
               value: {{ quote .Values.tmApi.env.TM_DEFAULT_LOCALE }}
             - name: TM_APP_API_URL
               value: {{ .Values.tmApi.env.TM_APP_API_URL }}
+            - name: TM_APP_BASE_URL
+              value: {{ .Values.tmApi.env.TM_APP_BASE_URL }}
       {{- if .Values.tmApi.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tmApi.nodeSelector.label_key }} : {{ .Values.tmApi.nodeSelector.label_value }}

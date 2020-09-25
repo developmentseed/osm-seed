@@ -6,7 +6,9 @@ RUN apk update && \
 
 ENV workdir /usr/src/app
 
+RUN echo 'bust cache'
 RUN git clone https://github.com/OpenHistoricalMap/tasking-manager.git $workdir
+RUN git checkout d94ea226e2142da7e2b4b33755ab12ce41797458
 WORKDIR $workdir
 
 # Setup backend dependencies
