@@ -1,9 +1,9 @@
 charts:
   - name: osm-seed
     imagePrefix: developmentseed/osmseed-
-    # repo:
-    #   git: jupyterhub/helm-chart
-    #   published: https://jupyterhub.github.io/helm-chart
+    repo:
+       git: developmentseed/osm-seed-chart
+       published: https://developmentseed.github.io/osm-seed-chart
 
     images:
       web:
