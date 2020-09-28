@@ -13,6 +13,7 @@ spec:
   selector:
     matchLabels:
       app:  {{ .Release.Name }}-tiler-imposm-statefulset
+  serviceName: {{ .Release.Name }}-tiler-imposm
   replicas: 1
   template:
     metadata:
@@ -47,8 +48,12 @@ spec:
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM }}
           - name: TILER_IMPORT_PBF_URL
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL }}
-          # - name: TILER_IMPORT_LIMIT
-          #   value: {{ .Values.tilerImposm.env.TILER_IMPORT_LIMIT }}
+          - name: REPLICATION_URL
+            value: {{ .Values.tilerImposm.env.REPLICATION_URL }}
+          - name: SEQUENCE_NUMBER
+            value: {{ .Values.tilerImposm.env.SEQUENCE_NUMBER | quote}}
+          - name: OVERWRITE_STATE
+            value: {{ quote .Values.tilerImposm.env.OVERWRITE_STATE }}
           - name: CLOUDPROVIDER
             value: {{ .Values.cloudProvider }}
           # In case cloudProvider=aws
@@ -73,5 +78,9 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+      {{- if .Values.tilerImposm.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.tilerImposm.nodeSelector.label_key }} : {{ .Values.tilerImposm.nodeSelector.label_value }}
+      {{- end }}
 {{- end }}
 {{- end }}

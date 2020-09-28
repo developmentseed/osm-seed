@@ -13,3 +13,13 @@ osm-processor-data/
 postgres-gis-data/
 tiler-imposm-data/
 tiler-server-data/
+data/
+*.osm
+*.pbf
+*.bz2
+
+tiler-imposm/config.json
+tiler-imposm/cachedir/
+tiler-imposm/diff/
+tiler-imposm/imposm3_expire_dir
+tiler-server/imposm/

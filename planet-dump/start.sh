@@ -8,8 +8,13 @@ else
 	echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" >~/.osmosis
 fi
 # Read the DB and create the planet osm file
-date=$(date '+%Y-%m-%d:%H:%M')
-planetPBFFile=history-latest-${date}.pbf
+date=$(date '+%y%m%d_%H%M')
+planetPBFFile=planet-${date}.osm.pbf
+# In case overwrite the file
+if [ "$OVERWRITE_PLANET_FILE" == "true" ]; then
+	planetPBFFile=planet-latest.osm.pbf
+fi
+
 stateFile="state.txt"
 
 # Creating the replication file
@@ -25,53 +30,17 @@ osmosis --read-apidb \
 # AWS
 if [ $CLOUDPROVIDER == "aws" ]; then
 	# Save the path file
-	echo "$AWS_S3_BUCKET/planet/full-history/$planetPBFFile" >>$stateFile
+	echo "https://$AWS_S3_BUCKET.s3.amazonaws.com/planet/$planetPBFFile" > $stateFile
 	# Upload to S3
-	aws s3 cp $planetPBFFile $AWS_S3_BUCKET/planet/full-history/$planetPBFFile
-	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read
+	aws s3 cp $planetPBFFile $AWS_S3_BUCKET/planet/$planetPBFFile --acl public-read 
+	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/$stateFile --acl public-read
 fi
 
 # Google Storage
 if [ $CLOUDPROVIDER == "gcp" ]; then
 	# Save the path file
-	echo "$GCP_STORAGE_BUCKET/planet/full-history/$planetPBFFile" >>$stateFile
+	echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/planet/$planetPBFFile" > $stateFile
 	# Upload to GS
-	gsutil cp $planetPBFFile $GCP_STORAGE_BUCKET/planet/full-history/$planetPBFFile
-	gsutil cp $stateFile $GCP_STORAGE_BUCKET/planet/full-history/$stateFile
-fi
-
-# Clean backups older than 7 days
-
-if [ $CLEAN_BACKUPS == "true" ]; then
-	DATE=$(date --date="5 day ago" +"%Y-%m-%d")
-	# AWS
-	if [ $CLOUDPROVIDER == "aws" ]; then
-		# Filter files from S3
-		aws s3 ls $AWS_S3_BUCKET/planet/full-history/ |
-			awk '{print $4}' |
-			awk -F"history-latest-" '{$1=$1}1' |
-			awk '/pbf/{print}' |
-			awk -F".pbf" '{$1=$1}1' |
-			awk '$1 < "'"$DATE"'" {print $0}' |
-			sort -n >output
-		# Delete filtered files
-		while read file; do
-			aws s3 rm $AWS_S3_BUCKET/planet/full-history/history-latest-$file.pbf
-		done <output
-		rm output
-	fi
-	# Google Storage
-	if [ $CLOUDPROVIDER == "gcp" ]; then
-		# Filter files from GS
-		gsutil ls $GCP_STORAGE_BUCKET/planet/full-history/ |
-			awk -F""$GCP_STORAGE_BUCKET"/planet/full-history/history-latest-" '{$1=$1}1' |
-			awk '/pbf/{print}' |
-			awk -F".pbf" '{$1=$1}1' |
-			awk '$1 < "'"$DATE"'" {print $0}' |
-			sort -n >output
-		# Delete filtered files
-		while read file; do
-			gsutil rm $GCP_STORAGE_BUCKET/planet/full-history/history-latest-$file.pbf
-		done <output
-	fi
+	gsutil cp -a public-read $planetPBFFile $GCP_STORAGE_BUCKET/planet/$planetPBFFile
+	gsutil cp -a public-read $stateFile $GCP_STORAGE_BUCKET/planet/$stateFile
 fi

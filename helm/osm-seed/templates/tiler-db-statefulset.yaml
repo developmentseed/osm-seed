@@ -15,6 +15,7 @@ spec:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
       run: {{ .Release.Name }}-tiler-db
+  serviceName: {{ .Release.Name }}-tiler-db
   template:
     metadata:
       labels:
@@ -85,4 +86,8 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+      {{- if .Values.tilerDb.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.tilerDb.nodeSelector.label_key }} : {{ .Values.tilerDb.nodeSelector.label_value }}
+      {{- end }}
 {{- end }}
