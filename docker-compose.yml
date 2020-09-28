@@ -11,6 +11,8 @@ services:
       - ./.env
     depends_on:
       - db
+    links:
+      - memcached
   db:
     image: osmseed-db:v1
     build:
@@ -24,12 +26,13 @@ services:
       - ./.env
   planet-dump:
     image: osmseed-planet-dump:v1
-    build: 
+    build:
       context: ./planet-dump
       dockerfile: Dockerfile
     depends_on:
-      - web
       - db
+    volumes:
+      - ./planet-dump-data:/app
     command: >
       /bin/bash -c "
       echo Sleep the planet-dump for a while!;
@@ -44,7 +47,6 @@ services:
       context: ./db-backup-restore
       dockerfile: Dockerfile
     depends_on:
-      - web
       - db
     command: >
       /bin/bash -c "
@@ -54,27 +56,14 @@ services:
       ./start.sh"
     env_file: 
       - ./.env
-  id-editor:
-    image: osmseed-id-editor:v1
-    build: 
-      context: ./id-editor
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    depends_on:
-      - web
-      - db
-    env_file: 
-      - ./.env
   replication-job:
     image: osmseed-replication-job:v1
     build:
       context: ./replication-job
       dockerfile: Dockerfile
     volumes:
-      - ./replication-job-data:/app/data
+      - ./replication-job:/mnt/data
     depends_on:
-      - web
       - db
     command: >
       /bin/bash -c "
@@ -92,7 +81,6 @@ services:
     volumes:
       - ./populate-apidb-data:/app/data
     depends_on:
-      - web
       - db
     command: >
       /bin/bash -c "
@@ -107,13 +95,29 @@ services:
     build:
       context: ./osm-processor
       dockerfile: Dockerfile
-    volumes:
-      - ./osm-processor-data:/app/data
     env_file:
       - ./.env
-  ##=========================================================================
-  ## OMS-SEED-TILER section
-  ##=========================================================================
+  full-history:
+    image: osmseed-full-history:v1
+    build:
+      context: ./full-history
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - db
+    volumes:
+      - ./full-history-data:/mnt/data
+    command: >
+      /bin/bash -c "
+      echo Sleep full-history for a while!;
+      sleep 40;
+      echo Starting full-history!;
+      ./start.sh"
+    env_file:
+      - ./.env
+  # #=========================================================================
+  # OSM-SEED-TILER section
+  #=========================================================================
   tiler-db:
     image: osmseed-tiler-db:v1
     build: 
@@ -162,14 +166,21 @@ services:
       ./start.sh"
     env_file:
       - ./.env-tiler
-  tiler-visor:
-    image: osmseed-tiler-visor:v1
-    build: 
-      context: ./tiler-visor
+  memcached:
+    image: memcached
+  tasking-manager-api:
+    image: osmseed-tasking-manager-api:v1
+    build:
+      context: ./tasking-manager-api
       dockerfile: Dockerfile
-    depends_on:
-      - tiler-server
-    ports:
-      - "8081:80"
     env_file:
-      - ./.env-tiler
+      - ./.env-tasking-manager
+  tasking-manager-frontend:
+    image: osmseed-tasking-manager-frontend:v1
+    build:
+      context: ./tasking-manager-frontend
+      dockerfile: Dockerfile
+      args:
+        TM_APP_API_URL: 'http://127.0.0.1:5000'
+    env_file:
+      - ./.env-tasking-manager

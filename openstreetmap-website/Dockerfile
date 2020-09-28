@@ -4,20 +4,48 @@ ENV workdir /var/www
 # Production OSM setup
 ENV RAILS_ENV=production
 
-# Postgres dependecies
-RUN apt-get update
-RUN apt-get install -y wget
-RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
-RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
-RUN apt-get update
-
 # Install the openstreetmap-website dependencies and passenger dependencies
-RUN apt-get install -y ruby2.3 libruby2.3 ruby2.3-dev \
-    libmagickwand-dev libxml2-dev libxslt1-dev \
-    apache2 apache2-dev build-essential git \
-    postgresql postgresql-contrib libpq-dev \
-    libsasl2-dev imagemagick libffi-dev curl
-RUN gem2.3 install bundler
+RUN apt-get update && \
+    apt-get install -y wget curl \
+    build-essential git git-core \
+    zlib1g-dev libssl-dev libreadline-dev libyaml-dev \
+    libsqlite3-dev sqlite3 libmagickwand-dev libxml2-dev libxslt1-dev \
+    openssh-server openssh-client \
+    apache2 apache2-dev \
+    libsasl2-dev imagemagick libffi-dev postgresql-client curl &&\
+    # Cleanup
+    apt-get clean && \
+    cd /var/lib/apt/lists && rm -fr *Release* *Sources* *Packages* && \
+    truncate -s 0 /var/log/*log
+
+# Install Ruby 2.4.1
+RUN cd /tmp &&\
+  wget -O ruby-2.4.1.tar.gz https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.1.tar.gz &&\
+  tar -xzvf ruby-2.4.1.tar.gz &&\
+  cd ruby-2.4.1/ &&\
+  ./configure &&\
+  make &&\
+  make install &&\
+  cd /tmp &&\
+  rm -rf ruby-2.4.1 &&\
+  rm -rf ruby-2.4.1.tar.gz
+
+# Add Ruby binaries and gem to $PATH 
+ENV PATH /usr/local/bin/:$PATH
+ENV WORK_ROOT /var
+ENV GEM_HOME $WORK_ROOT/.gem/ruby
+ENV GEM_PATH $GEM_HOME
+ENV PATH $PATH:$GEM_PATH/bin
+
+# Add options to gemrc
+RUN echo "gem: --no-document" > $WORK_ROOT/.gemrc
+RUN apt-get -y update && \
+    apt-get -y upgrade
+
+
+RUN gem install bundler
+
+RUN ln -s /usr/local/lib/libcrypto.so.1.0.0 /usr/lib/libcrypto.so.1.1
 
 # Install node for some images process dependencies
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
@@ -49,6 +77,7 @@ RUN apt-get install -y libxml2-dev libpqxx-dev libfcgi-dev \
     libboost-date-time-dev libboost-filesystem-dev \
     libboost-system-dev libboost-locale-dev libmemcached-dev \
     libcrypto++-dev automake autoconf libtool libyajl-dev
+
 ENV cgimap /tmp/openstreetmap-cgimap
 RUN git clone -b v0.6.2 https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
 RUN cd $cgimap && \
@@ -83,17 +112,23 @@ RUN /usr/sbin/passenger-memory-stats
 
 # Clone the openstreetmap-website
 RUN rm -rf $workdir
-RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
+RUN echo 'clone the repo'
+RUN git clone https://github.com/OpenHistoricalMap/ohm-website.git $workdir
 WORKDIR $workdir
-# gitsha 39f0b501e8cefea961447de9c8076e20fa3adbb4 at Jul 23, 2018
-RUN git checkout 39f0b501e8cefea961447de9c8076e20fa3adbb4
+RUN git checkout 283d7ea5214814249bd01ed836c1adb2883217fa
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
 RUN echo "gem 'therubyracer'" >> Gemfile
 
+RUN gem install nokogiri -- --use-system-libraries
+
 # Install app dependencies
 RUN bundle update listen && bundle install
+
+# update vendored iD
+RUN rm -rf vendor/assets/iD
+RUN vendorer
 
 # Configure database.yml, application.yml and secrets.yml
 ADD config/database.yml $workdir/config/database.yml
@@ -109,7 +144,11 @@ RUN chmod 600 $workdir/config/database.yml $workdir/config/application.yml $work
 ADD config/action_mailer.rb config/initializers/action_mailer.rb
 
 # Precompile the website assets
-RUN bundle exec rake assets:precompile --trace
+RUN apt-get install -y tzdata
+# gem install tzinfo-data
+
+# RUN bundle exec rake assets:precompile --trace
+RUN bundle exec rake i18n:js:export --trace
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
 RUN ln -s /tmp /var/www/tmp
@@ -130,6 +169,7 @@ RUN sed -e 's/RewriteRule ^(.*)/#RewriteRule ^(.*)/' \
 RUN chmod 644 /etc/apache2/sites-available/cgimap.conf
 RUN a2ensite cgimap
 RUN apache2ctl configtest
+RUN npm install yarn -g
 
 # Set Permissions for www-data
 RUN chown -R www-data: /var/www

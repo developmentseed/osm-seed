@@ -43,6 +43,6 @@ In case GCP:
     docker run \
     --env-file ./../.env \
     --network osm-seed_default \
-    -v $(pwd)/../replication-job-data:/app/data \
+    -v ${PWD}:/mnt/data \
     -t osmseed-replication-job:v1
 ```

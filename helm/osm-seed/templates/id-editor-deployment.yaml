@@ -47,4 +47,8 @@ spec:
               value: {{ .Values.idEditor.env.OSM_API_DOMAIN }}
             - name: SERVER_PROTOCOL
               value : {{ .Values.idEditor.env.OSM_API_PROTOCOL }}
+      {{- if .Values.idEditor.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.idEditor.nodeSelector.label_key }} : {{ .Values.idEditor.nodeSelector.label_value }}
+      {{- end }}
 {{- end }}

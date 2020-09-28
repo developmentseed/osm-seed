@@ -20,7 +20,7 @@ Required environment variables:
 
  **Env variables to  import the files**
 
-- `TILER_IMPORT_PROM` e.g `osm` or `osmseed`
+- `TILER_IMPORT_FROM` e.g `osm` or `osmseed`
 - `TILER_IMPORT_PBF_URL` eg `http://download.geofabrik.de/south-america/peru-latest.osm.pbf`
 
 
@@ -54,5 +54,16 @@ Note: In case you use the `TILER_IMPORT_PROM`=`osmseed` you need to make public 
     docker run \
     --env-file ./../.env-tiler \
     --network osm-seed_default \
-    -t osmseed-tiler-imposm:v1  
+    -v ${PWD}:/mnt/data \
+    -t osmseed-tiler-imposm:v1 
+```
+
+#### Access the container
+
+```
+    docker run \
+    --env-file ./../.env-tiler \
+    --network osm-seed_default \
+    -v ${PWD}:/mnt/data \
+    -it osmseed-tiler-imposm:v1 bash
 ```

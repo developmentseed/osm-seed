@@ -18,7 +18,6 @@ This project provides docker container definitions for various aspects of the Op
 
  - `web` A container that runs The OpenStreetMap Rails Port.
  - `db` A container that runs OSM Api database.
- - `id-editor` A container that runs id-editor, synchronizer with  Rails Port. 
  - `populate-apidb` A container that runs `osmium` to import data into the api-db.
  - `planet-dump` A container that exports a planet replication in pbf format.
  - `replication-job`  A container that exports data from the api-db every minute, hour or day.
@@ -38,5 +37,3 @@ If you plan to use data from the main OpenStreetMap project in your OSM Seed ins
 ## What's next?
 
 Our immediate next goal is integrate a tile server. Eventually, the goal is include as many tools from the OSM ecosystem part of this stack. Take a look at our [roadmap](https://github.com/developmentseed/osm-seed/blob/master/ROADMAP.md), and help out if this project helps what you're trying to do! We are always interested in collaborations and contributions! If you are interested in contributing, please see the [Contributor Guidelines](CONTRIBUTING.md).
-
-

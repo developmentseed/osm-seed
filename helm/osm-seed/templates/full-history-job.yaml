@@ -1,15 +1,15 @@
-{{- if .Values.planetDump.enabled -}}
+{{- if .Values.fullHistory.enabled -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-planet-dump-job
+  name: {{ .Release.Name }}-full-history-job
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: planet-dump-job
+    component: full-history-job
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: {{ quote .Values.planetDump.schedule }}
+  schedule: {{ quote .Values.fullHistory.schedule }}
   startingDeadlineSeconds: 100
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2
@@ -19,17 +19,17 @@ spec:
       template:
         spec:
           containers:
-          - name: {{ .Release.Name }}-planet-dump-job
-            image: {{ .Values.planetDump.image }}:{{ .Values.osmSeedVersion }}
+          - name: {{ .Release.Name }}-full-history-job
+            image: {{ .Values.fullHistory.image }}:{{ .Values.osmSeedVersion }}
             command: ['./start.sh']
-            {{- if .Values.planetDump.resources.enabled }}   
+            {{- if .Values.fullHistory.resources.enabled }}   
             resources:
               requests:
-                memory: {{ .Values.planetDump.resources.requests.memory }}
-                cpu: {{ .Values.planetDump.resources.requests.cpu }}
+                memory: {{ .Values.fullHistory.resources.requests.memory }}
+                cpu: {{ .Values.fullHistory.resources.requests.cpu }}
               limits:
-                memory: {{ .Values.planetDump.resources.limits.memory }}
-                cpu: {{ .Values.planetDump.resources.limits.cpu }}
+                memory: {{ .Values.fullHistory.resources.limits.memory }}
+                cpu: {{ .Values.fullHistory.resources.limits.cpu }}
             {{- end }}
             env:
               - name: POSTGRES_HOST
@@ -40,10 +40,10 @@ spec:
                 value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
                 value: {{ .Values.db.env.POSTGRES_USER }}
+              - name: OVERWRITE_FHISTORY_FILE
+                value: {{ .Values.fullHistory.env.OVERWRITE_FHISTORY_FILE | quote}}
               - name: CLOUDPROVIDER
                 value: {{ .Values.cloudProvider }}
-              - name: OVERWRITE_PLANET_FILE
-                value: {{ .Values.planetDump.env.OVERWRITE_PLANET_FILE | quote}}
               # In case cloudProvider=aws
               {{- if eq .Values.cloudProvider "aws" }}
               - name: AWS_S3_BUCKET
@@ -55,14 +55,14 @@ spec:
                 value: {{ .Values.GCP_STORAGE_BUCKET }}
               {{- end }}
               # Memory optimization for osmosis
-              {{- if .Values.planetDump.resources.enabled }}   
+              {{- if .Values.fullHistory.resources.enabled }}   
               - name: MEMORY_JAVACMD_OPTIONS
-                value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
+                value: {{ .Values.fullHistory.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}
           restartPolicy: OnFailure
-          {{- if .Values.planetDump.nodeSelector.enabled }}
+          {{- if .Values.fullHistory.nodeSelector.enabled }}
           nodeSelector:
-            {{ .Values.planetDump.nodeSelector.label_key }} : {{ .Values.planetDump.nodeSelector.label_value }}
+            {{ .Values.fullHistory.nodeSelector.label_key }} : {{ .Values.fullHistory.nodeSelector.label_value }}
           {{- end }}
       backoffLimit: 3
 {{- end }}
