@@ -13,7 +13,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Install chartpress
       run: |
-        pip install requests
+        pip install --upgrade && pip install -v chartpress
     - name: Run Chartpress
       run: chartpress --push --publish-chart
 
