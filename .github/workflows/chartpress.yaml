@@ -14,8 +14,12 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Install chartpress
+      with:
+        python-version: ${{ matrix.python-version }}
       run: |
-        pip install --upgrade && pip install -v chartpress
+        pip install -v chartpress
     - name: Run Chartpress
+      with:
+        python-version: ${{ matrix.python-version }}
       run: chartpress --push --publish-chart
 
