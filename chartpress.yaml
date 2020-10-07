@@ -3,7 +3,7 @@ charts:
     imagePrefix: developmentseed/osmseed-
     repo:
        git: developmentseed/osm-seed-chart
-       published: https://developmentseed.github.io/osm-seed-chart
+       published: https://devseed.com/osm-seed-chart
 
     images:
       web:
