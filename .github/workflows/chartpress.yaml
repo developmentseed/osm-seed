@@ -19,6 +19,10 @@ jobs:
     - name: Install Chartpress
       run: |
         pip install -v chartpress
+    - name: Bust docker mirror
+      run: |
+        echo '{"mtu": 1460}' | sudo dd of=/etc/docker/daemon.json &&
+        sudo systemctl restart docker
     - name: Run Chartpress
       run: chartpress --push --publish-chart
       env:
