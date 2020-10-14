@@ -247,6 +247,8 @@ tilerDb:
     limits:
       memory: "2Gi"
       cpu: "2.5"
+  nodeSelector:
+    enabled: false
 
 # ====================================================================================================
 # Variables for tiler-imposm
@@ -319,6 +321,8 @@ tilerServer:
     limits:
       memory: "2Gi"
       cpu: "2"
+  nodeSelector:
+    enabled: false
 
 # ====================================================================================================
 # Variables for tiler-visor
