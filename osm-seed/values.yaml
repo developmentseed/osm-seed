@@ -86,6 +86,8 @@ db:
     limits:
       memory: "2Gi"
       cpu: "1"
+  nodeSelector:
+    enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed website
