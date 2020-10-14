@@ -113,6 +113,8 @@ web:
     limits:
       memory: "2Gi"
       cpu: "2"
+  nodeSelector:
+    enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed database backup and restore
