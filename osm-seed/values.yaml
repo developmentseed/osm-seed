@@ -156,7 +156,8 @@ planetDump:
     limits:
       memory: "16Gi"
       cpu: "4"
-
+  nodeSelector:
+    enabled: false
 
 # ====================================================================================================
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
@@ -174,6 +175,8 @@ replicationJob:
     limits:
       memory: "24Gi"
       cpu: "10"
+  nodeSelector:
+    enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed to pupulate the apidb
