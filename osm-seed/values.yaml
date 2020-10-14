@@ -122,6 +122,8 @@ web:
 idEditor:
   enabled: false
 
+fullHistory:
+  enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed database backup and restore
