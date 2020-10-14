@@ -11,7 +11,7 @@ charts:
       db:
         valuesPath: db.image
       backup-restore:
-        valuesPath: dbbackup.image
+        valuesPath: dbBackupRestore.image
       planet-dump:
         valuesPath: planetDump.image
       replication-job:
