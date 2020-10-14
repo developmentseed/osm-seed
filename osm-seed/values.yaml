@@ -130,7 +130,7 @@ fullHistory:
 # ====================================================================================================
 # Variables for osm-seed database backup and restore
 # ====================================================================================================
-dbbackup:
+dbBackupRestore:
   enabled: false
   image: 
     name: 'chartpress_replace'
