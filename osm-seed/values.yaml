@@ -68,7 +68,7 @@ db:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: '1234'
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
@@ -243,7 +243,7 @@ tilerDb:
     POSTGRES_PASSWORD: '1234'
     POSTGRES_PORT: 5432
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-d
