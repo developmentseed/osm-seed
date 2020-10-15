@@ -132,6 +132,7 @@ RUN vendorer
 # Configure database.yml, application.yml and secrets.yml
 ADD config/database.yml $workdir/config/database.yml
 RUN touch $workdir/config/settings.local.yml
+RUN cp $workdir/config/example.storage.yml $workdir/config/storage.yml
 
 # ADD config/application.yml $workdir/config/application.yml
 RUN echo "#session key \n\
