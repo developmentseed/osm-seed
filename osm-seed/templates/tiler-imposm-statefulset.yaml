@@ -1,6 +1,6 @@
 {{- if .Values.tilerImposm.enabled -}}
 {{- if .Values.tilerImposm.persistenceDisk.enabled -}}
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-tiler-imposm-statefulset
