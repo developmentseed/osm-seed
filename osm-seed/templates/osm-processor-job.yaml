@@ -13,7 +13,7 @@ spec:
       spec:
         containers:
         - name: {{ .Release.Name }}-osm-processor-job
-          image: {{ .Values.osmProcessor.image }}:{{ .Values.osmSeedVersion }}
+          image: {{ .Values.osmProcessor.image.name }}:{{ .Values.osmProcessor.image.tag }}
           command: ['./start.sh']
           {{- if .Values.osmProcessor.resources.enabled }}   
           resources:

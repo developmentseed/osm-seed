@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-tiler-visor
-          image: "{{ .Values.tilerVisor.image }}:{{ .Values.osmSeedVersion }}"
+          image: "{{ .Values.tilerVisor.image.name }}:{{ .Values.tilerVisor.image.tag }}"
           ports:
             - name: http
               containerPort: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
