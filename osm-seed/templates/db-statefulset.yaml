@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-db
-          image: "{{ .Values.db.image }}:{{ .Values.osmSeedVersion }}"
+          image: "{{ .Values.db.image.name }}:{{ .Values.db.image.tag }}"
           ports:
             - name: postgres
               containerPort: 5432

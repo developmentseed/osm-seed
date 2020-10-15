@@ -20,7 +20,7 @@ spec:
         spec:
           containers:
           - name: {{ .Release.Name }}-planet-dump-job
-            image: {{ .Values.planetDump.image }}:{{ .Values.osmSeedVersion }}
+            image: {{ .Values.planetDump.image.name }}:{{ .Values.planetDump.image.tag }}
             command: ['./start.sh']
             {{- if .Values.planetDump.resources.enabled }}   
             resources:

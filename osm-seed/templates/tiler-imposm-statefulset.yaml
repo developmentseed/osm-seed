@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: {{ .Release.Name }}-tiler-imposm-statefulset
-        image: {{ .Values.tilerImposm.image }}:{{ .Values.osmSeedVersion }}
+        image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}
         command: ['./start.sh']
         {{- if .Values.tilerImposm.resources.enabled }}
         resources:

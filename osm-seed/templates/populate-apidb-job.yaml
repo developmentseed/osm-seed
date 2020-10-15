@@ -13,7 +13,7 @@ spec:
       spec:
         containers:
         - name: {{ .Release.Name }}-populate-apidb-job
-          image: {{ .Values.populateApidb.image }}:{{ .Values.osmSeedVersion }}
+          image: {{ .Values.populateApidb.image.name }}:{{ .Values.populateApidb.image.tag }}
           command: ['./start.sh']
           {{- if .Values.populateApidb.resources.enabled }}   
           resources:

@@ -20,7 +20,7 @@ spec:
         spec:
           containers:
           - name: {{ .Release.Name }}-full-history-job
-            image: {{ .Values.fullHistory.image }}:{{ .Values.osmSeedVersion }}
+            image: {{ .Values.fullHistory.image.name }}:{{ .Values.fullHistory.image.tag }}
             command: ['./start.sh']
             {{- if .Values.fullHistory.resources.enabled }}   
             resources:

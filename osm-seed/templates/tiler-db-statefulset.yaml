@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-tiler-db
-          image: "{{ .Values.tilerDb.image }}:{{ .Values.osmSeedVersion }}"
+          image: "{{ .Values.tilerDb.image.name }}:{{ .Values.tilerDb.image.tag }}"
           ports:
             - name: postgres
               containerPort: 5432

@@ -20,7 +20,7 @@ spec:
         spec:
           containers:
           - name: {{ .Release.Name }}-db-backup-job
-            image: {{ .Values.dbBackupRestore.image }}:{{ .Values.osmSeedVersion }}
+            image: {{ .Values.dbBackupRestore.image.name }}:{{ .Values.dbBackupRestore.image.tag }}
             command: ['./start.sh']
             {{- if .Values.dbBackupRestore.resources.enabled }}
             resources:
