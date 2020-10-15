@@ -1,3 +1,9 @@
+### Use Published Helm Chart
+
+The recommended way to install osm-seed is to use the published Helm chart, rather than forking this repository. You can see a minimal example and basic instructions to do this at: https://github.com/developmentseed/osm-seed-deploy
+
+The below instructions are still useful reading if you are using Helm and Kubernetes for the first time, and can still be used to develop locally. For any real-world installs, we now highly recommend using the public Helm Chart to make it easier to manage custom changes, etc.
+
 ## Helm Chart configuration
 
 The `osm-seed` folder contains the `Helm` Chart to easily deploy osm-seed to a Kubernetes cluster. For more about helm, see https://helm.sh
