@@ -360,3 +360,52 @@ tilerVisor:
     limits:
       memory: "2Gi"
       cpu: "2"
+
+# ====================================================================================================
+# Variables for Tasking Manager API
+# ====================================================================================================
+
+tmApi:
+  enabled: false
+  image:
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
+  nodeSelector:
+    enabled: false
+  replicaCount: 1
+  staticIp: c
+  env:
+    POSTGRES_HOST: 'tm'
+    POSTGRES_DB: 'tm'
+    POSTGRES_PASSWORD: 'tm'
+    POSTGRES_USER: 'postgres'
+    POSTGRES_PORT: 5432
+    TM_ORG_NAME: 'OpenStreetMap'
+    TM_ORG_CODE: 'OSM'
+    TM_ORG_URL: 'openstreetmap.org'
+    TM_ORG_PRIVACY_POLICY_URL: 'openstreetmap.org/copyright'
+    TM_ORG_GITHUB: 'github.com/openstreetmap'
+    OSM_SERVER_URL: 'https://openstreetmap.org'
+    OSM_NOMINATIM_SERVER_URL: 'https://nominatim.openstreetmap.org'
+    OSM_REGISTER_URL: 'https://openstreetmap.org/user/new'
+    ID_EDITOR_URL: 'https://openstreetmap.org/edit?editor=id'
+    POTLATCH2_EDITOR_URL: 'https://openstreetmap.org/edit?editor=potlatch2'
+    TM_SECRET: 's0m3l0ngr4nd0mstr1ng-b3cr34tiv3'
+    TM_CONSUMER_KEY: 'example'
+    TM_CONSUMER_SECRET: 'example'
+    TM_EMAIL_FROM_ADDRESS: 'no-reply@openstreetmap.org'
+    TM_SMTP_HOST: 'email-smtp.us-east-1.amazonaws.com'
+    TM_SMTP_PORT: 25
+    TM_SMTP_USER: ''
+    TM_SMTP_PASSWORD: ''
+    TM_DEFAULT_LOCALE: 'en'
+    TM_APP_API_URL: ''
+    TM_APP_BASE_URL: ''
+  resources:
+    enabled: false
+    requests:
+      memory: "1Gi"
+      cpu: "2"
+    limits:
+      memory: "2Gi"
+      cpu: "2"
