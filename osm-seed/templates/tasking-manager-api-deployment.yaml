@@ -1,0 +1,116 @@
+{{- if .Values.tmApi.enabled -}}
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-tasking-manager-api
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tasking-manager-api-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.tmApi.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-tasking-manager-api
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-tasking-manager-api
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-tasking-manager-api
+          image: "{{ .Values.tmApi.image.name }}:{{ .Values.tmApi.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 120 # 10 min, because the compile process takes time.
+            timeoutSeconds: 30
+          {{- if .Values.tmApi.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.tmApi.resources.requests.memory }}
+              cpu: {{ .Values.tmApi.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.tmApi.resources.limits.memory }}
+              cpu: {{ .Values.tmApi.resources.limits.cpu }}
+          {{- end }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Values.tmApi.env.POSTGRES_HOST }}
+            - name: POSTGRES_DB
+              value: {{ .Values.tmApi.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.tmApi.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.tmApi.env.POSTGRES_USER }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.tmApi.env.POSTGRES_PORT | quote }}
+            - name: TM_DB
+              value: {{ printf "postgresql://%s:%s@%s/%s" .Values.tmApi.env.POSTGRES_USER .Values.tmApi.env.POSTGRES_PASSWORD .Values.tmApi.env.POSTGRES_HOST .Values.tmApi.env.POSTGRES_DB }}
+            - name: TM_ORG_NAME
+              value: {{ .Values.tmApi.env.TM_ORG_NAME }}
+            - name: TM_ORG_CODE
+              value: {{ .Values.tmApi.env.TM_ORG_CODE }}
+            - name: TM_ORG_URL
+              value: {{ .Values.tmApi.env.TM_ORG_URL }}
+            - name: TM_ORG_PRIVACY_POLICY_URL
+              value: {{ quote .Values.tmApi.env.TM_ORG_PRIVACY_POLICY_URL }}
+            - name: TM_ORG_TWITTER
+              value: {{ quote .Values.tmApi.env.TM_ORG_TWITTER }}
+            - name: TM_ORG_FB
+              value: {{ quote .Values.tmApi.env.TM_ORG_FB }}
+            - name: TM_ORG_INSTAGRAM
+              value: {{ quote .Values.tmApi.env.TM_ORG_INSTAGRAM }}
+            - name: TM_ORG_YOUTUBE
+              value: {{ quote .Values.tmApi.env.TM_ORG_YOUTUBE }}
+            - name: TM_ORG_GITHUB
+              value: {{ quote .Values.tmApi.env.TM_ORG_GITHUB }}
+            - name: OSM_SERVER_URL
+              value: {{ quote .Values.tmApi.env.OSM_SERVER_URL }}
+            - name: OSM_NOMINATIM_SERVER_URL
+              value: {{ quote .Values.tmApi.env.OSM_NOMINATIM_SERVER_URL }}
+            - name: OSM_REGISTER_URL
+              value: {{ quote .Values.tmApi.env.OSM_REGISTER_URL }}
+            - name: ID_EDITOR_URL
+              value: {{ quote .Values.tmApi.env.ID_EDITOR_URL }}
+            - name: POTLATCH2_EDITOR_URL
+              value: {{ quote .Values.tmApi.env.POTLATCH2_EDITOR_URL }}
+            - name: TM_SECRET
+              value: {{ quote .Values.tmApi.env.TM_SECRET }}
+            - name: TM_CONSUMER_SECRET
+              value: {{ quote .Values.tmApi.env.TM_CONSUMER_SECRET }}
+            - name: TM_CONSUMER_KEY
+              value: {{ quote .Values.tmApi.env.TM_CONSUMER_KEY }}
+            - name: TM_EMAIL_FROM_ADDRESS
+              value: {{ quote .Values.tmApi.env.TM_EMAIL_FROM_ADDRESS }}
+            - name: TM_EMAIL_CONTACT_ADDRESS
+              value: {{ quote .Values.tmApi.env.TM_EMAIL_CONTACT_ADDRESS }}
+            - name: TM_SMTP_HOST
+              value: {{ quote .Values.tmApi.env.TM_SMTP_HOST }}
+            - name: TM_SMTP_PORT
+              value: {{ quote .Values.tmApi.env.TM_SMTP_PORT }}
+            - name: TM_SMTP_USER
+              value: {{ quote .Values.tmApi.env.TM_SMTP_USER }}
+            - name: TM_SMTP_PASSWORD
+              value: {{ quote .Values.tmApi.env.TM_SMTP_PASSWORD }}
+            - name: TM_DEFAULT_LOCALE
+              value: {{ quote .Values.tmApi.env.TM_DEFAULT_LOCALE }}
+            - name: TM_APP_API_URL
+              value: {{ .Values.tmApi.env.TM_APP_API_URL }}
+            - name: TM_APP_BASE_URL
+              value: {{ .Values.tmApi.env.TM_APP_BASE_URL }}
+      {{- if .Values.tmApi.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.tmApi.nodeSelector.label_key }} : {{ .Values.tmApi.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}
