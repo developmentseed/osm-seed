@@ -26,6 +26,8 @@ charts:
         valuesPath: tilerImposm.image
       tiler-server:
         valuesPath: tilerServer.image
+      tasking-manager-api:
+        valuesPath: tmApi.image
       # tiler-visor:
       #   valuesPath: tilerVisor.image
       
