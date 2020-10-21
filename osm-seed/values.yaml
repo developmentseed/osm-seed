@@ -119,6 +119,24 @@ web:
     enabled: false
 
 # ====================================================================================================
+# Variables for memcached. Memcached is used to store session cookies
+# ====================================================================================================
+memcached:
+  enabled: true
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  resources:
+    enabled: false
+    requests:
+      memory: "8Gi"
+      cpu: "2"
+    limits:
+      memory: "8Gi"
+      cpu: "2"
+
+# ====================================================================================================
 # Variables for id-editor
 # ====================================================================================================
 idEditor:

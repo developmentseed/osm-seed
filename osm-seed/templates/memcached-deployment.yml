@@ -1,0 +1,45 @@
+{{- if .Values.memcached.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-memcached
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: memcached-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.memcached.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-memcached
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-memcached
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-memcached
+          image: "memcached"
+          ports:
+            - name: http
+              containerPort: 11211
+              protocol: TCP
+          {{- if .Values.memcached.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.memcached.resources.requests.memory }}
+              cpu: {{ .Values.memcached.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.memcached.resources.limits.memory }}
+              cpu: {{ .Values.memcached.resources.limits.cpu }}
+          {{- end }}
+      {{- if .Values.memcached.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.memcached.nodeSelector.label_key }} : {{ .Values.memcached.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}
