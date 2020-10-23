@@ -67,6 +67,8 @@ spec:
               value: {{ quote .Values.web.env.MAILER_FROM }}
             - name: OSM_id_key
               value: {{ .Values.web.env.OSM_id_key }}
+            - name: OSM_memcache_servers
+              value: {{ .Release.Name }}-memcached:11211
             # Set domain name or pod ip  
               {{- if .Values.domain.enabled }}
             - name: SERVER_URL
