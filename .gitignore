@@ -1,5 +1,6 @@
 .env
 .env-tiler
+.env-nominatim
 usa.values.yaml
 prod.values.yaml
 planet.values.yaml
@@ -23,3 +24,4 @@ tiler-imposm/cachedir/
 tiler-imposm/diff/
 tiler-imposm/imposm3_expire_dir
 tiler-server/imposm/
+nominatim-pgdata/
