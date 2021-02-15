@@ -178,30 +178,44 @@ services:
       - ./.env-nominatim
     entrypoint: sh /app/init.sh
 
-  nominatim-db:
+  # nominatim-db:
+  #   image: nominatim:v1
+  #   build:
+  #     context: ./images/nominatim
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - ./nominatim-pgdata:/var/lib/postgresql/12/main
+  #   env_file:
+  #     - ./.env-nominatim
+  #   depends_on:
+  #     - "nominatim-init"
+  #   entrypoint: sh /app/startpostgres.sh
+
+  # nominatim-api:
+  #   image: nominatim-api:v1
+  #   build:
+  #     context: ./images/nominatim
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "7070:8080"
+  #   env_file: 
+  #     - ./.env-nominatim
+  #   entrypoint: sh /app/startapache.sh
+  
+  nominatim:
     image: nominatim:v1
     build:
       context: ./images/nominatim
       dockerfile: Dockerfile
     ports:
       - "5432:5432"
+      - "7070:8080"
     volumes:
       - ./nominatim-pgdata:/var/lib/postgresql/12/main
     env_file:
       - ./.env-nominatim
     depends_on:
       - "nominatim-init"
-    entrypoint: sh /app/startpostgres.sh
-
-  nominatim-api:
-    image: nominatim-api:v1
-    build:
-      context: ./images/nominatim
-      dockerfile: Dockerfile
-    ports:
-      - "7070:8080"
-    env_file: 
-      - ./.env-nominatim
-    depends_on:
-      - nominatim-db
-    entrypoint: sh /app/startapache.sh
+    entrypoint: sh /app/start.sh

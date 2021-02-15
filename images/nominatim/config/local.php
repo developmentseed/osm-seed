@@ -8,7 +8,7 @@
  $replication_url = getenv('REPLICATION_URL');
  // Paths
  @define('CONST_Postgresql_Version', '12');
- @define('CONST_Postgis_Version', '3');
+ @define('CONST_Postgis_Versionls', '3');
  // Website settings
  @define('CONST_Website_BaseURL', '/');
  @define('CONST_Replication_Url', $replication_url);
@@ -19,3 +19,7 @@
  @define('CONST_Database_DSN', "pgsql:host=$pg_host;port=$pg_port;user=$pg_user;password=$pg_pass;dbname=$pg_dbname");
  // <driver>:host=<host>;port=<port>;user=<username>;password=<password>;dbname=<database>
 ?>
+
+/app/src/build
+
+php -r 'require_once("DB.php"); $oDB =& DB::connect("pgsql://@/nominatim"); echo $oDB->getOne("select count(*) from placex");'
