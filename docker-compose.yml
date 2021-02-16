@@ -118,7 +118,7 @@ services:
   # #=========================================================================
   # tiler-db:
   #   image: osmseed-tiler-db:v1
-  #   build: 
+  #   build:
   #     context: ./tiler-db
   #     dockerfile: Dockerfile
   #   ports:
@@ -129,7 +129,7 @@ services:
   #     - ./.env-tiler
   # tiler-imposm:
   #   image: osmseed-tiler-imposm:v1
-  #   build: 
+  #   build:
   #     context: ./tiler-imposm
   #     dockerfile: Dockerfile
   #   volumes:
@@ -146,7 +146,7 @@ services:
   #     ./start.sh"
   # tiler-server:
   #   image: osmseed-tiler-server:v1
-  #   build: 
+  #   build:
   #     context: ./tiler-server
   #     dockerfile: Dockerfile
   #   volumes:
@@ -203,7 +203,7 @@ services:
   #   env_file: 
   #     - ./.env-nominatim
   #   entrypoint: sh /app/startapache.sh
-  
+
   nominatim:
     image: nominatim:v1
     build:
@@ -219,3 +219,14 @@ services:
     depends_on:
       - "nominatim-init"
     entrypoint: sh /app/start.sh
+  
+  nominatim-update:
+    image: nominatim:v1
+    build:
+      context: ./images/nominatim
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env-nominatim
+    depends_on:
+      - nominatim
+    entrypoint: sh /app/update.sh

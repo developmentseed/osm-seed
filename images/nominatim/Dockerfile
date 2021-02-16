@@ -134,6 +134,7 @@ COPY nominatim.conf /etc/apache2/sites-enabled/000-default.conf
 
 COPY init.sh /app/init.sh
 COPY start.sh /app/start.sh
+COPY update.sh /app/update.sh
 COPY startapache.sh /app/startapache.sh
 COPY startpostgres.sh /app/startpostgres.sh
 
