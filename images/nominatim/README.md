@@ -3,7 +3,9 @@
 0. Copy .env-nominatim.example to .env-nominatim
 
 1. Build
+
   ```
+  cd images/nominatim
   docker build --pull --rm -t nominatim .
   ```
   See below for optional build arguments to include postcode data in your image.
@@ -11,6 +13,7 @@
 2. Copy <your_country>.osm.pbf to a local directory (i.e. /home/me/nominatimdata)
 
 3. Initialize Nominatim Database
+
   ```
   docker run -t -v /home/me/nominatimdata:/data nominatim  sh /app/init.sh /data/<your_country>.osm.pbf postgresdata 4
   ```
