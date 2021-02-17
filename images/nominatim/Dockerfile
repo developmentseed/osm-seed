@@ -67,10 +67,10 @@ RUN true \
     && git clone \
         --config advice.detachedHead=false \
         --single-branch \
-        --branch 3.6.0-debug \
+        --branch $NOMINATIM_VERSION \
         --depth 1 \
         --recursive \
-        https://github.com/batpad/Nominatim.git \
+        https://github.com/openstreetmap/Nominatim.git \
         src \
     && cd src \
     && mkdir build \
