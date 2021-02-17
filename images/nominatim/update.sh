@@ -1,4 +1,5 @@
 #!/bin/bash
+export NOMINATIM_SETTINGS='/app/src/build/settings/local_update.php'
 
 echo "Starting update process..."
 flag=true
