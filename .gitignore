@@ -1,5 +1,6 @@
 .env
 .env-tiler
+.env-nominatim
 usa.values.yaml
 prod.values.yaml
 planet.values.yaml

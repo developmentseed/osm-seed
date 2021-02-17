@@ -18,7 +18,8 @@ id-editor/
 tiler-visor/
 package.json
 db-backup-restore/
-
+nominatim-data/
+postgresdata/
 # ignore all *.class files in all folders, including build root
 **/*.json
 
