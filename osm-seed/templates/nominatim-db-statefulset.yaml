@@ -1,0 +1,101 @@
+{{- if .Values.nominatim_db.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-nominatim_db
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim_db-statefulset
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1 # we only ever want one replica of the nominatim_db
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-nominatim_db
+  serviceName: {{ .Release.Name }}-nominatim_db
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-nominatim_db
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-nominatim_db
+          image: "{{ .Values.nominatim_db.image.name }}:{{ .Values.nominatim_db.image.tag }}"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: GET_HOSTS_FROM
+              value: dns
+            - name: PG_HOST
+              value: {{ .Release.Name }}-nominatim_db
+            - name: PG_PORT
+              value: {{ .Values.nominatim_db.env.PG_PORT }}
+            - name: PG_PASSWORD
+              value: {{ quote .Values.nominatim_db.env.PG_PASSWORD | quote }}
+            - name: PG_USER
+              value: {{ default "postgres" .Values.nominatim_db.env.PG_USER }}
+            - name: PG_DATABASE
+              value: {{ .Values.nominatim_db.env.PG_DATABASE }}
+            - name: REPLICATION_URL
+              value: {{ quote .Values.nominatim_db.env.REPLICATION_URL | quote }}
+            - name: REPLICATION_MAXINTERVAL
+              value: {{ .Values.nominatim_db.env.REPLICATION_MAXINTERVAL }}
+            - name: REPLICATION_UPDATE_INTERVAL
+              value: {{ .Values.nominatim_db.env.REPLICATION_UPDATE_INTERVAL }}
+            - name: REPLICATION_RECHECK_INTERVAL
+              value: {{ .Values.nominatim_db.env.REPLICATION_RECHECK_INTERVAL }}
+            - name: PGDATA
+              value: {{ .Values.nominatim_db.persistenceDisk.mountPath }}
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+          volumeMounts:
+            - name: nominatim_db-storage
+              mountPath: {{ .Values.nominatim_db.persistenceDisk.mountPath }}
+              subPath: {{ .Values.nominatim_db.persistenceDisk.subPath }}
+          {{- if .Values.nominatim_db.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.nominatim_db.resources.requests.memory }}
+              cpu: {{ .Values.nominatim_db.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.nominatim_db.resources.limits.memory }}
+              cpu: {{ .Values.nominatim_db.resources.limits.cpu }}
+          {{- end }}
+      volumes:
+        - name: nominatim_db-storage
+        {{- if .Values.nominatim_db.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-nominatim-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      {{- if .Values.nominatim_db.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.nominatim_db.nodeSelector.label_key }} : {{ .Values.nominatim_db.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

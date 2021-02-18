@@ -1,0 +1,62 @@
+{{- if .Values.nominatim_api.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-nominatim_api
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim_api-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.nominatim_api.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-nominatim_api
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-nominatim_api
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-nominatim_api
+          image: "{{ .Values.nominatim_api.image.name }}:{{ .Values.nominatim_api.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/0.6/capabilities
+              port: 8080
+            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
+            timeoutSeconds: 30
+          {{- if .Values.nominatim_api.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.nominatim_api.resources.requests.memory }}
+              cpu: {{ .Values.nominatim_api.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.nominatim_api.resources.limits.memory }}
+              cpu: {{ .Values.nominatim_api.resources.limits.cpu }}
+          {{- end }}
+          env:
+            - name: GET_HOSTS_FROM
+              value: dns
+            - name: PG_HOST
+              value: {{ .Release.Name }}-nominatim_db # This should give us the host for DB on the cluster.
+            - name: PG_DATABASE
+              value: {{ .Values.nominatim_db.env.PG_DATABASE }}
+            - name: PG_PASSWORD
+              value: {{ quote .Values.nominatim_db.env.PG_PASSWORD }}
+            - name: PG_USER
+              value: {{ .Values.nominatim_db.env.PG_USER }}
+      {{- if .Values.nominatim_api.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.nominatim_api.nodeSelector.label_key }} : {{ .Values.nominatim_api.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

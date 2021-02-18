@@ -427,3 +427,97 @@ tmApi:
     limits:
       memory: "2Gi"
       cpu: "2"
+# ====================================================================================================
+# Variables for nominatim init
+# ====================================================================================================
+nominatim_init:
+  enabled: true
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
+  env:
+    OSM_URL_FILE: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
+    THREADS: 4
+  persistenceDisk:
+    enabled: true
+    accessMode: ReadWriteOnce
+    mountPath: /var/lib/postgresql/12/main
+    subPath: nominatim-pgdata
+    # In case cloudProvider: aws
+    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    # AWS_ElasticBlockStore_size: 500Gi
+    # In case cloudProvider: gcp
+    GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
+    GCP_gcePersistentDisk_size: 50Gi
+  resources:
+    enabled: false
+    requests:
+      memory: "1Gi"
+      cpu: "1"
+    limits:
+      memory: "2Gi"
+      cpu: "1"
+  nodeSelector:
+    enabled: false
+# ====================================================================================================
+# Variables for nominatim db
+# ====================================================================================================
+nominatim_db:
+  enabled: true
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
+  env:
+    PG_PORT: 5432
+    PG_USER: nominatim
+    PG_PASSWORD: password1234
+    PG_DATABASE: nominatim
+    REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates
+    REPLICATION_MAXINTERVAL: 86500
+    REPLICATION_UPDATE_INTERVAL: 86500
+    REPLICATION_RECHECK_INTERVAL: 900
+  persistenceDisk:
+    enabled: true
+    accessMode: ReadWriteOnce
+    mountPath: /var/lib/postgresql/12/main
+    subPath: nominatim-pgdata
+    # In case cloudProvider: aws
+    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    # AWS_ElasticBlockStore_size: 500Gi
+    # In case cloudProvider: gcp
+    GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
+    GCP_gcePersistentDisk_size: 50Gi
+  resources:
+    enabled: false
+    requests:
+      memory: "1Gi"
+      cpu: "1"
+    limits:
+      memory: "2Gi"
+      cpu: "1"
+  nodeSelector:
+    enabled: false
+
+# ====================================================================================================
+# Variables for nominatim api
+# ====================================================================================================
+nominatim_api:
+  enabled: true
+  # image: 'developmentseed/osmseed-web'
+  image: 
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
+  replicaCount: 1
+  # Set staticIp, if you are using cloudProvider=gcp
+  staticIp: 35.247.6.238
+  env:
+  resources:
+    enabled: false
+    requests:
+      memory: "1Gi"
+      cpu: "2"
+    limits:
+      memory: "2Gi"
+      cpu: "2"
+  nodeSelector:
+    enabled: false
