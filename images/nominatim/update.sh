@@ -1,5 +1,9 @@
 #!/bin/bash
-export NOMINATIM_SETTINGS='/app/src/build/settings/local_update.php'
+# Replace var in settings.php
+sed -i -e  "s#https://planet.openstreetmap.org/replication/minute#${REPLICATION_URL}#g" /app/src/build/settings/settings.php
+sed -i -e "s/30/${REPLICATION_MAXINTERVAL}/g" /app/src/build/settings/settings.php
+sed -i -e "s/75/${REPLICATION_UPDATE_INTERVAL}/g" /app/src/build/settings/settings.php
+sed -i -e "s/60/${REPLICATION_RECHECK_INTERVAL}/g" /app/src/build/settings/settings.php
 
 echo "Starting update process..."
 flag=true

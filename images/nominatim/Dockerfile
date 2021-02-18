@@ -135,7 +135,6 @@ COPY startapache.sh /app/startapache.sh
 COPY startpostgres.sh /app/startpostgres.sh
 COPY update.sh /app/update.sh
 COPY local_api.php /app/src/build/settings/local_api.php
-COPY local_update.php /app/src/build/settings/local_update.php
 
 # Collapse image to single layer.
 FROM scratch
