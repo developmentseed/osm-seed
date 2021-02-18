@@ -1,0 +1,62 @@
+{{- if .Values.nominatim_init.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-nominatim_init-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim_init-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+    template:
+      spec:
+        containers:
+        - name: {{ .Release.Name }}-nominatim_init-job
+          image: {{ .Values.nominatim_init.image.name }}:{{ .Values.nominatim_init.image.tag }}
+          command: ['./start.sh']
+          {{- if .Values.nominatim_init.resources.enabled }}   
+          resources:
+            requests:
+              memory: {{ .Values.nominatim_init.resources.requests.memory }}
+              cpu: {{ .Values.nominatim_init.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.nominatim_init.resources.limits.memory }}
+              cpu: {{ .Values.nominatim_init.resources.limits.cpu }}
+          {{- end }}
+          env:
+            - name: PG_HOST
+              value: "localhost"
+            - name: PG_PORT
+              value: {{ .Values.nominatim_db.env.PG_PORT }}
+            - name: PG_PASSWORD
+              value: {{ quote .Values.nominatim_db.env.PG_PASSWORD | quote }}
+            - name: PG_USER
+              value: {{ default "postgres" .Values.nominatim_db.env.PG_USER }}
+            - name: PG_DATABASE
+              value: {{ .Values.nominatim_db.env.PG_DATABASE }}
+            - name: OSM_URL_FILE
+              value: {{ .Values.nominatim_init.env.OSM_URL_FILE | quote }}
+            - name: THREADS
+              value: {{ .Values.nominatim_init.env.THREADS }}
+            # - name: PGDATA
+            #   value: {{ .Values.nominatim_db.persistenceDisk.mountPath }}
+          volumeMounts:
+            - name: nominatim_db-storage
+              mountPath: {{ .Values.nominatim_init.persistenceDisk.mountPath }}
+              subPath: {{ .Values.nominatim_init.persistenceDisk.subPath }}
+        volumes:
+          - name: nominatim_db-storage
+          {{- if .Values.nominatim_init.persistenceDisk.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ .Release.Name }}-nominatim-pv-claim
+          {{- else }}
+            emptyDir: {}
+          {{- end }}
+        {{- if .Values.nominatim_db.nodeSelector.enabled }}
+        restartPolicy: OnFailure
+        {{- if .Values.nominatim_init.nodeSelector.enabled }}
+        nodeSelector:
+          {{ .Values.nominatim_init.nodeSelector.label_key }} : {{ .Values.nominatim_init.nodeSelector.label_value }}
+        {{- end }}
+{{- end }}

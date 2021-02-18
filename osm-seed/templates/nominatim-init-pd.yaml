@@ -1,0 +1,60 @@
+{{- if .Values.nominatim_init.enabled -}}
+{{- if .Values.nominatim_init.persistenceDisk.enabled -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-pv
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim_db-pd
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  storageClassName: "" # It's necessary to specify "" as the storageClassName ,so that the default storage class won't be used, see : https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1
+  # AWS Provider
+  {{- if eq .Values.cloudProvider "aws" }}
+  capacity:
+    storage: {{ .Values.nominatim_db.persistenceDisk.AWS_ElasticBlockStore_size }}
+  accessModes:
+    - ReadWriteOnce
+  awsElasticBlockStore:
+    volumeID: {{ .Values.nominatim_db.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
+    fsType: ext4
+  {{- end }}
+  # GCP Provider
+  {{- if eq .Values.cloudProvider "gcp" }}
+  capacity:
+    storage: {{ .Values.nominatim_db.persistenceDisk.GCP_gcePersistentDisk_size }}
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: {{ .Values.nominatim_db.persistenceDisk.GCP_gcePersistentDisk_pdName}}
+    fsType: ext4
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-pv-claim
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim_db-pd
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  storageClassName: ""
+  volumeName: {{ .Release.Name }}-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # AWS Provider
+      {{- if eq .Values.cloudProvider "aws" }}
+      storage: {{ .Values.nominatim_db.persistenceDisk.AWS_ElasticBlockStore_size }}
+      {{- end }}
+      # GCP Provider
+      {{- if eq .Values.cloudProvider "gcp" }}
+      storage: {{ .Values.nominatim_db.persistenceDisk.GCP_gcePersistentDisk_size }}
+      {{- end }}
+{{- end }}
+{{- end }}
