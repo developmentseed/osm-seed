@@ -1,31 +1,31 @@
 version: '3'
 services:
   web:
-    image: osmseed-openstreetmap-website:v1
+    image: osmseed-web:v1
     build:
-      context: ./openstreetmap-website
+      context: ./images/web
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-    env_file: 
+      - '80:80'
+    env_file:
       - ./.env
     depends_on:
       - db
   db:
     image: osmseed-db:v1
     build:
-      context: ./db
+      context: ./images/db
       dockerfile: Dockerfile
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
-    env_file: 
+    env_file:
       - ./.env
   planet-dump:
     image: osmseed-planet-dump:v1
     build:
-      context: ./planet-dump
+      context: ./images/planet-dump
       dockerfile: Dockerfile
     depends_on:
       - db
@@ -37,12 +37,12 @@ services:
       sleep 40;
       echo Creating the planet-dump!;
       ./start.sh"
-    env_file: 
+    env_file:
       - ./.env
   db-backup-restore:
-    image: osmseed-db-backup-restore:v1
-    build: 
-      context: ./db-backup-restore
+    image: osmseed-backup-restore:v1
+    build:
+      context: ./images/backup-restore
       dockerfile: Dockerfile
     depends_on:
       - db
@@ -52,12 +52,12 @@ services:
       sleep 20;
       echo Building backup!;
       ./start.sh"
-    env_file: 
+    env_file:
       - ./.env
   replication-job:
     image: osmseed-replication-job:v1
     build:
-      context: ./replication-job
+      context: ./images/replication-job
       dockerfile: Dockerfile
     volumes:
       - ./replication-job:/mnt/data
@@ -74,7 +74,7 @@ services:
   populate-apidb:
     image: osmseed-populate-apidb:v1
     build:
-      context: ./populate-apidb
+      context: ./images/populate-apidb
       dockerfile: Dockerfile
     volumes:
       - ./populate-apidb-data:/app/data
@@ -91,14 +91,14 @@ services:
   osm-processor:
     image: osmseed-osm-processor:v1
     build:
-      context: ./osm-processor
+      context: ./images/osm-processor
       dockerfile: Dockerfile
     env_file:
       - ./.env
   full-history:
     image: osmseed-full-history:v1
     build:
-      context: ./full-history
+      context: ./images/full-history
       dockerfile: Dockerfile
     depends_on:
       - web
@@ -113,30 +113,30 @@ services:
       ./start.sh"
     env_file:
       - ./.env
+  # # #=========================================================================
+  # # OMS-SEED-TILER section
   # #=========================================================================
-  # OMS-SEED-TILER section
-  #=========================================================================
   tiler-db:
     image: osmseed-tiler-db:v1
-    build: 
-      context: ./tiler-db
+    build:
+      context: ./images/tiler-db
       dockerfile: Dockerfile
     ports:
-      -  "5433:5432"
+      - '5433:5432'
     volumes:
       - ./postgres-gis-data:/var/lib/postgresql/data
     env_file:
       - ./.env-tiler
   tiler-imposm:
     image: osmseed-tiler-imposm:v1
-    build: 
-      context: ./tiler-imposm
+    build:
+      context: ./images/tiler-imposm
       dockerfile: Dockerfile
     volumes:
       - ./tiler-imposm-data:/mnt/data
     depends_on:
       - tiler-db
-    env_file: 
+    env_file:
       - ./.env-tiler
     command: >
       /bin/bash -c "
@@ -146,8 +146,8 @@ services:
       ./start.sh"
   tiler-server:
     image: osmseed-tiler-server:v1
-    build: 
-      context: ./tiler-server
+    build:
+      context: ./images/tiler-server
       dockerfile: Dockerfile
     volumes:
       - ./tiler-server-data:/mnt/data
@@ -155,7 +155,7 @@ services:
       - tiler-db
       - tiler-imposm
     ports:
-      - "9090:9090"
+      - '9090:9090'
     command: >
       /bin/bash -c "
       echo Sleep for a while!;
