@@ -1,7 +1,7 @@
 FROM golang:1.14.1-alpine3.11 AS build
 ENV VERSION="v0.8.1"
 RUN apk update
-RUN apk add musl-dev=1.1.24-r2 \
+RUN apk add musl-dev=1.1.24-r3 \
 	gcc \
     bash \
     git \
