@@ -1,11 +1,11 @@
-{{- if .Values.nominatim_db.enabled -}}
+{{- if .Values.nominatimDb.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-nominatim_db
+  name: {{ .Release.Name }}-nominatim-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatim_db-service
+    component: nominatim-db-service
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -17,5 +17,5 @@ spec:
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-nominatim_db
+    run: {{ .Release.Name }}-nominatimDb
 {{- end }}

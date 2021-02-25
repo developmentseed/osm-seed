@@ -1,29 +1,29 @@
-{{- if .Values.nominatim_api.enabled -}}
+{{- if .Values.nominatimApi.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-nominatim_api
+  name: {{ template "osm-seed.fullname" . }}-nominatim-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatim_api-deployment
+    component: nominatim-api-deployment
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  replicas: {{ .Values.nominatim_api.replicaCount }}
+  replicas: {{ .Values.nominatimApi.replicaCount }}
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-nominatim_api
+      run: {{ .Release.Name }}-nominatimApi
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-nominatim_api
+        run: {{ .Release.Name }}-nominatimApi
     spec:
       containers:
-        - name: {{ .Chart.Name }}-nominatim_api
+        - name: {{ .Chart.Name }}-nominatimApi
           image: "{{ .Values.nominatim.image.name }}:{{ .Values.nominatim.image.tag }}"
           ports:
             - name: http
@@ -35,28 +35,28 @@ spec:
               port: 8080
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
-          {{- if .Values.nominatim_api.resources.enabled }}
+          {{- if .Values.nominatimApi.resources.enabled }}
           resources:
             requests:
-              memory: {{ .Values.nominatim_api.resources.requests.memory }}
-              cpu: {{ .Values.nominatim_api.resources.requests.cpu }}
+              memory: {{ .Values.nominatimApi.resources.requests.memory }}
+              cpu: {{ .Values.nominatimApi.resources.requests.cpu }}
             limits:
-              memory: {{ .Values.nominatim_api.resources.limits.memory }}
-              cpu: {{ .Values.nominatim_api.resources.limits.cpu }}
+              memory: {{ .Values.nominatimApi.resources.limits.memory }}
+              cpu: {{ .Values.nominatimApi.resources.limits.cpu }}
           {{- end }}
           env:
             - name: GET_HOSTS_FROM
               value: dns
             - name: PG_HOST
-              value: {{ .Release.Name }}-nominatim_db # This should give us the host for DB on the cluster.
+              value: {{ .Release.Name }}-nominatimDb # This should give us the host for DB on the cluster.
             - name: PG_DATABASE
-              value: {{ .Values.nominatim_db.env.PG_DATABASE }}
+              value: {{ .Values.nominatimDb.env.PG_DATABASE }}
             - name: PG_PASSWORD
-              value: {{ quote .Values.nominatim_db.env.PG_PASSWORD }}
+              value: {{ quote .Values.nominatimDb.env.PG_PASSWORD }}
             - name: PG_USER
-              value: {{ .Values.nominatim_db.env.PG_USER }}
-      {{- if .Values.nominatim_api.nodeSelector.enabled }}
+              value: {{ .Values.nominatimDb.env.PG_USER }}
+      {{- if .Values.nominatimApi.nodeSelector.enabled }}
       nodeSelector:
-        {{ .Values.nominatim_api.nodeSelector.label_key }} : {{ .Values.nominatim_api.nodeSelector.label_value }}
+        {{ .Values.nominatimApi.nodeSelector.label_key }} : {{ .Values.nominatimApi.nodeSelector.label_value }}
       {{- end }}
 {{- end }}

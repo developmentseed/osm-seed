@@ -30,8 +30,7 @@ GCP_STORAGE_BUCKET: gs://osm-seed-test
 # ====================================================================================================
 ingress:
   enabled: false
-  annotations:
-    {}
+  annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   path: /
@@ -440,7 +439,7 @@ nominatim:
 # Variables for nominatim init
 # ====================================================================================================
 
-nominatim_init:
+nominatimInit:
   enabled: true
   env:
     OSM_URL_FILE: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
@@ -452,8 +451,8 @@ nominatim_init:
     subPath: nominatim-pgdata
 
     # In case cloudProvider: aws
-    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
-    # AWS_ElasticBlockStore_size: 500Gi
+    AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    AWS_ElasticBlockStore_size: 500Gi
     # In case cloudProvider: gcp
     GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
     GCP_gcePersistentDisk_size: 50Gi
@@ -470,7 +469,7 @@ nominatim_init:
 # ====================================================================================================
 # Variables for nominatim db
 # ====================================================================================================
-nominatim_db:
+nominatimDb:
   enabled: true
   env:
     PG_PORT: 5432
@@ -487,8 +486,8 @@ nominatim_db:
     mountPath: /var/lib/postgresql/12/main
     subPath: nominatim-pgdata
     # In case cloudProvider: aws
-    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
-    # AWS_ElasticBlockStore_size: 500Gi
+    AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    AWS_ElasticBlockStore_size: 500Gi
     # In case cloudProvider: gcp
     GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
     GCP_gcePersistentDisk_size: 50Gi
@@ -506,12 +505,9 @@ nominatim_db:
 # ====================================================================================================
 # Variables for nominatim api
 # ====================================================================================================
-nominatim_api:
+nominatimApi:
   enabled: true
-  # image: 'developmentseed/osmseed-web'
   replicaCount: 1
-  # Set staticIp, if you are using cloudProvider=gcp
-  staticIp: 35.247.6.238
   env:
   resources:
     enabled: false

@@ -1,5 +1,5 @@
-{{- if .Values.nominatim_init.enabled -}}
-{{- if .Values.nominatim_init.persistenceDisk.enabled -}}
+{{- if .Values.nominatimInit.enabled -}}
+{{- if .Values.nominatimInit.persistenceDisk.enabled -}}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
