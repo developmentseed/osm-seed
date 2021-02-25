@@ -1,14 +1,11 @@
 #!/bin/bash
 
-stopServices() {
-        service apache2 stop
-        service postgresql stop
-}
-trap stopServices TERM
+# This script will be in charge to:
+# - Execute the data import into Database
+# - Starting the Database service
+# - Keep updated the database with replication files
 
-service postgresql start
-service apache2 start
-
-# fork a process and wait for it
-tail -f /var/log/postgresql/postgresql-12-main.log &
-wait
+echo 'Start init......'
+sh /app/init.sh
+echo 'Start database and update......'
+sh /app/startpostgres.sh & sh /app/update.sh

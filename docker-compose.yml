@@ -167,17 +167,7 @@ services:
   #=========================================================================
   # NOMINATIM section
   #=========================================================================
-  nominatim-init:
-    image: nominatim:v1
-    build:
-      context: ./images/nominatim
-      dockerfile: Dockerfile
-    volumes:
-      - ./nominatim-pgdata:/var/lib/postgresql/12/main
-    env_file:
-      - ./.env-nominatim
-    entrypoint: sh /app/init.sh
-
+  
   nominatim-db:
     image: nominatim:v1
     build:
@@ -189,10 +179,8 @@ services:
       - ./nominatim-pgdata:/var/lib/postgresql/12/main
     env_file:
       - ./.env-nominatim
-    depends_on:
-      - 'nominatim-init'
     command: >
-      /bin/bash -c "sh /app/startpostgres.sh & sh /app/update.sh"
+      /bin/bash -c "sh /app/start.sh"
 
   nominatim-api:
     image: nominatim-api:v1
