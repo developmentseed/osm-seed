@@ -32,7 +32,7 @@ spec:
   type: NodePort
   {{- end }}
   ports:
-    - port: 7070
+    - port: 8080
       targetPort: http
       protocol: TCP
       name: http

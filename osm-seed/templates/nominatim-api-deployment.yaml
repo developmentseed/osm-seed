@@ -29,6 +29,7 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          command: ['sh /app/startapache.sh']
           livenessProbe:
             httpGet:
               path: /api/0.6/capabilities
