@@ -60,7 +60,7 @@ domain:
 db:
   enabled: true
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   env:
     POSTGRES_DB: openstreetmap
@@ -95,7 +95,7 @@ web:
   enabled: true
   # image: 'developmentseed/osmseed-web'
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -149,7 +149,7 @@ fullHistory:
 dbBackupRestore:
   enabled: false
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   schedule: '0 */1 * * *'
   env:
@@ -170,7 +170,7 @@ dbBackupRestore:
 planetDump:
   enabled: true
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   schedule: '0 */1 * * *'
   env:
@@ -192,7 +192,7 @@ planetDump:
 replicationJob:
   enabled: true
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   resources:
     enabled: false
@@ -211,7 +211,7 @@ replicationJob:
 populateApidb:
   enabled: false
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
@@ -230,7 +230,7 @@ populateApidb:
 osmProcessor:
   enabled: false
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   env:
     URL_FILE_TO_PROCESS: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
@@ -250,7 +250,7 @@ osmProcessor:
 tilerDb:
   enabled: true
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   env:
     POSTGRES_HOST: tiler-db
@@ -286,7 +286,7 @@ tilerDb:
 tilerImposm:
   enabled: false
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   env:
     TILER_IMPORT_FROM: osm
@@ -317,7 +317,7 @@ tilerImposm:
 tilerServer:
   enabled: false
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -360,7 +360,7 @@ tilerServer:
 tilerVisor:
   enabled: false
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -384,7 +384,7 @@ tilerVisor:
 tmApi:
   enabled: false
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   nodeSelector:
     enabled: false
@@ -432,40 +432,9 @@ tmApi:
 
 nominatim:
   image:
-    name: 'chartpress_replace'
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
 
-# ====================================================================================================
-# Variables for nominatim init
-# ====================================================================================================
-
-nominatimInit:
-  enabled: true
-  env:
-    OSM_URL_FILE: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
-    THREADS: 4
-  persistenceDisk:
-    enabled: true
-    accessMode: ReadWriteOnce
-    mountPath: /var/lib/postgresql/12/main
-    subPath: nominatim-pgdata
-
-    # In case cloudProvider: aws
-    AWS_ElasticBlockStore_volumeID : vol-1234bcd
-    AWS_ElasticBlockStore_size: 500Gi
-    # In case cloudProvider: gcp
-    GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
-    GCP_gcePersistentDisk_size: 50Gi
-  resources:
-    enabled: false
-    requests:
-      memory: '1Gi'
-      cpu: '1'
-    limits:
-      memory: '2Gi'
-      cpu: '1'
-  nodeSelector:
-    enabled: false
 # ====================================================================================================
 # Variables for nominatim db
 # ====================================================================================================
@@ -476,6 +445,8 @@ nominatimDb:
     PG_USER: nominatim
     PG_PASSWORD: password1234
     PG_DATABASE: nominatim
+    OSM_URL_FILE: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
+    THREADS: 4
     REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates
     REPLICATION_MAXINTERVAL: 86500
     REPLICATION_UPDATE_INTERVAL: 86500
@@ -486,7 +457,7 @@ nominatimDb:
     mountPath: /var/lib/postgresql/12/main
     subPath: nominatim-pgdata
     # In case cloudProvider: aws
-    AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 500Gi
     # In case cloudProvider: gcp
     GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
