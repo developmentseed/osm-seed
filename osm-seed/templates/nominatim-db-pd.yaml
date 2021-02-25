@@ -1,12 +1,12 @@
-{{- if .Values.nominatim_db.enabled -}}
-{{- if .Values.nominatim_db.persistenceDisk.enabled -}}
+{{- if .Values.nominatimDb.enabled -}}
+{{- if .Values.nominatimDb.persistenceDisk.enabled -}}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: {{ .Release.Name }}-nominatim-pv
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatim_db-pd
+    component: nominatimDb-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -14,21 +14,21 @@ spec:
   # AWS Provider
   {{- if eq .Values.cloudProvider "aws" }}
   capacity:
-    storage: {{ .Values.nominatim_db.persistenceDisk.AWS_ElasticBlockStore_size }}
+    storage: {{ .Values.nominatimDb.persistenceDisk.AWS_ElasticBlockStore_size }}
   accessModes:
     - ReadWriteOnce
   awsElasticBlockStore:
-    volumeID: {{ .Values.nominatim_db.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
+    volumeID: {{ .Values.nominatimDb.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
     fsType: ext4
   {{- end }}
   # GCP Provider
   {{- if eq .Values.cloudProvider "gcp" }}
   capacity:
-    storage: {{ .Values.nominatim_db.persistenceDisk.GCP_gcePersistentDisk_size }}
+    storage: {{ .Values.nominatimDb.persistenceDisk.GCP_gcePersistentDisk_size }}
   accessModes:
     - ReadWriteOnce
   gcePersistentDisk:
-    pdName: {{ .Values.nominatim_db.persistenceDisk.GCP_gcePersistentDisk_pdName}}
+    pdName: {{ .Values.nominatimDb.persistenceDisk.GCP_gcePersistentDisk_pdName}}
     fsType: ext4
   {{- end }}
 ---
@@ -38,7 +38,7 @@ metadata:
   name: {{ .Release.Name }}-nominatim-pv-claim
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatim_db-pd
+    component: nominatimDb-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -50,11 +50,11 @@ spec:
     requests:
       # AWS Provider
       {{- if eq .Values.cloudProvider "aws" }}
-      storage: {{ .Values.nominatim_db.persistenceDisk.AWS_ElasticBlockStore_size }}
+      storage: {{ .Values.nominatimDb.persistenceDisk.AWS_ElasticBlockStore_size }}
       {{- end }}
       # GCP Provider
       {{- if eq .Values.cloudProvider "gcp" }}
-      storage: {{ .Values.nominatim_db.persistenceDisk.GCP_gcePersistentDisk_size }}
+      storage: {{ .Values.nominatimDb.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
 {{- end }}
 {{- end }}
