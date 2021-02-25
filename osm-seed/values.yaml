@@ -20,7 +20,6 @@ AWS_S3_BUCKET: s3://osm-seed
 
 AWS_SSL_ARN: false
 
-
 # ====================================================================================================
 # GCP: In case you are using the cloudProvider=gcp set the below variables
 # ====================================================================================================
@@ -31,7 +30,8 @@ GCP_STORAGE_BUCKET: gs://osm-seed-test
 # ====================================================================================================
 ingress:
   enabled: false
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   path: /
@@ -61,8 +61,8 @@ domain:
 db:
   enabled: true
   image:
-    name: 'developmentseed/osmseed-db'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
@@ -81,11 +81,11 @@ db:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "1"
+      memory: '1Gi'
+      cpu: '1'
     limits:
-      memory: "2Gi"
-      cpu: "1"
+      memory: '2Gi'
+      cpu: '1'
   nodeSelector:
     enabled: false
 
@@ -96,8 +96,8 @@ web:
   enabled: true
   # image: 'developmentseed/osmseed-web'
   image:
-    name: 'developmentseed/osmseed-web'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -109,11 +109,11 @@ web:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2"
+      memory: '2Gi'
+      cpu: '2'
   nodeSelector:
     enabled: false
 
@@ -129,11 +129,11 @@ memcached:
   resources:
     enabled: false
     requests:
-      memory: "8Gi"
-      cpu: "2"
+      memory: '8Gi'
+      cpu: '2'
     limits:
-      memory: "8Gi"
-      cpu: "2"
+      memory: '8Gi'
+      cpu: '2'
 
 # ====================================================================================================
 # Variables for id-editor
@@ -150,8 +150,8 @@ fullHistory:
 dbBackupRestore:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-backup-restore'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
@@ -159,11 +159,11 @@ dbBackupRestore:
   resources:
     enabled: false
     requests:
-      memory: "300Mi"
-      cpu: "0.5"
+      memory: '300Mi'
+      cpu: '0.5'
     limits:
-      memory: "400Mi"
-      cpu: "0.6"
+      memory: '400Mi'
+      cpu: '0.6'
 
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
@@ -171,19 +171,19 @@ dbBackupRestore:
 planetDump:
   enabled: true
   image:
-    name: 'developmentseed/osmseed-planet-dump'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      memory: '14Gi'
+      cpu: '4'
     limits:
-      memory: "16Gi"
-      cpu: "4"
+      memory: '16Gi'
+      cpu: '4'
   nodeSelector:
     enabled: false
 
@@ -193,16 +193,16 @@ planetDump:
 replicationJob:
   enabled: true
   image:
-    name: 'developmentseed/osmseed-replication-job'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      memory: '20Gi'
+      cpu: '8'
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      memory: '24Gi'
+      cpu: '10'
   nodeSelector:
     enabled: false
 
@@ -212,18 +212,18 @@ replicationJob:
 populateApidb:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-populate-apidb'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2.5"
+      memory: '2Gi'
+      cpu: '2.5'
 
 # ====================================================================================================
 # Variables to start a pod to process osm files
@@ -231,19 +231,19 @@ populateApidb:
 osmProcessor:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-osm-processor'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     URL_FILE_TO_PROCESS: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
     OSM_FILE_ACTION: simple_pbf
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      memory: '14Gi'
+      cpu: '4'
     limits:
-      memory: "16Gi"
-      cpu: "4"
+      memory: '16Gi'
+      cpu: '4'
 
 # ====================================================================================================
 # Variables for tiler-db
@@ -251,8 +251,8 @@ osmProcessor:
 tilerDb:
   enabled: true
   image:
-    name: 'developmentseed/osmseed-tiler-db'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
@@ -273,11 +273,11 @@ tilerDb:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2.5"
+      memory: '2Gi'
+      cpu: '2.5'
   nodeSelector:
     enabled: false
 
@@ -287,8 +287,8 @@ tilerDb:
 tilerImposm:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-tiler-imposm'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -306,11 +306,11 @@ tilerImposm:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      memory: '20Gi'
+      cpu: '8'
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      memory: '24Gi'
+      cpu: '10'
 
 # ====================================================================================================
 # Variables for tiler-server
@@ -318,8 +318,8 @@ tilerImposm:
 tilerServer:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-tiler-server'
-    tag: '0.1.0-n375.h27e67d7'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -333,7 +333,7 @@ tilerServer:
     # TILER_CACHE_REGION: us-east-1
     # TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
     # TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
-  # In case you use TILER_CACHE_TYPE: file with  persistenceDisk 
+  # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
     enabled: true
     accessMode: ReadWriteOnce
@@ -347,11 +347,11 @@ tilerServer:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2"
+      memory: '2Gi'
+      cpu: '2'
   nodeSelector:
     enabled: false
 
@@ -372,11 +372,11 @@ tilerVisor:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2"
+      memory: '2Gi'
+      cpu: '2'
 
 # ====================================================================================================
 # Variables for Tasking Manager API
@@ -385,8 +385,8 @@ tilerVisor:
 tmApi:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-tasking-manager-api'
-    tag: '0.1.0-n376.hd6832ef'
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
   nodeSelector:
     enabled: false
   replicaCount: 1
@@ -421,18 +421,24 @@ tmApi:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2"
+      memory: '2Gi'
+      cpu: '2'
+
+# ====================================================================================================
+# Nominatim image values
+# ====================================================================================================
+
+nominatim:
+  image:
+    name: 'chartpress_replace'
+    tag: 'chartpress_replace'
+
 # ====================================================================================================
 # Variables for nominatim init
 # ====================================================================================================
-nominatim:
-  image:
-    name: 'developmentseed/osmseed-nominatim'
-    tag: '0.1.0-n375.h27e67d7'
 
 nominatim_init:
   enabled: true
@@ -454,11 +460,11 @@ nominatim_init:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "1"
+      memory: '1Gi'
+      cpu: '1'
     limits:
-      memory: "2Gi"
-      cpu: "1"
+      memory: '2Gi'
+      cpu: '1'
   nodeSelector:
     enabled: false
 # ====================================================================================================
@@ -489,11 +495,11 @@ nominatim_db:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "1"
+      memory: '1Gi'
+      cpu: '1'
     limits:
-      memory: "2Gi"
-      cpu: "1"
+      memory: '2Gi'
+      cpu: '1'
   nodeSelector:
     enabled: false
 
@@ -510,10 +516,10 @@ nominatim_api:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2"
+      memory: '2Gi'
+      cpu: '2'
   nodeSelector:
     enabled: false
