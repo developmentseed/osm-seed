@@ -9,7 +9,7 @@ if [ "$(ls -A $PGDIR)" ]; then
     echo "$PGDIR is not empty, Import won't happen, if you want start an empty dataset remove the directory $PGDIR"
     exit 0
 else
-    echo "Download OSM file"
+    echo "Download OSM file ... $OSM_URL_FILE"
     curl $OSM_URL_FILE --output $OSMFILE
 
     chown postgres:postgres $PGDIR && \
