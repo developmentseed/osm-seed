@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-nominatim_api
-          image: "{{ .Values.nominatim_api.image.name }}:{{ .Values.nominatim_api.image.tag }}"
+          image: "{{ .Values.nominatim.image.name }}:{{ .Values.nominatim.image.tag }}"
           ports:
             - name: http
               containerPort: 8080

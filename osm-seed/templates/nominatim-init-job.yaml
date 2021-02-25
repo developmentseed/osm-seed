@@ -13,7 +13,7 @@ spec:
       spec:
         containers:
         - name: {{ .Release.Name }}-nominatim_init-job
-          image: {{ .Values.nominatim_init.image.name }}:{{ .Values.nominatim_init.image.tag }}
+          image: {{ .Values.nominatim.image.name }}:{{ .Values.nominatim.image.tag }}
           command: ['./start.sh']
           {{- if .Values.nominatim_init.resources.enabled }}   
           resources:

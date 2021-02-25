@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-nominatim_db
-          image: "{{ .Values.nominatim_db.image.name }}:{{ .Values.nominatim_db.image.tag }}"
+          image: "{{ .Values.nominatim.image.name }}:{{ .Values.nominatim.image.tag }}"
           ports:
             - name: postgres
               containerPort: 5432
