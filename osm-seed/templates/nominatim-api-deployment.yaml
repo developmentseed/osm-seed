@@ -32,7 +32,7 @@ spec:
           command: ['sh /app/startapache.sh']
           livenessProbe:
             httpGet:
-              path: /api/0.6/capabilities
+              path: /
               port: 8080
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
