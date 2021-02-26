@@ -10,12 +10,10 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   ports:
-    - port: 5432
-      targetPort: 5432
-      # protocol: TCP
-      # name: http
+    - port: {{ .Values.nominatimDb.env.PG_PORT }}
+      targetPort: {{ .Values.nominatimDb.env.PG_PORT }}
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-nominatimDb
+    run: {{ .Release.Name }}-nominatim-db
 {{- end }}

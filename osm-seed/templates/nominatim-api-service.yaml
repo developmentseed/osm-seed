@@ -46,5 +46,5 @@ spec:
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-nominatimApi
+    run: {{ .Release.Name }}-nominatim-api
 {{- end }}

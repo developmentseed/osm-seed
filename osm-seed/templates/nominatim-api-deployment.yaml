@@ -14,16 +14,16 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-nominatimApi
+      run: {{ .Release.Name }}-nominatim-api
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-nominatimApi
+        run: {{ .Release.Name }}-nominatim-api
     spec:
       containers:
-        - name: {{ .Chart.Name }}-nominatimApi
+        - name: {{ .Chart.Name }}-nominatim-api
           image: "{{ .Values.nominatim.image.name }}:{{ .Values.nominatim.image.tag }}"
           ports:
             - name: http
@@ -49,7 +49,7 @@ spec:
             - name: GET_HOSTS_FROM
               value: dns
             - name: PG_HOST
-              value: {{ .Release.Name }}-nominatimDb # This should give us the host for DB on the cluster.
+              value: {{ .Release.Name }}-nominatim-db # This should give us the host for DB on the cluster.
             - name: PG_DATABASE
               value: {{ .Values.nominatimDb.env.PG_DATABASE }}
             - name: PG_PASSWORD

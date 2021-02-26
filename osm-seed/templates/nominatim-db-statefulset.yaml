@@ -14,27 +14,27 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-nominatimDb
-  serviceName: {{ .Release.Name }}-nominatimDb
+      run: {{ .Release.Name }}-nominatim-db
+  serviceName: {{ .Release.Name }}-nominatim-db
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-nominatimDb
+        run: {{ .Release.Name }}-nominatim-db
     spec:
       containers:
-        - name: {{ .Chart.Name }}-nominatimDb
+        - name: {{ .Chart.Name }}-nominatim-db
           image: "{{ .Values.nominatim.image.name }}:{{ .Values.nominatim.image.tag }}"
           ports:
             - name: postgres
-              containerPort: 5432
+              containerPort: {{ .Values.nominatimDb.env.PG_PORT }}
               protocol: TCP
           env:
             - name: GET_HOSTS_FROM
               value: dns
             - name: PG_HOST
-              value: {{ .Release.Name }}-nominatimDb
+              value: {{ .Release.Name }}-nominatim-db
             - name: PG_PORT
               value: {{ .Values.nominatimDb.env.PG_PORT }}
             - name: PG_PASSWORD
