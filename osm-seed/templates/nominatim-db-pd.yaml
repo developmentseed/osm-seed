@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}-nominatim-pv
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatimDb-pd
+    component: nominatim-db-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -38,7 +38,7 @@ metadata:
   name: {{ .Release.Name }}-nominatim-pv-claim
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatimDb-pd
+    component: nominatim-db-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
