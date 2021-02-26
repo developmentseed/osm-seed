@@ -29,7 +29,8 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-          command: ['sh /app/startapache.sh']
+          command: ["/bin/sh"]
+          args: ["-c", "sh /app/startapache.sh"]
           livenessProbe:
             httpGet:
               path: /
@@ -57,7 +58,7 @@ spec:
             - name: PG_USER
               value: {{ .Values.nominatimDb.env.PG_USER }}
             - name: PG_PORT
-              value: {{ .Values.nominatimDb.env.PG_PORT }}
+              value: {{ .Values.nominatimDb.env.PG_PORT  | quote }}
       {{- if .Values.nominatimApi.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.nominatimApi.nodeSelector.label_key }} : {{ .Values.nominatimApi.nodeSelector.label_value }}
