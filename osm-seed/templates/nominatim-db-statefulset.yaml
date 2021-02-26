@@ -28,7 +28,7 @@ spec:
           image: "{{ .Values.nominatim.image.name }}:{{ .Values.nominatim.image.tag }}"
           ports:
             - name: postgres
-              containerPort: {{ .Values.nominatimDb.env.PG_PORT }}
+              containerPort: 5432
               protocol: TCP
           env:
             - name: GET_HOSTS_FROM
@@ -36,7 +36,7 @@ spec:
             - name: PG_HOST
               value: {{ .Release.Name }}-nominatim-db
             - name: PG_PORT
-              value: {{ .Values.nominatimDb.env.PG_PORT }}
+              value: {{ .Values.nominatimDb.env.PG_PORT | quote }}
             - name: PG_PASSWORD
               value: {{ quote .Values.nominatimDb.env.PG_PASSWORD | quote }}
             - name: PG_USER
@@ -46,15 +46,15 @@ spec:
             - name: OSM_URL_FILE
               value: {{quote .Values.nominatimDb.env.OSM_URL_FILE | quote }}
             - name: THREADS
-              value: {{ .Values.nominatimDb.env.THREADS }}
+              value: {{ .Values.nominatimDb.env.THREADS | quote}}
             - name: REPLICATION_URL
               value: {{ quote .Values.nominatimDb.env.REPLICATION_URL | quote }}
             - name: REPLICATION_MAXINTERVAL
-              value: {{ .Values.nominatimDb.env.REPLICATION_MAXINTERVAL }}
+              value: {{ .Values.nominatimDb.env.REPLICATION_MAXINTERVAL | quote}}
             - name: REPLICATION_UPDATE_INTERVAL
-              value: {{ .Values.nominatimDb.env.REPLICATION_UPDATE_INTERVAL }}
+              value: {{ .Values.nominatimDb.env.REPLICATION_UPDATE_INTERVAL | quote}}
             - name: REPLICATION_RECHECK_INTERVAL
-              value: {{ .Values.nominatimDb.env.REPLICATION_RECHECK_INTERVAL }}
+              value: {{ .Values.nominatimDb.env.REPLICATION_RECHECK_INTERVAL | quote}}
             - name: PGDATA
               value: {{ .Values.nominatimDb.persistenceDisk.mountPath }}
             - name: POD_IP
