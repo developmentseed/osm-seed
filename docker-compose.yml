@@ -169,7 +169,7 @@ services:
   #=========================================================================
   
   nominatim-db:
-    image: nominatim:v1
+    image: nominatim-db:v1
     build:
       context: ./images/nominatim
       dockerfile: Dockerfile
