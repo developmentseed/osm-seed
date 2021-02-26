@@ -59,7 +59,8 @@ spec:
               value: {{ .Values.nominatimDb.persistenceDisk.mountPath }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
-          command: ['sh /app/start.sh']
+          command: ["/bin/sh"]
+          args: ["-c", "sh /app/start.sh"]
           # livenessProbe:
           #   exec:
           #     command:
