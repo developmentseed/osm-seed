@@ -80,7 +80,7 @@ spec:
           #   timeoutSeconds: 3
           #   periodSeconds: 5
           volumeMounts:
-            - name: nominatimDb-storage
+            - name: nominatim-db-storage
               mountPath: {{ .Values.nominatimDb.persistenceDisk.mountPath }}
               subPath: {{ .Values.nominatimDb.persistenceDisk.subPath }}
           {{- if .Values.nominatimDb.resources.enabled }}
@@ -93,7 +93,7 @@ spec:
               cpu: {{ .Values.nominatimDb.resources.limits.cpu }}
           {{- end }}
       volumes:
-        - name: nominatimDb-storage
+        - name: nominatim-db-storage
         {{- if .Values.nominatimDb.persistenceDisk.enabled }}
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-nominatim-pv-claim
