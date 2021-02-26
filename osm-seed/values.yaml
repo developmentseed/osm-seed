@@ -457,8 +457,8 @@ nominatimDb:
     mountPath: /var/lib/postgresql/12/main
     subPath: nominatim-pgdata
     # In case cloudProvider: aws
-    AWS_ElasticBlockStore_volumeID: vol-1234bcd
-    AWS_ElasticBlockStore_size: 500Gi
+    AWS_ElasticBlockStore_volumeID: vol-037a44560af1076f1
+    AWS_ElasticBlockStore_size: 100Gi
     # In case cloudProvider: gcp
     GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
     GCP_gcePersistentDisk_size: 50Gi
