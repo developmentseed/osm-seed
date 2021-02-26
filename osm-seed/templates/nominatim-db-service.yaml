@@ -10,8 +10,8 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   ports:
-    - port: {{ .Values.nominatimDb.env.PG_PORT }}
-      targetPort: {{ .Values.nominatimDb.env.PG_PORT }}
+    - port: {{ .Values.nominatimDb.env.PG_PORT  | quote}}
+      targetPort: {{ .Values.nominatimDb.env.PG_PORT  | quote}}
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
