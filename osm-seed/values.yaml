@@ -60,8 +60,8 @@ domain:
 db:
   enabled: true
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-db'
+    tag: '0.1.0-n377.hd099819'
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
@@ -95,8 +95,8 @@ web:
   enabled: true
   # image: 'developmentseed/osmseed-web'
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-web'
+    tag: '0.1.0-n377.hd099819'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -149,8 +149,8 @@ fullHistory:
 dbBackupRestore:
   enabled: false
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-backup-restore'
+    tag: '0.1.0-n377.hd099819'
   schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
@@ -170,8 +170,8 @@ dbBackupRestore:
 planetDump:
   enabled: true
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-planet-dump'
+    tag: '0.1.0-n377.hd099819'
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true
@@ -192,8 +192,8 @@ planetDump:
 replicationJob:
   enabled: true
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-replication-job'
+    tag: '0.1.0-n377.hd099819'
   resources:
     enabled: false
     requests:
@@ -211,8 +211,8 @@ replicationJob:
 populateApidb:
   enabled: false
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-populate-apidb'
+    tag: '0.1.0-n377.hd099819'
   env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
   resources:
@@ -230,8 +230,8 @@ populateApidb:
 osmProcessor:
   enabled: false
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-osm-processor'
+    tag: '0.1.0-n377.hd099819'
   env:
     URL_FILE_TO_PROCESS: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
     OSM_FILE_ACTION: simple_pbf
@@ -250,8 +250,8 @@ osmProcessor:
 tilerDb:
   enabled: true
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-tiler-db'
+    tag: '0.1.0-n377.hd099819'
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
@@ -286,8 +286,8 @@ tilerDb:
 tilerImposm:
   enabled: false
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-tiler-imposm'
+    tag: '0.1.0-n377.hd099819'
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -317,8 +317,8 @@ tilerImposm:
 tilerServer:
   enabled: false
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-tiler-server'
+    tag: '0.1.0-n377.hd099819'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -384,8 +384,8 @@ tilerVisor:
 tmApi:
   enabled: false
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-tasking-manager-api'
+    tag: '0.1.0-n377.hd099819'
   nodeSelector:
     enabled: false
   replicaCount: 1
@@ -432,8 +432,8 @@ tmApi:
 
 nominatim:
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-nominatim'
+    tag: '0.1.0-n391.hd9dad6b'
 
 # ====================================================================================================
 # Variables for nominatim db
