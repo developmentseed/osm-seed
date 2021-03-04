@@ -5,7 +5,7 @@ PGDIR=/var/lib/postgresql/12/main
 mkdir -p $PGDIR
 
 # Check if $PGDATA is empty
-if [ "$(ls -A $PGDIR)" ]; then
+if [ -f "$PGDIR/postgresql.conf" ]; then
     echo "$PGDIR is not empty, Import won't happen, if you want start an empty dataset remove the directory $PGDIR"
     exit 0
 else
