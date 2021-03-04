@@ -113,7 +113,7 @@ RUN /usr/sbin/passenger-memory-stats
 RUN rm -rf $workdir
 RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
 WORKDIR $workdir
-# RUN git checkout master
+RUN git checkout master
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
@@ -122,7 +122,7 @@ RUN echo "gem 'mini_racer'" >> Gemfile
 RUN gem install nokogiri -- --use-system-libraries
 
 # Install app dependencies
-RUN bundle install
+RUN bundle install 
 RUN gem install rake
 
 # update vendored iD
@@ -131,10 +131,10 @@ RUN vendorer
 
 # Configure database.yml, application.yml and secrets.yml
 ADD config/database.yml $workdir/config/database.yml
-RUN touch $workdir/config/settings.local.yml
+# RUN touch $workdir/config/settings.local.yml
 RUN cp $workdir/config/example.storage.yml $workdir/config/storage.yml
 
-# ADD config/application.yml $workdir/config/application.yml
+ADD config/application.yml $workdir/config/settings.local.yml
 RUN echo "#session key \n\
 production: \n\
   secret_key_base: $(bundle exec rake secret)" > $workdir/config/secrets.yml

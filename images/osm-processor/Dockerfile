@@ -1,7 +1,6 @@
 FROM ubuntu:16.04
 ENV workdir /mnt/data
-RUN apt-get -y update
-RUN apt-get -y install \
+RUN apt-get -y update && apt-get -y install \
     build-essential \
     libboost-program-options-dev \
     libbz2-dev \

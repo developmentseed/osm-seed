@@ -12,14 +12,14 @@ production:
   encoding: utf8" > $workdir/config/database.yml
 
 # Setting up the SERVER_URL and SERVER_PROTOCOL
-# sed -i -e 's/server_url: "localhost"/server_url: "'$SERVER_URL'"/g' $workdir/config/application.yml
-# sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/application.yml
+sed -i -e 's/server_url: "localhost"/server_url: "'$SERVER_URL'"/g' $workdir/config/settings.local.yml
+sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/settings.local.yml
 
 # # Setting up the email
-# sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_FROM'/g' $workdir/config/application.yml
+sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_FROM'/g' $workdir/config/settings.local.yml
 
 # # Set up iD key
-# sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/application.yml
+sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/settings.local.yml
 
 
 
