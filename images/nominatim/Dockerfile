@@ -50,6 +50,7 @@ RUN true \
         # Misc.
         git \
         curl \
+        wget \
         sudo
 
 # Configure postgres.
@@ -129,6 +130,11 @@ RUN true \
         /var/lib/apt/lists/* \
         /var/lib/postgresql/12/main/*
 
+# Postgres PGDATA as volume
+ENV PATH $PATH:/usr/lib/postgresql/12/bin
+ENV PGDATA /var/lib/postgresql/data
+RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
+VOLUME /var/lib/postgresql/data
 
 COPY local_api.php /app/src/build/settings/local_api.php
 COPY init.sh /app/init.sh
