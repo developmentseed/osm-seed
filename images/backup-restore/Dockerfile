@@ -1,7 +1,6 @@
 FROM ubuntu:16.04
 ENV workdir /app
-RUN apt-get update
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     wget \
     python-pip \
     software-properties-common \

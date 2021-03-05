@@ -1,7 +1,6 @@
 FROM ubuntu:16.04
 
-RUN apt-get -y update
-RUN apt-get install -y \
+RUN apt-get -y update && apt-get install -y \
      \
     g++ \
     git-core \

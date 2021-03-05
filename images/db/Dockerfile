@@ -1,6 +1,5 @@
 FROM postgres:9.5
-RUN apt-get update
-RUN apt-get install -y make \
+RUN apt-get update && apt-get install -y make \
     postgresql-server-dev-9.5 \
     build-essential \
     postgresql-9.5-postgis-2.3 \
