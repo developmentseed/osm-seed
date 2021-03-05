@@ -12,14 +12,16 @@ production:
   encoding: utf8" > $workdir/config/database.yml
 
 # Setting up the SERVER_URL and SERVER_PROTOCOL
-sed -i -e 's/server_url: "localhost"/server_url: "'$SERVER_URL'"/g' $workdir/config/settings.local.yml
-sed -i -e 's/server_protocol: "http"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/settings.local.yml
+# Rails is supposed to pick up env with OPENSTREETMAP prefix but for some reason this is not the case
+# So we'll just manually override the settings.local.yml for now
+sed -i -e 's/server_url: "localhost"/server_url: "'$OPENSTREETMAP_server_url'"/g' $workdir/config/settings.local.yml
+sed -i -e 's/server_protocol: "http"/server_protocol: "'$OPENSTREETMAP_server_protocol'"/g' $workdir/config/settings.local.yml
 
 # # Setting up the email
-sed -i -e 's/osmseed-test@developmentseed.org/'$MAILER_FROM'/g' $workdir/config/settings.local.yml
+sed -i -e 's/openstreetmap@example.com/'$MAILER_SENDER_EMAIL'/g' $workdir/config/settings.local.yml
 
 # # Set up iD key
-sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/settings.local.yml
+sed -i -e 's/id-key/'$OPENSTREETMAP_id_key'/g' $workdir/config/settings.local.yml
 
 
 
