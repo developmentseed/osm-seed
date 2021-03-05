@@ -32,7 +32,7 @@ while "$flag" = true; do
   pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
   flag=false
   # Print the log while compiling the assets
-  until $(curl -sf -o /dev/null $SERVER_URL); do
+  until $(curl -sf -o /dev/null $OPENSTREETMAP_server_url); do
       echo "Waiting to start rails ports server..."
       sleep 2
   done &
