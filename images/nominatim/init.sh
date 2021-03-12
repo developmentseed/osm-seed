@@ -1,5 +1,5 @@
 #!/bin/bash
-OSMFILE=osmfile.osm.bz2
+OSMFILE=osmfile.osm.pbf
 PGDIR=$PGDATA
 sudo rm -rf $PGDATA/*
 mkdir -p $PGDIR
