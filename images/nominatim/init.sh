@@ -1,8 +1,6 @@
 #!/bin/bash
 OSMFILE=osmfile.osm.bz2
 PGDIR=$PGDATA
-echo "ls $PGDATA"
-ls $PGDATA
 sudo rm -rf $PGDATA/*
 mkdir -p $PGDIR
 
