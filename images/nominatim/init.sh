@@ -18,7 +18,7 @@ else
     useradd -m -p $PG_PASSWORD $PG_USER && \
     echo "Download OSM file ... $OSM_URL_FILE"  && \
     chown -R $PG_USER:$PG_USER ./src && \
-    sudo wget $OSM_URL_FILE -O $OSMFILE && \
+    wget $OSM_URL_FILE -O $OSMFILE && \
     sudo -u $PG_USER ./src/build/utils/setup.php --osm-file $OSMFILE --all --threads $THREADS && \
     sudo -u $PG_USER ./src/build/utils/check_import_finished.php && \
     sudo -u postgres /usr/lib/postgresql/12/bin/pg_ctl -D $PGDIR stop && \
