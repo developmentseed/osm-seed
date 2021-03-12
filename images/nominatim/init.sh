@@ -1,7 +1,7 @@
 #!/bin/bash
 OSMFILE=osmfile.osm.pbf
 PGDIR=$PGDATA
-sudo rm -rf $PGDATA/*
+# sudo rm -rf $PGDATA/*
 mkdir -p $PGDIR
 
 if [ -f "$PGDIR/postgresql.conf" ]; then
