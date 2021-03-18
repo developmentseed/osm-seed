@@ -44,11 +44,11 @@ spec:
             - name: PG_DATABASE
               value: {{ .Values.nominatimDb.env.PG_DATABASE }}
             - name: OSM_URL_FILE
-              value: {{quote .Values.nominatimDb.env.OSM_URL_FILE | quote }}
+              value: {{ .Values.nominatimDb.env.OSM_URL_FILE }}
             - name: THREADS
               value: {{ .Values.nominatimDb.env.THREADS | quote}}
             - name: REPLICATION_URL
-              value: {{ quote .Values.nominatimDb.env.REPLICATION_URL | quote }}
+              value: {{ .Values.nominatimDb.env.REPLICATION_URL }}
             - name: REPLICATION_MAXINTERVAL
               value: {{ .Values.nominatimDb.env.REPLICATION_MAXINTERVAL | quote}}
             - name: REPLICATION_UPDATE_INTERVAL
