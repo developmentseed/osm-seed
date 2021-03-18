@@ -81,6 +81,9 @@ spec:
             - name: SERVER_PROTOCOL
               value : http
               {{- end }}
+              # Nominatim domain
+            - name: NOMINATIM_URL
+              value: {{ .Values.web.env.NOMINATIM_URL }}
       {{- if .Values.web.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.web.nodeSelector.label_key }} : {{ .Values.web.nodeSelector.label_value }}
