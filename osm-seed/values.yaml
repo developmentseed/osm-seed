@@ -482,7 +482,7 @@ nominatimApi:
   env:
     REQUEST_SCHEME: http
     SERVER_NAME: nominatim
-    DOCUMENT_URI: ''
+    DOCUMENT_URI: 'document'
   replicaCount: 1
   env:
   resources:
