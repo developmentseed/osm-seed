@@ -479,12 +479,11 @@ nominatimDb:
 # ====================================================================================================
 nominatimApi:
   enabled: true
+  replicaCount: 1
   env:
     REQUEST_SCHEME: http
     SERVER_NAME: nominatim
-    DOCUMENT_URI: 'document'
-  replicaCount: 1
-  env:
+    DOCUMENT_URI: ''
   resources:
     enabled: false
     requests:
