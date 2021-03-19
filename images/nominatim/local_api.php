@@ -1,4 +1,9 @@
 <?php
+ //Variables that are needed to return a correct more_url
+ $_SERVER['REQUEST_SCHEME'] = getenv('REQUEST_SCHEME');
+ $_SERVER['SERVER_NAME'] = getenv('SERVER_NAME');
+ $_SERVER['DOCUMENT_URI'] = getenv('DOCUMENT_URI');
+
  // Get vars from env
  $pg_host = getenv('PG_HOST');
  $pg_port = getenv('PG_PORT');

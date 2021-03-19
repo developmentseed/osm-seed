@@ -59,6 +59,12 @@ spec:
               value: {{ .Values.nominatimDb.env.PG_USER }}
             - name: PG_PORT
               value: {{ .Values.nominatimDb.env.PG_PORT  | quote }}
+            - name: REQUEST_SCHEME
+              value: {{ .Values.nominatimApi.env.REQUEST_SCHEME }}
+            - name: SERVER_NAME
+              value: {{ .Values.nominatimApi.env.SERVER_NAME }}
+            - name: DOCUMENT_URI
+              value: {{ .Values.nominatimApi.env.DOCUMENT_URI }}
       {{- if .Values.nominatimApi.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.nominatimApi.nodeSelector.label_key }} : {{ .Values.nominatimApi.nodeSelector.label_value }}
