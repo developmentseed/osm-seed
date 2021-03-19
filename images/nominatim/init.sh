@@ -1,5 +1,13 @@
 #!/bin/bash
-OSMFILE=osmfile.osm.pbf
+
+FILENAME=$(basename -- "$OSM_URL_FILE")
+EXTENSION="${FILENAME##*.}"
+OSMFILE=osmfile.osm.$EXTENSION
+
+if [ $strval2 != "pbf" ]; then
+  OSM_FILE_EXTENSION=osmfile.osm.pbf
+fi
+
 PGDIR=$PGDATA
 # sudo rm -rf $PGDATA/*
 mkdir -p $PGDIR
