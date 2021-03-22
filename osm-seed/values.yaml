@@ -94,7 +94,6 @@ db:
 web:
   enabled: true
   # image: 'developmentseed/osmseed-web'
-  stagingEnv: true
   image:
     name: 'developmentseed/osmseed-web'
     tag: '0.1.0-n377.hd099819'
