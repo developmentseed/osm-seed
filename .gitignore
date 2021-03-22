@@ -1,6 +1,7 @@
 .env
 .env-tiler
 .env-nominatim
+.env-tasking-manager
 .DS_Store
 usa.values.yaml
 prod.values.yaml
