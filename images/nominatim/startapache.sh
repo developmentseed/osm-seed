@@ -1,5 +1,6 @@
 #!/bin/bash
-export NOMINATIM_SETTINGS='/app/src/build/settings/local.php'
+export NOMINATIM_SETTINGS='/app/src/build/settings/local_api.php'
+
 echo 'Setup the app'
 /app/src/build/utils/setup.php --setup-website
 
