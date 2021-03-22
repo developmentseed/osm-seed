@@ -42,12 +42,6 @@ spec:
       protocol: TCP
       name: https
   {{- end }}
-  {{- if .Values.web.stagingEnv }}
-    - port: 3000
-      targetPort: http
-      protocol: TCP
-      name: rails
-  {{- end }}
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
