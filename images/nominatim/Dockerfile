@@ -136,7 +136,7 @@ ENV PGDATA /var/lib/postgresql/data
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
 VOLUME /var/lib/postgresql/data
 
-COPY local_api.php /app/src/build/settings/local_api.php
+COPY local_api.php /app/src/build/settings/local.php
 COPY init.sh /app/init.sh
 COPY startapache.sh /app/startapache.sh
 COPY startpostgres.sh /app/startpostgres.sh

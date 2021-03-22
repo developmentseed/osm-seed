@@ -480,10 +480,6 @@ nominatimDb:
 nominatimApi:
   enabled: true
   replicaCount: 1
-  env:
-    REQUEST_SCHEME: https
-    SERVER_NAME: nominatim
-    DOCUMENT_URI: ''
   resources:
     enabled: false
     requests:
