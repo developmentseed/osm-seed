@@ -36,6 +36,12 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+  {{- if .Values.nominatimApi.stagingEnv }}
+    - port: 3000
+      targetPort: http
+      protocol: TCP
+      name: https
+  {{- end }}
   {{- if .Values.AWS_SSL_ARN }} #FIXME: make generic
     - port: 443
       targetPort: http

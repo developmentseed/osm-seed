@@ -480,6 +480,7 @@ nominatimDb:
 nominatimApi:
   enabled: true
   replicaCount: 1
+  stagingEnv: true
   env:
     BASE_URL: 'https://nominatim.osm-seed.test'
   resources:
