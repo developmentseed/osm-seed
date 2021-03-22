@@ -40,7 +40,7 @@ spec:
     - port: 3000
       targetPort: http
       protocol: TCP
-      name: https
+      name: railsServer
   {{- end }}
   {{- if .Values.AWS_SSL_ARN }} #FIXME: make generic
     - port: 443
