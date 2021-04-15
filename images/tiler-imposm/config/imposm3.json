@@ -636,6 +636,27 @@
                             "__any__"
                         ]
                     }
+                },
+                "tourism": {
+                    "mapping": {
+                        "tourism": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "shop": {
+                    "mapping": {
+                        "shop": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "craft": {
+                    "mapping": {
+                        "craft": [
+                            "__any__"
+                        ]
+                    }
                 }
             }
         },
