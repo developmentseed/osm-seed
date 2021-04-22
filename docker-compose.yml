@@ -167,28 +167,43 @@ services:
   #=========================================================================
   # NOMINATIM section
   #=========================================================================
-  
-  nominatim-db:
-    image: nominatim-db:v1
-    build:
-      context: ./images/nominatim
-      dockerfile: Dockerfile
-    ports:
-      - '6432:5432'
-    volumes:
-      - ./nominatim-pgdata:/var/lib/postgresql/data
-    env_file:
-      - ./.env-nominatim
-    command: >
-      /bin/bash -c "sh /app/start.sh"
 
-  nominatim-api:
-    image: nominatim-api:v1
+  # nominatim-db:
+  #   image: nominatim-db:v1
+  #   build:
+  #     context: ./images/nominatim
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '6432:5432'
+  #   volumes:
+  #     - ./nominatim-pgdata:/var/lib/postgresql/data
+  #   env_file:
+  #     - ./.env-nominatim
+  #   command: >
+  #     /bin/bash -c "sh /app/start.sh"
+
+  # nominatim-api:
+  #   image: nominatim-api:v1
+  #   build:
+  #     context: ./images/nominatim
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '7070:8080'
+  #   env_file:
+  #     - ./.env-nominatim
+  #   entrypoint: sh /app/startapache.sh
+
+  #=========================================================================
+  # OVERPASS section
+  #=========================================================================
+  overpass-api:
+    image: osmseed-overpass-api:v1
     build:
-      context: ./images/nominatim
+      context: ./images/overpass-api
       dockerfile: Dockerfile
     ports:
-      - '7070:8080'
+      - '80:80'
+    volumes:
+      - ./overpass-api-db:/db
     env_file:
-      - ./.env-nominatim
-    entrypoint: sh /app/startapache.sh
+      - ./.env-overpass
