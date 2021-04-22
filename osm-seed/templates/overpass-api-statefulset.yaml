@@ -1,0 +1,77 @@
+{{- if .Values.overpassApi.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-overpass-api
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: overpass-api-statefulset
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-overpass-api
+  serviceName: {{ .Release.Name }}-overpass-api
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-overpass-api
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-overpass-api
+          image: "{{ .Values.overpassApi.image.name }}:{{ .Values.overpassApi.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 80
+          #   initialDelaySeconds: 600 # 10 min, because the compile process takes time.
+          #   timeoutSeconds: 30
+          {{- if .Values.overpassApi.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.overpassApi.resources.requests.memory }}
+              cpu: {{ .Values.overpassApi.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.overpassApi.resources.limits.memory }}
+              cpu: {{ .Values.overpassApi.resources.limits.cpu }}
+          {{- end }}
+          env:
+              # overpass-api env variables
+            - name: OVERPASS_META
+              value: {{ .Values.overpassApi.env.OVERPASS_META }}
+            - name: OVERPASS_MODE
+              value: {{ .Values.overpassApi.env.OVERPASS_MODE }}
+            - name: OVERPASS_PLANET_URL
+              value: {{ .Values.overpassApi.env.OVERPASS_PLANET_URL }}
+            - name: OVERPASS_DIFF_URL
+              value: {{ quote .Values.overpassApi.env.OVERPASS_DIFF_URL }}
+            - name: OVERPASS_RULES_LOAD
+              value: {{ quote .Values.overpassApi.env.OVERPASS_RULES_LOAD }}
+              
+          volumeMounts:
+          - mountPath: /db
+            name: overpass-api-storage
+      restartPolicy: Always
+      volumes:
+        - name: overpass-api-storage
+        {{- if .Values.overpassApi.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-overpass-api-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      {{- if .Values.overpassApi.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.overpassApi.nodeSelector.label_key }} : {{ .Values.overpassApi.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}
