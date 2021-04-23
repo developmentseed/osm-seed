@@ -416,25 +416,25 @@
                 ]
             },
             "mappings": {
-		"railway": {
+                "railway": {
                     "mapping": {
                         "railway": [
                             "__any__"
-			]
+                        ]
                     }
                 },
                 "highway": {
                     "mapping": {
                         "highway": [
                             "__any__"
- 			]
+                        ]
                     }
                 },
                 "aeroway": {
                     "mapping": {
                         "aeroway": [
                             "__any__"
- 			]
+                        ]
                     }
                 }
             }
@@ -455,6 +455,11 @@
                     "type": "string",
                     "name": "name",
                     "key": "name"
+                },
+                {
+                    "type": "string",
+                    "name": "area",
+                    "key": "area"
                 },
                 {
                     "type": "mapping_value",
