@@ -130,6 +130,46 @@
                 ]
             }
         },
+        "place_areas": {
+            "fields": [
+                {
+                    "type": "id",
+                    "name": "osm_id",
+                    "key": null
+                },
+                {
+                    "type": "geometry",
+                    "name": "geometry",
+                    "key": null
+                },
+                {
+                    "type": "string",
+                    "name": "name",
+                    "key": "name"
+                },
+                {
+                    "type": "mapping_value",
+                    "name": "type",
+                    "key": null
+                },
+                {
+                    "type": "integer",
+                    "name": "population",
+                    "key": "population"
+                },
+                {
+                    "type": "hstore_tags",
+                    "name": "tags",
+                    "key": null
+                }
+            ],
+            "type": "polygon",
+            "mapping": {
+                "place": [
+                    "__any__"
+                ]
+            }
+        },
         "landuse_areas": {
             "fields": [
                 {
