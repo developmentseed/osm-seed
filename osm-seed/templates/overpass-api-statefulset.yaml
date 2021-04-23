@@ -54,10 +54,11 @@ spec:
             - name: OVERPASS_PLANET_URL
               value: {{ .Values.overpassApi.env.OVERPASS_PLANET_URL }}
             - name: OVERPASS_DIFF_URL
-              value: {{ quote .Values.overpassApi.env.OVERPASS_DIFF_URL }}
+              value: {{ .Values.overpassApi.env.OVERPASS_DIFF_URL }}
             - name: OVERPASS_RULES_LOAD
-              value: {{ quote .Values.overpassApi.env.OVERPASS_RULES_LOAD }}
-              
+              value: {{ .Values.overpassApi.env.OVERPASS_RULES_LOAD }}
+            - name: OVERPASS_PLANET_PREPROCESS
+              value: {{ quote .Values.overpassApi.env.OVERPASS_PLANET_PREPROCESS }}
           volumeMounts:
           - mountPath: /db
             name: overpass-api-storage
