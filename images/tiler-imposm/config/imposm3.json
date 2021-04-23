@@ -499,7 +499,7 @@
                 {
                     "type": "string",
                     "name": "area",
-                    "key": "area"
+                    "key": null
                 },
                 {
                     "type": "mapping_value",
