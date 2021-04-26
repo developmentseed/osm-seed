@@ -439,6 +439,11 @@
                     "key": "service"
                 },
                 {
+                    "type": "string",
+                    "name": "ford",
+                    "key": "ford"
+                },
+                {
                     "type": "mapping_key",
                     "name": "class",
                     "key": null
