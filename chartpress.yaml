@@ -30,4 +30,5 @@ charts:
         valuesPath: tmApi.image
       # tiler-visor:
       #   valuesPath: tilerVisor.image
-      
+      nominatim:
+        valuesPath: nominatim.image

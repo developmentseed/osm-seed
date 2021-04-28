@@ -1,11 +1,11 @@
-{{- if .Values.web.enabled -}}
+{{- if .Values.nominatimApi.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-web
+  name: {{ template "osm-seed.fullname" . }}-nominatim-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: web-service
+    component: nominatim-api-service
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   {{- if eq .Values.cloudProvider "aws" }}
@@ -25,14 +25,14 @@ spec:
   # In case cloudProvider=gcp
   {{- if eq .Values.cloudProvider "gcp" }}
   type: LoadBalancer
-  loadBalancerIP : {{ .Values.web.staticIp }}
+  loadBalancerIP : {{ .Values.nominatimApi.staticIp }}
   {{- end }}
   # In case cloudProvider=minikube
   {{- if eq .Values.cloudProvider "minikube" }}
   type: NodePort
   {{- end }}
   ports:
-    - port: 80
+    - port: 8080
       targetPort: http
       protocol: TCP
       name: http
@@ -45,5 +45,5 @@ spec:
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-web
+    run: {{ .Release.Name }}-nominatim-api
 {{- end }}

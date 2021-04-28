@@ -49,5 +49,3 @@ services:
       sleep 100;
       echo Starting tiles server!;
       ./start.sh"
-    env_file:
-      - ./.env-tiler
