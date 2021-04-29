@@ -168,11 +168,16 @@ while "$flag" = true; do
             echo "Update the DB with osm data"
             updateData
         else
-            echo "Import PBF data to DB"
-            getData
-            if [ -f $PBFFile ]; then
-                echo "Start importing the data"
-                importData
+            if [[ ! -f /mnt/data/init_done ]]; then
+                echo "Import PBF data to DB"
+                getData
+                if [ -f $PBFFile ]; then
+                    echo "Start importing the data"
+                    importData \
+                    && touch /mnt/data/init_done
+                fi
+            else
+                echo "Data has already imported"
             fi
         fi
 done
