@@ -130,6 +130,46 @@
                 ]
             }
         },
+        "place_areas": {
+            "fields": [
+                {
+                    "type": "id",
+                    "name": "osm_id",
+                    "key": null
+                },
+                {
+                    "type": "geometry",
+                    "name": "geometry",
+                    "key": null
+                },
+                {
+                    "type": "string",
+                    "name": "name",
+                    "key": "name"
+                },
+                {
+                    "type": "mapping_value",
+                    "name": "type",
+                    "key": null
+                },
+                {
+                    "type": "integer",
+                    "name": "population",
+                    "key": "population"
+                },
+                {
+                    "type": "hstore_tags",
+                    "name": "tags",
+                    "key": null
+                }
+            ],
+            "type": "polygon",
+            "mapping": {
+                "place": [
+                    "__any__"
+                ]
+            }
+        },
         "landuse_areas": {
             "fields": [
                 {
@@ -399,6 +439,11 @@
                     "key": "service"
                 },
                 {
+                    "type": "string",
+                    "name": "ford",
+                    "key": "ford"
+                },
+                {
                     "type": "mapping_key",
                     "name": "class",
                     "key": null
@@ -416,25 +461,25 @@
                 ]
             },
             "mappings": {
-		"railway": {
+                "railway": {
                     "mapping": {
                         "railway": [
                             "__any__"
-			]
+                        ]
                     }
                 },
                 "highway": {
                     "mapping": {
                         "highway": [
                             "__any__"
- 			]
+                        ]
                     }
                 },
                 "aeroway": {
                     "mapping": {
                         "aeroway": [
                             "__any__"
- 			]
+                        ]
                     }
                 }
             }
@@ -455,6 +500,11 @@
                     "type": "string",
                     "name": "name",
                     "key": "name"
+                },
+                {
+                    "type": "string",
+                    "name": "area",
+                    "key": "area"
                 },
                 {
                     "type": "mapping_value",
@@ -633,6 +683,27 @@
                 "military": {
                     "mapping": {
                         "military": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "tourism": {
+                    "mapping": {
+                        "tourism": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "shop": {
+                    "mapping": {
+                        "shop": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "craft": {
+                    "mapping": {
+                        "craft": [
                             "__any__"
                         ]
                     }

@@ -20,7 +20,6 @@ AWS_S3_BUCKET: s3://osm-seed
 
 AWS_SSL_ARN: false
 
-
 # ====================================================================================================
 # GCP: In case you are using the cloudProvider=gcp set the below variables
 # ====================================================================================================
@@ -60,9 +59,9 @@ domain:
 # ====================================================================================================
 db:
   enabled: true
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+  image:
+    name: 'developmentseed/osmseed-db'
+    tag: '0.1.0-n377.hd099819'
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
@@ -81,11 +80,11 @@ db:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "1"
+      memory: '1Gi'
+      cpu: '1'
     limits:
-      memory: "2Gi"
-      cpu: "1"
+      memory: '2Gi'
+      cpu: '1'
   nodeSelector:
     enabled: false
 
@@ -95,10 +94,9 @@ db:
 web:
   enabled: true
   # image: 'developmentseed/osmseed-web'
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
-    
+  image:
+    name: 'developmentseed/osmseed-web'
+    tag: '0.1.0-n377.hd099819'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -107,14 +105,15 @@ web:
     MAILER_DOMAIN: gmail.com
     MAILER_USERNAME: osmseed.test@gmail.com
     MAILER_PASSWORD: '1234'
+    NOMINATIM_URL: 'nominatim'
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2"
+      memory: '2Gi'
+      cpu: '2'
   nodeSelector:
     enabled: false
 
@@ -130,11 +129,11 @@ memcached:
   resources:
     enabled: false
     requests:
-      memory: "8Gi"
-      cpu: "2"
+      memory: '8Gi'
+      cpu: '2'
     limits:
-      memory: "8Gi"
-      cpu: "2"
+      memory: '8Gi'
+      cpu: '2'
 
 # ====================================================================================================
 # Variables for id-editor
@@ -150,9 +149,9 @@ fullHistory:
 # ====================================================================================================
 dbBackupRestore:
   enabled: false
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+  image:
+    name: 'developmentseed/osmseed-backup-restore'
+    tag: '0.1.0-n377.hd099819'
   schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
@@ -160,31 +159,31 @@ dbBackupRestore:
   resources:
     enabled: false
     requests:
-      memory: "300Mi"
-      cpu: "0.5"
+      memory: '300Mi'
+      cpu: '0.5'
     limits:
-      memory: "400Mi"
-      cpu: "0.6"
+      memory: '400Mi'
+      cpu: '0.6'
 
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
 planetDump:
   enabled: true
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+  image:
+    name: 'developmentseed/osmseed-planet-dump'
+    tag: '0.1.0-n377.hd099819'
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      memory: '14Gi'
+      cpu: '4'
     limits:
-      memory: "16Gi"
-      cpu: "4"
+      memory: '16Gi'
+      cpu: '4'
   nodeSelector:
     enabled: false
 
@@ -193,17 +192,17 @@ planetDump:
 # ====================================================================================================
 replicationJob:
   enabled: true
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+  image:
+    name: 'developmentseed/osmseed-replication-job'
+    tag: '0.1.0-n377.hd099819'
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      memory: '20Gi'
+      cpu: '8'
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      memory: '24Gi'
+      cpu: '10'
   nodeSelector:
     enabled: false
 
@@ -212,48 +211,48 @@ replicationJob:
 # ====================================================================================================
 populateApidb:
   enabled: false
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+  image:
+    name: 'developmentseed/osmseed-populate-apidb'
+    tag: '0.1.0-n377.hd099819'
   env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2.5"
+      memory: '2Gi'
+      cpu: '2.5'
 
 # ====================================================================================================
 # Variables to start a pod to process osm files
 # ====================================================================================================
 osmProcessor:
   enabled: false
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+  image:
+    name: 'developmentseed/osmseed-osm-processor'
+    tag: '0.1.0-n377.hd099819'
   env:
     URL_FILE_TO_PROCESS: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
     OSM_FILE_ACTION: simple_pbf
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      memory: '14Gi'
+      cpu: '4'
     limits:
-      memory: "16Gi"
-      cpu: "4"
+      memory: '16Gi'
+      cpu: '4'
 
 # ====================================================================================================
 # Variables for tiler-db
 # ====================================================================================================
 tilerDb:
   enabled: true
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+  image:
+    name: 'developmentseed/osmseed-tiler-db'
+    tag: '0.1.0-n377.hd099819'
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
@@ -274,11 +273,11 @@ tilerDb:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2.5"
+      memory: '2Gi'
+      cpu: '2.5'
   nodeSelector:
     enabled: false
 
@@ -287,9 +286,9 @@ tilerDb:
 # ====================================================================================================
 tilerImposm:
   enabled: false
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+  image:
+    name: 'developmentseed/osmseed-tiler-imposm'
+    tag: '0.1.0-n377.hd099819'
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -307,20 +306,20 @@ tilerImposm:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      memory: '20Gi'
+      cpu: '8'
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      memory: '24Gi'
+      cpu: '10'
 
 # ====================================================================================================
 # Variables for tiler-server
 # ====================================================================================================
 tilerServer:
   enabled: false
-  image: 
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+  image:
+    name: 'developmentseed/osmseed-tiler-server'
+    tag: '0.1.0-n377.hd099819'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -334,7 +333,7 @@ tilerServer:
     # TILER_CACHE_REGION: us-east-1
     # TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
     # TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
-  # In case you use TILER_CACHE_TYPE: file with  persistenceDisk 
+  # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
     enabled: true
     accessMode: ReadWriteOnce
@@ -348,11 +347,11 @@ tilerServer:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2"
+      memory: '2Gi'
+      cpu: '2'
   nodeSelector:
     enabled: false
 
@@ -361,8 +360,8 @@ tilerServer:
 # ====================================================================================================
 tilerVisor:
   enabled: false
-  image: 
-    name: 'chartpress_replace'
+  image:
+    name: 'cartpress_replace'
     tag: 'chartpress_replace'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
@@ -373,11 +372,11 @@ tilerVisor:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2"
+      memory: '2Gi'
+      cpu: '2'
 
 # ====================================================================================================
 # Variables for Tasking Manager API
@@ -386,8 +385,8 @@ tilerVisor:
 tmApi:
   enabled: false
   image:
-    name: 'chartpress_replace'
-    tag: 'chartpress_replace'
+    name: 'developmentseed/osmseed-tasking-manager-api'
+    tag: '0.1.0-n377.hd099819'
   nodeSelector:
     enabled: false
   replicaCount: 1
@@ -422,8 +421,74 @@ tmApi:
   resources:
     enabled: false
     requests:
-      memory: "1Gi"
-      cpu: "2"
+      memory: '1Gi'
+      cpu: '2'
     limits:
-      memory: "2Gi"
-      cpu: "2"
+      memory: '2Gi'
+      cpu: '2'
+
+# ====================================================================================================
+# Nominatim image values
+# ====================================================================================================
+
+nominatim:
+  image:
+    name: 'developmentseed/osmseed-nominatim'
+    tag: '0.1.0-n391.hd9dad6b'
+
+# ====================================================================================================
+# Variables for nominatim db
+# ====================================================================================================
+nominatimDb:
+  enabled: true
+  env:
+    PG_PORT: 5432
+    PG_USER: nominatim
+    PG_PASSWORD: password1234
+    PG_DATABASE: nominatim
+    OSM_URL_FILE: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
+    THREADS: 4
+    REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates
+    REPLICATION_MAXINTERVAL: 86500
+    REPLICATION_UPDATE_INTERVAL: 86500
+    REPLICATION_RECHECK_INTERVAL: 900
+  persistenceDisk:
+    enabled: true
+    accessMode: ReadWriteOnce
+    mountPath: /var/lib/postgresql/data
+    subPath: nominatim-pgdata
+    # In case cloudProvider: aws
+    AWS_ElasticBlockStore_volumeID: vol-037a44560af1076f1
+    AWS_ElasticBlockStore_size: 100Gi
+    # In case cloudProvider: gcp
+    GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
+    GCP_gcePersistentDisk_size: 50Gi
+  resources:
+    enabled: false
+    requests:
+      memory: '1Gi'
+      cpu: '1'
+    limits:
+      memory: '2Gi'
+      cpu: '1'
+  nodeSelector:
+    enabled: false
+
+# ====================================================================================================
+# Variables for nominatim api
+# ====================================================================================================
+nominatimApi:
+  enabled: true
+  replicaCount: 1
+  env:
+    BASE_URL: 'https://nominatim.osm-seed.test'
+  resources:
+    enabled: false
+    requests:
+      memory: '1Gi'
+      cpu: '2'
+    limits:
+      memory: '2Gi'
+      cpu: '2'
+  nodeSelector:
+    enabled: false

@@ -1,5 +1,8 @@
 .env
 .env-tiler
+.env-nominatim
+.env-tasking-manager
+.DS_Store
 usa.values.yaml
 prod.values.yaml
 planet.values.yaml
@@ -13,6 +16,7 @@ osm-processor-data/
 postgres-gis-data/
 tiler-imposm-data/
 tiler-server-data/
+nominatim-pgdata/
 data/
 *.osm
 *.pbf
