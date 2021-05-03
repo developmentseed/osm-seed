@@ -162,3 +162,29 @@ services:
       sleep 100;
       echo Starting tiles server!;
       ./start.sh"
+  #=========================================================================
+  # NOMINATIM section
+  #=========================================================================
+  nominatim-db:
+    image: nominatim-db:v1
+    build:
+      context: ./images/nominatim
+      dockerfile: Dockerfile
+    ports:
+      - '6432:5432'
+    volumes:
+      - ./nominatim-pgdata:/var/lib/postgresql/data
+    env_file:
+      - ./.env-nominatim
+    command: >
+      /bin/bash -c "sh /app/start.sh"
+  nominatim-api:
+    image: nominatim-api:v1
+    build:
+      context: ./images/nominatim
+      dockerfile: Dockerfile
+    ports:
+      - '7070:8080'
+    env_file:
+      - ./.env-nominatim
+    entrypoint: sh /app/startapache.sh
