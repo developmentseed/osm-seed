@@ -316,7 +316,7 @@ tilerImposm:
 # Variables for tiler-server
 # ====================================================================================================
 tilerServer:
-  enabled: false
+  enabled: true
   image:
     name: 'developmentseed/osmseed-tiler-server'
     tag: '0.1.0-n377.hd099819'
@@ -325,14 +325,14 @@ tilerServer:
   staticIp: 35.247.6.238
   env:
     TILER_SERVER_PORT: 9090
-    TILER_CACHE_TYPE: file #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
+    TILER_CACHE_TYPE: s3 #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
     TILER_CACHE_BASEPATH: /mnt/data
     TILER_CACHE_MAX_ZOOM: 22
     # in case s3
-    # TILER_CACHE_BUCKET: osmseed-tiler
-    # TILER_CACHE_REGION: us-east-1
-    # TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
-    # TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
+    TILER_CACHE_BUCKET: osmseed-tiler
+    TILER_CACHE_REGION: us-east-1
+    TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
+    TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
   # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
     enabled: true

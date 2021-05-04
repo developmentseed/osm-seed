@@ -1,5 +1,5 @@
 {{- if .Values.tilerServer.enabled -}}
-{{ if eq .Values.env.TILER_CACHE_TYPE "file" }}
+{{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "file" }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
