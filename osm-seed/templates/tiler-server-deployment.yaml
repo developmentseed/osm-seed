@@ -62,6 +62,8 @@ spec:
               value: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
             - name: TILER_CACHE_TYPE
               value: {{ .Values.tilerServer.env.TILER_CACHE_TYPE }}
+            - name: TILER_CACHE_REGION
+              value: {{ .Values.tilerServer.env.TILER_CACHE_REGION }}
             - name: TILER_CACHE_BUCKET
               value: {{ .Values.tilerServer.env.TILER_CACHE_BUCKET }}
             - name: TILER_CACHE_BASEPATH
