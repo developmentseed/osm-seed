@@ -1,12 +1,12 @@
 {{- if .Values.tilerServer.enabled -}}
-{{ if eq .Values.env.TILER_CACHE_TYPE "file" }}
+{{ if eq .Values.env.TILER_CACHE_TYPE "s3" }}
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: {{ template "osm-seed.fullname" . }}-tiler-server
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-server-statefulset
+    component: tiler-server-deployment
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -16,7 +16,6 @@ spec:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
       run: {{ .Release.Name }}-tiler-server
-  serviceName: {{ .Release.Name }}-tiler-server
   template:
     metadata:
       labels:
@@ -85,18 +84,6 @@ spec:
             - name: GCP_STORAGE_BUCKET
               value: {{ .Values.GCP_STORAGE_BUCKET }}
             {{- end }}
-          volumeMounts:
-          - mountPath: /mnt/data
-            name: tiler-server-storage
-      restartPolicy: Always
-      volumes:
-        - name: tiler-server-storage
-        {{- if .Values.tilerServer.persistenceDisk.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-tiler-server-pv-claim
-        {{- else }}
-          emptyDir: {}
-        {{- end }}
       {{- if .Values.tilerServer.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerServer.nodeSelector.label_key }} : {{ .Values.tilerServer.nodeSelector.label_value }}

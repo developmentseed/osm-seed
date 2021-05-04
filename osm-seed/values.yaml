@@ -325,7 +325,7 @@ tilerServer:
   staticIp: 35.247.6.238
   env:
     TILER_SERVER_PORT: 9090
-    TILER_CACHE_TYPE: file
+    TILER_CACHE_TYPE: file #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
     TILER_CACHE_BASEPATH: /mnt/data
     TILER_CACHE_MAX_ZOOM: 22
     # in case s3
