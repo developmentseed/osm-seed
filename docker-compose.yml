@@ -1,3 +1,4 @@
+
 version: '3'
 services:
   ######################################################
@@ -206,3 +207,17 @@ services:
     env_file:
       - ./.env-nominatim
     entrypoint: sh /app/startapache.sh
+  ######################################################
+  ### Overpass API section
+  ######################################################
+  overpass-api:
+    image: osmseed-overpass-api:v1
+    build:
+      context: ./images/overpass-api
+      dockerfile: Dockerfile
+    ports:
+      - '8081:80'
+    volumes:
+      - ./overpass-api-db:/db
+    env_file:
+      - ./.env-overpass
