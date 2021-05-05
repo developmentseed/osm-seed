@@ -492,3 +492,39 @@ nominatimApi:
       cpu: '2'
   nodeSelector:
     enabled: false
+  
+# ====================================================================================================
+# Variables for overpass-api
+# ====================================================================================================
+overpassApi:
+  enabled: true
+  image:
+    name: ''
+    tag: ''
+  env:
+    OVERPASS_META: 'yes'
+    OVERPASS_MODE: init
+    OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
+    OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/monaco/minute/
+    OVERPASS_RULES_LOAD: 10
+    OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf'
+  persistenceDisk:
+    enabled: true
+    accessMode: ReadWriteOnce
+    mountPath: /db
+    # In case cloudProvider: aws
+    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
+    # AWS_ElasticBlockStore_size: 100Gi
+    # In case cloudProvider: gcp
+    # GCP_gcePersistentDisk_pdName: osmseed-disk-overpass-api-v2
+    # GCP_gcePersistentDisk_size: 50Gi
+  resources:
+    enabled: false
+    requests:
+      memory: '1Gi'
+      cpu: '2'
+    limits:
+      memory: '2Gi'
+      cpu: '2'
+  nodeSelector:
+    enabled: false

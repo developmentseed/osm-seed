@@ -32,3 +32,5 @@ charts:
       #   valuesPath: tilerVisor.image
       nominatim:
         valuesPath: nominatim.image
+      overpass-api:
+        valuesPath: overpassApi.image
