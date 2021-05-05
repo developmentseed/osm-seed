@@ -363,7 +363,7 @@ tilerServer:
 tilerServerCacheCleaner:
   enabled: true
   replicaCount: 1
-  commad: './tile_cache_downloader.sh & ./expire-watcher.sh'
+  command: './tile_cache_downloader.sh & ./expire-watcher.sh'
   resources:
     enabled: false
     requests:
