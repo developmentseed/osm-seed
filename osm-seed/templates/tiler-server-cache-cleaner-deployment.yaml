@@ -1,50 +1,37 @@
 {{- if .Values.tilerServer.enabled -}}
 {{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "s3" }}
+{{- if .Values.tilerServerCacheCleaner.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-tiler-server
+  name: {{ .Release.Name }}-tiler-server-cache-cleaner
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-server-deployment
+    component: tiler-server-cache-cleaner
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  replicas: {{ .Values.tilerServer.replicaCount }}
+  replicas: {{ .Values.tilerServerCacheCleaner.replicaCount }}
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
-      release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-tiler-server
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
-        release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-tiler-server
     spec:
       containers:
-        - name: {{ .Chart.Name }}-tiler-server
-          image: "{{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}"
-          command: [ {{ .Values.tilerServer.command }} ]
-          ports:
-            - name: http
-              containerPort: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
-            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
-            timeoutSeconds: 30
-          {{- if .Values.tilerServer.resources.enabled }}
+        - name: {{ .Release.Name }}-tiler-server-cache-cleaner-deployment
+          image: {{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}
+          command: [{{.Values.tilerServerCacheCleaner.commnad}}]
+          {{- if .Values.tilerServerCacheCleaner.resources.enabled }}
           resources:
             requests:
-              memory: {{ .Values.tilerServer.resources.requests.memory }}
-              cpu: {{ .Values.tilerServer.resources.requests.cpu }}
+              memory: {{ .Values.tilerServerCacheCleaner.resources.requests.memory }}
+              cpu: {{ .Values.tilerServerCacheCleaner.resources.requests.cpu }}
             limits:
-              memory: {{ .Values.tilerServer.resources.limits.memory }}
-              cpu: {{ .Values.tilerServer.resources.limits.cpu }}
+              memory: {{ .Values.tilerServerCacheCleaner.resources.limits.memory }}
+              cpu: {{ .Values.tilerServerCacheCleaner.resources.limits.cpu }}
           {{- end }}
           env:
               # tiler-db env variables
@@ -87,9 +74,10 @@ spec:
             - name: GCP_STORAGE_BUCKET
               value: {{ .Values.GCP_STORAGE_BUCKET }}
             {{- end }}
-      {{- if .Values.tilerServer.nodeSelector.enabled }}
+      {{- if .Values.tilerServerCacheCleaner.nodeSelector.enabled }}
       nodeSelector:
-        {{ .Values.tilerServer.nodeSelector.label_key }} : {{ .Values.tilerServer.nodeSelector.label_value }}
+        {{ .Values.tilerServerCacheCleaner.nodeSelector.label_key }} : {{ .Values.tilerServerCacheCleaner.nodeSelector.label_value }}
       {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}

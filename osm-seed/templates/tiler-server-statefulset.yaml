@@ -27,6 +27,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-tiler-server
           image: "{{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}"
+          command: [ {{ .Values.tilerServer.command }} ]
           ports:
             - name: http
               containerPort: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
