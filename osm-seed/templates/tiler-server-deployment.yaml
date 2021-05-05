@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-tiler-server
+  name: {{ .Release.Name }}-tiler-server
   labels:
     app: {{ template "osm-seed.name" . }}
     component: tiler-server-deployment

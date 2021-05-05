@@ -10,7 +10,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  replicas: {{ .Values.tilerServer.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
