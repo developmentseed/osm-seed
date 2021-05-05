@@ -61,7 +61,7 @@ db:
   enabled: true
   image:
     name: 'developmentseed/osmseed-db'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n423.hdb62b0d'
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
@@ -96,7 +96,7 @@ web:
   # image: 'developmentseed/osmseed-web'
   image:
     name: 'developmentseed/osmseed-web'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n423.hdb62b0d'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -151,7 +151,7 @@ dbBackupRestore:
   enabled: false
   image:
     name: 'developmentseed/osmseed-backup-restore'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n423.hdb62b0d'
   schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
@@ -172,7 +172,7 @@ planetDump:
   enabled: true
   image:
     name: 'developmentseed/osmseed-planet-dump'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n436.h4b5ffc4'
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true
@@ -194,7 +194,7 @@ replicationJob:
   enabled: true
   image:
     name: 'developmentseed/osmseed-replication-job'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n423.hdb62b0d'
   resources:
     enabled: false
     requests:
@@ -213,7 +213,7 @@ populateApidb:
   enabled: false
   image:
     name: 'developmentseed/osmseed-populate-apidb'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n423.hdb62b0d'
   env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
   resources:
@@ -232,7 +232,7 @@ osmProcessor:
   enabled: false
   image:
     name: 'developmentseed/osmseed-osm-processor'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n423.hdb62b0d'
   env:
     URL_FILE_TO_PROCESS: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
     OSM_FILE_ACTION: simple_pbf
@@ -252,7 +252,7 @@ tilerDb:
   enabled: true
   image:
     name: 'developmentseed/osmseed-tiler-db'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n423.hdb62b0d'
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
@@ -288,7 +288,7 @@ tilerImposm:
   enabled: false
   image:
     name: 'developmentseed/osmseed-tiler-imposm'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n438.hf4be954'
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -319,7 +319,7 @@ tilerServer:
   enabled: true
   image:
     name: 'developmentseed/osmseed-tiler-server'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n423.hdb62b0d'
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -333,6 +333,7 @@ tilerServer:
     TILER_CACHE_REGION: us-east-1
     TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
     TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
+  command: './start.sh' # ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
   # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
     enabled: true
@@ -354,7 +355,27 @@ tilerServer:
       cpu: '2'
   nodeSelector:
     enabled: false
-
+    label_key: nodegroup-type
+    label_value: node-tiler
+# ====================================================================================================
+# Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3  
+# ====================================================================================================
+tilerServerCacheCleaner:
+  enabled: true
+  replicaCount: 1
+  commad: './tile_cache_downloader.sh & ./expire-watcher.sh'
+  resources:
+    enabled: false
+    requests:
+      memory: '1Gi'
+      cpu: '2'
+    limits:
+      memory: '2Gi'
+      cpu: '2'
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup-type
+    label_value: node-tiler
 # ====================================================================================================
 # Variables for tiler-visor
 # ====================================================================================================
@@ -386,7 +407,7 @@ tmApi:
   enabled: false
   image:
     name: 'developmentseed/osmseed-tasking-manager-api'
-    tag: '0.1.0-n377.hd099819'
+    tag: '0.1.0-n423.hdb62b0d'
   nodeSelector:
     enabled: false
   replicaCount: 1
@@ -434,7 +455,7 @@ tmApi:
 nominatim:
   image:
     name: 'developmentseed/osmseed-nominatim'
-    tag: '0.1.0-n391.hd9dad6b'
+    tag: '0.1.0-n423.hdb62b0d'
 
 # ====================================================================================================
 # Variables for nominatim db
@@ -492,15 +513,15 @@ nominatimApi:
       cpu: '2'
   nodeSelector:
     enabled: false
-  
+
 # ====================================================================================================
 # Variables for overpass-api
 # ====================================================================================================
 overpassApi:
   enabled: true
   image:
-    name: ''
-    tag: ''
+    name: 'developmentseed/osmseed-overpass-api'
+    tag: '0.1.0-n423.hdb62b0d'
   env:
     OVERPASS_META: 'yes'
     OVERPASS_MODE: init
