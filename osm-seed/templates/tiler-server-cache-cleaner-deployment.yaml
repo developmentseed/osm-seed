@@ -23,7 +23,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-tiler-server-cache-cleaner-deployment
           image: {{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}
-          command: [{{.Values.tilerServerCacheCleaner.commnad}}]
+          command: [{{.Values.tilerServerCacheCleaner.command}}]
           {{- if .Values.tilerServerCacheCleaner.resources.enabled }}
           resources:
             requests:
