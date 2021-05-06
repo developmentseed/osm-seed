@@ -45,6 +45,8 @@ spec:
               value: {{ default "postgres" .Values.tilerDb.env.POSTGRES_USER | quote }}
             - name: PGDATA
               value: {{ .Values.tilerDb.persistenceDisk.mountPath }}
+            - name: POSTGRES_DB_MAX_CONNECTIONS
+              value: {{ default 100 .Values.tilerDb.env.POSTGRES_DB_MAX_CONNECTIONS | quote }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
           livenessProbe:
