@@ -67,7 +67,7 @@ spec:
             # In case cloudProvider=aws
             {{- if eq .Values.cloudProvider "aws" }}
             - name: AWS_S3_BUCKET
-              value: {{ .Values.AWS_S3_BUCKET }}
+              value: {{ .Values.tilerServer.env.AWS_S3_BUCKET | .Values.AWS_S3_BUCKET }}
             {{- end }}
             # In case cloudProvider=gcp
             {{- if eq .Values.cloudProvider "gcp" }}
