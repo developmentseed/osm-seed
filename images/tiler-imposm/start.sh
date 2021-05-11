@@ -120,7 +120,7 @@ function importData () {
     echo "Execute the missing functions"
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f config/postgis_helpers.sql
     echo "Import Natural Earth"
-    ./scripts/natural_earth.sh
+    # ./scripts/natural_earth.sh
     echo "Import OSM Land"
     ./scripts/osm_land.sh
     echo "Import PBF file"
@@ -174,7 +174,7 @@ while "$flag" = true; do
                 if [ -f $PBFFile ]; then
                     echo "Start importing the data"
                     importData \
-                    && touch /mnt/data/init_done
+                    & touch /mnt/data/init_done
                 fi
             else
                 echo "Data has already imported"
