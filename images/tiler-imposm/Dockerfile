@@ -36,9 +36,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa \
         python3.6 -m pip install wheel
 
 # Install postgresql-client
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-    && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" | tee  /etc/apt/sources.list.d/pgdg.list' \
-    && apt-get update && apt-get install -y postgresql-client \
+RUN apt-get update && apt-get install -y postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Gdal is required to process the natural earth files
