@@ -154,7 +154,7 @@ function importData () {
 }
 
 
-echo "Connecting... to postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
+echo "Connecting to db..."
 flag=true
 while "$flag" = true; do
     pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
@@ -163,7 +163,7 @@ while "$flag" = true; do
         hasData=$(psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" \
         -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" | sed -n 3p | sed 's/ //g')
         # After import there are more than 70 tables
-        
+        echo "$hasData tables in DB"
         if [ $hasData  \> 70 ]; then
             echo "Update the DB with osm data"
             updateData
