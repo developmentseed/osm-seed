@@ -120,11 +120,10 @@ function importData () {
     echo "Execute the missing functions"
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f config/postgis_helpers.sql
     echo "Import Natural Earth"
-    # ./scripts/natural_earth.sh
+    ./scripts/natural_earth.sh
     echo "Import OSM Land"
     ./scripts/osm_land.sh
     echo "Import PBF file"
-
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
         imposm import \
         -config $workDir/config.json \
@@ -149,12 +148,13 @@ function importData () {
     # These index will help speed up tegola tile generation
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f config/postgis_index.sql
 
+    touch /mnt/data/init_done
     # Update the DB
     updateData
 }
 
 
-echo "Connecting to db..."
+echo "Connecting to DB..."
 flag=true
 while "$flag" = true; do
     pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
@@ -163,21 +163,16 @@ while "$flag" = true; do
         hasData=$(psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" \
         -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" | sed -n 3p | sed 's/ //g')
         # After import there are more than 70 tables
-        echo "$hasData tables in DB"
-        if [ $hasData  \> 70 ]; then
+        echo "$hasData tables in the DB"
+        if ([ $hasData  \> 70 ] && [[ ! -f /mnt/data/init_done ]]); then
             echo "Update the DB with osm data"
             updateData
         else
-            if [[ ! -f /mnt/data/init_done ]]; then
-                echo "Import PBF data to DB"
-                getData
-                if [ -f $PBFFile ]; then
-                    echo "Start importing the data"
-                    importData \
-                    & touch /mnt/data/init_done
-                fi
-            else
-                echo "Data has already imported"
+            echo "Import PBF data to DB"
+            getData
+            if [ -f $PBFFile ]; then
+                echo "Start importing the data"
+                importData
             fi
         fi
 done
