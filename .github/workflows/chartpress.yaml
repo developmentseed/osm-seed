@@ -18,7 +18,7 @@ jobs:
       run: git config --global user.email "noreply@developmentseed.org" && git config --global user.name "Github Action"
     - name: Install Chartpress
       run: |
-        pip install -v chartpress
+        pip install -v chartpress && pip install six
     - name: Run Chartpress
       run: chartpress --push --publish-chart
       env:
