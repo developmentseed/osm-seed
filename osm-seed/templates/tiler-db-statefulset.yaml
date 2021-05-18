@@ -47,6 +47,14 @@ spec:
               value: {{ .Values.tilerDb.persistenceDisk.mountPath }}
             - name: POSTGRES_DB_MAX_CONNECTIONS
               value: {{ default 100 .Values.tilerDb.env.POSTGRES_DB_MAX_CONNECTIONS | quote }}
+            - name: POSTGRES_DB_SHARED_BUFFERS
+              value: {{ default "128MB" .Values.tilerDb.env.POSTGRES_DB_SHARED_BUFFERS | quote }}
+            - name: POSTGRES_DB_WORK_MEM
+              value: {{ default "4MB" .Values.tilerDb.env.POSTGRES_DB_WORK_MEM | quote }}
+            - name: POSTGRES_DB_MAINTENANCE_WORK_MEM
+              value: {{ default "64MB" .Values.tilerDb.env.POSTGRES_DB_MAINTENANCE_WORK_MEM | quote }}
+            - name: POSTGRES_DB_EFFECTIVE_CACHE_SIZE
+              value: {{ default "4GB" .Values.tilerDb.env.POSTGRES_DB_EFFECTIVE_CACHE_SIZE | quote }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
           livenessProbe:
