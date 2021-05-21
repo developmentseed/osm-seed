@@ -1,4 +1,5 @@
 {{- if .Values.tilerServer.enabled -}}
+{{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "file" }}
 {{- if .Values.tilerServer.persistenceDisk.enabled -}}
 apiVersion: v1
 kind: PersistentVolume
@@ -54,5 +55,6 @@ spec:
       {{- if eq .Values.cloudProvider "gcp" }}
       storage: {{ .Values.tilerServer.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
