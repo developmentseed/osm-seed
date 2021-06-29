@@ -164,7 +164,7 @@ while "$flag" = true; do
         -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" | sed -n 3p | sed 's/ //g')
         # After import there are more than 70 tables
         echo "$hasData tables in the DB"
-        if ([ $hasData  \> 70 ] && [[ ! -f /mnt/data/init_done ]]); then
+        if ([ $hasData  \> 70 ] && [[ -f /mnt/data/init_done ]]); then
             echo "Update the DB with osm data"
             updateData
         else
