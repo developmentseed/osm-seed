@@ -93,7 +93,7 @@ function updateData(){
     else 
         # OverWrite the last.state.txt file with REPLICATION_URL and sequenceNumber=0
         echo "timestamp=0001-01-01T00\:00\:00Z 
-        sequenceNumber=0
+        sequenceNumber=$SEQUENCE_NUMBER
         replicationUrl=$REPLICATION_URL" > $diffdir/last.state.txt
     fi
 
@@ -164,7 +164,7 @@ while "$flag" = true; do
         -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" | sed -n 3p | sed 's/ //g')
         # After import there are more than 70 tables
         echo "$hasData tables in the DB"
-        if ([ $hasData  \> 70 ] && [[ ! -f /mnt/data/init_done ]]); then
+        if ([ $hasData  \> 70 ] && [[ -f /mnt/data/init_done ]]); then
             echo "Update the DB with osm data"
             updateData
         else
