@@ -62,7 +62,7 @@ function generateReplication () {
 				fi
 			fi
 		done
-		sleep 30s
+		sleep 15s
 	done
 }
 
