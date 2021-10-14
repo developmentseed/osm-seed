@@ -19,6 +19,7 @@ postgres-gis-data/
 tiler-imposm-data/
 tiler-server-data/
 nominatim-pgdata/
+taginfo-data/
 data/
 *.osm
 *.pbf
