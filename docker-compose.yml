@@ -4,220 +4,237 @@ services:
   ######################################################
   ### OSM API and Database section
   ######################################################
-  web:
-    image: osmseed-web:v1
-    build:
-      context: ./images/web
-      dockerfile: Dockerfile
-    ports:
-      - '80:80'
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-  db:
-    image: osmseed-db:v1
-    build:
-      context: ./images/db
-      dockerfile: Dockerfile
-    ports:
-      - '5432:5432'
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-    env_file:
-      - ./.env
-  ######################################################
-  ### Planet replication section 
-  ######################################################
-  planet-dump:
-    image: osmseed-planet-dump:v1
-    build:
-      context: ./images/planet-dump
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-    volumes:
-      - ./planet-dump-data:/app
-    command: >
-      /bin/bash -c "
-      echo Sleep the planet-dump for a while!;
-      sleep 40;
-      echo Creating the planet-dump!;
-      ./start.sh"
-    env_file:
-      - ./.env
-  ######################################################
-  ### OSM Database backup and restore section
-  ######################################################
-  db-backup-restore:
-    image: osmseed-backup-restore:v1
-    build:
-      context: ./images/backup-restore
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while!;
-      sleep 20;
-      echo Building backup!;
-      ./start.sh"
-    env_file:
-      - ./.env
-  ######################################################
-  ### OSM minute replication files section
-  ######################################################
-  replication-job:
-    image: osmseed-replication-job:v1
-    build:
-      context: ./images/replication-job
-      dockerfile: Dockerfile
-    volumes:
-      - ./replication-job:/mnt/data
-    depends_on:
-      - db
-    command: >
-      /bin/bash -c "
-      echo Sleep the replication-job for a while!;
-      sleep 40;
-      echo Creating the replication-job!;
-      ./start.sh"
-    env_file:
-      - ./.env
-  ######################################################
-  ### OSM data restoring into the database
-  ######################################################
-  populate-apidb:
-    image: osmseed-populate-apidb:v1
-    build:
-      context: ./images/populate-apidb
-      dockerfile: Dockerfile
-    volumes:
-      - ./populate-apidb-data:/app/data
-    depends_on:
-      - db
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while populate-apidb!;
-      sleep 70s;
-      echo Starting populate-apidb!;
-      ./start.sh"
-    env_file:
-      - ./.env
-  osm-processor:
-    image: osmseed-osm-processor:v1
-    build:
-      context: ./images/osm-processor
-      dockerfile: Dockerfile
-    env_file:
-      - ./.env
-  ######################################################
-  ### OSM full planet replication
-  ######################################################
-  full-history:
-    image: osmseed-full-history:v1
-    build:
-      context: ./images/full-history
-      dockerfile: Dockerfile
-    depends_on:
-      - web
-      - db
-    volumes:
-      - ./full-history-data:/mnt/data
-    command: >
-      /bin/bash -c "
-      echo Sleep full-history for a while!;
-      sleep 40;
-      echo Starting full-history!;
-      ./start.sh"
-    env_file:
-      - ./.env
-  ######################################################
-  ### Tiler server(tegola), Database and  imposm section
-  ######################################################
-  tiler-db:
-    image: osmseed-tiler-db:v1
-    build: 
-      context: ./images/tiler-db
-      dockerfile: Dockerfile
-    ports:
-      -  "5433:5432"
-    volumes:
-      - ./postgres-gis-data:/var/lib/postgresql/data
-    env_file:
-      - ./.env-tiler
-  tiler-imposm:
-    image: osmseed-tiler-imposm:v1
-    build: 
-      context: ./images/tiler-imposm
-      dockerfile: Dockerfile
-    volumes:
-      - ./tiler-imposm-data:/mnt/data
-    depends_on:
-      - tiler-db
-    env_file: 
-      - ./.env-tiler
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while!;
-      sleep 20;
-      echo starting imposm!;
-      ./start.sh"
-  tiler-server:
-    image: osmseed-tiler-server:v1
-    build: 
-      context: ./images/tiler-server
-      dockerfile: Dockerfile
-    volumes:
-      - ./tiler-server-data:/mnt/data
-    depends_on:
-      - tiler-db
-      - tiler-imposm
-    ports:
-      - "9090:9090"
-    command: >
-      /bin/bash -c "
-      echo Sleep for a while!;
-      sleep 100;
-      echo Starting tiles server!;
-      ./start.sh"
-  ######################################################
-  ### Nominatim section
-  ######################################################
-  nominatim-db:
-    image: nominatim-db:v1
-    build:
-      context: ./images/nominatim
-      dockerfile: Dockerfile
-    ports:
-      - '6432:5432'
-    volumes:
-      - ./nominatim-pgdata:/var/lib/postgresql/data
-    env_file:
-      - ./.env-nominatim
-    command: >
-      /bin/bash -c "sh /app/start.sh"
-  nominatim-api:
-    image: nominatim-api:v1
-    build:
-      context: ./images/nominatim
-      dockerfile: Dockerfile
-    ports:
-      - '7070:8080'
-    env_file:
-      - ./.env-nominatim
-    entrypoint: sh /app/startapache.sh
+  # web:
+  #   image: osmseed-web:v1
+  #   build:
+  #     context: ./images/web
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '80:80'
+  #   env_file:
+  #     - ./.env
+  #   depends_on:
+  #     - db
+  # db:
+  #   image: osmseed-db:v1
+  #   build:
+  #     context: ./images/db
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '5432:5432'
+  #   volumes:
+  #     - ./postgres-data:/var/lib/postgresql/data
+  #   env_file:
+  #     - ./.env
+  # ######################################################
+  # ### Planet replication section 
+  # ######################################################
+  # planet-dump:
+  #   image: osmseed-planet-dump:v1
+  #   build:
+  #     context: ./images/planet-dump
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - ./planet-dump-data:/app
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep the planet-dump for a while!;
+  #     sleep 40;
+  #     echo Creating the planet-dump!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env
+  # ######################################################
+  # ### OSM Database backup and restore section
+  # ######################################################
+  # db-backup-restore:
+  #   image: osmseed-backup-restore:v1
+  #   build:
+  #     context: ./images/backup-restore
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - db
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while!;
+  #     sleep 20;
+  #     echo Building backup!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env
+  # ######################################################
+  # ### OSM minute replication files section
+  # ######################################################
+  # replication-job:
+  #   image: osmseed-replication-job:v1
+  #   build:
+  #     context: ./images/replication-job
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./replication-job:/mnt/data
+  #   depends_on:
+  #     - db
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep the replication-job for a while!;
+  #     sleep 40;
+  #     echo Creating the replication-job!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env
+  # ######################################################
+  # ### OSM data restoring into the database
+  # ######################################################
+  # populate-apidb:
+  #   image: osmseed-populate-apidb:v1
+  #   build:
+  #     context: ./images/populate-apidb
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./populate-apidb-data:/app/data
+  #   depends_on:
+  #     - db
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while populate-apidb!;
+  #     sleep 70s;
+  #     echo Starting populate-apidb!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env
+  # osm-processor:
+  #   image: osmseed-osm-processor:v1
+  #   build:
+  #     context: ./images/osm-processor
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./.env
+  # ######################################################
+  # ### OSM full planet replication
+  # ######################################################
+  # full-history:
+  #   image: osmseed-full-history:v1
+  #   build:
+  #     context: ./images/full-history
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - web
+  #     - db
+  #   volumes:
+  #     - ./full-history-data:/mnt/data
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep full-history for a while!;
+  #     sleep 40;
+  #     echo Starting full-history!;
+  #     ./start.sh"
+  #   env_file:
+  #     - ./.env
+  # ######################################################
+  # ### Tiler server(tegola), Database and  imposm section
+  # ######################################################
+  # tiler-db:
+  #   image: osmseed-tiler-db:v1
+  #   build: 
+  #     context: ./images/tiler-db
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     -  "5433:5432"
+  #   volumes:
+  #     - ./postgres-gis-data:/var/lib/postgresql/data
+  #   env_file:
+  #     - ./.env-tiler
+  # tiler-imposm:
+  #   image: osmseed-tiler-imposm:v1
+  #   build: 
+  #     context: ./images/tiler-imposm
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./tiler-imposm-data:/mnt/data
+  #   depends_on:
+  #     - tiler-db
+  #   env_file: 
+  #     - ./.env-tiler
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while!;
+  #     sleep 20;
+  #     echo starting imposm!;
+  #     ./start.sh"
+  # tiler-server:
+  #   image: osmseed-tiler-server:v1
+  #   build: 
+  #     context: ./images/tiler-server
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./tiler-server-data:/mnt/data
+  #   depends_on:
+  #     - tiler-db
+  #     - tiler-imposm
+  #   ports:
+  #     - "9090:9090"
+  #   command: >
+  #     /bin/bash -c "
+  #     echo Sleep for a while!;
+  #     sleep 100;
+  #     echo Starting tiles server!;
+  #     ./start.sh"
+  # ######################################################
+  # ### Nominatim section
+  # ######################################################
+  # nominatim-db:
+  #   image: nominatim-db:v1
+  #   build:
+  #     context: ./images/nominatim
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '6432:5432'
+  #   volumes:
+  #     - ./nominatim-pgdata:/var/lib/postgresql/data
+  #   env_file:
+  #     - ./.env-nominatim
+  #   command: >
+  #     /bin/bash -c "sh /app/start.sh"
+  # nominatim-api:
+  #   image: nominatim-api:v1
+  #   build:
+  #     context: ./images/nominatim
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '7070:8080'
+  #   env_file:
+  #     - ./.env-nominatim
+  #   entrypoint: sh /app/startapache.sh
+  # ######################################################
+  # ### Overpass API section
+  # ######################################################
+  # overpass-api:
+  #   image: osmseed-overpass-api:v1
+  #   build:
+  #     context: ./images/overpass-api
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '8081:80'
+  #   volumes:
+  #     - ./overpass-api-db:/db
+  #   env_file:
+  #     - ./.env-overpass
   ######################################################
   ### Overpass API section
   ######################################################
-  overpass-api:
-    image: osmseed-overpass-api:v1
+  taginfo:
+    image: osmseed-taginfo:v1
     build:
-      context: ./images/overpass-api
+      context: ./images/taginfo
       dockerfile: Dockerfile
     ports:
-      - '8081:80'
+      - '4567:4567'
     volumes:
-      - ./overpass-api-db:/db
+      - ./taginfo-data:/apps/data/
     env_file:
       - ./.env-overpass
+    # command: >
+    #   /bin/bash -c "
+    #   ruby test.rb "

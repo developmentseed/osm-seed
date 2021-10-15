@@ -1,7 +1,8 @@
 FROM ruby:2.7
 RUN apt-get update
-ENV workdir /var/www
+ENV workdir /apps
 
+# Install Taginfo site
 RUN apt-get -y install \
     curl \
     sqlite3 \
@@ -10,13 +11,33 @@ RUN apt-get -y install \
     libapache2-mod-passenger \
     git
 
-RUN git clone https://github.com/taginfo/taginfo.git $workdir
-WORKDIR $workdir
+RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo
+WORKDIR $workdir/taginfo
 RUN echo "gem 'thin' " >>Gemfile
 RUN gem install bundler
 RUN bundle install
-# Copy config file
-COPY config/taginfo-config.json /var/
-EXPOSE 4567
-WORKDIR $workdir/web
+
+# # Install Taginfo tools
+RUN apt-get -y install \
+    cmake \
+    libbz2-dev \
+    libexpat1-dev \
+    libgd-dev \
+    libicu-dev \
+    libosmium2-dev \
+    libprotozero-dev \
+    libsqlite3-dev \
+    make \
+    zlib1g-dev
+
+RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools
+WORKDIR $workdir/taginfo-tools
+RUN git submodule update --init
+RUN  mkdir build && cd build && cmake .. && make
+RUN ctest
+
+COPY config/taginfo-config.json $workdir/
+COPY update_all.sh $workdir/taginfo/sources/
+
+WORKDIR $workdir/taginfo/web
 CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4567"]
