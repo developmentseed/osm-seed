@@ -141,8 +141,26 @@ memcached:
 idEditor:
   enabled: false
 
+# ====================================================================================================
+# Variables for full-history container
+# ====================================================================================================
 fullHistory:
-  enabled: false
+  enabled: true
+  nodeSelector:
+    enabled: true
+    label_key: nodegroup-type
+    label_value: ohm-non-tiler
+  schedule: '* */24 * * *'
+  env:
+    OVERWRITE_FHISTORY_FILE: false
+  resources:
+    enabled: false
+    requests:
+      memory: "14Gi"
+      cpu: "4"
+    limits:
+      memory: "16Gi"
+      cpu: "4"
 
 # ====================================================================================================
 # Variables for osm-seed database backup and restore
