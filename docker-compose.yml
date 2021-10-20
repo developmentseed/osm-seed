@@ -234,7 +234,7 @@ services:
     volumes:
       - ./taginfo-data:/apps/data/
     env_file:
-      - ./.env-overpass
+      - ./.env-taginfo
     command: >
       /bin/bash -c "
       ./start.sh"

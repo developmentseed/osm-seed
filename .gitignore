@@ -3,6 +3,7 @@
 .env-nominatim
 .env-tasking-manager
 .env-overpass
+.env-taginfo
 .DS_Store
 
 usa.values.yaml
