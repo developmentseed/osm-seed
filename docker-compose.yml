@@ -235,6 +235,6 @@ services:
       - ./taginfo-data:/apps/data/
     env_file:
       - ./.env-overpass
-    # command: >
-    #   /bin/bash -c "
-    #   ruby test.rb "
+    command: >
+      /bin/bash -c "
+      ./start.sh"

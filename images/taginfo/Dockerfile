@@ -1,9 +1,8 @@
 FROM ruby:2.7
-RUN apt-get update
 ENV workdir /apps
 
 # Install Taginfo site
-RUN apt-get -y install \
+RUN apt-get update && apt-get -y install \
     curl \
     sqlite3 \
     sqlite3-pcre \
@@ -28,7 +27,9 @@ RUN apt-get -y install \
     libprotozero-dev \
     libsqlite3-dev \
     make \
-    zlib1g-dev
+    zlib1g-dev \
+    jq \
+    ca-certificates
 
 RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools
 WORKDIR $workdir/taginfo-tools
@@ -36,8 +37,8 @@ RUN git submodule update --init
 RUN  mkdir build && cd build && cmake .. && make
 RUN ctest
 
-COPY config/taginfo-config.json $workdir/
-COPY update_all.sh $workdir/taginfo/sources/
+COPY start.sh $workdir/
+WORKDIR $workdir/
 
-WORKDIR $workdir/taginfo/web
-CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4567"]
+# WORKDIR $workdir/taginfo/web
+# CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4567"]
