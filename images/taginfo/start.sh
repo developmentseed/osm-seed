@@ -34,7 +34,8 @@ grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
 # ### Update local DB
 # ##################################################################
 
-sed -i -e 's/set -euo pipefail/set -x -euo pipefail/g' /apps/taginfo/sources/db/../util.sh
+# The follow line is requiered to avoid issue: require cannot load such file -- sqlite3 
+sed -i -e 's/run_ruby "$SRCDIR/update_characters.rb"/ruby "$SRCDIR/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
 $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
 
 # ##################################################################
@@ -42,5 +43,7 @@ $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
 # ##################################################################
 
 mv $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
-# mv $UPDATE_DIR/download/* $DOWNLOAD_DIR
+mv $UPDATE_DIR/taginfo-*.db $DATA_DIR/
+mv $UPDATE_DIR/download/* $DOWNLOAD_DIR
+
 cd $WORKDIR/taginfo/web && bundle exec rackup --host 0.0.0.0 -p 4567
