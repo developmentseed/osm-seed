@@ -34,8 +34,8 @@ grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
 # ### Update local DB
 # ##################################################################
 
-# The follow line is requiered to avoid issue: require cannot load such file -- sqlite3 
-sed -i -e 's/run_ruby "$SRCDIR/update_characters.rb"/ruby "$SRCDIR/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
+# The follow line is requiered to avoid issue: require cannot load such file -- sqlite3
+sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
 $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
 
 # ##################################################################
