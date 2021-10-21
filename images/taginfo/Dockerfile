@@ -37,6 +37,7 @@ RUN git submodule update --init
 RUN  mkdir build && cd build && cmake .. && make
 RUN ctest
 
+# COPY config/taginfo-config.json $workdir/
 COPY start.sh $workdir/
 WORKDIR $workdir/
 
