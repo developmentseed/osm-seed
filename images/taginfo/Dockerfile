@@ -48,9 +48,6 @@ RUN ctest
 
 # COPY config/taginfo-config.json $workdir/
 COPY start.sh $workdir/
-COPY update.sh $workdir/
-
 WORKDIR $workdir/
-
 # WORKDIR $workdir/taginfo/web
 # CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4567"]
