@@ -16,7 +16,7 @@ RUN echo "gem 'thin' " >>Gemfile
 RUN gem install bundler
 RUN bundle install
 
-# # Install Taginfo tools
+# Install Taginfo tools
 RUN apt-get -y install \
     cmake \
     libbz2-dev \
@@ -31,6 +31,15 @@ RUN apt-get -y install \
     jq \
     ca-certificates
 
+# Other useful packages
+RUN apt-get install -y \
+    git \
+    osmium-tool \
+    pyosmium \
+    rsync \
+    tmux \
+    zsh
+
 RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools
 WORKDIR $workdir/taginfo-tools
 RUN git submodule update --init
@@ -39,6 +48,8 @@ RUN ctest
 
 # COPY config/taginfo-config.json $workdir/
 COPY start.sh $workdir/
+COPY update.sh $workdir/
+
 WORKDIR $workdir/
 
 # WORKDIR $workdir/taginfo/web

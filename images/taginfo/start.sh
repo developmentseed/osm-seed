@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
+set -x
+# -euo pipefail
+
 WORKDIR=/apps
 DATA_DIR=$WORKDIR/data
 UPDATE_DIR=$DATA_DIR/update
 DOWNLOAD_DIR=$DATA_DIR/download
-
 mkdir -p $UPDATE_DIR
 mkdir -p $DATA_DIR
 mkdir -p $DOWNLOAD_DIR
-mkdir -p $UPDATE_DIR/planet/
 
 ##################################################################
 ### Update dir values in taginfo-config.json
@@ -23,27 +24,41 @@ grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
     jq '.paths.data_dir                      = "'$DATA_DIR'"' \
         >$WORKDIR/taginfo-config.json
 
-# ##################################################################
-# ### Download OSM planet replication and full-history files
-# ##################################################################
+function update() {
+    echo "Download and update pbf files at $(date +%Y-%m-%d:%H-%M)"
 
-[ ! -f $UPDATE_DIR/planet/planet.osm.pbf ] && wget --no-check-certificate -O $UPDATE_DIR/planet/planet.osm.pbf $URL_PLANET_FILE
-[ ! -f $UPDATE_DIR/planet/history-planet.osh.pbf ] && wget --no-check-certificate -O $UPDATE_DIR/planet/history-planet.osh.pbf $URL_HISTORY_PLANET_FILE
+    # ### Download OSM planet replication and full-history files
+    mkdir -p $UPDATE_DIR/planet/
+    [ ! -f $UPDATE_DIR/planet/planet.osm.pbf ] && wget --no-check-certificate -O $UPDATE_DIR/planet/planet.osm.pbf $URL_PLANET_FILE
+    [ ! -f $UPDATE_DIR/planet/history-planet.osh.pbf ] && wget --no-check-certificate -O $UPDATE_DIR/planet/history-planet.osh.pbf $URL_HISTORY_PLANET_FILE
 
-# ##################################################################
-# ### Update local DB
-# ##################################################################
+    # ### Update pbf files ussing replication files
+    pyosmium-up-to-date \
+        -v \
+        --size 5000 \
+        --server $REPLICATION_SERVER \
+        $UPDATE_DIR/planet/history-planet.osh.pbf
 
-# The follow line is requiered to avoid issue: require cannot load such file -- sqlite3
-sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
-$WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
+    pyosmium-up-to-date \
+        -v \
+        --size 5000 \
+        --server $REPLICATION_SERVER \
+        $UPDATE_DIR/planet/planet.osm.pbf
 
-# ##################################################################
-# ### Start taginfo service
-# ##################################################################
+    # The follow line is requiered to avoid issue: require cannot load such file -- sqlite3
+    sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
 
-mv $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
-mv $UPDATE_DIR/taginfo-*.db $DATA_DIR/
-mv $UPDATE_DIR/download/* $DOWNLOAD_DIR
+    # ### Update local DB
+    $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
+    # Move files to the folder /apps/data/
+    mv $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
+    mv $UPDATE_DIR/taginfo-*.db $DATA_DIR/
+    mv $UPDATE_DIR/download/* $DOWNLOAD_DIR
+}
 
-cd $WORKDIR/taginfo/web && bundle exec rackup --host 0.0.0.0 -p 4567
+# # ### Start taginfo service and update the db
+cd $WORKDIR/taginfo/web && bundle exec rackup --host 0.0.0.0 -p 4567 &
+while true; do
+    update
+    sleep $TIME_UPDATE_INTERVAL
+done
