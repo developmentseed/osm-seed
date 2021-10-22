@@ -24,6 +24,8 @@ grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
     jq '.paths.data_dir                      = "'$DATA_DIR'"' \
         >$WORKDIR/taginfo-config.json
 
+echo $WORKDIR/taginfo-config.json
+cat $WORKDIR/taginfo-config.json
 update() {
     echo "Download and update pbf files at $(date +%Y-%m-%d:%H-%M)"
 
@@ -53,10 +55,14 @@ update() {
     # Move files to the folder /apps/data/
     mv $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
     mv $UPDATE_DIR/taginfo-*.db $DATA_DIR/
-    mv $UPDATE_DIR/download/* $DOWNLOAD_DIR
+
+    # Link download folder
+    chmod a=r $UPDATE_DIR/download
+    ln -sf $UPDATE_DIR/download $WORKDIR/taginfo/web/public/download
 }
 
 start_web() {
+    echo "Start taginfo..."
     cd $WORKDIR/taginfo/web && bundle exec rackup --host 0.0.0.0 -p 4567
 }
 
@@ -70,7 +76,6 @@ continuous_update() {
 main() {
     # check if db files are store in the $DATA_DIR
     NUM_DB_FILES=$(ls $DATA_DIR/*.db | wc -l)
-    echo $NUM_DB_FILES
     if [ $NUM_DB_FILES -lt 7 ]; then
         update
     fi
