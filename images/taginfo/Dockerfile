@@ -44,10 +44,7 @@ RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tool
 WORKDIR $workdir/taginfo-tools
 RUN git submodule update --init
 RUN  mkdir build && cd build && cmake .. && make
-RUN ctest
 
-# COPY config/taginfo-config.json $workdir/
 COPY start.sh $workdir/
 WORKDIR $workdir/
-# WORKDIR $workdir/taginfo/web
-# CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4567"]
+CMD $workdir/start.sh
