@@ -24,10 +24,13 @@ grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
 [[ ! -z $INSTANCE_ICON+z} ]] && jq --arg a "${INSTANCE_ICON}" '.instance.icon = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
 [[ ! -z $INSTANCE_CONTACT+z} ]] && jq --arg a "${INSTANCE_CONTACT}" '.instance.contact = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
 
+# Update DBs to create
+[[ ! -z $DOWNLOAD_DB+z} ]] && jq --arg a "${DOWNLOAD_DB}" '.sources.download = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+[[ ! -z $CREATE_DB+z} ]] && jq --arg a "${CREATE_DB}" '.sources.create = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+
 # Function to replace the repo to get the projects information
-# TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
-# sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
-git clone --quiet --depth=1 $TAGINFO_PROJECT_REPO "$UPDATE_DIR/taginfo-projects"
+TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
+sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
 
 # The follow line is requiered to avoid an issue -> require cannot load such file -- sqlite3
 sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
