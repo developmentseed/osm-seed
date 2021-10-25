@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+# set -x
 
 WORKDIR=/apps
 DATA_DIR=$WORKDIR/data
@@ -25,8 +25,9 @@ grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
 [[ ! -z $INSTANCE_CONTACT+z} ]] && jq --arg a "${INSTANCE_CONTACT}" '.instance.contact = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
 
 # Function to replace the repo to get the projects information
-TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
-sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
+# TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
+# sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
+git clone --quiet --depth=1 $TAGINFO_PROJECT_REPO "$UPDATE_DIR/taginfo-projects"
 
 # The follow line is requiered to avoid an issue -> require cannot load such file -- sqlite3
 sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
@@ -54,8 +55,8 @@ update() {
 
     # Update local DB
     $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
-    mv $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
-    mv $UPDATE_DIR/taginfo-*.db $DATA_DIR/
+    cp $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
+    cp $UPDATE_DIR/taginfo-*.db $DATA_DIR/
 
     # Link to download db zip files
     chmod a=r $UPDATE_DIR/download

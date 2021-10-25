@@ -45,6 +45,7 @@ WORKDIR $workdir/taginfo-tools
 RUN git submodule update --init
 RUN  mkdir build && cd build && cmake .. && make
 
+RUN apt-get install -y nano vim
 COPY start.sh $workdir/
 WORKDIR $workdir/
 CMD $workdir/start.sh
