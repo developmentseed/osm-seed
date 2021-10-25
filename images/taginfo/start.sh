@@ -61,8 +61,8 @@ update() {
 
     # Update local DB
     $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
-    cp $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
-    cp $UPDATE_DIR/taginfo-*.db $DATA_DIR/
+    mv $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
+    mv $UPDATE_DIR/taginfo-*.db $DATA_DIR/
 
     # Link to download db zip files
     chmod a=r $UPDATE_DIR/download
