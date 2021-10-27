@@ -14,6 +14,8 @@ charts:
         valuesPath: dbBackupRestore.image
       planet-dump:
         valuesPath: planetDump.image
+      full-history:
+        valuesPath: fullHistory.image
       replication-job:
         valuesPath: replicationJob.image
       populate-apidb:

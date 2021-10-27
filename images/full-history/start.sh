@@ -8,15 +8,17 @@ else
 	echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" >~/.osmosis
 fi
 
-# Fixing name for file
+# Fixing name for historical file
 date=$(date '+%y%m%d_%H%M')
-fullHistoryFile=history-${date}.osm.bz2
+fullHistoryFile=history-${date}.osh.pbf
 # In case overwrite the file
 if [ "$OVERWRITE_FHISTORY_FILE" == "true" ]; then
-	fullHistoryFile=history-latest.osm.bz2
+	fullHistoryFile=history-latest.osh.pbf
 fi
-# State file
+
+# State file nname
 stateFile="state.txt"
+osm_tmp_file="osm_tmp.osm"
 
 # Creating full history
 osmosis --read-apidb-change \
@@ -26,21 +28,25 @@ osmosis --read-apidb-change \
 	password=$POSTGRES_PASSWORD \
 	validateSchemaVersion=no \
 	readFullHistory=yes \
-  	--write-xml-change \
-	compressionMethod=bzip2 \
-	$fullHistoryFile
+	--write-xml-change \
+	compressionMethod=auto \
+	$osm_tmp_file
+
+# Convert file to PBF file
+osmium cat $osm_tmp_file -o $fullHistoryFile
+osmium fileinfo $fullHistoryFile
 
 # AWS
 if [ $CLOUDPROVIDER == "aws" ]; then
-	echo "https://$AWS_S3_BUCKET.s3.amazonaws.com/planet/full-history/$fullHistoryFile" > $stateFile
+	echo "https://$AWS_S3_BUCKET.s3.amazonaws.com/planet/full-history/$fullHistoryFile" >$stateFile
 	# Upload to S3
-	aws s3 cp $fullHistoryFile $AWS_S3_BUCKET/planet/full-history/$fullHistoryFile --acl public-read 
-	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read 
+	aws s3 cp $fullHistoryFile $AWS_S3_BUCKET/planet/full-history/$fullHistoryFile --acl public-read
+	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read
 fi
 
 # Google Storage
 if [ $CLOUDPROVIDER == "gcp" ]; then
-	echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/planet/full-history/$fullHistoryFile" > $stateFile
+	echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/planet/full-history/$fullHistoryFile" >$stateFile
 	# Upload to GS
 	gsutil cp -a public-read $fullHistoryFile $GCP_STORAGE_BUCKET/planet/full-history/$fullHistoryFile
 	gsutil cp -a public-read $stateFile $GCP_STORAGE_BUCKET/planet/full-history/$stateFile
