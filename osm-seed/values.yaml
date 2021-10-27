@@ -146,6 +146,9 @@ idEditor:
 # ====================================================================================================
 fullHistory:
   enabled: true
+  image:
+    name: ''
+    tag: ''
   nodeSelector:
     enabled: true
     label_key: nodegroup-type
