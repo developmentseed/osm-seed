@@ -113,13 +113,12 @@ RUN /usr/sbin/passenger-memory-stats
 RUN rm -rf $workdir
 RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
 WORKDIR $workdir
+# Gitsha for current live site https://github.com/openstreetmap/openstreetmap-website/commits/live at Apr 10, 2020
 RUN git checkout --force 8199002a0fd83a6eec91764bcec9e9e8705c7e5d
-# RUN git checkout master
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
 RUN echo "gem 'mini_racer'" >> Gemfile
-
 RUN gem install nokogiri -- --use-system-libraries
 
 RUN apt-get install -y cargo
@@ -153,8 +152,6 @@ ADD config/action_mailer.rb config/initializers/action_mailer.rb
 
 # Precompile the website assets
 RUN apt-get install -y tzdata
-# gem install tzinfo-data
-
 RUN npm install yarn -g
 RUN bundle exec rake yarn:install
 RUN bundle exec rake i18n:js:export
