@@ -113,6 +113,7 @@ RUN /usr/sbin/passenger-memory-stats
 RUN rm -rf $workdir
 RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
 WORKDIR $workdir
+RUN git checkout --force 8199002a0fd83a6eec91764bcec9e9e8705c7e5d
 # RUN git checkout master
 
 # Install the javascript runtime required by the `execjs` gem in
@@ -121,8 +122,13 @@ RUN echo "gem 'mini_racer'" >> Gemfile
 
 RUN gem install nokogiri -- --use-system-libraries
 
+RUN apt-get install -y cargo
+RUN git clone https://github.com/shssoichiro/oxipng.git
+RUN cd oxipng && cargo build --release && cp target/release/oxipng /usr/local/bin
+
 # Install app dependencies
-RUN bundle install
+RUN bundle update mimemagic
+RUN bundle update listen && bundle install
 RUN gem install rake
 
 # update vendored iD
@@ -152,6 +158,7 @@ RUN apt-get install -y tzdata
 RUN npm install yarn -g
 RUN bundle exec rake yarn:install
 RUN bundle exec rake i18n:js:export
+RUN  sed -i -e 's/config.assets.js_compressor = :uglifier/config.assets.js_compressor = Uglifier.new(:harmony => true)/g' $workdir/config/environments/production.rb
 RUN bundle exec rake assets:precompile
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
