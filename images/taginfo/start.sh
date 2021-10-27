@@ -5,64 +5,70 @@ DATA_DIR=$WORKDIR/data
 UPDATE_DIR=$DATA_DIR/update
 DOWNLOAD_DIR=$DATA_DIR/download
 
-# Update dir values in taginfo-config.json
-grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
-    jq '.logging.directory                   = "'$UPDATE_DIR'/log"' |
-    jq '.paths.download_dir                  = "'$UPDATE_DIR'/download"' |
-    jq '.paths.bin_dir                       = "'$WORKDIR'/taginfo-tools/build/src"' |
-    jq '.sources.db.planetfile               = "'$UPDATE_DIR'/planet/planet.osm.pbf"' |
-    jq '.sources.chronology.osm_history_file = "'$UPDATE_DIR'/planet/history-planet.osh.pbf"' |
-    jq '.sources.db.bindir                   = "'$UPDATE_DIR'/build/src"' |
-    jq '.paths.data_dir                      = "'$DATA_DIR'"' \
-        >$WORKDIR/taginfo-config.json
+set_taginfo_config() {
+    echo "Setting up $WORKDIR/taginfo-config.json file ..."
 
-# Update instance values in taginfo-config.json
-[[ ! -z ${INSTANCE_URL+z} ]] && jq --arg a "${INSTANCE_URL}" '.instance.url = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
-[[ ! -z $INSTANCE_NAME+z} ]] && jq --arg a "${INSTANCE_NAME}" '.instance.name = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
-[[ ! -z $INSTANCE_DESCRIPTION+z} ]] && jq --arg a "${INSTANCE_DESCRIPTION}" '.instance.description = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
-[[ ! -z $INSTANCE_ICON+z} ]] && jq --arg a "${INSTANCE_ICON}" '.instance.icon = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
-[[ ! -z $INSTANCE_CONTACT+z} ]] && jq --arg a "${INSTANCE_CONTACT}" '.instance.contact = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+    # Update dir values in taginfo-config.json
+    grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
+        jq '.logging.directory                   = "'$UPDATE_DIR'/log"' |
+        jq '.paths.download_dir                  = "'$UPDATE_DIR'/download"' |
+        jq '.paths.bin_dir                       = "'$WORKDIR'/taginfo-tools/build/src"' |
+        jq '.sources.db.planetfile               = "'$UPDATE_DIR'/planet/planet.osm.pbf"' |
+        jq '.sources.chronology.osm_history_file = "'$UPDATE_DIR'/planet/history-planet.osh.pbf"' |
+        jq '.sources.db.bindir                   = "'$UPDATE_DIR'/build/src"' |
+        jq '.paths.data_dir                      = "'$DATA_DIR'"' \
+            >$WORKDIR/taginfo-config.json
 
+    # Update instance values in taginfo-config.json
+    [[ ! -z ${INSTANCE_URL+z} ]] && jq --arg a "${INSTANCE_URL}" '.instance.url = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+    [[ ! -z $INSTANCE_NAME+z} ]] && jq --arg a "${INSTANCE_NAME}" '.instance.name = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+    [[ ! -z $INSTANCE_DESCRIPTION+z} ]] && jq --arg a "${INSTANCE_DESCRIPTION}" '.instance.description = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+    [[ ! -z $INSTANCE_ICON+z} ]] && jq --arg a "${INSTANCE_ICON}" '.instance.icon = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+    [[ ! -z $INSTANCE_CONTACT+z} ]] && jq --arg a "${INSTANCE_CONTACT}" '.instance.contact = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
 
-# Update DBs to create
-[[ ! -z $DOWNLOAD_DB+z} ]] && jq --arg a "${DOWNLOAD_DB}" '.sources.download = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
-[[ ! -z $CREATE_DB+z} ]] && jq --arg a "${CREATE_DB}" '.sources.create = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+    # languages wiki databases will be downloaded from OSM
+    jq --arg a "languages wiki" '.sources.download = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+}
 
-# Function to replace the repo to get the projects information
-TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
-sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
+updates_create_db() {
+    local CREATE_DB="$1"
+    [[ ! -z $CREATE_DB+z} ]] && jq --arg a "${CREATE_DB}" '.sources.create = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
+}
 
-# The follow line is requiered to avoid an issue -> require cannot load such file -- sqlite3
-sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
-sed -i -e 's/run_ruby "$SRCDIR\/import.rb"/ruby "$SRCDIR\/import.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
-sed -i -e 's/run_ruby "$SRCDIR\/parse.rb"/ruby "$SRCDIR\/parse.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
-sed -i -e 's/run_ruby "$SRCDIR\/get_icons.rb"/ruby "$SRCDIR\/get_icons.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
+updates_source_code() {
+    echo "Updating source code, in order to make the code running..."
+
+    # Function to replace the projects repo to get the projects information
+    TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
+    sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
+
+    # The follow line is requiered to avoid sqlite3 issues
+    sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
+    sed -i -e 's/run_ruby "$SRCDIR\/import.rb"/ruby "$SRCDIR\/import.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
+    sed -i -e 's/run_ruby "$SRCDIR\/parse.rb"/ruby "$SRCDIR\/parse.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
+    sed -i -e 's/run_ruby "$SRCDIR\/get_icons.rb"/ruby "$SRCDIR\/get_icons.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
+}
 
 update() {
-    echo "Download and update pbf files at $(date +%Y-%m-%d:%H-%M)"
+    echo "Download and update pbf files at $(date +%Y-%m-%d:%H-%M)..."
 
-    # Download OSM planet replication and full-history files
+    # Download OSM planet replication and full-history files, 
+    # TODO: Download latest files,comparing with something like md5 decryption
     mkdir -p $UPDATE_DIR/planet/
     [ ! -f $UPDATE_DIR/planet/planet.osm.pbf ] && wget --no-check-certificate -O $UPDATE_DIR/planet/planet.osm.pbf $URL_PLANET_FILE
     [ ! -f $UPDATE_DIR/planet/history-planet.osh.pbf ] && wget --no-check-certificate -O $UPDATE_DIR/planet/history-planet.osh.pbf $URL_HISTORY_PLANET_FILE
 
-    # Update pbf files ussing replication files, TODO, fix the certification issue
-    # pyosmium-up-to-date \
-    #     -v \
-    #     --size 5000 \
-    #     --server $REPLICATION_SERVER \
-    #     $UPDATE_DIR/planet/history-planet.osh.pbf
-
-    # pyosmium-up-to-date \
-    #     -v \
-    #     --size 5000 \
-    #     --server $REPLICATION_SERVER \
-    #     $UPDATE_DIR/planet/planet.osm.pbf
-
-    # Update local DB
+    # Update local DB,twice, with different parameters,
+    # in order to make it work we need to pass first "db projects" and then "db projects chronology"
+    updates_create_db "db projects"
     $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
-    mv $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
-    mv $UPDATE_DIR/taginfo-*.db $DATA_DIR/
+
+    updates_create_db "db projects chronology"
+    $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
+
+    # Copy db files into data folder
+    cp $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
+    cp $UPDATE_DIR/taginfo-*.db $DATA_DIR/
 
     # Link to download db zip files
     chmod a=r $UPDATE_DIR/download
@@ -82,11 +88,12 @@ continuous_update() {
 }
 
 main() {
-    # Check if db files are store in the $DATA_DIR
+    set_taginfo_config
+    updates_source_code
+
+    # Check if db files are store in the $DATA_DIR in order to start the service or start procesing the file
     NUM_DB_FILES=$(ls $DATA_DIR/*.db | wc -l)
     if [ $NUM_DB_FILES -lt 7 ]; then
-        # We are changing the default values, we need to run update twice at the beginning
-        update
         update
     fi
     start_web &
