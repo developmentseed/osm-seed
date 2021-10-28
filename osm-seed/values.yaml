@@ -575,3 +575,35 @@ overpassApi:
       cpu: '2'
   nodeSelector:
     enabled: false
+# ====================================================================================================
+# Variables for taginfo
+# ====================================================================================================
+taginfo:
+  enabled: true
+  image:
+    name: ''
+    tag: ''
+  env:
+    URL_PLANET_FILE_STATE: https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/state.txt
+    URL_HISTORY_PLANET_FILE_STATE: https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/full-history/state.txt
+    URL_PLANET_FILE: https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/planet-200526_0000.osm.pbf
+    URL_HISTORY_PLANET_FILE: https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/full-history/history-200526_0000.osh.pbf
+    TIME_UPDATE_INTERVAL: 24h
+    INSTANCE_NAME: OHM Taginfo
+    INSTANCE_DESCRIPTION: "This is a <b>taginfo test instance</b>"
+    INSTANCE_ICON: /img/logo/world.png
+    INSTANCE_CONTACT: Anonymous
+    TAGINFO_PROJECT_REPO: https://github.com/taginfo/taginfo-projects.git
+    DOWNLOAD_DB: 'languages wiki'
+    CREATE_DB: 'db projects chronology'
+  resources:
+    enabled: false
+    requests:
+      memory: '1Gi'
+      cpu: '2'
+    limits:
+      memory: '2Gi'
+      cpu: '2'
+  nodeSelector:
+    enabled: false
+    
