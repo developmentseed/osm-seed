@@ -1,0 +1,76 @@
+{{- if .Values.taginfo.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-taginfo
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: web-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.taginfo.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-taginfo
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-taginfo
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-taginfo
+          image: "{{ .Values.taginfo.image.name }}:{{ .Values.taginfo.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
+            timeoutSeconds: 30
+          {{- if .Values.taginfo.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.taginfo.resources.requests.memory }}
+              cpu: {{ .Values.taginfo.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.taginfo.resources.limits.memory }}
+              cpu: {{ .Values.taginfo.resources.limits.cpu }}
+          {{- end }}
+          env:
+            - name: URL_PLANET_FILE_STATE
+              value: {{ .Values.taginfo.env.URL_PLANET_FILE_STATE }}
+            - name: URL_PLANET_FILE
+              value: {{ .Values.taginfo.env.URL_PLANET_FILE }}
+            - name: URL_HISTORY_PLANET_FILE_STATE
+              value: {{ .Values.taginfo.env.URL_HISTORY_PLANET_FILE_STATE }}
+            - name: URL_HISTORY_PLANET_FILE
+              value: {{ .Values.taginfo.env.URL_HISTORY_PLANET_FILE }}
+            - name: INSTANCE_URL
+              value: dns
+            - name: INSTANCE_NAME
+              value: {{ .Values.taginfo.env.INSTANCE_NAME }}
+            - name: INSTANCE_DESCRIPTION
+              value: {{ .Values.taginfo.env.INSTANCE_DESCRIPTION }}
+            - name: INSTANCE_ICON
+              value: {{ .Values.taginfo.env.INSTANCE_ICON }}
+            - name: INSTANCE_CONTACT
+              value: {{ .Values.taginfo.env.INSTANCE_CONTACT }}
+            - name: TAGINFO_PROJECT_REPO
+              value: {{ .Values.taginfo.env.TAGINFO_PROJECT_REPO }}
+            - name: DOWNLOAD_DB
+              value: {{ .Values.taginfo.env.DOWNLOAD_DB }}
+            - name: CREATE_DB
+              value: {{ .Values.taginfo.env.CREATE_DB }}
+      {{- if .Values.taginfo.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.taginfo.nodeSelector.label_key }} : {{ .Values.taginfo.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

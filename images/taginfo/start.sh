@@ -17,14 +17,12 @@ set_taginfo_config() {
         jq '.sources.db.bindir                   = "'$UPDATE_DIR'/build/src"' |
         jq '.paths.data_dir                      = "'$DATA_DIR'"' \
             >$WORKDIR/taginfo-config.json
-
     # Update instance values in taginfo-config.json
     [[ ! -z ${INSTANCE_URL+z} ]] && jq --arg a "${INSTANCE_URL}" '.instance.url = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
     [[ ! -z $INSTANCE_NAME+z} ]] && jq --arg a "${INSTANCE_NAME}" '.instance.name = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
     [[ ! -z $INSTANCE_DESCRIPTION+z} ]] && jq --arg a "${INSTANCE_DESCRIPTION}" '.instance.description = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
     [[ ! -z $INSTANCE_ICON+z} ]] && jq --arg a "${INSTANCE_ICON}" '.instance.icon = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
     [[ ! -z $INSTANCE_CONTACT+z} ]] && jq --arg a "${INSTANCE_CONTACT}" '.instance.contact = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
-
     # languages wiki databases will be downloaded from OSM
     [[ ! -z $DOWNLOAD_DB+z} ]] && jq --arg a "${DOWNLOAD_DB}" '.sources.download = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
 }
