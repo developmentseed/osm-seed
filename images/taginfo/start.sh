@@ -49,21 +49,37 @@ updates_source_code() {
     sed -i -e 's/run_ruby "$SRCDIR\/get_icons.rb"/ruby "$SRCDIR\/get_icons.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
 }
 
-update() {
-    echo "Download and update pbf files at $(date +%Y-%m-%d:%H-%M)..."
-
-    # Download OSM planet replication and full-history files, 
-    # TODO: Download latest files,comparing with something like md5 decryption
+download_planet_files() {
     mkdir -p $UPDATE_DIR/planet/
-    [ ! -f $UPDATE_DIR/planet/planet.osm.pbf ] && wget --no-check-certificate -O $UPDATE_DIR/planet/planet.osm.pbf $URL_PLANET_FILE
-    [ ! -f $UPDATE_DIR/planet/history-planet.osh.pbf ] && wget --no-check-certificate -O $UPDATE_DIR/planet/history-planet.osh.pbf $URL_HISTORY_PLANET_FILE
 
-    # Update local DB,twice, with different parameters,
-    # in order to make it work we need to pass first "db projects" and then "db projects chronology"
-    updates_create_db "db projects"
-    $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
+    # Check if URL_PLANET_FILE_STATE exist and set URL_PLANET_FILE
+    if [[ ${URL_PLANET_FILE_STATE} && ${URL_PLANET_FILE_STATE-x} ]]; then
+        URL_PLANET_FILE=$(curl -D -X GET $URL_PLANET_FILE_STATE)
+    fi
 
-    updates_create_db "db projects chronology"
+    # Check if URL_HISTORY_PLANET_FILE_STATE exist and set URL_HISTORY_PLANET_FILE
+    if [[ ${URL_HISTORY_PLANET_FILE_STATE} && ${URL_HISTORY_PLANET_FILE_STATE-x} ]]; then
+        URL_HISTORY_PLANET_FILE=$(curl -D -X GET $URL_HISTORY_PLANET_FILE_STATE)
+    fi
+    # Download pbf files
+    wget --no-check-certificate -O $UPDATE_DIR/planet/planet.osm.pbf $URL_PLANET_FILE
+    wget --no-check-certificate -O $UPDATE_DIR/planet/history-planet.osh.pbf $URL_HISTORY_PLANET_FILE
+
+}
+
+update() {
+    echo "Update Sqlite DBs at $(date +%Y-%m-%d:%H-%M)..."
+
+    # Download OSM planet replication and full-history files,
+    download_planet_files
+
+    # In order to make it work we need to pass first one by one the creation and then all of them "db projects chronology"
+    for value in $CREATE_DB; do
+        updates_create_db $value
+        $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
+    done
+
+    updates_create_db $CREATE_DB
     $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
 
     # Copy db files into data folder
