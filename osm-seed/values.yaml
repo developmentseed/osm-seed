@@ -584,10 +584,10 @@ taginfo:
     name: ''
     tag: ''
   env:
-    URL_PLANET_FILE_STATE: https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/state.txt
-    URL_HISTORY_PLANET_FILE_STATE: https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/full-history/state.txt
-    URL_PLANET_FILE: https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/planet-200526_0000.osm.pbf
-    URL_HISTORY_PLANET_FILE: https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/full-history/history-200526_0000.osh.pbf
+    URL_PLANET_FILE_STATE: https://planet.osm.org/pbf/state.txt
+    URL_HISTORY_PLANET_FILE_STATE: https://planet.osm.org/pbf/full-history/state.txt
+    URL_PLANET_FILE: https://planet.osm.org/pbf/planet-latest.osm.pbf
+    URL_HISTORY_PLANET_FILE: https://planet.osm.org/pbf/full-history/history-latest.osm.pbf
     TIME_UPDATE_INTERVAL: 24h
     INSTANCE_NAME: OHM Taginfo
     INSTANCE_DESCRIPTION: "This is a <b>taginfo test instance</b>"
@@ -606,4 +606,3 @@ taginfo:
       cpu: '2'
   nodeSelector:
     enabled: false
-    
