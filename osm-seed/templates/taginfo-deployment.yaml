@@ -27,12 +27,12 @@ spec:
           image: "{{ .Values.taginfo.image.name }}:{{ .Values.taginfo.image.tag }}"
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 4567
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /
-              port: 80
+              port: 4567
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
           {{- if .Values.taginfo.resources.enabled }}
