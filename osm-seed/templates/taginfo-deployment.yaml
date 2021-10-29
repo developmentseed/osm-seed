@@ -69,6 +69,8 @@ spec:
               value: {{ .Values.taginfo.env.DOWNLOAD_DB }}
             - name: CREATE_DB
               value: {{ .Values.taginfo.env.CREATE_DB }}
+            - name: TIME_UPDATE_INTERVAL
+              value: {{ .Values.taginfo.env.TIME_UPDATE_INTERVAL }}
       {{- if .Values.taginfo.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.taginfo.nodeSelector.label_key }} : {{ .Values.taginfo.nodeSelector.label_value }}
