@@ -118,8 +118,9 @@ RUN git checkout --force 8199002a0fd83a6eec91764bcec9e9e8705c7e5d
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
-RUN echo "gem 'mini_racer'" >> Gemfile
-RUN gem install nokogiri -- --use-system-libraries
+# RUN echo "gem 'mini_racer'" >> Gemfile
+RUN echo "gem 'terser', '~> 1.1.3'" >> Gemfile
+# RUN gem install nokogiri -- --use-system-libraries
 
 RUN apt-get install -y cargo
 RUN git clone https://github.com/shssoichiro/oxipng.git
@@ -155,7 +156,8 @@ RUN apt-get install -y tzdata
 RUN npm install yarn -g
 RUN bundle exec rake yarn:install
 RUN bundle exec rake i18n:js:export
-RUN  sed -i -e 's/config.assets.js_compressor = :uglifier/config.assets.js_compressor = Uglifier.new(:harmony => true)/g' $workdir/config/environments/production.rb
+# From https://github.com/lautis/uglifier#readme
+RUN  sed -i -e 's/config.assets.js_compressor = :uglifier/config.assets.js_compressor = :terser/g' $workdir/config/environments/production.rb
 RUN bundle exec rake assets:precompile
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
