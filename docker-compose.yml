@@ -168,6 +168,8 @@ services:
     build: 
       context: ./images/tiler-server
       dockerfile: Dockerfile
+    env_file: 
+      - ./.env-tiler
     volumes:
       - ./tiler-server-data:/mnt/data
     depends_on:
