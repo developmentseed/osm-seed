@@ -230,7 +230,7 @@ services:
       context: ./images/taginfo
       dockerfile: Dockerfile
     ports:
-      - '4567:4567'
+      - '4567:80'
     volumes:
       - ./taginfo-data:/apps/data/
     env_file:

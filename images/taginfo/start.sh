@@ -88,7 +88,7 @@ update() {
 
 start_web() {
     echo "Start...Taginfo web service"
-    cd $WORKDIR/taginfo/web && bundle exec rackup --host 0.0.0.0 -p 4567
+    cd $WORKDIR/taginfo/web && bundle exec rackup --host 0.0.0.0 -p 80
 }
 
 continuous_update() {
