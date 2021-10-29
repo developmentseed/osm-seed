@@ -81,7 +81,7 @@ services:
       echo Sleep the replication-job for a while!;
       sleep 40;
       echo Creating the replication-job!;
-      ./start.sh"
+      /start.sh"
     env_file:
       - ./.env
   ######################################################
