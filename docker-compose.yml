@@ -223,3 +223,18 @@ services:
       - ./overpass-api-db:/db
     env_file:
       - ./.env-overpass
+
+  ######################################################
+  ### Tasking Manager section
+  ######################################################
+  tasking-manager-api:
+    image: osmseed-tasking-manager-api:v1
+    build:
+      context: ./images/tasking-manager-api
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./tasking-manager-api-db:/db
+    env_file:
+      - ./.env-tasking-manager

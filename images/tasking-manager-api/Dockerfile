@@ -25,6 +25,7 @@ RUN apk update && \
         proj-dev
 
 RUN pip install -r requirements.txt
+RUN pip install apscheduler==3.7.0
 
 ## INITIALIZATION
 EXPOSE 5000
