@@ -25,7 +25,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install  \
     default-jre \
     default-jdk \
     gradle \
-    apt-utils
+    apt-utils \
+    postgresql-client
 
 # Install osmosis 0.47
 RUN git clone https://github.com/openstreetmap/osmosis.git
