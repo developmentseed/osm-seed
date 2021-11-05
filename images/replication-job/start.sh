@@ -8,7 +8,7 @@ else
 	echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" >~/.osmosis
 fi
 
-workingDirectory="data"
+workingDirectory="/mnt/data/data"
 
 # Check if state.txt exist in the workingDirectory,
 # in case the file does not exist locally and does not exist in the cloud the replication will start from 0
