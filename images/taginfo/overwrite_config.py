@@ -21,7 +21,7 @@ def main(config_file, overwrite_config_url):
     if 'sources' in overwrite_values.keys() and 'master' in overwrite_values['sources'].keys():
         current_values['sources']['master'] = overwrite_values['sources']['master']
     # Overwrite file
-    with open(config_file + '.json', 'w') as f:
+    with open(config_file, 'w') as f:
         f.write(json.dumps(current_values))
 
 
