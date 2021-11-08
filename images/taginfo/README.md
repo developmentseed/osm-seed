@@ -16,12 +16,7 @@ All environment variables are located at [`.env-taginfo.example`](https://github
 
 The following env vars are required in the instance to update the values at: https://github.com/taginfo/taginfo/blob/master/taginfo-config-example.json
 
-- `INSTANCE_URL`: URL prefix for the site.
-- `INSTANCE_NAME`: Used in the title of all HTML pages.
-- `INSTANCE_DESCRIPTION` : Description of this taginfo instance. Will appear on the home page and about page.
-- `INSTANCE_ICON`: URL path to instance icon in the upper left.
-- `INSTANCE_CONTACT`: Contact name and email address.
-- `TAGINFO_PROJECT_REPO` : If you're implementing your own instances of taginfo with you own data, you need to look into the projects, clone the [taginfo-project ](https://github.com/taginfo/taginfo-projects) repo, and pass it in this env var.
+- `OVERWRITE_CONFIG_URL`: config file with the values to update
 
 - `DOWNLOAD_DB`: Taginfo instances need 7 Sqlite databases to start up the web service, all of them can be downloaded from https://taginfo.openstreetmap.org/download. Or if you can download only some of them you can pass herec. e.g DOWNLOAD_DB=`languages wiki`, or DOWNLOAD_DB=`languages wiki projects chronology`.
 

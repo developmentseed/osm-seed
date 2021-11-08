@@ -10,6 +10,7 @@ RUN apt-get update && apt-get -y install \
     libapache2-mod-passenger \
     git
 
+# Commit ae5a950f7aa4c0de4e706839619a1dc05fc4450a, at 2021-10-18
 RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo
 WORKDIR $workdir/taginfo
 RUN echo "gem 'thin' " >>Gemfile
@@ -46,6 +47,8 @@ RUN git submodule update --init
 RUN  mkdir build && cd build && cmake .. && make
 
 RUN apt-get install -y nano vim
+COPY overwrite_config.py $workdir/
 COPY start.sh $workdir/
+
 WORKDIR $workdir/
 CMD $workdir/start.sh

@@ -53,16 +53,8 @@ spec:
               value: {{ .Values.taginfo.env.URL_HISTORY_PLANET_FILE_STATE }}
             - name: URL_HISTORY_PLANET_FILE
               value: {{ .Values.taginfo.env.URL_HISTORY_PLANET_FILE }}
-            - name: INSTANCE_URL
-              value: dns
-            - name: INSTANCE_NAME
-              value: {{ .Values.taginfo.env.INSTANCE_NAME }}
-            - name: INSTANCE_DESCRIPTION
-              value: {{ .Values.taginfo.env.INSTANCE_DESCRIPTION }}
-            - name: INSTANCE_ICON
-              value: {{ .Values.taginfo.env.INSTANCE_ICON }}
-            - name: INSTANCE_CONTACT
-              value: {{ .Values.taginfo.env.INSTANCE_CONTACT }}
+            - name: OVERWRITE_CONFIG_URL
+              value: {{ .Values.taginfo.env.OVERWRITE_CONFIG_URL }}
             - name: TAGINFO_PROJECT_REPO
               value: {{ .Values.taginfo.env.TAGINFO_PROJECT_REPO }}
             - name: DOWNLOAD_DB
