@@ -18,7 +18,7 @@ mkdir -p $imposm3_expire_dir
 settingDir=/osm
 # Folder to store the imposm expider files in s3 or gs
 BUCKET_IMPOSM_FOLDER=imposm
-
+INIT_FILE=/mnt/data/init_done
 # Create config file to set variable  for imposm
 echo "{" > $workDir/config.json
 echo "\"cachedir\": \"$cachedir\","  >> $workDir/config.json
@@ -148,23 +148,20 @@ function importData () {
     # These index will help speed up tegola tile generation
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f config/postgis_index.sql
 
-    touch /mnt/data/init_done
+    touch $INIT_FILE
     # Update the DB
     updateData
 }
 
 
-echo "Connecting to DB..."
+echo "Connecting to $POSTGRES_HOST DB"
 flag=true
 while "$flag" = true; do
     pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
         # Change flag to false to stop ping the DB
         flag=false
-        hasData=$(psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" \
-        -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" | sed -n 3p | sed 's/ //g')
-        # After import there are more than 70 tables
-        echo "$hasData tables in the DB"
-        if ([ $hasData  \> 70 ] && [[ -f /mnt/data/init_done ]]); then
+        echo "Check if $INIT_FILE exists"
+        if ([[ -f $INIT_FILE ]]); then
             echo "Update the DB with osm data"
             updateData
         else

@@ -113,16 +113,22 @@ RUN /usr/sbin/passenger-memory-stats
 RUN rm -rf $workdir
 RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
 WORKDIR $workdir
-# RUN git checkout master
+# Gitsha for current live site https://github.com/openstreetmap/openstreetmap-website/commits/live at Apr 10, 2020
+RUN git checkout --force 8199002a0fd83a6eec91764bcec9e9e8705c7e5d
 
 # Install the javascript runtime required by the `execjs` gem in
 RUN apt-get install -y libv8-dev
-RUN echo "gem 'mini_racer'" >> Gemfile
+# RUN echo "gem 'mini_racer'" >> Gemfile
+RUN echo "gem 'terser', '~> 1.1.3'" >> Gemfile
+# RUN gem install nokogiri -- --use-system-libraries
 
-RUN gem install nokogiri -- --use-system-libraries
+RUN apt-get install -y cargo
+RUN git clone https://github.com/shssoichiro/oxipng.git
+RUN cd oxipng && cargo build --release && cp target/release/oxipng /usr/local/bin
 
 # Install app dependencies
-RUN bundle install
+RUN bundle update mimemagic
+RUN bundle update listen && bundle install
 RUN gem install rake
 
 # update vendored iD
@@ -147,11 +153,11 @@ ADD config/action_mailer.rb config/initializers/action_mailer.rb
 
 # Precompile the website assets
 RUN apt-get install -y tzdata
-# gem install tzinfo-data
-
 RUN npm install yarn -g
 RUN bundle exec rake yarn:install
 RUN bundle exec rake i18n:js:export
+# From https://github.com/lautis/uglifier#readme
+RUN  sed -i -e 's/config.assets.js_compressor = :uglifier/config.assets.js_compressor = :terser/g' $workdir/config/environments/production.rb
 RUN bundle exec rake assets:precompile
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap

@@ -21,7 +21,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-replication-job-deployment
           image: {{ .Values.replicationJob.image.name }}:{{ .Values.replicationJob.image.tag }}
-          command: ['./start.sh']
+          command: ['/start.sh']
           {{- if .Values.replicationJob.resources.enabled }}
           resources:
             requests:

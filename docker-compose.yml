@@ -81,7 +81,7 @@ services:
       echo Sleep the replication-job for a while!;
       sleep 40;
       echo Creating the replication-job!;
-      ./start.sh"
+      /start.sh"
     env_file:
       - ./.env
   ######################################################
@@ -168,6 +168,8 @@ services:
     build: 
       context: ./images/tiler-server
       dockerfile: Dockerfile
+    env_file: 
+      - ./.env-tiler
     volumes:
       - ./tiler-server-data:/mnt/data
     depends_on:
@@ -221,3 +223,18 @@ services:
       - ./overpass-api-db:/db
     env_file:
       - ./.env-overpass
+
+  ######################################################
+  ### Tasking Manager section
+  ######################################################
+  tasking-manager-api:
+    image: osmseed-tasking-manager-api:v1
+    build:
+      context: ./images/tasking-manager-api
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./tasking-manager-api-db:/db
+    env_file:
+      - ./.env-tasking-manager

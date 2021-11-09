@@ -28,11 +28,13 @@ RUN apk add --update \
     python-dev \
     linux-headers \
     musl-dev \
-    openssl-dev
+    openssl-dev \
+    curl
 
 # Install aws-cli and  gsutil
-RUN pip install awscli \
-    && pip install gsutil
+RUN pip install awscli
+RUN curl -sSL https://sdk.cloud.google.com | bash
+RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
 
 RUN pip install mercantile \
     && apk del build-deps \
