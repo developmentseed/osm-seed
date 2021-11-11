@@ -36,3 +36,5 @@ charts:
         valuesPath: nominatim.image
       overpass-api:
         valuesPath: overpassApi.image
+      taginfo:
+        valuesPath: taginfo.image

@@ -238,3 +238,20 @@ services:
       - ./tasking-manager-api-db:/db
     env_file:
       - ./.env-tasking-manager
+  # #####################################################
+  # ## Taginfo section
+  # #####################################################
+  taginfo:
+    image: osmseed-taginfo:v1
+    build:
+      context: ./images/taginfo
+      dockerfile: Dockerfile
+    ports:
+      - '4567:80'
+    volumes:
+      - ./taginfo-data:/apps/data/
+    env_file:
+      - ./.env-taginfo
+    command: >
+      /bin/bash -c "
+      ./start.sh"

@@ -20,6 +20,18 @@ package.json
 db-backup-restore/
 nominatim-data/
 postgresdata/
+taginfo-data/
+.env
+.env-nominatim
+.env-nominatim.example
+.env-overpass
+.env-overpass.example
+.env-taginfo
+.env-taginfo.example
+.env-tasking-manager.example
+.env-tiler
+.env-tiler.example
+.env.example
 # ignore all *.class files in all folders, including build root
 **/*.json
 

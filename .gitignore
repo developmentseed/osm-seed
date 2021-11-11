@@ -3,6 +3,7 @@
 .env-nominatim
 .env-tasking-manager
 .env-overpass
+.env-taginfo
 .DS_Store
 
 usa.values.yaml
@@ -19,6 +20,7 @@ postgres-gis-data/
 tiler-imposm-data/
 tiler-server-data/
 nominatim-pgdata/
+taginfo-data/
 data/
 *.osm
 *.pbf
