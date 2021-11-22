@@ -2,10 +2,11 @@
 export PGPASSWORD=$POSTGRES_PASSWORD
 
 date=$(date '+%y%m%d_%H%M')
-backupFile=osmseed-${date}.sql.gz
+backupFile=osmseed-db-${date}.sql.gz
 stateFile="state.txt"
 restoreFile="backup.sql.gz"
 
+echo "Start... $DB_ACTION action"
 # Backing up DataBase
 if [ "$DB_ACTION" == "backup" ]; then
 	# Backup database and make maximum compression at the slowest speed
