@@ -4,7 +4,7 @@ The docker container installs dependencies required for the website, checks out 
 
 ### Configuration
 
-In order to run container, it needs environment variables, these can be found in the following files👇:
+In order to run this container we need environment variables, these can be found in the following files👇:
 
 - [.env.web.example](./../../.env.web.example)
 - [.env.db.example](./../../.env.db.example)

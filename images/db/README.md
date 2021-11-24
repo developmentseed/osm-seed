@@ -8,7 +8,7 @@ If run via the `docker-compose` file, running this container will expose the dat
 
 ### Configuration
 
-In order to run container, it needs environment variables, these can be found in the following files👇:
+In order to run this container we need environment variables, these can be found in the following files👇:
 
 - [.env.db.example](./../../.env.db.example)
 
@@ -25,7 +25,7 @@ In order to run container, it needs environment variables, these can be found in
   --env-file ./../.env.db \
   --network osm-seed_default \
   --name db \
-  -v $(pwd)/../../data/postgres-data:/var/lib/postgresql/data \
+  -v ${PWD}/data/db-data:/var/lib/postgresql/data \
   -p "5432:5432" \
   -t osmseed-db:v1
 ```
