@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 export PGPASSWORD=$POSTGRES_PASSWORD
+export VOLUME_DIR=/mnt/data
 
 date=$(date '+%y%m%d_%H%M')
-backupFile=osmseed-db-${date}.sql.gz
-stateFile="state.txt"
-restoreFile="backup.sql.gz"
+backupFile=$VOLUME_DIR/osmseed-db-${date}.sql.gz
+stateFile=$VOLUME_DIR/state.txt
+restoreFile=$VOLUME_DIR/backup.sql.gz
 
-echo "Start... $DB_ACTION action"
+echo "Start...$DB_ACTION action"
 # Backing up DataBase
 if [ "$DB_ACTION" == "backup" ]; then
 	# Backup database and make maximum compression at the slowest speed
@@ -37,40 +38,4 @@ if [ "$DB_ACTION" == "restore" ]; then
 	wget -O $restoreFile $RESTORE_URL_FILE
 	gunzip <$restoreFile | psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB
 	echo " Import data to  $POSTGRES_DB has finished ..."
-fi
-
-# This part of the code will clean the backups that have an aging of more than a week,
-# this can be activated according to a environment variable.
-if [ $CLEAN_BACKUPS == "true" ]; then
-	DATE=$(date --date="5 day ago" +"%Y-%m-%d")
-	# AWS
-	if [ $CLOUDPROVIDER == "aws" ]; then
-		# Filter files from S3
-		aws s3 ls $AWS_S3_BUCKET/database/ |
-			awk '{print $4}' |
-			awk -F"osm-seed-" '{$1=$1}1' |
-			awk '/sql.gz/{print}' |
-			awk -F".sql.gz" '{$1=$1}1' |
-			awk '$1 < "'"$DATE"'" {print $0}' |
-			sort -n >output
-		# Delete filtered files
-		while read file; do
-			aws s3 rm $AWS_S3_BUCKET/database/osm-seed-$file.sql.gz
-		done <output
-		rm output
-	fi
-	# Google Storage
-	if [ $CLOUDPROVIDER == "gcp" ]; then
-		# Filter files from GS
-		gsutil ls $GCP_STORAGE_BUCKET/database/ |
-			awk -F""$GCP_STORAGE_BUCKET"/database/osm-seed-" '{$1=$1}1' |
-			awk '/sql.gz/{print}' |
-			awk -F".sql.gz" '{$1=$1}1' |
-			awk '$1 < "'"$DATE"'" {print $0}' |
-			sort -n >output
-		# Delete filtered files
-		while read file; do
-			gsutil rm $GCP_STORAGE_BUCKET/database/osm-seed-$file.sql.gz
-		done <output
-	fi
 fi
