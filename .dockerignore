@@ -21,6 +21,7 @@ db-backup-restore/
 nominatim-data/
 postgresdata/
 taginfo-data/
+data/
 .env
 .env-nominatim
 .env-nominatim.example
@@ -31,7 +32,9 @@ taginfo-data/
 .env-tasking-manager.example
 .env-tiler
 .env-tiler.example
-.env.example
+.env.example\
+.env.*
+.env.*.example
 # ignore all *.class files in all folders, including build root
 **/*.json
 
