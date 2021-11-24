@@ -6,9 +6,9 @@ Dockerfile for getting the full planet history of database.
 
 In order to run this container we need environment variables, these can be found in the following files👇:
 
-- [.env.db.example](./../../.env.db.example)
-- [.env.full-history.example](./../../.env.full-history.example)
-- [.env.cloudprovider.example](./../../.env.cloudprovider.example)
+- [.env.db.example](./../../envs/.env.db.example)
+- [.env.full-history.example](./../../envs/.env.full-history.example)
+- [.env.cloudprovider.example](./../../envs/.env.cloudprovider.example)
 
 **Note**: Rename the above files as `.env.db`, `.env.full-history` and `.env.cloudprovider`
 
@@ -20,9 +20,9 @@ In order to run this container we need environment variables, these can be found
 
     # Docker
     docker run \
-    --env-file ./../.env.db \
-    --env-file ./../.env.full-history \
-    --env-file ./../.env.cloudprovider \
+    --env-file ./envs/.env.db \
+    --env-file ./envs/.env.full-history \
+    --env-file ./envs/.env.cloudprovider \
     -v ${PWD}/data/full-history-data:/mnt/data \
     --network osm-seed_default \
     -it osmseed-full-history:v1

@@ -13,7 +13,7 @@ services:
     volumes:
       - ./data/db-data:/var/lib/postgresql/data
     env_file:
-      - ./.env.db
+      - ./envs/.env.db
   web:
     image: osmseed-web:v1
     build:
@@ -22,8 +22,8 @@ services:
     ports:
       - '80:80'
     env_file:
-      - ./.env.web
-      - ./.env.db
+      - ./envs/.env.web
+      - ./envs/.env.db
     depends_on:
       - db
   # ######################################################
@@ -51,9 +51,9 @@ services:
         while :; do echo 'Creating the planet dump file...'; /start.sh; sleep 3m; done;
       "
     env_file:
-      - ./.env.db
-      - ./.env.planet-dump
-      - ./.env.cloudprovider
+      - ./envs/.env.db
+      - ./envs/.env.planet-dump
+      - ./envs/.env.cloudprovider
     depends_on:
       - db
   ######################################################
@@ -73,9 +73,9 @@ services:
         while :; do echo 'Creating DB backup...'; /start.sh; sleep 3m; done;
       "
     env_file:
-      - ./.env.db
-      - ./.env.backup-restore
-      - ./.env.cloudprovider
+      - ./envs/.env.db
+      - ./envs/.env.backup-restore
+      - ./envs/.env.cloudprovider
     depends_on:
       - db
   # ######################################################
@@ -95,9 +95,9 @@ services:
       echo Creating the replication files!;
       /start.sh"
     env_file:
-      - ./.env.db
-      - ./.env.replication-job
-      - ./.env.cloudprovider
+      - ./envs/.env.db
+      - ./envs/.env.replication-job
+      - ./envs/.env.cloudprovider
     depends_on:
       - db
   ######################################################
@@ -117,9 +117,9 @@ services:
         while :; do echo 'Creating full history PBF file...'; /start.sh; sleep 3m; done;
       "
     env_file:
-      - ./.env.db
-      - ./.env.full-history
-      - ./.env.cloudprovider
+      - ./envs/.env.db
+      - ./envs/.env.full-history
+      - ./envs/.env.cloudprovider
     depends_on:
       - db
   # ######################################################

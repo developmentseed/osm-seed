@@ -49,7 +49,7 @@ if [ $CLOUDPROVIDER == "aws" ]; then
 	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read
 fi
 
-# Google Storagegit status
+# Google Storage
 if [ $CLOUDPROVIDER == "gcp" ]; then
 	echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/planet/full-history/$fullHistoryFile" >$stateFile
 	# Upload to GS

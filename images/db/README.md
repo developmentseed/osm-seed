@@ -10,7 +10,7 @@ If run via the `docker-compose` file, running this container will expose the dat
 
 In order to run this container we need environment variables, these can be found in the following files👇:
 
-- [.env.db.example](./../../.env.db.example)
+- [.env.db.example](./../../envs/.env.db.example)
 
 **Note**: Rename the above files as `.env.db`
 
@@ -22,7 +22,7 @@ In order to run this container we need environment variables, these can be found
 
   # Docker
   docker run \
-  --env-file ./../.env.db \
+  --env-file ./envs/.env.db \
   --network osm-seed_default \
   --name db \
   -v ${PWD}/data/db-data:/var/lib/postgresql/data \

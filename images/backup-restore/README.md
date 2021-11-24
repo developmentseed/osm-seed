@@ -7,9 +7,9 @@ This container will create a backup of the osm-seed-db and compress according to
 
 In order to run this container we need environment variables, these can be found in the following files👇:
 
-- [.env.db.example](./../../.env.db.example)
-- [.env.backup-restore.example](./../../.env.backup-restore.example)
-- [.env.cloudprovider.example](./../../.env.cloudprovider.example)
+- [.env.db.example](./../../envs/.env.db.example)
+- [.env.backup-restore.example](./../../envs/.env.backup-restore.example)
+- [.env.cloudprovider.example](./../../envs/.env.cloudprovider.example)
 
 **Note**: Rename the above files as `.env.db`, `.env.backup-restore` and `.env.cloudprovider`
 
@@ -21,9 +21,9 @@ In order to run this container we need environment variables, these can be found
 
   # Docker compose
   docker run \
-    --env-file ./../.env.db \
-    --env-file ./../.env.backup-restore \
-    --env-file ./../.env.cloudprovider \
+    --env-file ./envs/.env.db \
+    --env-file ./envs/.env.backup-restore \
+    --env-file ./envs/.env.cloudprovider \
     --network osm-seed_default \
     -it osmseed-db-backup-restore:v1 
 ```
