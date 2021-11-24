@@ -11,7 +11,7 @@ In order to run this container we need environment variables, these can be found
 - [.env.backup-restore.example](./../../.env.backup-restore.example)
 - [.env.cloudprovider.example](./../../.env.cloudprovider.example)
 
-**Note**: Make a copy and rename the files as `.env.db`, `.env.backup-restore` and `.env.cloudprovider`
+**Note**: Rename the above files as `.env.db`, `.env.backup-restore` and `.env.cloudprovider`
 
 ### Running the container
 

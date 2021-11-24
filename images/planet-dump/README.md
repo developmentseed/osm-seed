@@ -10,7 +10,7 @@ In order to run this container we need environment variables, these can be found
 - [.env.planet-dump.example](./../../.env.planet-dump.example)
 - [.env.cloudprovider.example](./../../.env.cloudprovider.example)
 
-**Note**: Make a copy and rename the files as `.env.db`, `.env.planet-dump` and `.env.cloudprovider`
+**Note**: Rename the above files as `.env.db`, `.env.planet-dump` and `.env.cloudprovider`
 
 #### Running planet-dump container
 

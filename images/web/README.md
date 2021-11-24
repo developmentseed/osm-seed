@@ -9,7 +9,7 @@ In order to run this container we need environment variables, these can be found
 - [.env.web.example](./../../.env.web.example)
 - [.env.db.example](./../../.env.db.example)
 
-**Note**: Make a copy and rename the files as `.env.web` and `.env.db`
+**Note**: Rename the above files as `.env.web` and `.env.db`
 
 ### Running web container
 

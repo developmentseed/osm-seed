@@ -12,7 +12,7 @@ In order to run this container we need environment variables, these can be found
 
 - [.env.db.example](./../../.env.db.example)
 
-**Note**: Make a copy and rename the file as `.env.db`
+**Note**: Rename the above files as `.env.db`
 
 ### Running DB container
 

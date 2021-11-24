@@ -10,7 +10,7 @@ In order to run this container we need environment variables, these can be found
 - [.env.replication-job.example](./../../.env.replication-job.example)
 - [.env.cloudprovider.example](./../../.env.cloudprovider.example)
 
-**Note**: Rename the above files name as `.env.db`, `.env.replication-job` and `.env.cloudprovider`
+**Note**: Rename the above files as `.env.db`, `.env.replication-job` and `.env.cloudprovider`
 
 #### Running replication-job container
 
