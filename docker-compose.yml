@@ -27,6 +27,14 @@ services:
     depends_on:
       - db
   # ######################################################
+  # ### OSM processor and also use this image as base for other containers
+  # ######################################################
+  osm-processor:
+    image: osmseed-osm-processor:v1
+    build:
+      context: ./images/osm-processor
+      dockerfile: Dockerfile
+  # ######################################################
   # ### Planet replication section
   # ######################################################
   planet-dump:
@@ -92,6 +100,28 @@ services:
       - ./.env.cloudprovider
     depends_on:
       - db
+  ######################################################
+  ### OSM full planet replication
+  ######################################################
+  full-history:
+    image: osmseed-full-history:v1
+    build:
+      context: ./images/full-history
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/full-history-data:/mnt/data
+    command: >
+      /bin/bash -c "
+        echo 'Set cron job for full history PBF file, every 3m minutes';
+        sleep 1m;
+        while :; do echo 'Creating full history PBF file...'; /start.sh; sleep 3m; done;
+      "
+    env_file:
+      - ./.env.db
+      - ./.env.full-history
+      - ./.env.cloudprovider
+    depends_on:
+      - db
   # ######################################################
   # ### OSM data restoring into the database
   # ######################################################
@@ -101,7 +131,7 @@ services:
   #     context: ./images/populate-apidb
   #     dockerfile: Dockerfile
   #   volumes:
-  #     - ./populate-apidb-data:/app/data
+  #     - ./data/populate-apidb-data:/app/data
   #   depends_on:
   #     - db
   #   command: >
@@ -109,34 +139,6 @@ services:
   #     echo Sleep for a while populate-apidb!;
   #     sleep 70s;
   #     echo Starting populate-apidb!;
-  #     ./start.sh"
-  #   env_file:
-  #     - ./.env
-  # osm-processor:
-  #   image: osmseed-osm-processor:v1
-  #   build:
-  #     context: ./images/osm-processor
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./.env
-  # ######################################################
-  # ### OSM full planet replication
-  # ######################################################
-  # full-history:
-  #   image: osmseed-full-history:v1
-  #   build:
-  #     context: ./images/full-history
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - web
-  #     - db
-  #   volumes:
-  #     - ./full-history-data:/mnt/data
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep full-history for a while!;
-  #     sleep 40;
-  #     echo Starting full-history!;
   #     ./start.sh"
   #   env_file:
   #     - ./.env

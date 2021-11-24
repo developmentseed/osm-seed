@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+export VOLUME_DIR=/mnt/data
 
 # osmosis tuning: https://wiki.openstreetmap.org/wiki/Osmosis/Tuning,https://lists.openstreetmap.org/pipermail/talk/2012-October/064771.html
 if [ -z "$MEMORY_JAVACMD_OPTIONS" ]; then
@@ -10,14 +11,14 @@ fi
 
 # Fixing name for historical file
 date=$(date '+%y%m%d_%H%M')
-fullHistoryFile=history-${date}.osh.pbf
+fullHistoryFile=$VOLUME_DIR/history-${date}.osh.pbf
 # In case overwrite the file
 if [ "$OVERWRITE_FHISTORY_FILE" == "true" ]; then
-	fullHistoryFile=history-latest.osh.pbf
+	fullHistoryFile=$VOLUME_DIR/history-latest.osh.pbf
 fi
 
 # State file nname
-stateFile="state.txt"
+stateFile="$VOLUME_DIR/state.txt"
 osm_tmp_file="osm_tmp.osm"
 
 # Creating full history
@@ -36,6 +37,9 @@ osmosis --read-apidb-change \
 osmium cat $osm_tmp_file -o $fullHistoryFile
 osmium fileinfo $fullHistoryFile
 
+# Remove full-hitory osm file, keep only history-latest.osh.pbf files
+rm $osm_tmp_file
+
 # AWS
 if [ $CLOUDPROVIDER == "aws" ]; then
 	AWS_URL=${AWS_S3_BUCKET/s3:\/\//http:\/\/}
@@ -45,7 +49,7 @@ if [ $CLOUDPROVIDER == "aws" ]; then
 	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/full-history/$stateFile --acl public-read
 fi
 
-# Google Storage
+# Google Storagegit status
 if [ $CLOUDPROVIDER == "gcp" ]; then
 	echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/planet/full-history/$fullHistoryFile" >$stateFile
 	# Upload to GS
