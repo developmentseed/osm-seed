@@ -35,12 +35,12 @@ services:
       context: ./images/planet-dump
       dockerfile: Dockerfile
     volumes:
-      - ./data/planet-dump-data:/app
+      - ./data/planet-dump-data:/mnt/data
     command: >
       /bin/bash -c "
-        echo 'Set cronjob for planet-dump: Run every 5 minutes';
-        sleep 60;
-        while :; do echo 'Start creating the planet dump file...'; ./start.sh; sleep 300; done;
+        echo 'Set cronjob for planet-dump, every 3 minutes';
+        sleep 1m;
+        while :; do echo 'Creating the planet dump file...'; /start.sh; sleep 3m; done;
       "
     env_file:
       - ./.env.db
@@ -48,24 +48,28 @@ services:
       - ./.env.cloudprovider
     depends_on:
       - db
-  # ######################################################
-  # ### OSM Database backup and restore section
-  # ######################################################
-  # db-backup-restore:
-  #   image: osmseed-backup-restore:v1
-  #   build:
-  #     context: ./images/backup-restore
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep for a while!;
-  #     sleep 20;
-  #     echo Building backup!;
-  #     ./start.sh"
-  #   env_file:
-  #     - ./.env
+  ######################################################
+  ### OSM Database backup and restore section
+  ######################################################
+  db-backup-restore:
+    image: osmseed-backup-restore:v1
+    build:
+      context: ./images/backup-restore
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/db-backup-restore-data:/mnt/data
+    depends_on:
+      - db
+    command: >
+      /bin/bash -c "
+        echo 'Set cron job for backing up DB, every 3m minutes';
+        sleep 1m;
+        while :; do echo 'Creating DB backup...'; /start.sh; sleep 3m; done;
+      "
+    env_file:
+      - ./.env.db
+      - ./.env.backup-restore
+      - ./.env.cloudprovider
   # ######################################################
   # ### OSM minute replication files section
   # ######################################################
