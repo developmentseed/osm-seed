@@ -5,6 +5,8 @@
 .env-overpass
 .env-taginfo
 .DS_Store
+.env.*
+!.env.*.example
 
 usa.values.yaml
 prod.values.yaml

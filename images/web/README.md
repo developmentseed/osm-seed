@@ -4,49 +4,25 @@ The docker container installs dependencies required for the website, checks out 
 
 ### Configuration
 
-To run the container needs a bunch of ENV variables which are:
+In order to run container, it needs environment variables, these can be found in the following files👇:
 
-- **Configure the HOST and the PROTOCOL**
+- [.env.web.example](./../../.env.web.example)
+- [.env.db.example](./../../.env.db.example)
 
-  - `SERVER_URL` We need to setup the url to the server to send the email
-  - `SERVER_PROTOCOL`  protocolo, e.g `http`
+**Note**: Make a copy and rename the files as `.env.web` and `.env.db`
 
-- **Configure ActionMailer SMTP**
+### Running web container
 
-  - `MAILER_ADDRESS` e.g smtp.gmail.com
-  - `MAILER_DOMAIN` e.g gmail.com
-  - `MAILER_USERNAME` e.g osmseed@gmail.com
-  - `MAILER_PASSWORD` e.g 1234
+```sh
+    # Docker compose
+    docker-compose run web
 
-- **Configure Postgres Database**
-
-  - `POSTGRES_HOST` - Database host
-  - `POSTGRES_DB` - Database name
-  - `POSTGRES_USER` - Database user
-  - `POSTGRES_PASSWORD` - Database user's password 
-
-Those parameters must be set up for the run the container, not required to build the container
-
-
-### Building the container
-
-Before to start the api, you should first create the [api-db](https://github.com/developmentseed/osm-seed/tree/master/db).
-
-
-```
-    cd openstreetmap-website/
-    docker network create osm-seed_default
-    docker build -t osmseed-openstreetmap-website:v1 .
-```
-
-
-### Running the container
-
-```
+    # Docker
     docker run \
-    --env-file ./../.env \
+    --env-file ./../../.env.web \
+    --env-file ./../../.env.db \
     --network osm-seed_default \
     -p "80:80" \
     -h localhost \
-    -t osmseed-openstreetmap-website:v1
+    -t osmseed-web:v1
 ```

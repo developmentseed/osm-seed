@@ -1,20 +1,8 @@
-
 version: '3'
 services:
   ######################################################
   ### OSM API and Database section
   ######################################################
-  web:
-    image: osmseed-web:v1
-    build:
-      context: ./images/web
-      dockerfile: Dockerfile
-    ports:
-      - '80:80'
-    env_file:
-      - ./.env
-    depends_on:
-      - db
   db:
     image: osmseed-db:v1
     build:
@@ -23,11 +11,23 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./data/postgres-data:/var/lib/postgresql/data
     env_file:
-      - ./.env
+      - ./.env.db
+  web:
+    image: osmseed-web:v1
+    build:
+      context: ./images/web
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    env_file:
+      - ./.env.web
+      - ./.env.db
+    depends_on:
+      - db
   ######################################################
-  ### Planet replication section 
+  ### Planet replication section
   ######################################################
   planet-dump:
     image: osmseed-planet-dump:v1
@@ -37,7 +37,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./planet-dump-data:/app
+      - ./data/planet-dump-data:/app
     command: >
       /bin/bash -c "
       echo Sleep the planet-dump for a while!;
@@ -45,6 +45,7 @@ services:
       echo Creating the planet-dump!;
       ./start.sh"
     env_file:
+      - ./.env.db
       - ./.env
   ######################################################
   ### OSM Database backup and restore section
@@ -73,7 +74,7 @@ services:
       context: ./images/replication-job
       dockerfile: Dockerfile
     volumes:
-      - ./replication-job:/mnt/data
+      - ./data/replication-job:/mnt/data
     depends_on:
       - db
     command: >
@@ -137,7 +138,7 @@ services:
   ######################################################
   tiler-db:
     image: osmseed-tiler-db:v1
-    build: 
+    build:
       context: ./images/tiler-db
       dockerfile: Dockerfile
     ports:
@@ -148,14 +149,14 @@ services:
       - ./.env-tiler
   tiler-imposm:
     image: osmseed-tiler-imposm:v1
-    build: 
+    build:
       context: ./images/tiler-imposm
       dockerfile: Dockerfile
     volumes:
       - ./tiler-imposm-data:/mnt/data
     depends_on:
       - tiler-db
-    env_file: 
+    env_file:
       - ./.env-tiler
     command: >
       /bin/bash -c "
@@ -165,10 +166,10 @@ services:
       ./start.sh"
   tiler-server:
     image: osmseed-tiler-server:v1
-    build: 
+    build:
       context: ./images/tiler-server
       dockerfile: Dockerfile
-    env_file: 
+    env_file:
       - ./.env-tiler
     volumes:
       - ./tiler-server-data:/mnt/data
