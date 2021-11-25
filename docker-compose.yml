@@ -1,8 +1,8 @@
 version: '3'
 services:
-  ######################################################
-  ### OSM API and Database section
-  ######################################################
+  ####################################################
+  # OSM API and Database section
+  ####################################################
   db:
     image: osmseed-db:v1
     build:
@@ -26,17 +26,17 @@ services:
       - ./envs/.env.db
     depends_on:
       - db
-  # ######################################################
-  # ### OSM processor and also use this image as base for other containers
-  # ######################################################
+  ######################################################
+  ### OSM processor and also use this image as base for other containers
+  ######################################################
   osm-processor:
     image: osmseed-osm-processor:v1
     build:
       context: ./images/osm-processor
       dockerfile: Dockerfile
-  # ######################################################
-  # ### Planet replication section
-  # ######################################################
+  ######################################################
+  ### Planet replication section
+  ######################################################
   planet-dump:
     image: osmseed-planet-dump:v1
     build:
@@ -56,9 +56,9 @@ services:
       - ./envs/.env.cloudprovider
     depends_on:
       - db
-  ######################################################
-  ### OSM Database backup and restore section
-  ######################################################
+  #####################################################
+  ## OSM Database backup and restore section
+  #####################################################
   db-backup-restore:
     image: osmseed-backup-restore:v1
     build:
@@ -78,9 +78,9 @@ services:
       - ./envs/.env.cloudprovider
     depends_on:
       - db
-  # ######################################################
-  # ### OSM minute replication files section
-  # ######################################################
+  ######################################################
+  ### OSM minute replication files section
+  ######################################################
   replication-job:
     image: osmseed-replication-job:v1
     build:
@@ -93,16 +93,17 @@ services:
       echo Sleep the replication-job for 1 minute;
       sleep 1m;
       echo Creating the replication files!;
-      /start.sh"
+      /start.sh
+      "
     env_file:
       - ./envs/.env.db
       - ./envs/.env.replication-job
       - ./envs/.env.cloudprovider
     depends_on:
       - db
-  ######################################################
-  ### OSM full planet replication
-  ######################################################
+  #####################################################
+  ## OSM full planet replication
+  #####################################################
   full-history:
     image: osmseed-full-history:v1
     build:
@@ -122,9 +123,9 @@ services:
       - ./envs/.env.cloudprovider
     depends_on:
       - db
-  # ######################################################
-  # ### Populate apidb from PBF file
-  # ######################################################
+  ######################################################
+  ### Populate apidb from PBF file
+  ######################################################
   populate-apidb:
     image: osmseed-populate-apidb:v1
     build:
@@ -132,137 +133,148 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./data/populate-apidb-data:/mnt/data
-    depends_on:
-      - db
     command: >
       /bin/bash -c "
-      echo Sleep for a while populate-apidb!;
-      sleep 4m;
-      echo Starting populate-apidb!;
-      /start.sh"
+        echo Sleep for a while populate-apidb!;
+        sleep 4m;
+        echo Starting populate-apidb!;
+        /start.sh
+      "
     env_file:
       - ./envs/.env.db
       - ./envs/.env.populate-apidb
   # ######################################################
-  # ### Tiler server(tegola), Database and  imposm section
+  # ### Tiler DB
   # ######################################################
-  # tiler-db:
-  #   image: osmseed-tiler-db:v1
-  #   build:
-  #     context: ./images/tiler-db
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     -  "5433:5432"
-  #   volumes:
-  #     - ./postgres-gis-data:/var/lib/postgresql/data
-  #   env_file:
-  #     - ./.env-tiler
-  # tiler-imposm:
-  #   image: osmseed-tiler-imposm:v1
-  #   build:
-  #     context: ./images/tiler-imposm
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./tiler-imposm-data:/mnt/data
-  #   depends_on:
-  #     - tiler-db
-  #   env_file:
-  #     - ./.env-tiler
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep for a while!;
-  #     sleep 20;
-  #     echo starting imposm!;
-  #     ./start.sh"
-  # tiler-server:
-  #   image: osmseed-tiler-server:v1
-  #   build:
-  #     context: ./images/tiler-server
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./.env-tiler
-  #   volumes:
-  #     - ./tiler-server-data:/mnt/data
-  #   depends_on:
-  #     - tiler-db
-  #     - tiler-imposm
-  #   ports:
-  #     - "9090:9090"
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep for a while!;
-  #     sleep 100;
-  #     echo Starting tiles server!;
-  #     ./start.sh"
+  tiler-db:
+    image: osmseed-tiler-db:v1
+    build:
+      context: ./images/tiler-db
+      dockerfile: Dockerfile
+    ports:
+      -  "5433:5432"
+    volumes:
+      - ./data/tiler-db-data:/var/lib/postgresql/data
+    env_file:
+      - ./envs/.env.tiler-db
   # ######################################################
-  # ### Nominatim section
+  # ### Tiler imposm for importing data
   # ######################################################
-  # nominatim-db:
-  #   image: nominatim-db:v1
-  #   build:
-  #     context: ./images/nominatim
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - '6432:5432'
-  #   volumes:
-  #     - ./nominatim-pgdata:/var/lib/postgresql/data
-  #   env_file:
-  #     - ./.env-nominatim
-  #   command: >
-  #     /bin/bash -c "sh /app/start.sh"
-  # nominatim-api:
-  #   image: nominatim-api:v1
-  #   build:
-  #     context: ./images/nominatim
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - '7070:8080'
-  #   env_file:
-  #     - ./.env-nominatim
-  #   entrypoint: sh /app/startapache.sh
+  tiler-imposm:
+    image: osmseed-tiler-imposm:v1
+    build:
+      context: ./images/tiler-imposm
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/tiler-imposm-data:/mnt/data
+    depends_on:
+      - tiler-db
+    command: >
+      /bin/bash -c "
+        echo starting imposm!;
+        sleep 1m;
+        ./start.sh;
+      "
+    env_file:
+      - ./envs/.env.tiler-db
+      - ./envs/.env.tiler-imposm
   # ######################################################
-  # ### Overpass API section
+  # ### Tiler imposm for importing data
   # ######################################################
-  # overpass-api:
-  #   image: osmseed-overpass-api:v1
-  #   build:
-  #     context: ./images/overpass-api
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - '8081:80'
-  #   volumes:
-  #     - ./overpass-api-db:/db
-  #   env_file:
-  #     - ./.env-overpass
+  tiler-server:
+    image: osmseed-tiler-server:v1
+    build:
+      context: ./images/tiler-server
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/tiler-server-data:/mnt/data
+    depends_on:
+      - tiler-db
+      - tiler-imposm
+    ports:
+      - "9090:9090"
+    command: >
+      /bin/bash -c "
+        echo Starting tiles server!;
+        sleep 2m;
+        ./start.sh;
+      "
+    env_file:
+      - ./envs/.env.tiler-db
+      - ./envs/.env.tiler-server
+  #####################################################
+  ## Nominatim DB-API section
+  #####################################################
+  nominatim-db:
+    image: nominatim-db:v1
+    build:
+      context: ./images/nominatim
+      dockerfile: Dockerfile
+    ports:
+      - '5434:5432'
+    volumes:
+      - ./data/nominatim-db-data:/var/lib/postgresql/data
+    command: >
+      /bin/bash -c "
+        sh /app/start.sh
+      "
+    env_file:
+      - ./envs/.env.nominatim
+  nominatim-api:
+    image: nominatim-api:v1
+    build:
+      context: ./images/nominatim
+      dockerfile: Dockerfile
+    ports:
+      - '7070:8080'
+    env_file:
+      - ./.env.nominatim
+    entrypoint: sh /app/startapache.sh
+    env_file:
+      - ./envs/.env.nominatim
+  ######################################################
+  ### Overpass API section
+  ######################################################
+  overpass-api:
+    image: osmseed-overpass-api:v1
+    build:
+      context: ./images/overpass-api
+      dockerfile: Dockerfile
+    ports:
+      - '8081:80'
+    volumes:
+      - ./data/overpass-api-db:/db
+    env_file:
+      - ./envs/.env.overpass
 
-  # ######################################################
-  # ### Tasking Manager section
-  # ######################################################
-  # tasking-manager-api:
-  #   image: osmseed-tasking-manager-api:v1
-  #   build:
-  #     context: ./images/tasking-manager-api
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - '5000:5000'
-  #   volumes:
-  #     - ./tasking-manager-api-db:/db
-  #   env_file:
-  #     - ./.env-tasking-manager
-  # # #####################################################
-  # # ## Taginfo section
-  # # #####################################################
-  # taginfo:
-  #   image: osmseed-taginfo:v1
-  #   build:
-  #     context: ./images/taginfo
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - '4567:80'
-  #   volumes:
-  #     - ./taginfo-data:/apps/data/
-  #   env_file:
-  #     - ./.env-taginfo
-  #   command: >
-  #     /bin/bash -c "
-  #     ./start.sh"
+  ######################################################
+  ### Tasking Manager section
+  ######################################################
+  tasking-manager-api:
+    image: osmseed-tasking-manager-api:v1
+    build:
+      context: ./images/tasking-manager-api
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./data/tasking-manager-api-db:/db
+    env_file:
+      - ./envs/.env.tasking-manager
+  # #####################################################
+  # ## Taginfo section
+  # #####################################################
+  taginfo:
+    image: osmseed-taginfo:v1
+    build:
+      context: ./images/taginfo
+      dockerfile: Dockerfile
+    ports:
+      - '4567:80'
+    volumes:
+      - ./data/taginfo-data:/apps/data/
+    command: >
+      /bin/bash -c "
+      ./start.sh"
+    env_file:
+      - ./envs/.env.taginfo
