@@ -123,25 +123,26 @@ services:
     depends_on:
       - db
   # ######################################################
-  # ### OSM data restoring into the database
+  # ### Populate apidb from PBF file
   # ######################################################
-  # populate-apidb:
-  #   image: osmseed-populate-apidb:v1
-  #   build:
-  #     context: ./images/populate-apidb
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./data/populate-apidb-data:/app/data
-  #   depends_on:
-  #     - db
-  #   command: >
-  #     /bin/bash -c "
-  #     echo Sleep for a while populate-apidb!;
-  #     sleep 70s;
-  #     echo Starting populate-apidb!;
-  #     ./start.sh"
-  #   env_file:
-  #     - ./.env
+  populate-apidb:
+    image: osmseed-populate-apidb:v1
+    build:
+      context: ./images/populate-apidb
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/populate-apidb-data:/mnt/data
+    depends_on:
+      - db
+    command: >
+      /bin/bash -c "
+      echo Sleep for a while populate-apidb!;
+      sleep 4m;
+      echo Starting populate-apidb!;
+      /start.sh"
+    env_file:
+      - ./envs/.env.db
+      - ./envs/.env.populate-apidb
   # ######################################################
   # ### Tiler server(tegola), Database and  imposm section
   # ######################################################
