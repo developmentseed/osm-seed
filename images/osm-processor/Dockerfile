@@ -28,10 +28,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install  \
     apt-utils \
     postgresql-client
 
-# Install osmosis 0.47
+# Install osmosis 0.48
+RUN echo "osmosis"
 RUN git clone https://github.com/openstreetmap/osmosis.git
 WORKDIR osmosis
-RUN git checkout 9cfb8a06d9bcc948f34a6c8df31d878903d529fc
+RUN git checkout bb0e592671a9bf0c48db1301cdc3d6085c88bae9
 RUN mkdir "$PWD"/dist
 RUN ./gradlew assemble
 RUN tar -xvzf "$PWD"/package/build/distribution/*.tgz -C "$PWD"/dist/
