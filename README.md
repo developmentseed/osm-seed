@@ -16,17 +16,24 @@ This project provides docker container definitions for various aspects of the Op
 
 ### What's included now:
 
- - `web` A container that runs The OpenStreetMap Rails Port.
- - `db` A container that runs OSM Api database.
- - `populate-apidb` A container that runs `osmium` to import data into the api-db.
- - `planet-dump` A container that exports a planet replication in pbf format.
- - `replication-job`  A container that exports data from the api-db every minute, hour or day.
- - `db-backup-restore` A container that runs database backup.
+ - [`web`](images/web) A container that runs The OpenStreetMap Rails Port - https://wiki.openstreetmap.org/wiki/Main_Page.
+ - [`db`](images/db) A container that runs OSM Api database.
+ - [`populate-apidb`](images/populate-apidb) A container that runs `osmium` to import data into the api-db.
+ - [`planet-dump`](images/planet-dump) A container that exports a planet replication in pbf format.
+ - [`full-history`](images/full-history) A container that exports a full planet replication in pbf format.
+ - [`replication-job`](images/replication-job)  A container that exports data from the api-db every minute, hour or day.
+ - [`db-backup-restore`](images/db-backup-restore) A container that runs database backup.
+
+ - [`tiler-db`](images/tiler-db) A container that runs tiler database.
+ - [`tiler-imposm`](images/tiler-imposm) A container that runs updates from minute replication job.
+ - [`tiler-server`](images/tiler-server) A container that runs vector tile server base on tegola - https://github.com/go-spatial/tegola
+
+ - [`nominatim`](images/nominatim) A container that runs geocoder using data from `planet-dump` and `replication-job`
+ - [`overpass-api`](images/overpass-api) A container that runs read-only API for filtering  map data - https://wiki.openstreetmap.org/wiki/Overpass_API
+ - [`taginfo`](images/taginfo) A container that runs a service for finding and aggregating information about osm-seed tags - https://wiki.openstreetmap.org/wiki/Taginfo
+ - [`tasking-manager-api`](images/tasking-manager-api) A container that runs Task manager rest api - https://github.com/pgmorgan/task-manager-api
+
  - A `Helm` [chart](https://www.helm.sh/), simplifying the process of deploying the entire system onto a Kubernetes cluster.
-
-### Diagram
-
-![](https://user-images.githubusercontent.com/1152236/49454074-6c6b2280-f7b2-11e8-944d-e47136d1dcf9.png)
 
 ### Usage
 For more details on installation, see [INSTALL.md](INSTALL.md).

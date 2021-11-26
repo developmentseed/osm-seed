@@ -13,28 +13,38 @@ You will need `docker` and `docker-compose` installed on your system.
 
 ### Run locally
 
-Copy `.env.example` to `.env` and edit as appropriate. 
+Osm-seed contains different containers, you may need to comment out some of them at docker-compose.yml according to your use case.
+
+Copy the required environment files  form `envs/` folder, e.g `envs/.env.db.example` to `.env.db` and edit as appropriate. 
 
 Run `docker-compose build` to build all Dockerfiles defined in `docker-compose.yml`.
 
-Run `source .env && docker-compose up` to run all containers defined in `docker-compose`
+Run `docker-compose up` to run all containers defined in `docker-compose.yml`
 
-Once `docker-compose` is running, you should be able to access a local instance of the OpenStreetMap website on `http://localhost:80`
+Once `docker-compose` is running, you should be able to access a local instance of services:
+
+   - OpenStreetMap website on `http://localhost:80`
+   - Api DB on port 5432
+   - Tiler DB on port 5433
+   - Vector tile server on `http://localhost:9090`
+   - Nominatim DB on port 5434
+   - Nominatim API on  `http://localhost:7070`
+   - Overpass API on `http://localhost:8081`
+   - Tasking Manager API on `http://localhost:5050`
+   - Taginfo API website on `http://localhost:4567`
+   - OpenStreetMap website on `http://localhost:80`
 
 NOTE: 
  
  - The map-tiles on the instance are being served from the main osm.org website currently. 
  - Make sure the port 5432 and 80 are not busy.
+ - Data outputs from osm-seed is going to be store i the `data/` folder.
+
 
 ### Building and Running individual containers
 
-Sometime you may require building and running a container by itself, so to do that and to put the container on the same network as other containers it maybe dependent on, first you should create a network.
+Sometime you may require building and running a container by itself, so to do that and to put the container on the same network as other containers, take a looks on the folder [`images`](images/) of each contianer.
 
-e.g
+### Run in Kubernetes Cluster
 
-```
-docker network create osm_network
-
-```
-
-And then follow the README file in folders specific for each container definition, to configure, edit and test individual containers. 
+For running in kubernetes use helm templates, https://devseed.com/osm-seed-chart/
