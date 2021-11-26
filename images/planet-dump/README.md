@@ -7,10 +7,10 @@ Dockerfile definition to run a container with `osmosis` installed. This containe
 In order to run this container we need environment variables, these can be found in the following files👇:
 
 - [.env.db.example](./../../envs/.env.db.example)
-- [.env.planet-dump.example](./../../envs/.env.planet-dump.example)
+- [.env.db-utils.example](./../../envs/.env.db-utils.example)
 - [.env.cloudprovider.example](./../../envs/.env.cloudprovider.example)
 
-**Note**: Rename the above files as `.env.db`, `.env.planet-dump` and `.env.cloudprovider`
+**Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
 
 #### Running planet-dump container
 

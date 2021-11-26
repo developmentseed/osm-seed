@@ -11,9 +11,9 @@ This container needs some environment variables passed into it in order to run:
 In order to run this container we need environment variables, these can be found in the following files👇:
 
 - [.env.db.example](./../../envs/.env.db.example)
-- [.env.env.populate-apidb.example](./../../envs/.env.env.populate-apidb.example)
+- [.env.env.db-utils.example](./../../envs/.env.env.db-utils.example)
 
-**Note**: Rename the above files as `.env.db` and `.env.populate-apidb`
+**Note**: Rename the above files as `.env.db` and `.env.db-utils`
 
 - `URL_FILE_TO_IMPORT` it could be a PBF file or OSM file.
 

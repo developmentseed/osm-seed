@@ -8,10 +8,10 @@ This container will create a backup of the osm-seed-db and compress according to
 In order to run this container we need environment variables, these can be found in the following files👇:
 
 - [.env.db.example](./../../envs/.env.db.example)
-- [.env.backup-restore.example](./../../envs/.env.backup-restore.example)
+- [.env.db-utils.example](./../../envs/.env.db-utils.example)
 - [.env.cloudprovider.example](./../../envs/.env.cloudprovider.example)
 
-**Note**: Rename the above files as `.env.db`, `.env.backup-restore` and `.env.cloudprovider`
+**Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
 
 ### Running the container
 

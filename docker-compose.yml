@@ -46,13 +46,12 @@ services:
       - ./data/planet-dump-data:/mnt/data
     command: >
       /bin/bash -c "
-        echo 'Set cronjob for planet-dump, every 3 minutes';
-        sleep 1m;
-        while :; do echo 'Creating the planet dump file...'; /start.sh; sleep 3m; done;
+        echo 'Set cronjob for planet-dump, every 4 minutes';
+        while :; do sleep 4m; echo 'Creating the planet dump file...'; /start.sh; done;
       "
     env_file:
       - ./envs/.env.db
-      - ./envs/.env.planet-dump
+      - ./envs/.env.db-utils
       - ./envs/.env.cloudprovider
     depends_on:
       - db
@@ -68,13 +67,12 @@ services:
       - ./data/db-backup-restore-data:/mnt/data
     command: >
       /bin/bash -c "
-        echo 'Set cron job for backing up DB, every 3m minutes';
-        sleep 1m;
-        while :; do echo 'Creating DB backup...'; /start.sh; sleep 3m; done;
+        echo 'Set cron job for backing up DB, every 4 minutes';
+        while :; do sleep 4m; echo 'Creating DB backup...'; /start.sh; done;
       "
     env_file:
       - ./envs/.env.db
-      - ./envs/.env.backup-restore
+      - ./envs/.env.db-utils
       - ./envs/.env.cloudprovider
     depends_on:
       - db
@@ -97,7 +95,7 @@ services:
       "
     env_file:
       - ./envs/.env.db
-      - ./envs/.env.replication-job
+      - ./envs/.env.db-utils
       - ./envs/.env.cloudprovider
     depends_on:
       - db
@@ -113,19 +111,18 @@ services:
       - ./data/full-history-data:/mnt/data
     command: >
       /bin/bash -c "
-        echo 'Set cron job for full history PBF file, every 3m minutes';
-        sleep 1m;
-        while :; do echo 'Creating full history PBF file...'; /start.sh; sleep 3m; done;
+        echo 'Set cron job for full history PBF file, every 4 minutes';
+        while :; do sleep 4m; echo 'Creating full history PBF file...'; /start.sh;  done;
       "
     env_file:
       - ./envs/.env.db
-      - ./envs/.env.full-history
+      - ./envs/.env.db-utils
       - ./envs/.env.cloudprovider
     depends_on:
       - db
-  ######################################################
-  ### Populate apidb from PBF file
-  ######################################################
+  #####################################################
+  ## Populate apidb from PBF file
+  #####################################################
   populate-apidb:
     image: osmseed-populate-apidb:v1
     build:
@@ -142,7 +139,7 @@ services:
       "
     env_file:
       - ./envs/.env.db
-      - ./envs/.env.populate-apidb
+      - ./envs/.env.db-utils
   # ######################################################
   # ### Tiler DB
   # ######################################################

@@ -7,10 +7,10 @@ Dockerfile for getting the full planet history of database.
 In order to run this container we need environment variables, these can be found in the following files👇:
 
 - [.env.db.example](./../../envs/.env.db.example)
-- [.env.full-history.example](./../../envs/.env.full-history.example)
+- [.env.db-utils.example](./../../envs/.env.db-utils.example)
 - [.env.cloudprovider.example](./../../envs/.env.cloudprovider.example)
 
-**Note**: Rename the above files as `.env.db`, `.env.full-history` and `.env.cloudprovider`
+**Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
 
 #### Running full-history container
 

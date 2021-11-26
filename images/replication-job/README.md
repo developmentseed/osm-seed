@@ -7,10 +7,10 @@ This contain is responsible for creating the delta replication files it may be s
 In order to run this container we need environment variables, these can be found in the following files👇:
 
 - [.env.db.example](./../../envs/.env.db.example)
-- [.env.replication-job.example](./../../envs/.env.replication-job.example)
+- [.env.db-utils.example](./../../envs/.env.db-utils.example)
 - [.env.cloudprovider.example](./../../envs/.env.cloudprovider.example)
 
-**Note**: Rename the above files as `.env.db`, `.env.replication-job` and `.env.cloudprovider`
+**Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
 
 #### Running replication-job container
 
