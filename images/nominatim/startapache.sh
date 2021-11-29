@@ -1,13 +1,10 @@
 #!/bin/bash
 export NOMINATIM_SETTINGS='/app/src/build/settings/local_api.php'
-
-# Replace API URLs on files
-sed -i -e "s/www.openstreetmap.org/$OSMSEED_WEB_API_DOMAIN/g" /app/src/lib/lib.php
-sed -i -e "s/www.openstreetmap.org/$OSMSEED_WEB_API_DOMAIN/g" /app/src/utils/update.php
-sed -i -e "s/overpass-api.de/$OSMSEED_OVERPASS_API_DOMAIN/g" /app/src/utils/update.php
-
 # echo 'Setup the app'
 # /app/src/build/utils/setup.php --setup-website
+
+# Replace domains
+./replace_domain.sh
 
 flag=true
 while "$flag" = true; do
