@@ -59,6 +59,10 @@ spec:
               value: {{ .Values.nominatimDb.persistenceDisk.mountPath }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
+            - name: OSMSEED_WEB_API_DOMAIN
+              value: {{ .Values.nominatimApi.env.OSMSEED_WEB_API_DOMAIN }}
+            - name: OSMSEED_OVERPASS_API_DOMAIN
+              value: {{ .Values.nominatimApi.env.OSMSEED_OVERPASS_API_DOMAIN }}
           command: ["/bin/sh"]
           args: ["-c", "sh /app/start.sh"]
           # livenessProbe:
