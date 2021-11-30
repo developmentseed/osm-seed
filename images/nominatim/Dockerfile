@@ -142,6 +142,7 @@ COPY startapache.sh /app/startapache.sh
 COPY startpostgres.sh /app/startpostgres.sh
 COPY update.sh /app/update.sh
 COPY start.sh /app/start.sh
+COPY replace_domain.sh /app/replace_domain.sh
 
 # Collapse image to single layer.
 FROM scratch
