@@ -528,7 +528,9 @@ nominatimApi:
   enabled: true
   replicaCount: 1
   env:
-    BASE_URL: 'https://nominatim.osm-seed.test'
+    BASE_URL: https://nominatim.osm-seed.test
+    OSMSEED_WEB_API_DOMAIN: osmseed.org
+    OSMSEED_OVERPASS_API_DOMAIN: overpass-api.osmseed.org
   resources:
     enabled: false
     requests:
