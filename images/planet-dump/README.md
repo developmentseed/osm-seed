@@ -2,47 +2,28 @@
 
 Dockerfile definition to run a container with `osmosis` installed. This container definition will be responsible to create the planet dump in PBF format according to a schedule.
 
-
 ### Configuration
 
-This container needs some environment variables passed into it in order to run:
+In order to run this container we need environment variables, these can be found in the following files👇:
 
-- `POSTGRES_HOST` - db
-- `POSTGRES_DB` - openstreetmap
-- `POSTGRES_USER` - postgres
-- `POSTGRES_PASSWORD`  - 1234
+- [.env.db.example](./../../envs/.env.db.example)
+- [.env.db-utils.example](./../../envs/.env.db-utils.example)
+- [.env.cloudprovider.example](./../../envs/.env.cloudprovider.example)
 
-The following env variables are according to which cloud provider you are going to use:
+**Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
 
-- `CLOUDPROVIDER`, eg. `aws` or `gcp`
+#### Running planet-dump container
 
-In case AWS:
+```sh
+    # Docker compose
+    docker-compose run planet-dump
 
-- `AWS_S3_BUCKET` e.g `s3://osm-seed-test`
-
-In case GCP:
-
-- `GCP_STORAGE_BUCKET` e.g `gs://osm-seed-test`
-
-By default, the container create a new *.osm.bz2 file, if you want to overwrite the same file as `planet-latest.osm.pbf` set the following env var 👇;
-
-- `OVERWRITE_PLANET_FILE=yes`
-
-
-#### Building the container
-
-```
-    cd planet-dump
-    docker network create osm-seed_default
-    docker build -t osmseed-planet-dump:v1 .
-```
-
-#### Running the container
-
-```
-docker run \
---env-file ./../.env \
--v ${PWD}:/mnt/data \
---network osm-seed_default \
--it osmseed-planet-dump:v1
+    # Docker
+    docker run \
+    --env-file ./envs/.env.db \
+    --env-file ./envs/.env.planet-dump \
+    --env-file ./envs/.env.cloudprovider \
+    -v ${PWD}/data/planet-dump-data:/mnt/data \
+    --network osm-seed_default \
+    -it osmseed-planet-dump:v1
 ```

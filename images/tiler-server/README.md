@@ -2,51 +2,27 @@
 
 This container is for rendering the vector tiles base on [Tegola](https://github.com/go-spatial/tegola), the container connects to the database `tiler-db` and serves the tiles through the port `9090`.
 
-
 ### Configuration
 
-Required environment variables:
+In order to run this container we need environment variables, these can be found in the following files👇:
 
- **Env variables to connect to the db-tiler**
+- [.env.tiler-db.example](./../../envs/.env.tiler-db.example)
+- [.env.tiler-server.example](./../../envs/.env.tiler-server.example)
 
-- `POSTGRES_HOST` e.g `tiler-db`
-- `POSTGRES_DB` e.g `tiler-osm`
-- `POSTGRES_PORT` e.g `5432`
-- `POSTGRES_USER` e.g `postgres`
-- `POSTGRES_PASSWORD` e.g `1234`
+**Note**: Rename the above files as `.env.tiler-db` and `.env.tiler-server`
 
-**Env variables  to serve the tiles**
+#### Running tiler-server container
 
-- `TILER_SERVER_PORT` e.g `9090`
+```sh
+    # Docker compose
+    docker-compose run tiler-server
 
-**Env variables for caching the tiles**
-
-TILER_CACHE_* , by default osmseed-tiler is using aws-s3 for caching the tiles, if you want to change it, take a look in: https://github.com/go-spatial/tegola/tree/master/cache
-
-- `TILER_SERVER_PORT` e.g `9090`
-- `TILER_CACHE_TYPE` e.g `s3`
-- `TILER_CACHE_BUCKET` e.g `s3://osmseed-tiler`
-- `TILER_CACHE_BASEPATH` e.g `local`
-- `TILER_CACHE_REGION` e.g `us-east-1`
-- `TILER_CACHE_AWS_ACCESS_KEY_ID` e.g `xyz`
-- `TILER_CACHE_AWS_SECRET_ACCESS_KEY` e.g `xyz`
-- `TILER_CACHE_MAX_ZOOM` e.g `22`
-
-#### Building the container
-
-```
-    cd tiler-server/
-    docker network create osm-seed_default
-    docker build -t osmseed-tiler-server:v1 .
-```
-
-#### Running the container
-
-```
-  docker run \
-  --env-file ./../.env-tiler \
-  --network osm-seed_default \
-  -v $(pwd)/:/mnt/data \
-  -p "9090:9090" \
-  -t osmseed-tiler-server:v1
+    # Docker
+    docker run \
+      --env-file ./envs/.env.tiler-db \
+      --env-file ./envs/.env.tiler-server \
+      -v ${PWD}/data/tiler-server-data:/mnt/data \
+      --network osm-seed_default \
+      -p "9090:9090" \
+      -it osmseed-tiler-server:v1
 ```

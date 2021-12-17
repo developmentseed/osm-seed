@@ -5,45 +5,26 @@ This container will create a backup of the osm-seed-db and compress according to
 
 ### Configuration
 
-To run the container needs a bunch of ENV variables:
+In order to run this container we need environment variables, these can be found in the following files👇:
 
-- `POSTGRES_HOST` - Database host
-- `POSTGRES_DB` - Database name
-- `POSTGRES_USER` - Database user
-- `POSTGRES_PASSWORD` - Database user's password
+- [.env.db.example](./../../envs/.env.db.example)
+- [.env.db-utils.example](./../../envs/.env.db-utils.example)
+- [.env.cloudprovider.example](./../../envs/.env.cloudprovider.example)
 
-The following env variables are according to which cloud provider you are going to use:
-
-- `CLOUDPROVIDER`, eg. `aws` or `gcp`
-
-In case AWS:
-
-- `AWS_S3_BUCKET` e.g `s3://osm-seed-test`
-
-In case GCP:
-
-- `GCP_STORAGE_BUCKET` e.g `gs://osm-seed-test`
-
-*Database action*
-
-- `DB_ACTION` e.g `backup` or `restore`
-
-Change the `DB_ACTION` variable to restore or backup the database. `DB_ACTION` =  `restore` or `backup`
-
-### Building the container
-
-```
-  cd db-backup-restore/
-  docker network create osm-seed_default 
-  docker build -t osmseed-db-backup-restore:v1 .
-```
+**Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
 
 ### Running the container
 
+```sh
+  # Docker compose
+  docker-compose run db-backup-restore
 
+  # Docker compose
+  docker run \
+    --env-file ./envs/.env.db \
+    --env-file ./envs/.env.backup-restore \
+    --env-file ./envs/.env.cloudprovider \
+    --network osm-seed_default \
+    -it osmseed-db-backup-restore:v1 
 ```
-docker run \
---env-file ./../.env \
---network osm-seed_default \
--it osmseed-db-backup-restore:v1 
-```
+

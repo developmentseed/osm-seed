@@ -4,7 +4,7 @@ We build a docker container for taginfo software, the container will start the w
 
 ## Environment Variables
 
-All environment variables are located at [`.env-taginfo.example`](https://github.com/developmentseed/osm-seed/blob/develop/.env-taginfo.example), make a copy and name it as `.env-tagninfo` to use in osm-seed.
+All environment variables are located at [`.env.taginfo.example`](./../../envs/.env.taginfo.example), make a copy and name it as `.env.tagninfo` to use in osm-seed.
 
 - `URL_PLANET_FILE_STATE`: Url to the state file, that contains the URL for the latest planet PBF file. e.g [`state.txt`](https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/state.txt), This is no required in case you set the `URL_PLANET_FILE` env var
 
@@ -25,3 +25,17 @@ The following env vars are required in the instance to update the values at: htt
   - Value `db` require to pass `URL_PLANET_FILE` or `URL_PLANET_FILE_STATE` 
   - Value `projects` require to pass `TAGINFO_PROJECT_REPO` 
   - Value `chronology` require to pass `URL_PLANET_FILE` or `URL_HISTORY_PLANET_FILE`
+
+#### Running taginfo container
+
+```sh
+    # Docker compose
+    docker-compose run taginfo
+
+    # Docker
+    docker run \
+    --env-file ./envs/.env.taginfo \
+    -v ${PWD}/data/taginfo-data:/apps/data/ \
+    --network osm-seed_default \
+    -it osmseed-taginfo:v1
+```

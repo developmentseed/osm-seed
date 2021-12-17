@@ -8,37 +8,30 @@ If run via the `docker-compose` file, running this container will expose the dat
 
 ### Configuration
 
-We are using the official postgres image we need to pass the following environment variable:
+In order to run this container we need environment variables, these can be found in the following files👇:
 
-  - `POSTGRES_HOST` - Database host
-  - `POSTGRES_DB` - Database name
-  - `POSTGRES_USER` - Database user
-  - `POSTGRES_PASSWORD` - Database user's password
+- [.env.db.example](./../../envs/.env.db.example)
 
-When we set up the above variables the container will create automatically the user, password and database in the on the container
+**Note**: Rename the above files as `.env.db`
 
-### Building the container
+### Running DB container
 
-```
-  cd db/
-  docker network create osm-seed_default
-  docker build -t osmseed-db:v1 .
-```
+```sh
+  # Docker compose
+  docker-compose run db
 
-### Running the container
-
-```
+  # Docker
   docker run \
-  --env-file ./../.env \
+  --env-file ./envs/.env.db \
   --network osm-seed_default \
   --name db \
-  -v $(pwd)/../postgres-data:/var/lib/postgresql/data \
+  -v ${PWD}/data/db-data:/var/lib/postgresql/data \
   -p "5432:5432" \
   -t osmseed-db:v1
 ```
 
 ### Test DB connection
 
-```
-psql -h 127.0.0.1 -p 5432 -d openstreetmap -U postgres --password
+```sh
+  pg_isready -h 127.0.0.1 -p 5432
 ```

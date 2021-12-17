@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+export VOLUME_DIR=/mnt/data
 
 # osmosis tuning: https://wiki.openstreetmap.org/wiki/Osmosis/Tuning,https://lists.openstreetmap.org/pipermail/talk/2012-October/064771.html
 if [ -z "$MEMORY_JAVACMD_OPTIONS" ]; then
@@ -7,15 +8,16 @@ else
 	memory="${MEMORY_JAVACMD_OPTIONS//i/}"
 	echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" >~/.osmosis
 fi
+
 # Read the DB and create the planet osm file
 date=$(date '+%y%m%d_%H%M')
-planetPBFFile=planet-${date}.osm.pbf
+planetPBFFile=$VOLUME_DIR/planet-${date}.osm.pbf
 # In case overwrite the file
 if [ "$OVERWRITE_PLANET_FILE" == "true" ]; then
-	planetPBFFile=planet-latest.osm.pbf
+	planetPBFFile=$VOLUME_DIR/planet-latest.osm.pbf
 fi
 
-stateFile="state.txt"
+stateFile="$VOLUME_DIR/state.txt"
 
 # Creating the replication file
 osmosis --read-apidb \

@@ -5,6 +5,8 @@
 .env-overpass
 .env-taginfo
 .DS_Store
+.env.*
+!.env.*.example
 
 usa.values.yaml
 prod.values.yaml
@@ -21,7 +23,6 @@ tiler-imposm-data/
 tiler-server-data/
 nominatim-pgdata/
 taginfo-data/
-data/
 *.osm
 *.pbf
 *.bz2
@@ -32,3 +33,5 @@ tiler-imposm/diff/
 tiler-imposm/imposm3_expire_dir
 tiler-server/imposm/
 overpass-api-db/
+data/*/
+!data/README.md

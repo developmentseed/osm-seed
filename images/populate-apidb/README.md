@@ -1,42 +1,38 @@
 # Container to populate APIDB
 
-
 This container is in charge to import data from PBF file or OSM files into the API database.
-
 
 ### Configuration
 
 This container needs some environment variables passed into it in order to run:
 
+### Configuration
+
+In order to run this container we need environment variables, these can be found in the following files👇:
+
+- [.env.db.example](./../../envs/.env.db.example)
+- [.env.env.db-utils.example](./../../envs/.env.env.db-utils.example)
+
+**Note**: Rename the above files as `.env.db` and `.env.db-utils`
 
 - `URL_FILE_TO_IMPORT` it could be a PBF file or OSM file.
 
-Get the files form :
+Get those files form 👇
 
 - http://download.geofabrik.de/
 - https://wiki.openstreetmap.org/wiki/Planet.osm
 
-**APIDB configuration**
+#### Running planet-dump container
 
-  - `POSTGRES_HOST`e.g localhost
-  - `POSTGRES_DB` e.g openstreetmap
-  - `POSTGRES_USER` e.g postgres
-  - `POSTGRES_PASSWORD` e.g 1234
+```sh
+    # Docker compose
+    docker-compose run populate-apidb
 
-#### Building the container
-
-
-```
-    cd populate-apidb/
-    docker network create osm-seed_default
-    docker build -t osmseed-populate-apidb:v1 .
-```
-
-#### Running the container
-
-```
-  docker run \
-  --env-file ./../.env \
-  --network osm-seed_default \
-  -t osmseed-populate-apidb:v1
+    # Docker
+    docker run \
+    --env-file ./envs/.env.db \
+    --env-file ./envs/.env.populate-apidb \
+    -v ${PWD}/data/populate-apidb-data:/mnt/data \
+    --network osm-seed_default \
+    -it osmseed-populate-apidb:v1
 ```

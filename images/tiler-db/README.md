@@ -4,36 +4,30 @@ PostGIS database container to store the osm-seed or osm data for tiling.
 
 ### Configuration
 
-Required environment variables:
+In order to run this container we need environment variables, these can be found in the following files👇:
 
-- `POSTGRES_HOST` e.g `tiler-db`
-- `POSTGRES_DB` e.g `tiler-osm`
-- `POSTGRES_PORT` e.g `5432`
-- `POSTGRES_USER` e.g `postgres`
-- `POSTGRES_PASSWORD` e.g `1234`
+- [.env.tiler-db.example](./../../envs/.env.tiler-db.example)
+
+**Note**: Rename the above files as `.env.tiler-db`
 
 
-#### Building the container
+#### Running tiler-DB container
 
-```
-  cd tiler-db/
-  docker network create osm-seed_default
-  docker build -t osmseed-tiler-db:v1 .
-```
+```sh
+  # Docker compose
+  docker-compose tiler-db
 
-#### Running the container
-
-```
+  #Dcoker 
   docker run \
-  --env-file ./../.env-tiler \
-  --network osm-seed_default \
-  -v $(pwd)/../postgres-gis-data:/var/lib/postgresql/data \
-  -p "5433:5432" \
-  -t osmseed-tiler-db:v1
+    --env-file ./envs/.env.db-tiler \
+    --network osm-seed_default \
+    -v ${PWD}/data/tiler-db-data:/mnt/data \
+    -p "5433:5432" \
+    -t osmseed-tiler-db:v1
 ```
 
-### Test DB connection
+### Test tiler-DB connection
 
-```
-psql -h 0.0.0.0 -p 5433 -d tiler-db -U postgres --password
+```sh
+  pg_isready -h 0.0.0.0 -p 5433
 ```
