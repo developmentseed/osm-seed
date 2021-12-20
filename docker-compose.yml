@@ -240,7 +240,7 @@ services:
     ports:
       - '8081:80'
     volumes:
-      - ./data/overpass-api-db:/db
+      - ./data/overpass-api-db-data:/db
     env_file:
       - ./envs/.env.overpass
 

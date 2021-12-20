@@ -46,6 +46,29 @@ To delete all resources created in the Helm chart:
     helm delete <release-name> 
 
 
+## Install osm-seed on minikube cluster
+
+```sh
+minikube delete --all
+minikube start --mount-string=$PWD/data/:/mnt/ --mount
+minikube ssh
+chartpress
+# It is necesary to create the folder in the shared folder 
+mkdir -p $PWD/data/db-data
+mkdir -p $PWD/data/tiler-db-data
+mkdir -p $PWD/data/tiler-imposm-data
+mkdir -p $PWD/data/tiler-server-data
+mkdir -p $PWD/data/overpass-api-db-data
+mkdir -p $PWD/data/nominatim-db-data
+
+# Install develop version
+helm install develop osm-seed -f osm-seed/values.yaml
+# Update develop version
+helm upgrade develop osm-seed -f osm-seed/values.yaml
+# Delete develop version
+helm delete develop
+```
+
 ### Additional Notes
 
 When developing and testing locally, it is often useful to use the same `docker` context inside your minikube instance as your local machine. This avoids having to re-pull docker images from within your `minikube` VM. This can be accomplished with:

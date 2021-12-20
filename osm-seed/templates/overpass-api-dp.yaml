@@ -10,9 +10,20 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  storageClassName: "" # It's necessary to specify "" as the storageClassName ,so that the default storage class won't be used, see : https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1
-  # AWS Provider
+  ############## Minikube ##############
+  {{- if eq .Values.cloudProvider "minikube" }}
+  storageClassName: local-storage
+  capacity:
+    storage: {{ .Values.overpassApi.persistenceDisk.local_volume_size }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {{ .Values.overpassApi.persistenceDisk.local_volume_hostPath | quote }}
+  {{- end }}
+
+  ############## AWS Provider ##############
   {{- if eq .Values.cloudProvider "aws" }}
+  storageClassName: "" 
   capacity:
     storage: {{ .Values.overpassApi.persistenceDisk.AWS_ElasticBlockStore_size }}
   accessModes:
@@ -21,8 +32,10 @@ spec:
     volumeID: {{ .Values.overpassApi.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
     fsType: ext4
   {{- end }}
-  # GCP Provider
+
+  ############## GCP Provider ##############
   {{- if eq .Values.cloudProvider "gcp" }}
+  storageClassName: ""
   capacity:
     storage: {{ .Values.overpassApi.persistenceDisk.GCP_gcePersistentDisk_size }}
   accessModes:
@@ -42,15 +55,29 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
+  ############## Minikube ##############
+  {{- if eq .Values.cloudProvider "minikube" }}
+  storageClassName: local-storage
+  {{- else }}
+  ############## Other providers ##############
   storageClassName: ""
+  {{- end }}
   volumeName: {{ .Release.Name }}-overpass-api-pv
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
+      ############## Minikube ##############
+      {{- if eq .Values.cloudProvider "minikube" }}
+      storage: {{ .Values.overpassApi.persistenceDisk.local_volume_size }}
+      {{- end }}
+
+      ############## AWS Provider ##############
       {{- if eq .Values.cloudProvider "aws" }}
       storage: {{ .Values.overpassApi.persistenceDisk.AWS_ElasticBlockStore_size }}
       {{- end }}
+      
+      ############## GCP Provider ##############
       {{- if eq .Values.cloudProvider "gcp" }}
       storage: {{ .Values.overpassApi.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
