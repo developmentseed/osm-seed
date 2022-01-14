@@ -123,8 +123,8 @@ RUN echo "gem 'terser', '~> 1.1.3'" >> Gemfile
 # RUN gem install nokogiri -- --use-system-libraries
 
 RUN apt-get install -y cargo
-RUN git clone https://github.com/shssoichiro/oxipng.git
-RUN cd oxipng && cargo build --release && cp target/release/oxipng /usr/local/bin
+RUN git clone https://github.com/shssoichiro/oxipng.git 
+RUN cd oxipng && git checkout c888142bcb7a68a430245cb3eae5b6039aeb0e56 && cargo build --release && cp target/release/oxipng /usr/local/bin
 
 # Install app dependencies
 RUN bundle update mimemagic
