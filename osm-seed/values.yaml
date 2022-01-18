@@ -70,8 +70,8 @@ db:
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
     # Minikube
-    local_volume_hostPath: /mnt/db-data
-    local_volume_size: 10Gi
+    localVolumeHostPath: /mnt/db-data
+    localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 500Gi
@@ -291,8 +291,8 @@ tilerDb:
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-d
     # Minikube
-    local_volume_hostPath: /mnt/tiler-db-data
-    local_volume_size: 10Gi
+    localVolumeHostPath: /mnt/tiler-db-data
+    localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 50Gi
@@ -329,8 +329,8 @@ tilerImposm:
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
     # Minikube
-    local_volume_hostPath: /mnt/tiler-imposm-data
-    local_volume_size: 10Gi
+    localVolumeHostPath: /mnt/tiler-imposm-data
+    localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 50Gi
@@ -377,8 +377,8 @@ tilerServer:
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
     # Minikube
-    local_volume_hostPath: /mnt/tiler-server-data
-    local_volume_size: 10Gi
+    localVolumeHostPath: /mnt/tiler-server-data
+    localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 50Gi
@@ -522,8 +522,8 @@ nominatimDb:
     mountPath: /var/lib/postgresql/data
     subPath: nominatim-pgdata
     # Minikube
-    local_volume_hostPath: /mnt/nominatim-db-data
-    local_volume_size: 10Gi
+    localVolumeHostPath: /mnt/nominatim-db-data
+    localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-037a44560af1076f1
     AWS_ElasticBlockStore_size: 100Gi
@@ -583,8 +583,8 @@ overpassApi:
     accessMode: ReadWriteOnce
     mountPath: /db
     # Minikube
-    local_volume_hostPath: /mnt/overpass-api-db-data
-    local_volume_size: 10Gi
+    localVolumeHostPath: /mnt/overpass-api-db-data
+    localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 50Gi

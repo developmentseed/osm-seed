@@ -14,11 +14,11 @@ spec:
   {{- if eq .Values.cloudProvider "minikube" }}
   storageClassName: local-storage
   capacity:
-    storage: {{ .Values.db.persistenceDisk.local_volume_size }}
+    storage: {{ .Values.db.persistenceDisk.localVolumeSize }}
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: {{ .Values.db.persistenceDisk.local_volume_hostPath | quote }}
+    path: {{ .Values.db.persistenceDisk.localVolumeHostPath | quote }}
   {{- end }}
 
   ############## AWS Provider ##############
@@ -69,7 +69,7 @@ spec:
     requests:
       ############# Minikube ##############
       {{- if eq .Values.cloudProvider "minikube" }}
-      storage: {{ .Values.nominatimDb.persistenceDisk.local_volume_size }}
+      storage: {{ .Values.nominatimDb.persistenceDisk.localVolumeSize }}
       {{- end }}
 
       ############## AWS Provider ##############
