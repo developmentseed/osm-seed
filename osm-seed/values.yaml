@@ -8,7 +8,6 @@ osmSeedVersion: develop-9302179
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
 cloudProvider: minikube
-
 # ====================================================================================================
 # AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
 # ====================================================================================================
@@ -60,22 +59,24 @@ domain:
 db:
   enabled: true
   image:
-    name: 'developmentseed/osmseed-db'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: '1234'
   persistenceDisk:
-    enabled: false
-    accessMode: ReadWriteOnce
+    enabled: true
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
-    # In case cloudProvider: aws
-    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
-    # AWS_ElasticBlockStore_size: 500Gi
-    # In case cloudProvider: gcp
-    GCP_gcePersistentDisk_pdName: osmseed-disk-api-db-v1
+    # Minikube
+    localVolumeHostPath: /mnt/db-data
+    localVolumeSize: 10Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_size: 500Gi
+    # GCP
+    GCP_gcePersistentDisk_pdName: osmseed-disk-db-v1
     GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
@@ -93,10 +94,9 @@ db:
 # ====================================================================================================
 web:
   enabled: true
-  # image: 'developmentseed/osmseed-web'
   image:
-    name: 'developmentseed/osmseed-web'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -121,7 +121,7 @@ web:
 # Variables for memcached. Memcached is used to store session cookies
 # ====================================================================================================
 memcached:
-  enabled: true
+  enabled: false
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -145,12 +145,12 @@ idEditor:
 # Variables for full-history container
 # ====================================================================================================
 fullHistory:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
   nodeSelector:
-    enabled: true
+    enabled: false
     label_key: nodegroup-type
     label_value: ohm-non-tiler
   schedule: '* */24 * * *'
@@ -171,8 +171,8 @@ fullHistory:
 dbBackupRestore:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-backup-restore'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   schedule: '0 */1 * * *'
   env:
     DB_ACTION: backup
@@ -190,10 +190,10 @@ dbBackupRestore:
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
 planetDump:
-  enabled: true
+  enabled: false
   image:
-    name: 'developmentseed/osmseed-planet-dump'
-    tag: '0.1.0-n436.h4b5ffc4'
+    name: ''
+    tag: ''
   schedule: '0 */1 * * *'
   env:
     CLEAN_BACKUPS: true
@@ -212,10 +212,10 @@ planetDump:
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
 replicationJob:
-  enabled: true
+  enabled: false
   image:
-    name: 'developmentseed/osmseed-replication-job'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   resources:
     enabled: false
     requests:
@@ -233,8 +233,8 @@ replicationJob:
 populateApidb:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-populate-apidb'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   env:
     URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
   resources:
@@ -252,8 +252,8 @@ populateApidb:
 osmProcessor:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-osm-processor'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   env:
     URL_FILE_TO_PROCESS: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
     OSM_FILE_ACTION: simple_pbf
@@ -270,10 +270,10 @@ osmProcessor:
 # Variables for tiler-db
 # ====================================================================================================
 tilerDb:
-  enabled: true
+  enabled: false
   image:
-    name: 'developmentseed/osmseed-tiler-db'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
@@ -286,15 +286,18 @@ tilerDb:
     POSTGRES_DB_MAINTENANCE_WORK_MEM: 64MB
     POSTGRES_DB_EFFECTIVE_CACHE_SIZE: 4GB
   persistenceDisk:
-    enabled: false
+    enabled: true
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-d
-    # In case cloudProvider: aws
-    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
-    # AWS_ElasticBlockStore_size: 500Gi
-    # In case cloudProvider: gcp
-    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-db-v2
+    # Minikube
+    localVolumeHostPath: /mnt/tiler-db-data
+    localVolumeSize: 10Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_size: 50Gi
+    # GCP
+    GCP_gcePersistentDisk_pdName: osmseed-disk-tilerdb-v1
     GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
@@ -306,6 +309,8 @@ tilerDb:
       cpu: '2.5'
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: tiler
 
 # ====================================================================================================
 # Variables for tiler-imposm
@@ -313,8 +318,8 @@ tilerDb:
 tilerImposm:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-tiler-imposm'
-    tag: '0.1.0-n438.hf4be954'
+    name: ''
+    tag: ''
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -323,11 +328,14 @@ tilerImposm:
     enabled: true
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
-    # In case cloudProvider: aws
-    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
-    # AWS_ElasticBlockStore_size: 500Gi
-    # In case cloudProvider: gcp
-    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-imposm-v2
+    # Minikube
+    localVolumeHostPath: /mnt/tiler-imposm-data
+    localVolumeSize: 10Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_size: 50Gi
+    # GCP
+    GCP_gcePersistentDisk_pdName: osmseed-disk-imposm-v1
     GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
@@ -337,15 +345,18 @@ tilerImposm:
     limits:
       memory: '24Gi'
       cpu: '10'
-
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: tiler
 # ====================================================================================================
 # Variables for tiler-server
 # ====================================================================================================
 tilerServer:
-  enabled: true
+  enabled: false
   image:
-    name: 'developmentseed/osmseed-tiler-server'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -365,11 +376,14 @@ tilerServer:
     enabled: true
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
-    # In case cloudProvider: aws
-    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
-    # AWS_ElasticBlockStore_size: 500Gi
-    # In case cloudProvider: gcp
-    GCP_gcePersistentDisk_pdName: osmseed-disk-tiler-server-v2
+    # Minikube
+    localVolumeHostPath: /mnt/tiler-server-data
+    localVolumeSize: 10Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_size: 50Gi
+    # GCP
+    GCP_gcePersistentDisk_pdName: osmseed-disk-db-v1
     GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
@@ -381,13 +395,13 @@ tilerServer:
       cpu: '2'
   nodeSelector:
     enabled: false
-    label_key: nodegroup-type
-    label_value: node-tiler
+    label_key: nodegroup_type
+    label_value: tiler
 # ====================================================================================================
 # Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3  
 # ====================================================================================================
 tilerServerCacheCleaner:
-  enabled: true
+  enabled: false
   replicaCount: 1
   command: './tile_cache_downloader.sh & ./expire-watcher.sh'
   resources:
@@ -400,16 +414,16 @@ tilerServerCacheCleaner:
       cpu: '2'
   nodeSelector:
     enabled: false
-    label_key: nodegroup-type
-    label_value: node-tiler
+    label_key: nodegroup_type
+    label_value: tiler
 # ====================================================================================================
 # Variables for tiler-visor
 # ====================================================================================================
 tilerVisor:
   enabled: false
   image:
-    name: 'cartpress_replace'
-    tag: 'chartpress_replace'
+    name: ''
+    tag: ''
   replicaCount: 1
   # Set staticIp, if you are using cloudProvider=gcp
   staticIp: 35.247.6.238
@@ -424,7 +438,10 @@ tilerVisor:
     limits:
       memory: '2Gi'
       cpu: '2'
-
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: tiler
 # ====================================================================================================
 # Variables for Tasking Manager API
 # ====================================================================================================
@@ -432,8 +449,8 @@ tilerVisor:
 tmApi:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-tasking-manager-api'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   nodeSelector:
     enabled: false
   replicaCount: 1
@@ -480,14 +497,14 @@ tmApi:
 
 nominatim:
   image:
-    name: 'developmentseed/osmseed-nominatim'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
 
 # ====================================================================================================
 # Variables for nominatim db
 # ====================================================================================================
 nominatimDb:
-  enabled: true
+  enabled: false
   env:
     PG_PORT: 5432
     PG_USER: nominatim
@@ -504,10 +521,13 @@ nominatimDb:
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: nominatim-pgdata
-    # In case cloudProvider: aws
+    # Minikube
+    localVolumeHostPath: /mnt/nominatim-db-data
+    localVolumeSize: 10Gi
+    # AWS
     AWS_ElasticBlockStore_volumeID: vol-037a44560af1076f1
     AWS_ElasticBlockStore_size: 100Gi
-    # In case cloudProvider: gcp
+    # GCP
     GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
     GCP_gcePersistentDisk_size: 50Gi
   resources:
@@ -525,11 +545,11 @@ nominatimDb:
 # Variables for nominatim api
 # ====================================================================================================
 nominatimApi:
-  enabled: true
+  enabled: false
   replicaCount: 1
   env:
     BASE_URL: https://nominatim.osm-seed.test
-    OSMSEED_WEB_API_DOMAIN: osmseed.org
+    OSMSEED_WEB_API_DOMAIN: openstreetmap.org
     OSMSEED_OVERPASS_API_DOMAIN: overpass-api.osmseed.org
   resources:
     enabled: false
@@ -548,25 +568,29 @@ nominatimApi:
 overpassApi:
   enabled: true
   image:
-    name: 'developmentseed/osmseed-overpass-api'
-    tag: '0.1.0-n423.hdb62b0d'
+    name: ''
+    tag: ''
   env:
     OVERPASS_META: 'yes'
     OVERPASS_MODE: init
     OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
     OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/monaco/minute/
     OVERPASS_RULES_LOAD: 10
-    OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf'
+    #OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf' # it is in case we pass planet files as PBF file uncommment this line
+    OVERPASS_PLANET_PREPROCESS: 'ls'
   persistenceDisk:
     enabled: true
     accessMode: ReadWriteOnce
     mountPath: /db
-    # In case cloudProvider: aws
-    # AWS_ElasticBlockStore_volumeID : vol-1234bcd
-    # AWS_ElasticBlockStore_size: 100Gi
-    # In case cloudProvider: gcp
-    # GCP_gcePersistentDisk_pdName: osmseed-disk-overpass-api-v2
-    # GCP_gcePersistentDisk_size: 50Gi
+    # Minikube
+    localVolumeHostPath: /mnt/overpass-api-db-data
+    localVolumeSize: 10Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_size: 50Gi
+    # GCP
+    GCP_gcePersistentDisk_pdName: osmseed-disk-overpass-v1
+    GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
     requests:
@@ -581,7 +605,7 @@ overpassApi:
 # Variables for taginfo
 # ====================================================================================================
 taginfo:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
