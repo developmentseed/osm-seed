@@ -14,11 +14,11 @@ spec:
   {{- if eq .Values.cloudProvider "minikube" }}
   storageClassName: local-storage
   capacity:
-    storage: {{ .Values.tilerDb.persistenceDisk.local_volume_size }}
+    storage: {{ .Values.tilerDb.persistenceDisk.localVolumeSize }}
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: {{ .Values.tilerDb.persistenceDisk.local_volume_hostPath | quote }}
+    path: {{ .Values.tilerDb.persistenceDisk.localVolumeHostPath | quote }}
   {{- end }}
 
   ############## AWS Provider ##############
@@ -69,7 +69,7 @@ spec:
     requests:
       ############# Minikube ##############
       {{- if eq .Values.cloudProvider "minikube" }}
-      storage: {{ .Values.tilerDb.persistenceDisk.local_volume_size }}
+      storage: {{ .Values.tilerDb.persistenceDisk.localVolumeSize }}
       {{- end }}
 
       ############## AWS Provider ##############

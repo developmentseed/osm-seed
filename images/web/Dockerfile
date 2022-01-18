@@ -127,12 +127,6 @@ RUN git clone https://github.com/shssoichiro/oxipng.git
 # Set version 5.0.1 for oxipng
 RUN cd oxipng && git checkout c888142bcb7a68a430245cb3eae5b6039aeb0e56 && cargo build --release && cp target/release/oxipng /usr/local/bin
 
-# Fix issue with libffi
-RUN set -x \
-  && apt update \
-  && apt install -y --no-install-recommends \
-  libffi-dev
-
 # Install app dependencies
 RUN bundle update mimemagic
 RUN bundle update listen && bundle install
