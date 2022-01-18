@@ -155,11 +155,18 @@ ADD config/action_mailer.rb config/initializers/action_mailer.rb
 # Precompile the website assets
 RUN apt-get install -y tzdata
 RUN npm install yarn -g
+
 RUN bundle exec rake yarn:install
 RUN bundle exec rake i18n:js:export
 # From https://github.com/lautis/uglifier#readme
 RUN  sed -i -e 's/config.assets.js_compressor = :uglifier/config.assets.js_compressor = :terser/g' $workdir/config/environments/production.rb
 RUN bundle exec rake assets:precompile
+
+# Loading dynamically-linked native libraries 
+RUN gem install ffi
+
+# Clean all installed gems for Ruby version
+RUN gem pristine --all
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
 RUN ln -s /tmp /var/www/tmp
@@ -183,6 +190,7 @@ RUN apache2ctl configtest
 
 # Set Permissions for www-data
 RUN chown -R www-data: /var/www
+
 
 # Script to start the app
 ADD start.sh $workdir/start.sh
