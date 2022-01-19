@@ -21,10 +21,10 @@ production:
 # # Set up iD key
 # sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/application.yml
 
-
+# Loading dynamically-linked for ffi libraries 
+gem pristine ffi
 
 # Check if DB is already up
-
 flag=true
 while "$flag" = true; do
   pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
@@ -46,5 +46,3 @@ while "$flag" = true; do
   # Start the app
   apachectl -k start -DFOREGROUND
 done
-
-
