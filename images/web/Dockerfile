@@ -132,6 +132,9 @@ RUN bundle update mimemagic
 RUN bundle update listen && bundle install
 RUN gem install rake
 
+# Install ffi for loading dynamically-linked native libraries 
+RUN gem install ffi
+
 # update vendored iD
 RUN rm -rf vendor/assets/iD
 RUN vendorer
@@ -162,12 +165,6 @@ RUN bundle exec rake i18n:js:export
 RUN  sed -i -e 's/config.assets.js_compressor = :uglifier/config.assets.js_compressor = :terser/g' $workdir/config/environments/production.rb
 RUN bundle exec rake assets:precompile
 
-# Loading dynamically-linked native libraries 
-RUN gem install ffi
-
-# Clean all installed gems for Ruby version
-RUN gem pristine --all
-
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
 RUN ln -s /tmp /var/www/tmp
 
@@ -191,8 +188,10 @@ RUN apache2ctl configtest
 # Set Permissions for www-data
 RUN chown -R www-data: /var/www
 
-
 # Script to start the app
 ADD start.sh $workdir/start.sh
+
+# Clean all installed gems for Ruby version
+RUN gem pristine --all
 
 CMD $workdir/start.sh
