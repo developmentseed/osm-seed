@@ -21,8 +21,8 @@ production:
 # # Set up iD key
 # sed -i -e 's/id-key-to-be-replaced/'$OSM_id_key'/g' $workdir/config/application.yml
 
-# Loading dynamically-linked for ffi libraries 
-gem pristine ffi
+# Fix issues with platform
+bundle config force_ruby_platform true
 
 # Check if DB is already up
 flag=true

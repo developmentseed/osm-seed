@@ -188,10 +188,10 @@ RUN apache2ctl configtest
 # Set Permissions for www-data
 RUN chown -R www-data: /var/www
 
-# Script to start the app
-ADD start.sh $workdir/start.sh
-
 # Clean all installed gems for Ruby version
 RUN gem pristine --all
+
+# Script to start the app
+ADD start.sh $workdir/start.sh
 
 CMD $workdir/start.sh
