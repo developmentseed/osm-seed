@@ -66,7 +66,7 @@ db:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: '1234'
   persistenceDisk:
-    enabled: true
+    enabled: false
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
     # Minikube
@@ -98,8 +98,8 @@ web:
     name: ''
     tag: ''
   replicaCount: 1
-  # Set staticIp, if you are using cloudProvider=gcp
-  staticIp: 35.247.6.238
+  # # Set staticIp, if you are using cloudProvider=gcp
+  # staticIp: 35.247.6.238
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
@@ -116,6 +116,11 @@ web:
       cpu: '2'
   nodeSelector:
     enabled: false
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    cpuUtilization: 80
 
 # ====================================================================================================
 # Variables for memcached. Memcached is used to store session cookies
@@ -153,7 +158,7 @@ fullHistory:
     enabled: false
     label_key: nodegroup-type
     label_value: ohm-non-tiler
-  schedule: '* */24 * * *'
+  schedule: '* * * * *'
   env:
     OVERWRITE_FHISTORY_FILE: false
   resources:
@@ -173,7 +178,7 @@ dbBackupRestore:
   image:
     name: ''
     tag: ''
-  schedule: '0 */1 * * *'
+  schedule: '* * * * *'
   env:
     DB_ACTION: backup
     CLEAN_BACKUPS: true
@@ -185,6 +190,8 @@ dbBackupRestore:
     limits:
       memory: '400Mi'
       cpu: '0.6'
+  nodeSelector:
+    enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
@@ -194,7 +201,7 @@ planetDump:
   image:
     name: ''
     tag: ''
-  schedule: '0 */1 * * *'
+  schedule: '* * * * *'
   env:
     CLEAN_BACKUPS: true
   resources:
@@ -566,7 +573,7 @@ nominatimApi:
 # Variables for overpass-api
 # ====================================================================================================
 overpassApi:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
