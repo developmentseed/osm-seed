@@ -50,7 +50,7 @@ To delete all resources created in the Helm chart:
 
 ```sh
 minikube delete --all
-minikube start --mount-string=$PWD/data/:/mnt/ --mount
+minikube start --mount-string=$PWD/data/:/mnt/ --mount --driver=docker
 minikube ssh
 chartpress
 # It is necesary to create the folder in the shared folder 
@@ -63,10 +63,16 @@ mkdir -p $PWD/data/nominatim-db-data
 
 # Install develop version
 helm install develop osm-seed -f osm-seed/values.yaml
+
+# Expose web contianer service
+minikube service develop-osm-seed-web --url
+
 # Update develop version
 helm upgrade develop osm-seed -f osm-seed/values.yaml
+
 # Delete develop version
 helm delete develop
+
 ```
 
 ### Additional Notes

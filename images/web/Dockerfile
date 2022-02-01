@@ -123,13 +123,17 @@ RUN echo "gem 'terser', '~> 1.1.3'" >> Gemfile
 # RUN gem install nokogiri -- --use-system-libraries
 
 RUN apt-get install -y cargo
-RUN git clone https://github.com/shssoichiro/oxipng.git
+# Set version 5.0.1 for oxipng
+RUN git clone https://github.com/shssoichiro/oxipng.git && cd oxipng && git checkout c888142bcb7a68a430245cb3eae5b6039aeb0e56
 RUN cd oxipng && cargo build --release && cp target/release/oxipng /usr/local/bin
 
 # Install app dependencies
 RUN bundle update mimemagic
 RUN bundle update listen && bundle install
 RUN gem install rake
+
+# Install ffi for loading dynamically-linked native libraries 
+RUN gem install ffi
 
 # update vendored iD
 RUN rm -rf vendor/assets/iD
@@ -154,6 +158,7 @@ ADD config/action_mailer.rb config/initializers/action_mailer.rb
 # Precompile the website assets
 RUN apt-get install -y tzdata
 RUN npm install yarn -g
+
 RUN bundle exec rake yarn:install
 RUN bundle exec rake i18n:js:export
 # From https://github.com/lautis/uglifier#readme
@@ -182,6 +187,9 @@ RUN apache2ctl configtest
 
 # Set Permissions for www-data
 RUN chown -R www-data: /var/www
+
+# Clean all installed gems for Ruby version
+RUN gem pristine --all
 
 # Script to start the app
 ADD start.sh $workdir/start.sh
