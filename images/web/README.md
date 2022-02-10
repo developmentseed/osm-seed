@@ -19,10 +19,11 @@ In order to run this container we need environment variables, these can be found
 
     # Docker
     docker run \
-    --env-file ./../../.env.web \
-    --env-file ./../../.env.db \
+    --env-file ./envs/.env.web \
+    --env-file ./envs/.env.db \
     --network osm-seed_default \
     -p "80:80" \
+    -p "3000:3000" \
     -h localhost \
-    -t osmseed-web:v1
+    -it osmseed-web:v1 bash
 ```
