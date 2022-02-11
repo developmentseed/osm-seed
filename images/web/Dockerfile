@@ -45,7 +45,7 @@ RUN echo "gem 'image_optim_pack', :git => 'git://github.com/toy/image_optim_pack
 # Install Ruby packages
 RUN gem install bundler && bundle install
 
-# Configure database.yml, application.yml and secrets.yml
+# Configure database.yml and secrets.yml
 RUN cp $workdir/config/example.database.yml $workdir/config/database.yml
 RUN touch $workdir/config/settings.local.yml
 RUN cp $workdir/config/example.storage.yml $workdir/config/storage.yml
@@ -90,7 +90,11 @@ RUN a2ensite cgimap
 RUN apache2ctl configtest
 
 # Set Permissions for www-data
-RUN chown -R www-data: /var/www
+RUN chown -R www-data: $workdir
+
+# Add settings
+ADD config/settings.yml $workdir/config/settings.yml
 
 COPY start.sh $workdir/
+
 CMD $workdir/start.sh
