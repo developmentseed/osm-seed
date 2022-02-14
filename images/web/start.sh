@@ -25,6 +25,7 @@ sed -i -e 's/smtp_enable_starttls_auto: false/smtp_enable_starttls_auto: true/g'
 sed -i -e 's/smtp_authentication: null/smtp_authentication: "login"/g' $workdir/config/settings.yml
 sed -i -e 's/smtp_user_name: null/smtp_user_name: "'$MAILER_USERNAME'"/g' $workdir/config/settings.yml
 sed -i -e 's/smtp_password: null/smtp_password: "'$MAILER_PASSWORD'"/g' $workdir/config/settings.yml
+# sed -i -e 's/smtp_port: 25/smtp_port: '$MAILER_PORT'/g' $workdir/config/settings.yml
 sed -i -e 's/email_from: "OpenStreetMap <openstreetmap@example.com>"/email_from: "'$MAILER_FROM'"/g' $workdir/config/settings.yml
 
 # Check if DB is already up
