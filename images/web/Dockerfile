@@ -38,9 +38,12 @@ RUN npm install -g svgo
 
 # Install openstreetmap-website
 RUN rm -rf $workdir/html
-RUN git clone --depth 1 https://github.com/openstreetmap/openstreetmap-website.git $workdir
+# GITSHA value at 15-02-2022
+ENV OPENSTREETMAP_WEBSITE_GITSHA=c24b5481812aba9e83da1fd855ccb37f92c5d75e
+RUN curl -L https://github.com/openstreetmap/openstreetmap-website/archive/$OPENSTREETMAP_WEBSITE_GITSHA.zip --output website.zip && unzip website.zip 
+RUN mv openstreetmap-website-$OPENSTREETMAP_WEBSITE_GITSHA/* $workdir/
 WORKDIR $workdir
-RUN echo "gem 'image_optim_pack', :git => 'git://github.com/toy/image_optim_pack.git'" >> Gemfile
+RUN echo "gem 'image_optim_pack', :git => 'https://github.com/toy/image_optim_pack.git'" >> Gemfile
 
 # Install Ruby packages
 RUN gem install bundler && bundle install
