@@ -66,7 +66,7 @@ db:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: '1234'
   persistenceDisk:
-    enabled: true
+    enabled: false
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
     # Minikube
@@ -98,8 +98,6 @@ web:
     name: ''
     tag: ''
   replicaCount: 1
-  # Set staticIp, if you are using cloudProvider=gcp
-  staticIp: 35.247.6.238
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
@@ -116,6 +114,11 @@ web:
       cpu: '2'
   nodeSelector:
     enabled: false
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    cpuUtilization: 80
 
 # ====================================================================================================
 # Variables for memcached. Memcached is used to store session cookies
@@ -153,7 +156,7 @@ fullHistory:
     enabled: false
     label_key: nodegroup-type
     label_value: ohm-non-tiler
-  schedule: '* */24 * * *'
+  schedule: '* * * * *'
   env:
     OVERWRITE_FHISTORY_FILE: false
   resources:
@@ -173,10 +176,9 @@ dbBackupRestore:
   image:
     name: ''
     tag: ''
-  schedule: '0 */1 * * *'
+  schedule: '* * * * *'
   env:
     DB_ACTION: backup
-    CLEAN_BACKUPS: true
   resources:
     enabled: false
     requests:
@@ -185,6 +187,8 @@ dbBackupRestore:
     limits:
       memory: '400Mi'
       cpu: '0.6'
+  nodeSelector:
+    enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
@@ -194,9 +198,9 @@ planetDump:
   image:
     name: ''
     tag: ''
-  schedule: '0 */1 * * *'
+  schedule: '* * * * *'
   env:
-    CLEAN_BACKUPS: true
+    OVERWRITE_PLANET_FILE: false
   resources:
     enabled: false
     requests:
@@ -286,7 +290,7 @@ tilerDb:
     POSTGRES_DB_MAINTENANCE_WORK_MEM: 64MB
     POSTGRES_DB_EFFECTIVE_CACHE_SIZE: 4GB
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-d
@@ -325,7 +329,7 @@ tilerImposm:
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
     TILER_IMPORT_LIMIT: https://gist.githubusercontent.com/Rub21/96bdcac5eb11f0b36ba8d0352ac537f4/raw/2606f2e207d4a0d895897a83efa1efacefd36eb4/monaco.geojson
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
     # Minikube
@@ -358,8 +362,6 @@ tilerServer:
     name: ''
     tag: ''
   replicaCount: 1
-  # Set staticIp, if you are using cloudProvider=gcp
-  staticIp: 35.247.6.238
   env:
     TILER_SERVER_PORT: 9090
     TILER_CACHE_TYPE: s3 #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
@@ -373,7 +375,7 @@ tilerServer:
   command: './start.sh' # ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
   # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
     # Minikube
@@ -425,8 +427,6 @@ tilerVisor:
     name: ''
     tag: ''
   replicaCount: 1
-  # Set staticIp, if you are using cloudProvider=gcp
-  staticIp: 35.247.6.238
   env:
     TILER_VISOR_PROTOCOL: http
     TILER_VISOR_PORT: 8081
@@ -454,7 +454,6 @@ tmApi:
   nodeSelector:
     enabled: false
   replicaCount: 1
-  staticIp: c
   env:
     POSTGRES_HOST: 'tm'
     POSTGRES_DB: 'tm'
@@ -517,7 +516,7 @@ nominatimDb:
     REPLICATION_UPDATE_INTERVAL: 86500
     REPLICATION_RECHECK_INTERVAL: 900
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: nominatim-pgdata
@@ -566,7 +565,7 @@ nominatimApi:
 # Variables for overpass-api
 # ====================================================================================================
 overpassApi:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
@@ -579,7 +578,7 @@ overpassApi:
     #OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf' # it is in case we pass planet files as PBF file uncommment this line
     OVERPASS_PLANET_PREPROCESS: 'ls'
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /db
     # Minikube
