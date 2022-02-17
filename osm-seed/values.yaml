@@ -117,7 +117,7 @@ web:
   nodeSelector:
     enabled: false
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 3
     cpuUtilization: 80
@@ -181,7 +181,6 @@ dbBackupRestore:
   schedule: '* * * * *'
   env:
     DB_ACTION: backup
-    CLEAN_BACKUPS: true
   resources:
     enabled: false
     requests:
@@ -203,7 +202,7 @@ planetDump:
     tag: ''
   schedule: '* * * * *'
   env:
-    CLEAN_BACKUPS: true
+    OVERWRITE_PLANET_FILE: false
   resources:
     enabled: false
     requests:
@@ -293,7 +292,7 @@ tilerDb:
     POSTGRES_DB_MAINTENANCE_WORK_MEM: 64MB
     POSTGRES_DB_EFFECTIVE_CACHE_SIZE: 4GB
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-d
@@ -332,7 +331,7 @@ tilerImposm:
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
     TILER_IMPORT_LIMIT: https://gist.githubusercontent.com/Rub21/96bdcac5eb11f0b36ba8d0352ac537f4/raw/2606f2e207d4a0d895897a83efa1efacefd36eb4/monaco.geojson
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
     # Minikube
@@ -380,7 +379,7 @@ tilerServer:
   command: './start.sh' # ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
   # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
     # Minikube
@@ -524,7 +523,7 @@ nominatimDb:
     REPLICATION_UPDATE_INTERVAL: 86500
     REPLICATION_RECHECK_INTERVAL: 900
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: nominatim-pgdata
@@ -586,7 +585,7 @@ overpassApi:
     #OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf' # it is in case we pass planet files as PBF file uncommment this line
     OVERPASS_PLANET_PREPROCESS: 'ls'
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /db
     # Minikube
