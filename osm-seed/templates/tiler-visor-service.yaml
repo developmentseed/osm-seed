@@ -17,18 +17,14 @@ spec:
   {{- if eq .Values.cloudProvider "aws" }}
   type: LoadBalancer
   {{- end }}
-  
   # In case cloudProvider=gcp
   {{- if eq .Values.cloudProvider "gcp" }}
   type: LoadBalancer
-  loadBalancerIP : {{ .Values.tilerVisor.staticIp }}
   {{- end }}
-
   # In case cloudProvider=minikube
   {{- if eq .Values.cloudProvider "minikube" }}
   type: NodePort
   {{- end }}
-  
   ports:
     - port: {{ .Values.tilerVisor.env.TILER_VISOR_PORT }}
       targetPort: 80

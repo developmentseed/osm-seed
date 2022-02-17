@@ -21,18 +21,14 @@ spec:
   {{- if eq .Values.cloudProvider "aws" }}
   type: LoadBalancer
   {{- end }}
-  
   # In case cloudProvider=gcp
   {{- if eq .Values.cloudProvider "gcp" }}
   type: LoadBalancer
-  loadBalancerIP : {{ .Values.overpassApi.staticIp }}
   {{- end }}
-
   # In case cloudProvider=minikube
   {{- if eq .Values.cloudProvider "minikube" }}
   type: NodePort
   {{- end }}
-  
   ports:
     - port: 80
       targetPort: 80
