@@ -1,0 +1,25 @@
+version: '3'
+services:
+  ######################################################
+  ### OSM minute replication files section
+  ######################################################
+  replication-job:
+    image: osmseed-replication-job:v1
+    build:
+      context: ../images/replication-job
+      dockerfile: Dockerfile
+    volumes:
+      - ../data/replication-job-data:/mnt/data
+    command: >
+      /bin/bash -c "
+      echo Sleep the replication-job for 1 minute;
+      sleep 1m;
+      echo Creating the replication files!;
+      /start.sh
+      "
+    env_file:
+      - ../envs/.env.db
+      - ../envs/.env.db-utils
+      - ../envs/.env.cloudprovider
+    depends_on:
+      - db
