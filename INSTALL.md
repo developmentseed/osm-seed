@@ -13,11 +13,11 @@ You will need `docker` and `docker-compose` installed on your system.
 
 ### Run locally
 
-OSM Seed contains different containers, these are split into multiple docker compose files in `compose/`. The `docker-compose.yml` is the default with a API database and openstreetmap-website container. Make sure the required environment files are created. Example envs are in `envs/`. To create an env copy `envs/.env.db.example` to `.env.db` and edit as appropriate.
+OSM Seed contains different containers, these are split into multiple docker compose files in `compose/`. The `web.yml` is the default with a API database and openstreetmap-website container. Make sure the required environment files are created. Example envs are in `envs/`. To create an env copy `envs/.env.db.example` to `.env.db` and edit as appropriate.
 
 
 You can use any container required by extending the `docker compose up` command like this:
-* To run just the website `docker compose -f compose/docker-compose.yml up`
+* To run just the website `docker compose -f compose/web.yml up`
 * To run website and import some data to the DB `docker compose -f compose/populate-apidb.yml up`
 
 Once `docker-compose` is running, you should be able to access a local instance of services:
