@@ -39,6 +39,7 @@ while "$flag" = true; do
     sleep 2
   done &
 
+  bundle exec rake assets:precompile --trace
   bundle exec rails db:migrate
   # Start the delayed jobs queue worker and  Start the app
   bundle exec rake jobs:work &

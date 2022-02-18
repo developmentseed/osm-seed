@@ -13,9 +13,8 @@ You will need `docker` and `docker-compose` installed on your system.
 
 ### Run locally
 
-Osm-seed contains different containers, you may need to comment out some of them at docker-compose.yml according to your use case.
-
-Copy the required environment files  form `envs/` folder, e.g `envs/.env.db.example` to `.env.db` and edit as appropriate. 
+OSM Seed contains different containers, you may need to comment out some of them at docker-compose.yml according to your use case.
+Copy the required environment files  from `envs/` folder, e.g `envs/.env.db.example` to `.env.db` and edit as appropriate.
 
 Run `docker-compose build` to build all Dockerfiles defined in `docker-compose.yml`.
 
@@ -32,7 +31,6 @@ Once `docker-compose` is running, you should be able to access a local instance 
    - Overpass API on `http://localhost:8081`
    - Tasking Manager API on `http://localhost:5050`
    - Taginfo API website on `http://localhost:4567`
-   - OpenStreetMap website on `http://localhost:80`
 
 NOTE: 
  

@@ -4,6 +4,7 @@ services:
   # OSM API and Database section
   ####################################################
   db:
+    platform: linux/amd64
     image: osmseed-db:v1
     build:
       context: ./images/db
