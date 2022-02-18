@@ -1,0 +1,23 @@
+version: '3'
+services:
+  #####################################################
+  ## OSM Database backup and restore section
+  #####################################################
+  db-backup-restore:
+    image: osmseed-backup-restore:v1
+    build:
+      context: ../images/backup-restore
+      dockerfile: Dockerfile
+    volumes:
+      - ../data/db-backup-restore-data:/mnt/data
+    command: >
+      /bin/bash -c "
+        echo 'Set cron job for backing up DB, every 4 minutes';
+        while :; do sleep 4m; echo 'Creating DB backup...'; /start.sh; done;
+      "
+    env_file:
+      - ../envs/.env.db
+      - ../envs/.env.db-utils
+      - ../envs/.env.cloudprovider
+    depends_on:
+      - db

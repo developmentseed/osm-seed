@@ -13,13 +13,12 @@ You will need `docker` and `docker-compose` installed on your system.
 
 ### Run locally
 
-Osm-seed contains different containers, you may need to comment out some of them at docker-compose.yml according to your use case.
+OSM Seed contains different containers, these are split into multiple docker compose files in `compose/`. The `web.yml` is the default with a API database and openstreetmap-website container. Make sure the required environment files are created. Example envs are in `envs/`. To create an env copy `envs/.env.db.example` to `.env.db` and edit as appropriate.
 
-Copy the required environment files  form `envs/` folder, e.g `envs/.env.db.example` to `.env.db` and edit as appropriate. 
 
-Run `docker-compose build` to build all Dockerfiles defined in `docker-compose.yml`.
-
-Run `docker-compose up` to run all containers defined in `docker-compose.yml`
+You can use any container required by extending the `docker compose up` command like this:
+* To run just the website `docker compose -f compose/web.yml up`
+* To run website and import some data to the DB `docker compose  -f compose/web.yml -f compose/populate-apidb.yml up`
 
 Once `docker-compose` is running, you should be able to access a local instance of services:
 
@@ -32,7 +31,6 @@ Once `docker-compose` is running, you should be able to access a local instance 
    - Overpass API on `http://localhost:8081`
    - Tasking Manager API on `http://localhost:5050`
    - Taginfo API website on `http://localhost:4567`
-   - OpenStreetMap website on `http://localhost:80`
 
 NOTE: 
  

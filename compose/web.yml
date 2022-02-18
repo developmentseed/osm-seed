@@ -1,0 +1,29 @@
+version: '3'
+services:
+  ####################################################
+  # OSM API and Database section
+  ####################################################
+  db:
+    platform: linux/amd64
+    image: osmseed-db:v1
+    build:
+      context: ../images/db
+      dockerfile: Dockerfile
+    ports:
+      - '5432:5432'
+    volumes:
+      - ../data/db-data:/var/lib/postgresql/data
+    env_file:
+      - ../envs/.env.db
+  web:
+    image: osmseed-web:v1
+    build:
+      context: ../images/web
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    env_file:
+      - ../envs/.env.web
+      - ../envs/.env.db
+    depends_on:
+      - db

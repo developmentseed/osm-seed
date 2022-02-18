@@ -1,168 +1,64 @@
-FROM ubuntu:16.04
+FROM ubuntu:20.04
+ENV DEBIAN_FRONTEND=noninteractive
 ENV workdir /var/www
 
 # Production OSM setup
 ENV RAILS_ENV=production
 
-# Install the openstreetmap-website dependencies and passenger dependencies
-RUN apt-get update && \
-    apt-get install -y wget curl \
-    build-essential git git-core \
-    zlib1g-dev libssl-dev libreadline-dev libyaml-dev \
-    libsqlite3-dev sqlite3 libmagickwand-dev libxml2-dev libxslt1-dev \
-    openssh-server openssh-client \
-    apache2 apache2-dev \
-    libarchive13 libarchive-dev \
-    libsasl2-dev imagemagick libffi-dev postgresql-client curl &&\
-    # Cleanup
-    apt-get clean && \
-    cd /var/lib/apt/lists && rm -fr *Release* *Sources* *Packages* && \
-    truncate -s 0 /var/log/*log
+# Install the openstreetmap-website dependencies
+RUN apt-get update \ 
+    && apt-get install -y \
+    ruby2.7 libruby2.7 ruby2.7-dev libmagickwand-dev libxml2-dev libxslt1-dev \
+    nodejs npm apache2 apache2-dev build-essential git-core firefox-geckodriver postgresql-client \
+    libpq-dev libsasl2-dev imagemagick libffi-dev libgd-dev libarchive-dev libbz2-dev yarnpkg curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Ruby 2.6.6
-RUN cd /tmp &&\
-  wget -O ruby-2.6.6.tar.gz https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.6.tar.gz &&\
-  tar -xzvf ruby-2.6.6.tar.gz &&\
-  cd ruby-2.6.6/ &&\
-  ./configure &&\
-  make &&\
-  make install &&\
-  cd /tmp &&\
-  rm -rf ruby-2.6.6 &&\
-  rm -rf ruby-2.6.6.tar.gz
-
-# Add Ruby binaries and gem to $PATH 
-ENV PATH /usr/local/bin/:$PATH
-ENV WORK_ROOT /var
-ENV GEM_HOME $WORK_ROOT/.gem/ruby
-ENV GEM_PATH $GEM_HOME
-ENV PATH $PATH:$GEM_PATH/bin
-
-# Add options to gemrc
-RUN echo "gem: --no-document" > $WORK_ROOT/.gemrc
-RUN apt-get -y update && \
-    apt-get -y upgrade
-
-
-RUN gem install bundler
-
-# Install node for some images process dependencies
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get install -y nodejs
-
-# Fixing image_optim issues, installing a bush of libraries from : https://github.com/toy/image_optim#pngout-installation-optional
-RUN apt-get install -y advancecomp gifsicle jhead jpegoptim optipng
-RUN git clone -b 2.12.2 https://github.com/kornelski/pngquant.git && \
-    cd pngquant && \
-    ./configure && \
-    make && \
-    make install
-RUN git clone https://github.com/tjko/jpeginfo.git && \
-    cd jpeginfo && \
-    git checkout 743b1b15002f05298a0672e9d0f23ada240ababf && \
-    ./configure && \
-    make && \
-    make strip && \
-    make install
-RUN wget http://iweb.dl.sourceforge.net/project/pmt/pngcrush/1.8.12/pngcrush-1.8.12.tar.gz && \
-    tar zxf pngcrush-1.8.12.tar.gz && \
-    cd pngcrush-1.8.12 && \
-    make && cp -f pngcrush /usr/local/bin
-RUN npm install -g svgo
-
-# Install openstreetmap-cgimap
-RUN apt-get install -y libxml2-dev libpqxx-dev libfcgi-dev \
-    libboost-dev libboost-regex-dev libboost-program-options-dev \
-    libboost-date-time-dev libboost-filesystem-dev \
+# Install openstreetmap-cgimap requiriments
+RUN apt-get update \
+    && apt-get -y install \
+    libxml2-dev libpqxx-dev libfcgi-dev zlib1g-dev \
+    libboost-dev libboost-program-options-dev libboost-filesystem-dev \
     libboost-system-dev libboost-locale-dev libmemcached-dev \
-    libcrypto++-dev automake autoconf libtool libyajl-dev
+    libcrypto++-dev libargon2-dev libyajl-dev automake autoconf libtool \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
+# Install cgimap
 ENV cgimap /tmp/openstreetmap-cgimap
-RUN git clone -b v0.6.2 https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
+RUN git clone https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
 RUN cd $cgimap && \
     ./autogen.sh && \
     ./configure && \
     make && \
     make install
 
-# Daemontools provides the `fghack` program required for running the `cgimap`
-RUN apt-get install -y daemontools
+# Install svgo required
+RUN npm install -g svgo
 
-# Install the PGP key and add HTTPS support for APT
-RUN apt-get install -y dirmngr gnupg
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7
-RUN apt-get install -y apt-transport-https ca-certificates
-
-# Add the APT repository
-RUN sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main > /etc/apt/sources.list.d/passenger.list'
-RUN apt-get update
-
-# Install Passenger + Apache module
-RUN apt-get install -y libapache2-mod-passenger
-
-# Enable the Passenger Apache module and restart Apache
-RUN echo "ServerName $(cat /etc/hostname)" >> /etc/apache2/apache2.conf
-RUN a2enmod passenger
-RUN apache2ctl restart
-
-# Check installation
-RUN /usr/bin/passenger-config validate-install
-RUN /usr/sbin/passenger-memory-stats
-
-# Clone the openstreetmap-website
-RUN rm -rf $workdir
-RUN git clone https://github.com/openstreetmap/openstreetmap-website.git $workdir 
+# Install openstreetmap-website
+RUN rm -rf $workdir/html
+# GITSHA value at 15-02-2022
+ENV OPENSTREETMAP_WEBSITE_GITSHA=c24b5481812aba9e83da1fd855ccb37f92c5d75e
+RUN curl -L https://github.com/openstreetmap/openstreetmap-website/archive/$OPENSTREETMAP_WEBSITE_GITSHA.zip --output website.zip && unzip website.zip 
+RUN mv openstreetmap-website-$OPENSTREETMAP_WEBSITE_GITSHA/* $workdir/
 WORKDIR $workdir
-# Gitsha for current live site https://github.com/openstreetmap/openstreetmap-website/commits/live at Apr 10, 2020
-RUN git checkout --force 8199002a0fd83a6eec91764bcec9e9e8705c7e5d
+RUN echo "gem 'image_optim_pack', :git => 'https://github.com/toy/image_optim_pack.git'" >> Gemfile
 
-# Install the javascript runtime required by the `execjs` gem in
-RUN apt-get install -y libv8-dev
-# RUN echo "gem 'mini_racer'" >> Gemfile
-RUN echo "gem 'terser', '~> 1.1.3'" >> Gemfile
-# RUN gem install nokogiri -- --use-system-libraries
+# Install Ruby packages
+RUN gem install bundler && bundle install
 
-RUN apt-get install -y cargo
-# Set version 5.0.1 for oxipng
-RUN git clone https://github.com/shssoichiro/oxipng.git && cd oxipng && git checkout c888142bcb7a68a430245cb3eae5b6039aeb0e56
-RUN cd oxipng && cargo build --release && cp target/release/oxipng /usr/local/bin
-
-# Install app dependencies
-RUN bundle update mimemagic
-RUN bundle update listen && bundle install
-RUN gem install rake
-
-# Install ffi for loading dynamically-linked native libraries 
-RUN gem install ffi
-
-# update vendored iD
-RUN rm -rf vendor/assets/iD
-RUN vendorer
-
-# Configure database.yml, application.yml and secrets.yml
-ADD config/database.yml $workdir/config/database.yml
+# Configure database.yml and secrets.yml
+RUN cp $workdir/config/example.database.yml $workdir/config/database.yml
 RUN touch $workdir/config/settings.local.yml
 RUN cp $workdir/config/example.storage.yml $workdir/config/storage.yml
-
-# ADD config/application.yml $workdir/config/application.yml
 RUN echo "#session key \n\
 production: \n\
   secret_key_base: $(bundle exec rake secret)" > $workdir/config/secrets.yml
-
 # Protect sensitive information
 RUN chmod 600 $workdir/config/database.yml $workdir/config/secrets.yml
-
-# Configure ActionMailer SMTP settings, Replace config/initializers/action_mailer.rb with out configurations
-ADD config/action_mailer.rb config/initializers/action_mailer.rb
-
-# Precompile the website assets
-RUN apt-get install -y tzdata
-RUN npm install yarn -g
-
 RUN bundle exec rake yarn:install
 RUN bundle exec rake i18n:js:export
-# From https://github.com/lautis/uglifier#readme
-RUN  sed -i -e 's/config.assets.js_compressor = :uglifier/config.assets.js_compressor = :terser/g' $workdir/config/environments/production.rb
 RUN bundle exec rake assets:precompile
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
@@ -172,6 +68,17 @@ RUN ln -s /tmp /var/www/tmp
 ADD config/production.conf /etc/apache2/sites-available/production.conf
 RUN a2dissite 000-default
 RUN a2ensite production
+
+# Install Passenger + Apache module
+RUN apt-get update && apt-get install -y libapache2-mod-passenger
+
+# Enable the Passenger Apache module and restart Apache
+RUN echo "ServerName $(cat /etc/hostname)" >> /etc/apache2/apache2.conf
+RUN a2enmod passenger
+
+# Check installation
+RUN /usr/bin/passenger-config validate-install
+RUN /usr/sbin/passenger-memory-stats
 
 # Enable required apache modules for the cgimap Apache service
 RUN a2enmod proxy proxy_http rewrite
@@ -186,12 +93,11 @@ RUN a2ensite cgimap
 RUN apache2ctl configtest
 
 # Set Permissions for www-data
-RUN chown -R www-data: /var/www
+RUN chown -R www-data: $workdir
 
-# Clean all installed gems for Ruby version
-RUN gem pristine --all
+# Add settings
+ADD config/settings.yml $workdir/config/settings.yml
 
-# Script to start the app
-ADD start.sh $workdir/start.sh
+COPY start.sh $workdir/
 
 CMD $workdir/start.sh
