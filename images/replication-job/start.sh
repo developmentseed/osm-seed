@@ -39,9 +39,9 @@ if [ ! -f $workingDirectory/state.txt ]; then
         if [[ $state_file_exists=="true" ]]; then
             echo "File exist, let's get it from $CLOUDPROVIDER - $AZURE_CONTAINER_NAME"
             az storage blob download \
-            --container-name $AZURE_CONTAINER_NAME \
-            --name $REPLICATION_FOLDER/state.txt \
-            --file $workingDirectory/state.txt --query="name"
+                --container-name $AZURE_CONTAINER_NAME \
+                --name $REPLICATION_FOLDER/state.txt \
+                --file $workingDirectory/state.txt --query="name"
         fi
     fi
     mkdir -p $workingDirectory
@@ -50,17 +50,17 @@ fi
 # Creating the replication files
 function generateReplication() {
     osmosis -q \
-    --replicate-apidb \
-    iterations=0 \
-    minInterval=60000 \
-    maxInterval=120000 \
-    host=$POSTGRES_HOST \
-    database=$POSTGRES_DB \
-    user=$POSTGRES_USER \
-    password=$POSTGRES_PASSWORD \
-    validateSchemaVersion=no \
-    --write-replication \
-    workingDirectory=$workingDirectory &
+        --replicate-apidb \
+        iterations=0 \
+        minInterval=60000 \
+        maxInterval=120000 \
+        host=$POSTGRES_HOST \
+        database=$POSTGRES_DB \
+        user=$POSTGRES_USER \
+        password=$POSTGRES_PASSWORD \
+        validateSchemaVersion=no \
+        --write-replication \
+        workingDirectory=$workingDirectory &
     while true; do
         for local_file in $(find $workingDirectory/ -cmin -1); do
             if [ -f "$local_file" ]; then
@@ -83,10 +83,10 @@ function generateReplication() {
                 if [ $CLOUDPROVIDER == "azure" ]; then
                     #TODO, emable public acces
                     az storage blob upload \
-                    --container-name $AZURE_CONTAINER_NAME \
-                    --file $local_file \
-                    --name $cloud_file \
-                    --output none
+                        --container-name $AZURE_CONTAINER_NAME \
+                        --file $local_file \
+                        --name $cloud_file \
+                        --output none
                 fi
             fi
         done
