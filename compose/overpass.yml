@@ -1,0 +1,16 @@
+version: '3'
+services:
+  ######################################################
+  ### Overpass API section
+  ######################################################
+  overpass-api:
+    image: osmseed-overpass-api:v1
+    build:
+      context: ../images/overpass-api
+      dockerfile: Dockerfile
+    ports:
+      - '8081:80'
+    volumes:
+      - ../data/overpass-api-db-data:/db
+    env_file:
+      - ../envs/.env.overpass

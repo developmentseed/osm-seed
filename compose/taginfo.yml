@@ -1,0 +1,19 @@
+version: '3'
+services:
+  # #####################################################
+  # ## Taginfo section
+  # #####################################################
+  taginfo:
+    image: osmseed-taginfo:v1
+    build:
+      context: ../images/taginfo
+      dockerfile: Dockerfile
+    ports:
+      - '4567:80'
+    volumes:
+      - ../data/taginfo-data:/apps/data/
+    command: >
+      /bin/bash -c "
+      ./start.sh"
+    env_file:
+      - ../envs/.env.taginfo

@@ -1,0 +1,16 @@
+version: '3'
+services:
+  ######################################################
+  ### Tasking Manager section
+  ######################################################
+  tasking-manager-api:
+    image: osmseed-tasking-manager-api:v1
+    build:
+      context: ../images/tasking-manager-api
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+    volumes:
+      - ../data/tasking-manager-api-db:/db
+    env_file:
+      - ../envs/.env.tasking-manager

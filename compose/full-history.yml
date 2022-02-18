@@ -1,0 +1,23 @@
+version: '3'
+services:
+  #####################################################
+  ## OSM full planet replication
+  #####################################################
+  full-history:
+    image: osmseed-full-history:v1
+    build:
+      context: ../images/full-history
+      dockerfile: Dockerfile
+    volumes:
+      - ../data/full-history-data:/mnt/data
+    command: >
+      /bin/bash -c "
+        echo 'Set cron job for full history PBF file, every 4 minutes';
+        while :; do sleep 4m; echo 'Creating full history PBF file...'; /start.sh;  done;
+      "
+    env_file:
+      - ../envs/.env.db
+      - ../envs/.env.db-utils
+      - ../envs/.env.cloudprovider
+    depends_on:
+      - db

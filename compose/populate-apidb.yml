@@ -1,0 +1,22 @@
+version: '3'
+services:
+  #####################################################
+  ## Populate apidb from PBF file
+  #####################################################
+  populate-apidb:
+    image: osmseed-populate-apidb:v1
+    build:
+      context: ../images/populate-apidb
+      dockerfile: Dockerfile
+    volumes:
+      - ../data/populate-apidb-data:/mnt/data
+    command: >
+      /bin/bash -c "
+        echo Sleep for a while populate-apidb!;
+        sleep 4m;
+        echo Starting populate-apidb!;
+        /start.sh
+      "
+    env_file:
+      - ../envs/.env.db
+      - ../envs/.env.db-utils
