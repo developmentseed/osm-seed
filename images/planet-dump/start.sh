@@ -36,7 +36,7 @@ osmosis --read-apidb \
 if [ $CLOUDPROVIDER == "aws" ]; then
 	# Save the path file
 	AWS_URL=${AWS_S3_BUCKET/s3:\/\//http:\/\/}
-	echo "$AWS_URL.s3.amazonaws.com/planet/$local_planetPBFFile" > $stateFile
+	echo "$AWS_URL.s3.amazonaws.com/$cloud_planetPBFFile" > $stateFile
 	# Upload planet.osm.pbf file to s3
 	aws s3 cp $local_planetPBFFile $AWS_S3_BUCKET/$cloud_planetPBFFile --acl public-read
 	# Upload state.txt file to s3
@@ -56,7 +56,7 @@ fi
 # Azure
 if [ $CLOUDPROVIDER == "azure" ]; then
 	# Save the path file
-	echo "https://$AZURE_STORAGE_ACCOUNT.blob.core.windows.net/$AZURE_CONTAINER_NAME/$cloud_planetPBFFile"  > $stateFile
+	echo "https://$AZURE_STORAGE_ACCOUNT.blob.core.windows.net/$AZURE_CONTAINER_NAME/$cloud_planetPBFFile" > $stateFile
 	# Upload planet.osm.pbf file to blob storage
 	az storage blob upload \
         --container-name $AZURE_CONTAINER_NAME \

@@ -3,7 +3,8 @@ export PGPASSWORD=$POSTGRES_PASSWORD
 export VOLUME_DIR=/mnt/data
 
 date=$(date '+%y%m%d_%H%M')
-backupFile=$VOLUME_DIR/osmseed-db-${date}.sql.gz
+local_backupFile=$VOLUME_DIR/osmseed-db-${date}.sql.gz
+cloud_backupFile=database/osmseed-db-${date}.sql.gz
 stateFile=$VOLUME_DIR/state.txt
 restoreFile=$VOLUME_DIR/backup.sql.gz
 
@@ -11,24 +12,42 @@ echo "Start...$DB_ACTION action"
 # Backing up DataBase
 if [ "$DB_ACTION" == "backup" ]; then
 	# Backup database and make maximum compression at the slowest speed
-	pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB | gzip -9 >$backupFile
+	pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB | gzip -9 >$local_backupFile
 
 	# AWS
 	if [ "$CLOUDPROVIDER" == "aws" ]; then
-		# Upload to S3
-		aws s3 cp $backupFile $AWS_S3_BUCKET/database/$backupFile
-		# The file state.txt contain the latest version of DB path
-		echo "$AWS_S3_BUCKET/database/$backupFile" > $stateFile
-		aws s3 cp $stateFile $AWS_S3_BUCKET/database/$stateFile
+		echo "$AWS_S3_BUCKET/$cloud_backupFile" > $stateFile
+		# Upload db backup file
+		aws s3 cp $local_backupFile $AWS_S3_BUCKET/$cloud_backupFile
+		# Upload state.txt file
+		aws s3 cp $stateFile $AWS_S3_BUCKET/database/state.txt
 	fi
 
-	# Google Storage
+	# GCP
 	if [ "$CLOUDPROVIDER" == "gcp" ]; then
-		# Upload to GS
-		gsutil cp $backupFile $GCP_STORAGE_BUCKET/database/$backupFile
-		# The file state.txt contain the latest version of DB path
-		echo "$GCP_STORAGE_BUCKET/database/$backupFile" >$stateFile
-		gsutil cp $stateFile $GCP_STORAGE_BUCKET/database/$stateFile
+		echo "$GCP_STORAGE_BUCKET/$cloud_backupFile" > $stateFile
+		# Upload db backup file
+		gsutil cp $local_backupFile $GCP_STORAGE_BUCKET/$cloud_backupFile
+		# Upload state.txt file
+		gsutil cp $stateFile $GCP_STORAGE_BUCKET/database/state.txt
+	fi
+
+	# Azure
+	if [ "$CLOUDPROVIDER" == "azure" ]; then
+		# Save the path file
+		echo "blob://$AZURE_STORAGE_ACCOUNT/$AZURE_CONTAINER_NAME/$cloud_backupFile" > $stateFile
+		# Upload db backup file
+		az storage blob upload \
+			--container-name $AZURE_CONTAINER_NAME \
+			--file $local_backupFile \
+			--name $cloud_backupFile \
+			--output table
+		# Upload state.txt file
+		az storage blob upload \
+			--container-name $AZURE_CONTAINER_NAME \
+			--file $stateFile \
+			--name database/state.txt \
+			--output table
 	fi
 fi
 

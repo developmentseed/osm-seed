@@ -13,7 +13,7 @@ services:
     command: >
       /bin/bash -c "
         echo 'Set cron job for backing up DB, every 4 minutes';
-        while :; do sleep 4m; echo 'Creating DB backup...'; /start.sh; done;
+        while :; do echo 'Creating DB backup...'; /start.sh; sleep 4m; done;
       "
     env_file:
       - ../envs/.env.db
