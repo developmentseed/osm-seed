@@ -54,6 +54,17 @@ spec:
             - name: GCP_STORAGE_BUCKET
               value: {{ .Values.GCP_STORAGE_BUCKET }}
             {{- end }}
+            # In case cloudProvider=azure
+            {{- if eq .Values.cloudProvider "azure" }}
+            - name: AZURE_STORAGE_ACCOUNT
+              value: {{ .Values.AZURE_STORAGE_ACCOUNT }}
+            - name: AZURE_CONTAINER_NAME
+              value: {{ .Values.AZURE_CONTAINER_NAME }}
+            - name: AZURE_STORAGE_ACCESS_KEY
+              value: {{ .Values.AZURE_STORAGE_ACCESS_KEY }}
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
+            {{- end }}
               # Memory optimization for osmosis
             {{- if .Values.replicationJob.resources.enabled }}
             - name: MEMORY_JAVACMD_OPTIONS
