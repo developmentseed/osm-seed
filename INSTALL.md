@@ -18,7 +18,7 @@ OSM Seed contains different containers, these are split into multiple docker com
 
 You can use any container required by extending the `docker compose up` command like this:
 * To run just the website `docker compose -f compose/web.yml up`
-* To run website and import some data to the DB `docker compose -f compose/populate-apidb.yml up`
+* To run website and import some data to the DB `docker compose  -f compose/web.yml -f compose/populate-apidb.yml up`
 
 Once `docker-compose` is running, you should be able to access a local instance of services:
 
