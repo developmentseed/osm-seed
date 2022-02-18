@@ -21,7 +21,7 @@ services:
     command: >
       /bin/bash -c "
         echo 'Set cronjob for planet-dump, every 4 minutes';
-        while :; do sleep 4m; echo 'Creating the planet dump file...'; /start.sh; done;
+        while :; do echo 'Creating the planet dump file...'; /start.sh; sleep 4m; done;
       "
     env_file:
       - ../envs/.env.db

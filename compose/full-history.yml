@@ -13,7 +13,7 @@ services:
     command: >
       /bin/bash -c "
         echo 'Set cron job for full history PBF file, every 4 minutes';
-        while :; do sleep 4m; echo 'Creating full history PBF file...'; /start.sh;  done;
+        while :; do echo 'Creating full history PBF file...'; /start.sh; sleep 4m; done;
       "
     env_file:
       - ../envs/.env.db
