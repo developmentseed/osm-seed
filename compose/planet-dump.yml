@@ -27,5 +27,4 @@ services:
       - ../envs/.env.db
       - ../envs/.env.db-utils
       - ../envs/.env.cloudprovider
-    depends_on:
-      - db
+      
