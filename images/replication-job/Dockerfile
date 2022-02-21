@@ -1,4 +1,5 @@
-FROM developmentseed/osmseed-osm-processor:ohm-7dd7b8a
+FROM developmentseed/osmseed-osm-processor:v2
+
 COPY ./start.sh /
 WORKDIR /mnt/data
 CMD /start.sh

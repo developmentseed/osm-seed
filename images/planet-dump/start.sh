@@ -11,10 +11,13 @@ fi
 
 # Read the DB and create the planet osm file
 date=$(date '+%y%m%d_%H%M')
-planetPBFFile=$VOLUME_DIR/planet-${date}.osm.pbf
+local_planetPBFFile=$VOLUME_DIR/planet-${date}.osm.pbf
+cloud_planetPBFFile=planet/planet-${date}.osm.pbf
+
 # In case overwrite the file
 if [ "$OVERWRITE_PLANET_FILE" == "true" ]; then
-	planetPBFFile=$VOLUME_DIR/planet-latest.osm.pbf
+	local_planetPBFFile=$VOLUME_DIR/planet-latest.osm.pbf
+	cloud_planetPBFFile=planet/planet-latest.osm.pbf
 fi
 
 stateFile="$VOLUME_DIR/state.txt"
@@ -27,23 +30,43 @@ osmosis --read-apidb \
 	password=$POSTGRES_PASSWORD \
 	validateSchemaVersion=no \
 	--write-pbf \
-	file=$planetPBFFile
+	file=$local_planetPBFFile
 
 # AWS
 if [ $CLOUDPROVIDER == "aws" ]; then
 	# Save the path file
 	AWS_URL=${AWS_S3_BUCKET/s3:\/\//http:\/\/}
-	echo "$AWS_URL.s3.amazonaws.com/planet/$planetPBFFile" > $stateFile
-	# Upload to S3
-	aws s3 cp $planetPBFFile $AWS_S3_BUCKET/planet/$planetPBFFile --acl public-read 
-	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/$stateFile --acl public-read
+	echo "$AWS_URL.s3.amazonaws.com/$cloud_planetPBFFile" > $stateFile
+	# Upload planet.osm.pbf file to s3
+	aws s3 cp $local_planetPBFFile $AWS_S3_BUCKET/$cloud_planetPBFFile --acl public-read
+	# Upload state.txt file to s3
+	aws s3 cp $stateFile $AWS_S3_BUCKET/planet/state.txt --acl public-read
 fi
 
-# Google Storage
+# gcp
 if [ $CLOUDPROVIDER == "gcp" ]; then
 	# Save the path file
-	echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/planet/$planetPBFFile" > $stateFile
-	# Upload to GS
-	gsutil cp -a public-read $planetPBFFile $GCP_STORAGE_BUCKET/planet/$planetPBFFile
-	gsutil cp -a public-read $stateFile $GCP_STORAGE_BUCKET/planet/$stateFile
+	echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/$cloud_planetPBFFile" > $stateFile
+	# Upload planet.osm.pbf file to cloud storage
+	gsutil cp -a public-read $local_planetPBFFile $GCP_STORAGE_BUCKET/$cloud_planetPBFFile
+	# Upload state.txt file to cloud storage
+	gsutil cp -a public-read $stateFile $GCP_STORAGE_BUCKET/planet/state.txt
+fi
+
+# Azure
+if [ $CLOUDPROVIDER == "azure" ]; then
+	# Save the path file
+	echo "https://$AZURE_STORAGE_ACCOUNT.blob.core.windows.net/$AZURE_CONTAINER_NAME/$cloud_planetPBFFile" > $stateFile
+	# Upload planet.osm.pbf file to blob storage
+	az storage blob upload \
+        --container-name $AZURE_CONTAINER_NAME \
+        --file $local_planetPBFFile \
+        --name $cloud_planetPBFFile \
+        --output table
+	# Upload state.txt file to blob storage
+	az storage blob upload \
+        --container-name $AZURE_CONTAINER_NAME \
+        --file $stateFile \
+        --name planet/state.txt \
+        --output table
 fi

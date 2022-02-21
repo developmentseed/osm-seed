@@ -6,23 +6,32 @@
 # The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
 osmSeedVersion: develop-9302179
 environment: development
-# cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, minikube
+# cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, azure, minikube
 cloudProvider: minikube
+
 # ====================================================================================================
 # AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
 # ====================================================================================================
 AWS_S3_BUCKET: s3://osm-seed
+
+# ====================================================================================================
+# GCP: In case you are using the cloudProvider=gcp set the below variables, We are assuming the nodes has a policies to upload files to cloud storage 
+# ====================================================================================================
+GCP_STORAGE_BUCKET: gs://osm-seed-test
+
+# ====================================================================================================
+# AZURE: In case you are using the cloudProvider=azure set the below variables
+# ====================================================================================================
+AZURE_STORAGE_ACCOUNT: osmseed
+AZURE_CONTAINER_NAME: osm-seed
+AZURE_STORAGE_ACCESS_KEY: xyz..
+AZURE_STORAGE_CONNECTION_STRING: xyz..
 
 # ====================================================
 # AWS: Specify ARN for SSL certificate, currently assumes a single wildcard cert
 # ====================================================
 
 AWS_SSL_ARN: false
-
-# ====================================================================================================
-# GCP: In case you are using the cloudProvider=gcp set the below variables
-# ====================================================================================================
-GCP_STORAGE_BUCKET: gs://osm-seed-test
 
 # ====================================================================================================
 # Ingress variables
