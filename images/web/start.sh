@@ -28,6 +28,9 @@ sed -i -e 's/openstreetmap@example.com/'$MAILER_FROM'/g' $workdir/config/setting
 [[ -z "$MAILER_PORT" ]] && MAILER_PORT=25
 sed -i -e 's/smtp_port: 25/smtp_port: '$MAILER_PORT'/g' $workdir/config/settings.yml
 
+#### SET UP ID KEY
+sed -i -e 's/#id_key: ""/id_key: "'$OSM_id_key'"/g' $workdir/config/settings.yml
+
 #### CHECK IF DB IS ALREADY UP AND START THE APP
 flag=true
 while "$flag" = true; do
@@ -39,7 +42,7 @@ while "$flag" = true; do
     sleep 2
   done &
 
-  bundle exec rake assets:precompile --trace
+  # bundle exec rake assets:precompile --trace
   bundle exec rails db:migrate
   # Start the delayed jobs queue worker and  Start the app
   bundle exec rake jobs:work &
