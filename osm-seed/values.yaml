@@ -36,25 +36,46 @@ AWS_SSL_ARN: false
 # ====================================================================================================
 # Ingress variables
 # ====================================================================================================
-ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - chart-example.local
-  tls: []
+# ingress:
+#   enabled: false
+#   annotations: {}
+#     # kubernetes.io/ingress.class: nginx
+#     # kubernetes.io/tls-acme: "true"
+#   path: /
+#   hosts:
+#     - chart-example.local
+#   tls: []
+
+# # ====================================================================================================
+# # Domain app configuration
+# # ====================================================================================================
+# domain:
+#   #enabled, If you set  enabled=true, you should uncomment the following configurations
+#   enabled: false
+#   # domainName, Add here your domain or the fixed IP  where the server is running
+#   domainName: example.com
+#   protocolo: http
+
+# Domain that is pointed to the clusterIP
+# You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
+# Then, the cluster configuration will setup services at their respective subdomains:
+# - web.osmseed.example.com
+# - overpass.osmseed.example.com
+# - nominatim.osmseed.example.com
+# - etc.
+domain: osmseed.example.com
 
 # ====================================================================================================
-# Domain app configuration
+# Configuration for Lets Encrypt setup
 # ====================================================================================================
-domain:
-  #enabled, If you set  enabled=true, you should uncomment the following configurations
-  enabled: false
-  # domainName, Add here your domain or the fixed IP  where the server is running
-  domainName: example.com
-  protocolo: http
+
+# Admin Email address used when generating Lets Encrypt certificates.
+# You will be notified of expirations, etc. on this email address.
+adminEmail: admin@example.com
+
+# Sets the installCRDs to true for the lets-encrypt subchart.
+lets-encrypt:
+  installCRDs: true
 
 # ====================================================================================================
 # ====================================================================================================
