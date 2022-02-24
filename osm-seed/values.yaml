@@ -72,10 +72,6 @@ domain: osmseed.example.com
 # You will be notified of expirations, etc. on this email address.
 adminEmail: admin@example.com
 
-# Sets the installCRDs to true for the lets-encrypt subchart.
-lets-encrypt:
-  installCRDs: true
-
 # ====================================================================================================
 # ====================================================================================================
 # ==================================Pods Configurations===============================================
