@@ -35,21 +35,32 @@ To handle domain routing and SSL, osm-seed needs the nginx ingress controller se
 
 You can do this with:
 
+```sh
     helm upgrade --install ingress-nginx ingress-nginx \
   --repo https://kubernetes.github.io/ingress-nginx \
   --namespace ingress-nginx --create-namespace
+```
+
+or install using `kubectl`
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/cloud/deploy.yaml
+```
 
 For more options and cloud-specific instructions, see: https://kubernetes.github.io/ingress-nginx/deploy/
 
 To install the Lets Encrypt `cert-manager` helm chart:
 
-        $ helm install \
+```sh
+    helm repo add jetstack https://charts.jetstack.io
+    helm repo update
+    helm install \
         cert-manager jetstack/cert-manager \
         --namespace cert-manager \
         --create-namespace \
         --version v1.7.1 \
         --set installCRDs=true
-
+```
 For further information: https://cert-manager.io/docs/installation/helm/
 
 ### Install osm-seed onto your cluster
