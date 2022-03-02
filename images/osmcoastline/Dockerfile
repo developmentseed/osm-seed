@@ -65,7 +65,8 @@ RUN cd osmcoastline && git checkout v2.3.1 && mkdir build
 WORKDIR $workdir/osmcoastline/build
 RUN cmake ..
 RUN make
-
+RUN ln -s "$PWD"/src/osmcoastline /usr/bin/osmcoastline
+RUN osmcoastline --version
 # # Install AWS CLI
 # RUN pip install awscli
 
@@ -77,6 +78,6 @@ RUN make
 # RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
 WORKDIR $workdir
-COPY start.sh start.sh
-RUN chmod +x start.sh
-CMD ./start.sh
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+CMD /start.sh
