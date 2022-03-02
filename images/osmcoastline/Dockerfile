@@ -43,11 +43,11 @@ RUN apt-get -y install \
     ca-certificates \
     liblz4-dev
 
-WORKDIR $workdir
+WORKDIR /home
 RUN git clone https://github.com/osmcode/libosmium.git
 RUN cd libosmium && git checkout v2.18.0
-RUN mkdir build
-WORKDIR $workdir/libosmium/build
+RUN cd libosmium && mkdir build
+WORKDIR /home/libosmium/build
 RUN cmake ..
 RUN make ..
 
@@ -58,14 +58,14 @@ RUN apt-get install -y \
     zsh \
     libgdal-dev
 
-WORKDIR $workdir
+WORKDIR /home
 RUN echo 'hello'
 RUN git clone https://github.com/osmcode/osmcoastline.git
 RUN cd osmcoastline && git checkout v2.3.1 && mkdir build
-WORKDIR $workdir/osmcoastline/build
+WORKDIR /home/osmcoastline/build
 RUN cmake ..
 RUN make
-RUN ln -s "$PWD"/src/osmcoastline /usr/bin/osmcoastline
+RUN ln -s "$PWD"/src/osmcoastline /usr/local/bin/osmcoastline
 RUN osmcoastline --version
 # # Install AWS CLI
 # RUN pip install awscli
@@ -77,6 +77,7 @@ RUN osmcoastline --version
 # # Install Azure CLI
 # RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
+VOLUME $workdir
 WORKDIR $workdir
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
