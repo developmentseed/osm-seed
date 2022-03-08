@@ -112,6 +112,8 @@ web:
     MAILER_DOMAIN: gmail.com
     MAILER_USERNAME: osmseed.test@gmail.com
     MAILER_PASSWORD: '1234'
+    MAILER_FROM: no-reply@osmseed.org
+    MAILER_PORT: 25
     NOMINATIM_URL: 'nominatim'
   resources:
     enabled: false
