@@ -24,16 +24,18 @@ jobs:
         GIT_BRANCH_NAME=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
         GIT_BRANCH_NAME=${GIT_BRANCH_NAME/\//_}
         OSM_SEED_VERSION=$(jq -r '.version' < package.json)
+        SHORT_GITHUB_SHA=${GITHUB_SHA::7}
         echo "GIT_BRANCH_NAME=$GIT_BRANCH_NAME" >> $GITHUB_ENV
         echo "OSM_SEED_VERSION=$OSM_SEED_VERSION" >> $GITHUB_ENV
+        echo "SHORT_GITHUB_SHA=$SHORT_GITHUB_SHA" >> $GITHUB_ENV
     - name: Run Chartpress
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
       run: |
-          if [[ $GIT_BRANCH_NAME = "develop" && $GITHUB_EVENT_NAME = "push" ]]
+          TAG=dev
+          if [[ $GIT_BRANCH_NAME = "main" && $GITHUB_EVENT_NAME = "push" ]]
           then
-              chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}
-          else
-              chartpress --push --publish-chart
+              TAG=stable
           fi
+          chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}-$TAG.h$SHORT_GITHUB_SHA
