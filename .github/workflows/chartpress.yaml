@@ -33,9 +33,13 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
       run: |
-          TAG=dev
-          if [[ $GIT_BRANCH_NAME = "main" && $GITHUB_EVENT_NAME = "push" ]]
+          if [[ $GIT_BRANCH_NAME = "versioning" ]]
           then
-              TAG=stable
+              echo chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}
+          elif [[ $GIT_BRANCH_NAME = "develop" ]]
+          then
+              TAG=dev
+              echo chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}-$TAG.h$SHORT_GITHUB_SHA
+          else
+              echo chartpress --push --publish-chart
           fi
-          chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}-$TAG.h$SHORT_GITHUB_SHA
