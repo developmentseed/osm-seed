@@ -110,8 +110,10 @@ web:
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
-    MAILER_USERNAME: osmseed.test@gmail.com
+    MAILER_USERNAME: example@gmail.com
     MAILER_PASSWORD: '1234'
+    MAILER_FROM: no-reply@example.com
+    MAILER_PORT: 25
     NOMINATIM_URL: 'nominatim'
   resources:
     enabled: false
