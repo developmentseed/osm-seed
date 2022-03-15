@@ -18,12 +18,12 @@ jobs:
       run: git config --global user.email "noreply@developmentseed.org" && git config --global user.name "Github Action"
     - name: Install Chartpress and some python modules
       run: |
-        pip install -v chartpress && pip install six && pip install jq
+        pip install -v chartpress && pip install six && pip install yq
     - name: Set env vars for publish charts
       run: |
         GIT_BRANCH_NAME=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
         GIT_BRANCH_NAME=${GIT_BRANCH_NAME/\//_}
-        OSM_SEED_VERSION=$(jq -r '.version' < package.json)
+        OSM_SEED_VERSION=$(yq -r .appVersion ./osm-seed/Chart.yaml)
         SHORT_GITHUB_SHA=${GITHUB_SHA::7}
         echo "GIT_BRANCH_NAME=$GIT_BRANCH_NAME" >> $GITHUB_ENV
         echo "OSM_SEED_VERSION=$OSM_SEED_VERSION" >> $GITHUB_ENV
@@ -33,13 +33,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
       run: |
-          if [[ $GIT_BRANCH_NAME = "versioning" ]]
+          if [[ $GIT_BRANCH_NAME = "main" ]]
           then
-              echo chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}
+              chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}
           elif [[ $GIT_BRANCH_NAME = "develop" ]]
           then
-              TAG=dev
-              echo chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}-$TAG.h$SHORT_GITHUB_SHA
+              chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}-dev.h$SHORT_GITHUB_SHA
           else
-              echo chartpress --push --publish-chart
+              chartpress --push --publish-chart
           fi
