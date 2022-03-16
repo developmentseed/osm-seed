@@ -1,4 +1,4 @@
-{{- if .Values.web.enabled }}
+{{- if and .Values.web.enabled (eq .Values.serviceType "ClusterIP") }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
