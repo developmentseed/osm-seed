@@ -47,15 +47,10 @@ spec:
   capacity:
     storage: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_size }}
   persistentVolumeReclaimPolicy: Retain
-  # claimRef:
-  #   name: {{ .Release.Name }}-pv-claim
-  #   namespace: default
-  csi:
-    driver: disk.csi.azure.com
-    readOnly: false
-    volumeHandle: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_name }}
-    volumeAttributes:
-      fsType: ext4
+  azureDisk:
+    kind: Managed
+    diskName: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_name }}
+    diskURI: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_source }}
   {{- end }}
 ---
 apiVersion: v1
@@ -67,10 +62,6 @@ metadata:
     component: db-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-# {{- if eq .Values.cloudProvider "azure" }}
-#   annotations:
-#     volume.beta.kubernetes.io/storage-class: ""
-# {{- end }}
 spec:
   ############## Minikube ##############
   {{- if eq .Values.cloudProvider "minikube" }}
