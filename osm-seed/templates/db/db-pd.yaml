@@ -43,9 +43,13 @@ spec:
 
   ############## Azure Provider ##############
   {{- if eq .Values.cloudProvider "azure" }}
+  storageClassName: ""
   capacity:
     storage: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_size }}
   persistentVolumeReclaimPolicy: Retain
+  # claimRef:
+  #   name: {{ .Release.Name }}-pv-claim
+  #   namespace: default
   csi:
     driver: disk.csi.azure.com
     readOnly: false
@@ -63,6 +67,10 @@ metadata:
     component: db-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
+# {{- if eq .Values.cloudProvider "azure" }}
+#   annotations:
+#     volume.beta.kubernetes.io/storage-class: ""
+# {{- end }}
 spec:
   ############## Minikube ##############
   {{- if eq .Values.cloudProvider "minikube" }}
