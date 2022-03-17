@@ -87,6 +87,9 @@ db:
     # GCP
     GCP_gcePersistentDisk_pdName: osmseed-disk-db-v1
     GCP_gcePersistentDisk_size: 50Gi
+    # Azure
+    AZURE_PersistentDisk_name: /subscriptions/8b80d348-3ed0-421c-a192-31cffcb1c036/resourceGroups/mc_osmseed-production_rg_osmseed-production-cluster_eastus/providers/Microsoft.Compute/disks/osmseed-api-db-v2
+    AZURE_PersistentDisk_size: 20Gi
   resources:
     enabled: false
     requests:
