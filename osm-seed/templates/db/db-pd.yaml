@@ -10,13 +10,13 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
+  accessModes:
+    - ReadWriteOnce
   ############## Minikube ##############
   {{- if eq .Values.cloudProvider "minikube" }}
   storageClassName: local-storage
   capacity:
     storage: {{ .Values.db.persistenceDisk.localVolumeSize }}
-  accessModes:
-    - ReadWriteOnce
   hostPath:
     path: {{ .Values.db.persistenceDisk.localVolumeHostPath | quote }}
   {{- end }}
@@ -26,8 +26,6 @@ spec:
   storageClassName: ""
   capacity:
     storage: {{ .Values.db.persistenceDisk.AWS_ElasticBlockStore_size }}
-  accessModes:
-    - ReadWriteOnce
   awsElasticBlockStore:
     volumeID: {{ .Values.db.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
     fsType: ext4
@@ -38,11 +36,22 @@ spec:
   storageClassName: ""
   capacity:
     storage: {{ .Values.db.persistenceDisk.GCP_gcePersistentDisk_size }}
-  accessModes:
-    - ReadWriteOnce
   gcePersistentDisk:
     pdName: {{ .Values.db.persistenceDisk.GCP_gcePersistentDisk_pdName }}
     fsType: ext4
+  {{- end }}
+
+  ############## Azure Provider ##############
+  {{- if eq .Values.cloudProvider "azure" }}
+  capacity:
+    storage: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_size }}
+  persistentVolumeReclaimPolicy: Retain
+  csi:
+    driver: disk.csi.azure.com
+    readOnly: false
+    volumeHandle: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_name }}
+    volumeAttributes:
+      fsType: ext4
   {{- end }}
 ---
 apiVersion: v1
@@ -80,6 +89,11 @@ spec:
       ############## GCP Provider ##############
       {{- if eq .Values.cloudProvider "gcp" }}
       storage: {{ .Values.db.persistenceDisk.GCP_gcePersistentDisk_size }}
+      {{- end }}
+
+      ############## AZURE Provider ##############
+      {{- if eq .Values.cloudProvider "azure" }}
+      storage: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_size }}
       {{- end }}
 {{- end }}
 {{- end }}
