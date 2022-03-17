@@ -45,12 +45,12 @@ spec:
   {{- if eq .Values.cloudProvider "azure" }}
   storageClassName: ""
   capacity:
-    storage: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_size }}
+    storage: {{ .Values.db.persistenceDisk.AZURE_diskSize }}
   persistentVolumeReclaimPolicy: Retain
   azureDisk:
     kind: Managed
-    diskName: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_name }}
-    diskURI: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_source }}
+    diskName: {{ .Values.db.persistenceDisk.AZURE_diskName }}
+    diskURI: {{ .Values.db.persistenceDisk.AZURE_diskURI }}
   {{- end }}
 ---
 apiVersion: v1
@@ -92,7 +92,7 @@ spec:
 
       ############## AZURE Provider ##############
       {{- if eq .Values.cloudProvider "azure" }}
-      storage: {{ .Values.db.persistenceDisk.AZURE_PersistentDisk_size }}
+      storage: {{ .Values.db.persistenceDisk.AZURE_diskSize }}
       {{- end }}
 {{- end }}
 {{- end }}
