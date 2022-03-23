@@ -24,7 +24,6 @@ GCP_STORAGE_BUCKET: gs://osm-seed-test
 # ====================================================================================================
 AZURE_STORAGE_ACCOUNT: osmseed
 AZURE_CONTAINER_NAME: osm-seed
-AZURE_STORAGE_ACCESS_KEY: xyz..
 AZURE_STORAGE_CONNECTION_STRING: xyz..
 
 # ====================================================
