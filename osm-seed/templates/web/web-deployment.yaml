@@ -72,11 +72,11 @@ spec:
             - name: OSM_memcache_servers
               value: {{ .Release.Name }}-memcached:11211
             # Set domain name or pod ip  
-              {{- if .Values.domain.enabled }}
+              {{- if .Values.domain }}
             - name: SERVER_URL
-              value: {{ .Values.domain.domainName }}
+              value: web.{{ .Values.domain }}
             - name: SERVER_PROTOCOL
-              value : {{ .Values.domain.protocolo }}
+              value : "https"
               {{- else }}
             - name: SERVER_URL
               value: dns
