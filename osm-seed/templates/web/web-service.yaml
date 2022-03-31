@@ -14,7 +14,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https    
     {{- end }}
-    {{- else if eq .Values.serviceType "ClusterIP" }}
+    {{- if eq .Values.serviceType "ClusterIP" }}
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
     {{- else }}
