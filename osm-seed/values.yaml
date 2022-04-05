@@ -24,7 +24,6 @@ GCP_STORAGE_BUCKET: gs://osm-seed-test
 # ====================================================================================================
 AZURE_STORAGE_ACCOUNT: osmseed
 AZURE_CONTAINER_NAME: osm-seed
-AZURE_STORAGE_ACCESS_KEY: xyz..
 AZURE_STORAGE_CONNECTION_STRING: xyz..
 
 # ====================================================
@@ -33,28 +32,21 @@ AZURE_STORAGE_CONNECTION_STRING: xyz..
 
 AWS_SSL_ARN: false
 
-# ====================================================================================================
-# Ingress variables
-# ====================================================================================================
-# ingress:
-#   enabled: false
-#   annotations: {}
-#     # kubernetes.io/ingress.class: nginx
-#     # kubernetes.io/tls-acme: "true"
-#   path: /
-#   hosts:
-#     - chart-example.local
-#   tls: []
+# Specify serviceType.
+#
+# serviceType can be one of three values: 'NodePort', 'ClusterIP' or 'LoadBalancer'
+# Use `NodePort` for local testing on minikube.
+#
+# The recommended setting is `ClusterIP`, and then following the instructions to
+# point a DNS record to the cluster IP address. This will setup the ingress rules
+# for all services as subdomains and configure SSL using Lets Encrypt.
+#
+# If you specify `LoadBalancer` as the service type, if you also specify
+# an `AWS_SSL_ARN` that is a wildcart certificate, that will be configured
+# as the SSL certificate for your services. Else, you will need to configure
+# SSL separately. 
+serviceType: NodePort
 
-# # ====================================================================================================
-# # Domain app configuration
-# # ====================================================================================================
-# domain:
-#   #enabled, If you set  enabled=true, you should uncomment the following configurations
-#   enabled: false
-#   # domainName, Add here your domain or the fixed IP  where the server is running
-#   domainName: example.com
-#   protocolo: http
 
 # Domain that is pointed to the clusterIP
 # You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
@@ -104,6 +96,10 @@ db:
     # GCP
     GCP_gcePersistentDisk_pdName: osmseed-disk-db-v1
     GCP_gcePersistentDisk_size: 50Gi
+    # Azure
+    AZURE_diskName: osmseed-api-db-v1
+    AZURE_diskURI: /subscriptions/../../providers/Microsoft.Compute/disks/osmseed-api-db-v1
+    AZURE_diskSize: 20Gi
   resources:
     enabled: false
     requests:
@@ -127,8 +123,10 @@ web:
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
-    MAILER_USERNAME: osmseed.test@gmail.com
+    MAILER_USERNAME: example@gmail.com
     MAILER_PASSWORD: '1234'
+    MAILER_FROM: no-reply@example.com
+    MAILER_PORT: 25
     NOMINATIM_URL: 'nominatim'
   resources:
     enabled: false
