@@ -1,7 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "osm-seed.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
@@ -26,13 +26,33 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ . }}
+    {{- if .Values.web.enabled }}
+    - host: web.{{ .Values.domain.domainName }}
       http:
         paths:
-          - path: {{ $ingressPath }}
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: http
-  {{- end }}
+        - path: /
+          backend:
+            serviceName: {{ template "osm-seed.fullname" . }}-web
+            servicePort: 80
+    {{- end }}
+
+    {{- if .Values.tmApi.enabled }}
+    - host: tasking-manager-api.{{ .Values.domain.domainName }}
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: {{ template "osm-seed.fullname" . }}-tasking-manager-api
+            servicePort: 80
+    {{- end }}
+
+    {{- if .Values.taginfo.enabled }}
+    - host: taginfo.{{ .Values.domain.domainName }}
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: {{ template "osm-seed.fullname" . }}-taginfo
+            servicePort: 80
+    {{- end }}
 {{- end }}

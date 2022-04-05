@@ -7,7 +7,7 @@
 osmSeedVersion: develop-9302179
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, azure, minikube
-cloudProvider: minikube
+cloudProvider: azure
 
 # ====================================================================================================
 # AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
@@ -36,23 +36,21 @@ AWS_SSL_ARN: false
 # Ingress variables
 # ====================================================================================================
 ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - chart-example.local
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+    ingress.kubernetes.io/rewrite-target: /
   tls: []
+
 
 # ====================================================================================================
 # Domain app configuration
 # ====================================================================================================
 domain:
   #enabled, If you set  enabled=true, you should uncomment the following configurations
-  enabled: false
+  enabled: true
   # domainName, Add here your domain or the fixed IP  where the server is running
-  domainName: example.com
+  domainName: abc.northeurope.aksapp.io
   protocolo: http
 
 # ====================================================================================================
@@ -461,7 +459,7 @@ tilerVisor:
 # ====================================================================================================
 
 tmApi:
-  enabled: false
+  enabled: true
   image:
     name: ''
     tag: ''
