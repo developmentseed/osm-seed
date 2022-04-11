@@ -4,12 +4,9 @@ kind: Ingress
 metadata:
   name: {{ template "osm-seed.fullname" . }}-ingress-web
   annotations:
-    # kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
-    kubernetes.io/ingress.class: addon-http-application-routing
-    ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: nginx
   tls:
     - hosts:
       - web.{{ .Values.domain }}
