@@ -8,37 +8,30 @@ metadata:
     component: tiler-server-service
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-  {{- if eq .Values.cloudProvider "aws" }}
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
-    {{- if .Values.AWS_SSL_ARN }}
+    {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https    
     {{- end }}
-  {{- end }}
+    {{- if eq .Values.serviceType "ClusterIP" }}
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+    {{- else }}
+    fake.annotation: fake
+    {{- end }}
 spec:
-  # In case cloudProvider=aws
-  {{- if eq .Values.cloudProvider "aws" }}
-  type: LoadBalancer
-  {{- end }}
-  # In case cloudProvider=gcp
-  {{- if eq .Values.cloudProvider "gcp" }}
-  type: LoadBalancer
-  {{- end }}
-  # In case cloudProvider=minikube
-  {{- if eq .Values.cloudProvider "minikube" }}
-  type: NodePort
-  {{- end }}
+  type: {{ .Values.serviceType }}
   ports:
-    - port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
-      targetPort: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
+    - port: 80
+      targetPort: http
       protocol: TCP
       name: http
-  {{- if .Values.AWS_SSL_ARN }} #FIXME: make generic
+  {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     - port: 443
       targetPort: http
       protocol: TCP
-      name: https      
+      name: https
   {{- end }}
   
   selector:
