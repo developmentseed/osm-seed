@@ -452,6 +452,7 @@ tilerVisor:
   image:
     name: ''
     tag: ''
+  serviceAnnotations: {}
   replicaCount: 1
   env:
     TILER_VISOR_PROTOCOL: http
