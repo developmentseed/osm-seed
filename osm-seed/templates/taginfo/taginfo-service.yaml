@@ -20,6 +20,9 @@ metadata:
     {{- else }}
     fake.annotation: fake
     {{- end }}
+    {{- with .Values.taginfo.serviceAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ .Values.serviceType }}
   ports:
