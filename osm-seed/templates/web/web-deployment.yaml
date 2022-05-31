@@ -77,7 +77,7 @@ spec:
               value: web.{{ .Values.domain }}
             - name: SERVER_PROTOCOL
               value : "https"
-              {{- else }}
+              {{- end }}
               # Set SERVER_URL in case we use LoadBalancer
               {{- if eq .Values.serviceType "LoadBalancer" }}
             - name: SERVER_URL
