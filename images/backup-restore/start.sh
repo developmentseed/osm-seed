@@ -54,7 +54,12 @@ fi
 # Restoring DataBase
 if [ "$DB_ACTION" == "restore" ]; then
 	# AWS
+	flag=true
+	while "$flag" = true; do
+	pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
+	flag=false
 	wget -O $restoreFile $RESTORE_URL_FILE
 	gunzip <$restoreFile | psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB
 	echo " Import data to  $POSTGRES_DB has finished ..."
+	done
 fi
