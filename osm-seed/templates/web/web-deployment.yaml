@@ -71,13 +71,22 @@ spec:
               value: {{ .Values.web.env.OSM_id_key }}
             - name: OSM_memcache_servers
               value: {{ .Release.Name }}-memcached:11211
-            # Set domain name or pod ip  
-              {{- if .Values.domain.enabled }}
+              # Set SERVER_URL in case we use ingress
+              {{- if eq .Values.serviceType "ClusterIP" }}
             - name: SERVER_URL
-              value: {{ .Values.domain.domainName }}
+              value: web.{{ .Values.domain }}
             - name: SERVER_PROTOCOL
-              value : {{ .Values.domain.protocolo }}
-              {{- else }}
+              value : "https"
+              {{- end }}
+              # Set SERVER_URL in case we use LoadBalancer
+              {{- if eq .Values.serviceType "LoadBalancer" }}
+            - name: SERVER_URL
+              value: {{ .Values.domain }}
+            - name: SERVER_PROTOCOL
+              value : "https"
+              {{- end }}
+              # Set SERVER_URL in case we use NodePort
+              {{- if eq .Values.serviceType "NodePort" }}
             - name: SERVER_URL
               value: dns
             - name: SERVER_PROTOCOL

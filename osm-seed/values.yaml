@@ -32,28 +32,38 @@ AZURE_STORAGE_CONNECTION_STRING: xyz..
 
 AWS_SSL_ARN: false
 
-# ====================================================================================================
-# Ingress variables
-# ====================================================================================================
-ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - chart-example.local
-  tls: []
+# Specify serviceType.
+#
+# serviceType can be one of three values: 'NodePort', 'ClusterIP' or 'LoadBalancer'
+# Use `NodePort` for local testing on minikube.
+#
+# The recommended setting is `ClusterIP`, and then following the instructions to
+# point a DNS record to the cluster IP address. This will setup the ingress rules
+# for all services as subdomains and configure SSL using Lets Encrypt.
+#
+# If you specify `LoadBalancer` as the service type, if you also specify
+# an `AWS_SSL_ARN` that is a wildcart certificate, that will be configured
+# as the SSL certificate for your services. Else, you will need to configure
+# SSL separately. 
+serviceType: NodePort
+
+
+# Domain that is pointed to the clusterIP
+# You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
+# Then, the cluster configuration will setup services at their respective subdomains:
+# - web.osmseed.example.com
+# - overpass.osmseed.example.com
+# - nominatim.osmseed.example.com
+# - etc.
+domain: osmseed.example.com
 
 # ====================================================================================================
-# Domain app configuration
+# Configuration for Lets Encrypt setup
 # ====================================================================================================
-domain:
-  #enabled, If you set  enabled=true, you should uncomment the following configurations
-  enabled: false
-  # domainName, Add here your domain or the fixed IP  where the server is running
-  domainName: example.com
-  protocolo: http
+
+# Admin Email address used when generating Lets Encrypt certificates.
+# You will be notified of expirations, etc. on this email address.
+adminEmail: admin@example.com
 
 # ====================================================================================================
 # ====================================================================================================
@@ -110,6 +120,7 @@ web:
     name: ''
     tag: ''
   replicaCount: 1
+  serviceAnnotations: {}
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
@@ -376,6 +387,7 @@ tilerServer:
     name: ''
     tag: ''
   replicaCount: 1
+  serviceAnnotations: {}
   env:
     TILER_SERVER_PORT: 9090
     TILER_CACHE_TYPE: s3 #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
@@ -440,6 +452,7 @@ tilerVisor:
   image:
     name: ''
     tag: ''
+  serviceAnnotations: {}
   replicaCount: 1
   env:
     TILER_VISOR_PROTOCOL: http
@@ -468,6 +481,7 @@ tmApi:
   nodeSelector:
     enabled: false
   replicaCount: 1
+  serviceAnnotations: {}
   env:
     POSTGRES_HOST: 'tm'
     POSTGRES_DB: 'tm'
@@ -558,7 +572,8 @@ nominatimDb:
 # Variables for nominatim api
 # ====================================================================================================
 nominatimApi:
-  enabled: false
+  serviceAnnotations: {}
+  enabled: true
   replicaCount: 1
   env:
     BASE_URL: https://nominatim.osm-seed.test
@@ -583,6 +598,7 @@ overpassApi:
   image:
     name: ''
     tag: ''
+  serviceAnnotations: {}
   env:
     OVERPASS_META: 'yes'
     OVERPASS_MODE: init
@@ -622,6 +638,7 @@ taginfo:
   image:
     name: ''
     tag: ''
+  serviceAnnotations: {}
   env:
     URL_PLANET_FILE_STATE: https://planet.osm.org/pbf/state.txt
     URL_HISTORY_PLANET_FILE_STATE: https://planet.osm.org/pbf/full-history/state.txt
