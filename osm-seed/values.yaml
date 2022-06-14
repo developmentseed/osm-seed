@@ -525,8 +525,8 @@ tmApi:
 nominatimApi:
   enabled: true
   image:
-    name: 'developmentseed/osmseed-nominatim'
-    tag: '0.1.0-n674.he4009f3'
+    name: ''
+    tag: ''
   serviceAnnotations: {}
   replicaCount: 1
   env:
