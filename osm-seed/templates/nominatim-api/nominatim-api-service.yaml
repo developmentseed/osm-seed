@@ -30,6 +30,7 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+      targetPort: apache
   {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     - port: 443
       targetPort: http

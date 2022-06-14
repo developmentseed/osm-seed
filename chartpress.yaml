@@ -33,7 +33,7 @@ charts:
       # tiler-visor:
       #   valuesPath: tilerVisor.image
       nominatim:
-        valuesPath: nominatim.image
+        valuesPath: nominatimApi.image
       overpass-api:
         valuesPath: overpassApi.image
       taginfo:
