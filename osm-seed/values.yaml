@@ -129,6 +129,7 @@ web:
     MAILER_FROM: no-reply@example.com
     MAILER_PORT: 25
     NOMINATIM_URL: 'nominatim'
+    OVERPASS_URL: 'overpassApi'
   resources:
     enabled: false
     requests:
