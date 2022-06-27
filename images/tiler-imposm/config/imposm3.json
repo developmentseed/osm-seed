@@ -378,6 +378,9 @@
                 ],
                 "barrier": [
                     "ditch"
+                ],
+                "natural": [
+                    "cliff"
                 ]
             }
         },
