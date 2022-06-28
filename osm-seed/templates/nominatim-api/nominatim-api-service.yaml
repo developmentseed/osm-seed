@@ -27,15 +27,18 @@ spec:
   type: {{ .Values.serviceType }}
   ports:
     - port: 80
-      targetPort: http
       protocol: TCP
       name: http
       targetPort: apache
+    - port: 5432
+      protocol: TCP
+      name: postgres
+      targetPort: postgres
   {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     - port: 443
-      targetPort: http
       protocol: TCP
       name: https
+      targetPort: apache
   {{- end }}
   selector:
     app: {{ template "osm-seed.name" . }}
