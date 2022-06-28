@@ -95,6 +95,9 @@ spec:
               # Nominatim domain
             - name: NOMINATIM_URL
               value: {{ .Values.web.env.NOMINATIM_URL }}
+              # Nominatim domain
+            - name: OVERPASS_URL
+              value: {{ .Values.web.env.OVERPASS_URL }}
             # Here can be added other Env variables for monitoring, debugging, etc.
             - name: NEW_RELIC_LICENSE_KEY
               value: {{ .Values.web.env.NEW_RELIC_LICENSE_KEY | default ""}}
