@@ -1,12 +1,12 @@
-{{- if .Values.nominatimDb.enabled -}}
-{{- if .Values.nominatimDb.persistenceDisk.enabled -}}
+{{- if .Values.nominatimApi.enabled -}}
+{{- if .Values.nominatimApi.persistenceDisk.enabled -}}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: {{ .Release.Name }}-nominatim-pv
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatim-db-pd
+    component: nominatim-api-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -25,11 +25,11 @@ spec:
   {{- if eq .Values.cloudProvider "aws" }}
   storageClassName: ""
   capacity:
-    storage: {{ .Values.nominatimDb.persistenceDisk.AWS_ElasticBlockStore_size }}
+    storage: {{ .Values.nominatimApi.persistenceDisk.AWS_ElasticBlockStore_size }}
   accessModes:
     - ReadWriteOnce
   awsElasticBlockStore:
-    volumeID: {{ .Values.nominatimDb.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
+    volumeID: {{ .Values.nominatimApi.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
     fsType: ext4
   {{- end }}
 
@@ -37,11 +37,11 @@ spec:
   {{- if eq .Values.cloudProvider "gcp" }}
   storageClassName: ""
   capacity:
-    storage: {{ .Values.nominatimDb.persistenceDisk.GCP_gcePersistentDisk_size }}
+    storage: {{ .Values.nominatimApi.persistenceDisk.GCP_gcePersistentDisk_size }}
   accessModes:
     - ReadWriteOnce
   gcePersistentDisk:
-    pdName: {{ .Values.nominatimDb.persistenceDisk.GCP_gcePersistentDisk_pdName}}
+    pdName: {{ .Values.nominatimApi.persistenceDisk.GCP_gcePersistentDisk_pdName}}
     fsType: ext4
   {{- end }}
 ---
@@ -51,7 +51,7 @@ metadata:
   name: {{ .Release.Name }}-nominatim-pv-claim
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatim-db-pd
+    component: nominatim-api-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -69,17 +69,17 @@ spec:
     requests:
       ############# Minikube ##############
       {{- if eq .Values.cloudProvider "minikube" }}
-      storage: {{ .Values.nominatimDb.persistenceDisk.localVolumeSize }}
+      storage: {{ .Values.nominatimApi.persistenceDisk.localVolumeSize }}
       {{- end }}
 
       ############## AWS Provider ##############
       {{- if eq .Values.cloudProvider "aws" }}
-      storage: {{ .Values.nominatimDb.persistenceDisk.AWS_ElasticBlockStore_size }}
+      storage: {{ .Values.nominatimApi.persistenceDisk.AWS_ElasticBlockStore_size }}
       {{- end }}
 
       ############## GCP Provider ##############
       {{- if eq .Values.cloudProvider "gcp" }}
-      storage: {{ .Values.nominatimDb.persistenceDisk.GCP_gcePersistentDisk_size }}
+      storage: {{ .Values.nominatimApi.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
 {{- end }}
 {{- end }}

@@ -519,67 +519,30 @@ tmApi:
       memory: '2Gi'
       cpu: '2'
 
-# ====================================================================================================
-# Nominatim image values
-# ====================================================================================================
-
-nominatim:
-  image:
-    name: ''
-    tag: ''
-
-# ====================================================================================================
-# Variables for nominatim db
-# ====================================================================================================
-nominatimDb:
-  enabled: false
-  env:
-    PG_PORT: 5432
-    PG_USER: nominatim
-    PG_PASSWORD: password1234
-    PG_DATABASE: nominatim
-    OSM_URL_FILE: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
-    THREADS: 4
-    REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates
-    REPLICATION_MAXINTERVAL: 86500
-    REPLICATION_UPDATE_INTERVAL: 86500
-    REPLICATION_RECHECK_INTERVAL: 900
-  persistenceDisk:
-    enabled: false
-    accessMode: ReadWriteOnce
-    mountPath: /var/lib/postgresql/data
-    subPath: nominatim-pgdata
-    # Minikube
-    localVolumeHostPath: /mnt/nominatim-db-data
-    localVolumeSize: 10Gi
-    # AWS
-    AWS_ElasticBlockStore_volumeID: vol-037a44560af1076f1
-    AWS_ElasticBlockStore_size: 100Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
-    GCP_gcePersistentDisk_size: 50Gi
-  resources:
-    enabled: false
-    requests:
-      memory: '1Gi'
-      cpu: '1'
-    limits:
-      memory: '2Gi'
-      cpu: '1'
-  nodeSelector:
-    enabled: false
 
 # ====================================================================================================
 # Variables for nominatim api
 # ====================================================================================================
 nominatimApi:
-  serviceAnnotations: {}
   enabled: true
+  image:
+    name: ''
+    tag: ''
+  serviceAnnotations: {}
   replicaCount: 1
   env:
-    BASE_URL: https://nominatim.osm-seed.test
-    OSMSEED_WEB_API_DOMAIN: openstreetmap.org
-    OSMSEED_OVERPASS_API_DOMAIN: overpass-api.osmseed.org
+    PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
+    REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates
+    REPLICATION_UPDATE_INTERVAL: 86400
+    REPLICATION_RECHECK_INTERVAL: 900
+    FREEZE: false
+    IMPORT_WIKIPEDIA: false
+    IMPORT_US_POSTCODES: false
+    IMPORT_GB_POSTCODES: false
+    IMPORT_TIGER_ADDRESSES: false
+    THREADS: 4
+    NOMINATIM_PASSWORD: psw1234
+    PGDATA: /var/lib/postgresql/12/main
   resources:
     enabled: false
     requests:
@@ -588,6 +551,20 @@ nominatimApi:
     limits:
       memory: '2Gi'
       cpu: '2'
+  persistenceDisk:
+    enabled: true
+    accessMode: ReadWriteOnce
+    mountPath: /var/lib/postgresql/12/main
+    subPath: nominatim-pgdata
+    # Minikube
+    localVolumeHostPath: /mnt/nominatim-db-data
+    localVolumeSize: 10Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: vol-0403ccb65fb4a85e9
+    AWS_ElasticBlockStore_size: 100Gi
+    # GCP
+    GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
+    GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
 
