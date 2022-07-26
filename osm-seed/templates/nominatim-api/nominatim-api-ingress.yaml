@@ -5,8 +5,7 @@ metadata:
   name: {{ template "osm-seed.fullname" . }}-ingress-nominatim-api
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
-spec:
+    cert-manager.io/cluster-issuer: {{ template ".Release.Name" . }}-letsencrypt-prod-issuer
   tls:
     - hosts:
       - nominatim.{{ .Values.domain }}
