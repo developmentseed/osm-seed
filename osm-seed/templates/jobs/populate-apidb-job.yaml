@@ -9,39 +9,39 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-    template:
-      spec:
-        containers:
-        - name: {{ .Release.Name }}-populate-apidb-job
-          image: {{ .Values.populateApidb.image.name }}:{{ .Values.populateApidb.image.tag }}
-          command: ['/start.sh']
-          {{- if .Values.populateApidb.resources.enabled }}   
-          resources:
-            requests:
-              memory: {{ .Values.populateApidb.resources.requests.memory }}
-              cpu: {{ .Values.populateApidb.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.populateApidb.resources.limits.memory }}
-              cpu: {{ .Values.populateApidb.resources.limits.cpu }}
-          {{- end }}
-          env:
-            - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-db
-            - name: POSTGRES_DB
-              value: {{ .Values.db.env.POSTGRES_DB }}
-            - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
-            - name: POSTGRES_USER
-              value: {{ .Values.db.env.POSTGRES_USER }}
-            - name: URL_FILE_TO_IMPORT
-              value: {{.Values.populateApidb.env.URL_FILE_TO_IMPORT}}
-            {{- if .Values.populateApidb.resources.enabled }}   
-            - name: MEMORY_JAVACMD_OPTIONS
-              value: {{ .Values.populateApidb.resources.requests.memory  | default "4Gi" | quote}}
-            {{- end }}
-        restartPolicy: Never
-        {{- if .Values.populateApidb.nodeSelector.enabled }}
-        nodeSelector:
-          {{ .Values.populateApidb.nodeSelector.label_key }} : {{ .Values.populateApidb.nodeSelector.label_value }}
+  template:
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-populate-apidb-job
+        image: "{{ .Values.populateApidb.image.name }}:{{ .Values.populateApidb.image.tag }}"
+        command: ['/start.sh']
+        {{- if .Values.populateApidb.resources.enabled }}   
+        resources:
+          requests:
+            memory: {{ .Values.populateApidb.resources.requests.memory }}
+            cpu: {{ .Values.populateApidb.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.populateApidb.resources.limits.memory }}
+            cpu: {{ .Values.populateApidb.resources.limits.cpu }}
         {{- end }}
+        env:
+          - name: POSTGRES_HOST
+            value: {{ .Release.Name }}-db
+          - name: POSTGRES_DB
+            value: {{ .Values.db.env.POSTGRES_DB }}
+          - name: POSTGRES_PASSWORD
+            value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+          - name: POSTGRES_USER
+            value: {{ .Values.db.env.POSTGRES_USER }}
+          - name: URL_FILE_TO_IMPORT
+            value: {{.Values.populateApidb.env.URL_FILE_TO_IMPORT}}
+          {{- if .Values.populateApidb.resources.enabled }}   
+          - name: MEMORY_JAVACMD_OPTIONS
+            value: {{ .Values.populateApidb.resources.requests.memory  | default "4Gi" | quote}}
+          {{- end }}
+      restartPolicy: Never
+      {{- if .Values.populateApidb.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.populateApidb.nodeSelector.label_key }} : {{ .Values.populateApidb.nodeSelector.label_value }}
+      {{- end }}
 {{- end }}
