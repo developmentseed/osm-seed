@@ -67,7 +67,7 @@ spec:
               value: {{ .Values.web.env.MAILER_FROM }}
             - name: MAILER_PORT
               value: {{ .Values.web.env.MAILER_PORT | default "25" | quote }}
-            - name: OSM_id_key
+            - name: OPENSTREETMAP_id_key
               value: {{ .Values.web.env.OSM_id_key }}
             - name: OPENSTREETMAP_memcache_servers
               value: {{ .Release.Name }}-memcached:11211
