@@ -9,6 +9,9 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   annotations:
+    {{- if eq .Values.serviceType "LoadBalancer" }}
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+    {{- end }}
     {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
