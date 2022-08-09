@@ -43,6 +43,7 @@ RUN apt-get install -y \
 
 RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools
 WORKDIR $workdir/taginfo-tools
+RUN git checkout 52888a81d56e090f7e3b89c99342989ae476bb31
 RUN git submodule update --init
 RUN  mkdir build && cd build && cmake .. && make
 
