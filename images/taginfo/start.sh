@@ -105,7 +105,7 @@ main() {
     if [ $NUM_DB_FILES -lt 7 ]; then
         update
     fi
-    start_web &
-    continuous_update
+    start_web
+    # continuous_update
 }
 main
