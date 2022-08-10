@@ -130,6 +130,8 @@ web:
     MAILER_PORT: 25
     NOMINATIM_URL: 'nominatim'
     OVERPASS_URL: 'overpassApi'
+    OAUTH_CLIENT_ID: 'abcd' # Create client ID and key as OAuth2 Application
+    OAUTH_KEY: 'xyz'
   resources:
     enabled: false
     requests:

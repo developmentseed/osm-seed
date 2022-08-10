@@ -69,6 +69,10 @@ spec:
               value: {{ .Values.web.env.MAILER_PORT | default "25" | quote }}
             - name: OPENSTREETMAP_id_key
               value: {{ .Values.web.env.OSM_id_key }}
+            - name: OAUTH_CLIENT_ID
+              value: {{ .Values.web.env.OAUTH_CLIENT_ID }}
+            - name: OAUTH_KEY
+              value: {{ .Values.web.env.OAUTH_KEY }}
             - name: OPENSTREETMAP_memcache_servers
               value: {{ .Release.Name }}-memcached:11211
               # Set SERVER_URL in case we use ingress
