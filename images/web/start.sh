@@ -30,6 +30,10 @@ sed -i -e 's/smtp_port: 25/smtp_port: '$MAILER_PORT'/g' $workdir/config/settings
 #### SET UP ID KEY
 sed -i -e 's/#id_key: ""/id_key: "'$OPENSTREETMAP_id_key'"/g' $workdir/config/settings.yml
 
+### SET UP OAUTH ID AND KEY
+sed -i -e 's/OAUTH_CLIENT_ID/'$OAUTH_CLIENT_ID'/g' $workdir/config/settings.yml
+sed -i -e 's/OAUTH_KEY/'$OAUTH_KEY'/g' $workdir/config/settings.yml
+
 ## SET NOMINATIM URL
 sed -i -e 's/nominatim.openstreetmap.org/'$NOMINATIM_URL'/g' $workdir/config/settings.yml
 
