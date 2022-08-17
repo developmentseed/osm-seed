@@ -43,4 +43,4 @@ If you plan to use data from the main OpenStreetMap project in your OSM Seed ins
 
 ## What's next?
 
-Our immediate next goal is integrate a tile server. Eventually, the goal is include as many tools from the OSM ecosystem part of this stack. Take a look at our [roadmap](https://github.com/developmentseed/osm-seed/blob/master/ROADMAP.md), and help out if this project helps what you're trying to do! We are always interested in collaborations and contributions! If you are interested in contributing, please see the [Contributor Guidelines](CONTRIBUTING.md).
+Eventually, the goal is to include more tools from the OSM ecosystem part of this stack, and continue to try and make the process as simple and reproducible as possible. Take a look at our [roadmap](https://github.com/developmentseed/osm-seed/blob/master/ROADMAP.md), and help out if this project helps what you're trying to do! We are always interested in collaborations and contributions! If you are interested in contributing, please see the [Contributor Guidelines](CONTRIBUTING.md).
