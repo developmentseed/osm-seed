@@ -11,6 +11,8 @@ OVERPASS_CLONE_SOURCE=${OVERPASS_CLONE_SOURCE:-http://dev.overpass-api.de/api_dr
 # this is used by other processes, so needs to be exported
 export OVERPASS_MAX_TIMEOUT=${OVERPASS_MAX_TIMEOUT:-1000s}
 
+mkdir /db/replicate_id
+
 if [[ "$OVERPASS_META" == "attic" ]] ; then
     META="--keep-attic"
 elif [[ "${OVERPASS_META}" == "yes" ]] ; then
