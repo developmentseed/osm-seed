@@ -11,8 +11,6 @@ OVERPASS_CLONE_SOURCE=${OVERPASS_CLONE_SOURCE:-http://dev.overpass-api.de/api_dr
 # this is used by other processes, so needs to be exported
 export OVERPASS_MAX_TIMEOUT=${OVERPASS_MAX_TIMEOUT:-1000s}
 
-mkdir /db/replicate_id
-
 if [[ "$OVERPASS_META" == "attic" ]] ; then
     META="--keep-attic"
 elif [[ "${OVERPASS_META}" == "yes" ]] ; then
@@ -92,6 +90,8 @@ if [[ ! -f /db/init_done ]] ; then
                 && touch /db/init_done \
                 && rm /db/planet.osm.bz2 \
                 && chown -R overpass:overpass /db \
+                && echo $OVERPASS_REPLICATION_SEQUENCE_NUMBER > /db/replicate_id \
+                && chmod 777 /db/replicate_id \
                 && echo "Overpass ready, you can start your container with docker start" \
                 && startAPIServer
               ) || (
