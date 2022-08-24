@@ -28,7 +28,7 @@ RUN apt-get update \
 ENV cgimap /tmp/openstreetmap-cgimap
 RUN git clone -b master https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
 # openstreetmap-cgimap version at Jun 21, 2021
-RUN cd $cgimap && git checkout 813ce191a8e0732ec0fd973458ceb67383c6ed62
+RUN cd $cgimap && git checkout v0.8.6
 RUN cd $cgimap && \
     ./autogen.sh && \
     ./configure && \
