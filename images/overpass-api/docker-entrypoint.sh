@@ -90,6 +90,8 @@ if [[ ! -f /db/init_done ]] ; then
                 && touch /db/init_done \
                 && rm /db/planet.osm.bz2 \
                 && chown -R overpass:overpass /db \
+                && echo $OVERPASS_REPLICATION_SEQUENCE_NUMBER > /db/replicate_id \
+                && chmod 777 /db/replicate_id \
                 && echo "Overpass ready, you can start your container with docker start" \
                 && startAPIServer
               ) || (
