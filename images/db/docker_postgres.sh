@@ -6,10 +6,10 @@ set -e
 # Password and superuser privilege are needed to successfully run test suite
 psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" <<-EOSQL
     CREATE USER openstreetmap SUPERUSER PASSWORD 'openstreetmap';
-    GRANT ALL PRIVILEGES ON DATABASE openstreetmap TO openstreetmap;
+    GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO openstreetmap;
 EOSQL
 
-psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -c "CREATE ROLE hosm WITH SUPERUSER" openstreetmap
+psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -c "CREATE ROLE hosm WITH SUPERUSER" $POSTGRES_DB
 psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -c "CREATE EXTENSION btree_gist" $POSTGRES_DB
 psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -c "CREATE EXTENSION postgis" $POSTGRES_DB
 make -C /db/functions libpgosm.so
