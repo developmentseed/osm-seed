@@ -17,7 +17,7 @@ services:
       context: ./images/planet-dump
       dockerfile: Dockerfile
     volumes:
-      - ./data/planet-dump-data:/mnt/data
+      - ../data/planet-dump-data:/mnt/data
     command: >
       /bin/bash -c "
         echo 'Set cronjob for planet-dump, every 4 minutes';
