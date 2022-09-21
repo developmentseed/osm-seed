@@ -109,6 +109,10 @@ spec:
               value: {{ .Values.tmApi.env.TM_APP_API_URL }}
             - name: TM_APP_BASE_URL
               value: {{ .Values.tmApi.env.TM_APP_BASE_URL }}
+            - name: TM_IMPORT_MAX_FILESIZE
+              value: {{ .Values.tmApi.env.TM_IMPORT_MAX_FILESIZE | default "1000000" | quote }}
+            - name: TM_MAX_AOI_AREA
+              value: {{ .Values.tmApi.env.TM_MAX_AOI_AREA | default "5000" | quote }}
       {{- if .Values.tmApi.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tmApi.nodeSelector.label_key }} : {{ .Values.tmApi.nodeSelector.label_value }}
