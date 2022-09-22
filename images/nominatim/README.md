@@ -1,6 +1,6 @@
 # Nominatim  (Nominatim version 4.0)
 
-This version of Nominatim was copy from https://github.com/mediagis/nominatim-docker/tree/master/4.0, with certain updates  to fit in osm-seed enviroment
+This version of Nominatim was copy from https://github.com/mediagis/nominatim-docker/tree/master/4.1, with certain updates  to fit in osm-seed enviroment
 
 ### Configuration
 
