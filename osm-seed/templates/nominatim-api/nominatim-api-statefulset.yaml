@@ -64,6 +64,8 @@ spec:
               value: {{ .Values.nominatimApi.env.OSMSEED_OVERPASS_API_DOMAIN }}
             - name: NOMINATIM_ADDRESS_LEVEL_CONFIG_URL
               value: {{ .Values.nominatimApi.env.NOMINATIM_ADDRESS_LEVEL_CONFIG_URL }}
+            - name: UPDATE_MODE
+              value: {{ .Values.nominatimApi.env.UPDATE_MODE | default "none" | quote }}
           # command: ["/bin/sh"]
           # args: ["-c", "sh /app/start.sh"]
           # livenessProbe:
