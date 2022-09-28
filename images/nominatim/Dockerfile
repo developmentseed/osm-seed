@@ -1,5 +1,5 @@
 FROM mediagis/nominatim:4.1
-ENV PGDATA=/var/lib/postgresql/12/main
+ENV PGDATA=/var/lib/postgresql/14/main
 COPY docker-entrypoint.sh /app/
-RUN chmod a+rx /app/docker-entrypoint.sh 
+COPY start.sh /app/
 CMD ["/app/docker-entrypoint.sh"]
