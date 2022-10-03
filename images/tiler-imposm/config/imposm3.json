@@ -272,6 +272,11 @@
                 }
             ],
             "type": "linestring",
+            "filters": {
+                "exclude_tags": [
+                    ["area", "yes"]
+                ]
+            },
             "mappings": {
                 "landuse": {
                     "mapping": {
@@ -610,8 +615,16 @@
                             "__any__"
                         ]
                     }
+                },
+                "ferry": {
+                    "mapping": {
+                        "route": [
+                            "__any__"
+                        ]
+                    }
                 }
             }
+
         },
         "transport_areas": {
             "fields": [
