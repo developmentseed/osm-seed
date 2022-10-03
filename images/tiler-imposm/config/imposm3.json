@@ -233,6 +233,69 @@
                 }
             }
         },
+        "landuse_lines": {
+            "fields": [
+                {
+                    "type": "id",
+                    "name": "osm_id",
+                    "key": null
+                },
+                {
+                    "type": "geometry",
+                    "name": "geometry",
+                    "key": null
+                },
+                {
+                    "type": "string",
+                    "name": "name",
+                    "key": "name"
+                },
+                {
+                    "type": "mapping_value",
+                    "name": "type",
+                    "key": null
+                },
+                {
+                    "type": "pseudoarea",
+                    "name": "area",
+                    "key": null
+                },
+                {
+                    "type": "hstore_tags",
+                    "name": "tags",
+                    "key": null
+                },
+                {
+                    "type": "mapping_key",
+                    "name": "class",
+                    "key": null
+                }
+            ],
+            "type": "linestring",
+            "mappings": {
+                "landuse": {
+                    "mapping": {
+                        "landuse": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "leisure": {
+                    "mapping": {
+                        "leisure": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "natural": {
+                    "mapping": {
+                        "natural": [
+                            "__any__"
+                        ]
+                    }
+                }
+            }
+        },
         "landuse_points": {
             "fields": [
                 {
