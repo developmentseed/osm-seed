@@ -256,11 +256,6 @@
                     "key": null
                 },
                 {
-                    "type": "pseudoarea",
-                    "name": "area",
-                    "key": null
-                },
-                {
                     "type": "hstore_tags",
                     "name": "tags",
                     "key": null
@@ -274,7 +269,9 @@
             "type": "linestring",
             "filters": {
                 "exclude_tags": [
-                    ["area", "yes"]
+                    ["area", "yes"],
+                    ["natural", "coastline"],
+                    ["boundary", "administrative"]
                 ]
             },
             "mappings": {
