@@ -25,7 +25,7 @@
         },
         "transport_lines_gen1": {
             "source": "transport_lines",
-            "sql_filter": "type IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link') OR class IN('railway')",
+            "sql_filter": "type IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link') OR class IN('railway', 'route')",
             "tolerance": 50.0
         },
         "water_lines_gen0": {
@@ -509,6 +509,13 @@
                             "__any__"
                         ]
                     }
+                },
+                "route": {
+                    "mapping": {
+                        "route": [
+                            "__any__"
+                        ]
+                    }
                 }
             }
         },
@@ -613,7 +620,7 @@
                         ]
                     }
                 },
-                "ferry": {
+                "route": {
                     "mapping": {
                         "route": [
                             "__any__"
@@ -680,6 +687,13 @@
                 "aeroway": {
                     "mapping": {
                         "aeroway": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "route": {
+                    "mapping": {
+                        "route": [
                             "__any__"
                         ]
                     }
