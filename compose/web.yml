@@ -27,3 +27,15 @@ services:
       - ../envs/.env.db
     depends_on:
       - db
+  web_users:
+    build: ../images/web_users
+    volumes:
+      - ../images/web_users/app/:/app
+    ports:
+      - '8000:8000'
+    env_file:
+      - ../envs/.env.web
+      - ../envs/.env.db
+    depends_on:
+      - db
+    working_dir: /app
