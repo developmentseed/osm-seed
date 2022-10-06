@@ -10,7 +10,7 @@ export DJANGO_SUPERUSER_EMAIL="admi3n@admin.com"
 function startApp () {
     # python manage.py inspectdb > models.py
     python manage.py migrate
-    python manage.py createsuperuser --noinputs
+    python manage.py createsuperuser --no-input
     python manage.py runserver 0.0.0.0:8000
 }
 
