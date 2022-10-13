@@ -197,7 +197,6 @@ BEGIN
         SELECT place_id FROM placex
          WHERE bbox && geometry AND _ST_Covers(geometry, ST_Centroid(bbox))
                AND rank_address between 5 and 25
-               AND ST_GeometryType(geometry) in ('ST_Polygon','ST_MultiPolygon')
          ORDER BY rank_address desc
       LOOP
         RETURN location.place_id;
@@ -213,7 +212,6 @@ BEGIN
         SELECT place_id FROM placex
          WHERE bbox && geometry AND _ST_Covers(geometry, ST_Centroid(bbox))
                AND rank_address between 5 and 25
-               AND ST_GeometryType(geometry) in ('ST_Polygon','ST_MultiPolygon')
         ORDER BY rank_address desc
       LOOP
         RETURN location.place_id;
@@ -277,9 +275,7 @@ BEGIN
 
   -- If extratags has a place tag, look for linked nodes by their place type.
   -- Area and node still have to have the same name.
-  IF bnd.extratags ? 'place' and bnd.extratags->'place' != 'postcode'
-     and bnd_name is not null
-  THEN
+  IF bnd.extratags ? 'place' and bnd_name is not null THEN
     FOR linked_placex IN
       SELECT * FROM placex
       WHERE (position(lower(name->'name') in bnd_name) > 0
@@ -288,6 +284,7 @@ BEGIN
         AND placex.osm_type = 'N'
         AND (placex.linked_place_id is null or placex.linked_place_id = bnd.place_id)
         AND placex.rank_search < 26 -- needed to select the right index
+        AND placex.type != 'postcode'
         AND ST_Covers(bnd.geometry, placex.geometry)
     LOOP
       {% if debug %}RAISE WARNING 'Found type-matching place node %', linked_placex.osm_id;{% endif %}
@@ -849,8 +846,7 @@ BEGIN
       FROM placex
       WHERE osm_type = 'R' and class = 'boundary' and type = 'administrative'
             and admin_level < NEW.admin_level and admin_level > 3
-            and rank_address between 1 and 25 -- for index selection
-            and ST_GeometryType(geometry) in ('ST_Polygon','ST_MultiPolygon') -- for index selection
+            and rank_address > 0
             and geometry && NEW.centroid and _ST_Covers(geometry, NEW.centroid)
       ORDER BY admin_level desc LIMIT 1
     LOOP
@@ -878,9 +874,8 @@ BEGIN
           FROM placex,
                LATERAL compute_place_rank(country_code, 'A', class, type,
                                           admin_level, False, null) prank
-          WHERE class = 'place' and rank_address between 1 and 23
+          WHERE class = 'place' and rank_address < 24
                 and prank.address_rank >= NEW.rank_address
-                and ST_GeometryType(geometry) in ('ST_Polygon','ST_MultiPolygon') -- select right index
                 and geometry && NEW.geometry
                 and geometry ~ NEW.geometry -- needed because ST_Relate does not do bbox cover test
                 and ST_Relate(geometry, NEW.geometry, 'T*T***FF*') -- contains but not equal
@@ -901,8 +896,6 @@ BEGIN
                LATERAL compute_place_rank(country_code, 'A', class, type,
                                           admin_level, False, null) prank
           WHERE prank.address_rank < 24
-                and rank_address between 1 and 25 -- select right index
-                and ST_GeometryType(geometry) in ('ST_Polygon','ST_MultiPolygon') -- select right index
                 and prank.address_rank >= NEW.rank_address
                 and geometry && NEW.geometry
                 and geometry ~ NEW.geometry -- needed because ST_Relate does not do bbox cover test
@@ -923,10 +916,7 @@ BEGIN
              LATERAL compute_place_rank(country_code, 'A', class, type,
                                         admin_level, False, null) prank
         WHERE osm_type = 'R'
-              and rank_address between 1 and 25 -- select right index
-              and ST_GeometryType(geometry) in ('ST_Polygon','ST_MultiPolygon') -- select right index
-              and ((class = 'place' and prank.address_rank = NEW.rank_address)
-                   or (class = 'boundary' and rank_address = NEW.rank_address))
+              and prank.address_rank = NEW.rank_address
               and geometry && NEW.centroid and _ST_Covers(geometry, NEW.centroid)
         LIMIT 1
     LOOP
@@ -965,7 +955,7 @@ BEGIN
 
   NEW.importance := null;
   SELECT wikipedia, importance
-    FROM compute_importance(NEW.extratags, NEW.country_code, NEW.rank_search, NEW.centroid)
+    FROM compute_importance(NEW.extratags, NEW.country_code, NEW.osm_type, NEW.osm_id)
     INTO NEW.wikipedia,NEW.importance;
 
 {% if debug %}RAISE WARNING 'Importance computed from wikipedia: %', NEW.importance;{% endif %}
@@ -1047,7 +1037,7 @@ BEGIN
   IF linked_place is not null THEN
     -- Recompute the ranks here as the ones from the linked place might
     -- have been shifted to accommodate surrounding boundaries.
-    SELECT place_id, osm_id, class, type, extratags, rank_search,
+    SELECT place_id, osm_id, class, type, extratags,
            centroid, geometry,
            (compute_place_rank(country_code, osm_type, class, type, admin_level,
                               (extratags->'capital') = 'yes', null)).*
@@ -1088,7 +1078,7 @@ BEGIN
 
     SELECT wikipedia, importance
       FROM compute_importance(location.extratags, NEW.country_code,
-                              location.rank_search, NEW.centroid)
+                              'N', location.osm_id)
       INTO linked_wikipedia,linked_importance;
 
     -- Use the maximum importance if one could be computed from the linked object.
@@ -1110,15 +1100,6 @@ BEGIN
       END IF;
     END IF;
   END IF;
-
-  {% if not disable_diff_updates %}
-  IF OLD.rank_address != NEW.rank_address THEN
-    -- After a rank shift all addresses containing us must be updated.
-    UPDATE placex p SET indexed_status = 2 FROM place_addressline pa
-      WHERE pa.address_place_id = NEW.place_id and p.place_id = pa.place_id
-            and p.indexed_status = 0 and p.rank_address between 4 and 25;
-  END IF;
-  {% endif %}
 
   -- IF NEW.admin_level = 2
   --    AND NEW.class = 'boundary' AND NEW.type = 'administrative'

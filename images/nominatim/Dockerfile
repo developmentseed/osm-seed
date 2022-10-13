@@ -18,11 +18,9 @@ RUN apt-get update && \
 RUN true \
     && git clone https://github.com/osm-search/Nominatim.git \
     && cd Nominatim \
-    # Gitsha from oct-05 2022
-    && git checkout eed7abb839b81617ae5ece06ce84560ecdc2ae45 \
+    && git checkout v4.1.0 \
     && git submodule update --init
-
-COPY config/placex_triggers.sql /app/Nominatim/lib-sql/functions/
+COPY settings/placex_triggers.sql /app/Nominatim/lib-sql/functions/
 RUN wget -O Nominatim/data/country_osm_grid.sql.gz https://www.nominatim.org/data/country_grid.sql.gz
 RUN mkdir build \
     && cd build \
