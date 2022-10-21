@@ -27,15 +27,16 @@ services:
       - ../envs/.env.db
     depends_on:
       - db
-  web_users:
-    build: ../images/web_users
+  web_dashboard:
+    build: ../images/web_dashboard
     volumes:
-      - ../images/web_users/app/:/app
+      - ../data/web_bashboard-data:/var/lib/postgresql/data
+      - ../images/web_dashboard/app/:/app
     ports:
-      - '8000:8000'
+      - 8000:8000
+      - 5433:5432
     env_file:
-      - ../envs/.env.web
-      - ../envs/.env.db
+      - ../envs/.env.web_dashboard
     depends_on:
       - db
     working_dir: /app

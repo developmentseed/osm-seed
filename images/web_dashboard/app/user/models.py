@@ -26,3 +26,5 @@ class Users(models.Model):
         )
         self.pass_crypt = argon2Hasher.hash(self.pass_crypt)
         super(Users, self).save(*args, **kwargs)
+
+Users.objects = Users.objects.using('osm_api')
