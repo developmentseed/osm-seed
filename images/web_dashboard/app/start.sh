@@ -13,5 +13,6 @@ while "$flag" = true; do
     echo "===================Start app======================="
     python3 manage.py migrate
     python3 manage.py createsuperuser --no-input
+    python3 manage.py migrate --database=osm_api
     python3 manage.py runserver 0.0.0.0:8000
 done

@@ -12,15 +12,8 @@ COPY app/requirements.txt /app/
 RUN pip install -r requirements.txt
 COPY app/ /app/
 # COPY start.sh /app/
-
-# sed -n "x p" dump.sql
-
-# RUN echo "echo \"==========Start App==========\"" >> /usr/local/bin/docker-entrypoint.sh
-# RUN echo "./app/start.sh" >> /usr/local/bin/docker-entrypoint.sh
-
-# COPY start.sh /usr/local/bin/
 EXPOSE 5433
 EXPOSE 8000
-
-ENTRYPOINT ["sh","/app/start.sh"]
-# CMD /app/start.sh
+# ENTRYPOINT ["sh","/app/start.sh"]
+ENTRYPOINT ["sh"]
+CMD /app/start.sh
