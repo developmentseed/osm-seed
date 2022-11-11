@@ -27,3 +27,12 @@ services:
       - ../envs/.env.db
     depends_on:
       - db
+  nginx:
+    image: osmseed-nginx:v1
+    build:
+      context: ../images/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    depends_on:
+          - web
