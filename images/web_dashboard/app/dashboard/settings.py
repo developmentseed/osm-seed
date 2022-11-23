@@ -117,6 +117,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+DATABASE_ROUTERS = ("user.dbrouters.AccountsDBRouter",)
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 

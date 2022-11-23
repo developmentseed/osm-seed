@@ -11,7 +11,6 @@ WORKDIR /app
 COPY app/requirements.txt /app/
 RUN pip install -r requirements.txt
 COPY app/ /app/
-# COPY start.sh /app/
 EXPOSE 5433
 EXPOSE 8000
 # ENTRYPOINT ["sh","/app/start.sh"]
