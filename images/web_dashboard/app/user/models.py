@@ -19,12 +19,22 @@ class Users(models.Model):
     class Meta:
         managed = False
         db_table = "users"
+        verbose_name_plural = "OSM Users"
 
     def save(self, *args, **kwargs):
         argon2Hasher = argon2.PasswordHasher(
             time_cost=16, memory_cost=2 ** 16, parallelism=2, hash_len=32, salt_len=16
         )
         self.pass_crypt = argon2Hasher.hash(self.pass_crypt)
-        super(Users, self).save(*args, **kwargs)
+        if self._state.adding:
+            super(Users, self).save(
+                *args,
+                **kwargs,
+            )
+        else:
+            super(Users, self).save(
+                *args, **kwargs, update_fields=["email", "display_name", "status"]
+            )
 
-Users.objects = Users.objects.using('osm_api')
+
+Users.objects = Users.objects.using("osm_api")
