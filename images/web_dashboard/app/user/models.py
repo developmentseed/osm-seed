@@ -15,7 +15,7 @@ class Users(models.Model):
     terms_agreed = models.DateTimeField(default=datetime.now, null=True)
     tou_agreed = models.DateTimeField(default=datetime.now, null=True)
     creation_time = models.DateTimeField(default=datetime.now, blank=True)
-
+    changesets_count = models.IntegerField(default=0)
     class Meta:
         managed = False
         db_table = "users"
