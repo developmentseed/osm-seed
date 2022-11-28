@@ -7,4 +7,5 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ("email", "id", "display_name", "status", "changesets_count")
     form = UsersForm
 
+
 admin.site.register(Users, UserAdmin)

@@ -23,5 +23,3 @@ class UsersForm(forms.ModelForm):
     class Meta:
         model = Users
         fields = ["email", "display_name", "pass_crypt", "status"]
-
-    

@@ -13,6 +13,6 @@ RUN pip install -r requirements.txt
 COPY app/ /app/
 EXPOSE 5433
 EXPOSE 8000
-# ENTRYPOINT ["sh","/app/start.sh"]
-ENTRYPOINT ["sh"]
-CMD /app/start.sh
+ENTRYPOINT ["sh","/app/start.sh"]
+# ENTRYPOINT ["sh"]
+# CMD /app/start.sh

@@ -31,7 +31,7 @@ services:
     build: ../images/web_dashboard
     volumes:
       - ../data/web_bashboard-data:/var/lib/postgresql/data
-      - ../images/web_dashboard/app/:/app
+      # - ../images/web_dashboard/app/:/app
     ports:
       - 8000:8000
       - 5433:5432

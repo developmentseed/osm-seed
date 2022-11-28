@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-admin.site.site_header = 'OSM-Seed Administration'
+admin.site.site_header = "OSM-Seed Administration"
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("", admin.site.login),
 ]

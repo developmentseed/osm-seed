@@ -16,6 +16,7 @@ class Users(models.Model):
     tou_agreed = models.DateTimeField(default=datetime.now, null=True)
     creation_time = models.DateTimeField(default=datetime.now, blank=True)
     changesets_count = models.IntegerField(default=0)
+
     class Meta:
         managed = False
         db_table = "users"
@@ -35,6 +36,9 @@ class Users(models.Model):
             super(Users, self).save(
                 *args, **kwargs, update_fields=["email", "display_name", "status"]
             )
+
+    def __str__(self):
+        return f"{self.display_name}"
 
 
 Users.objects = Users.objects.using("osm_api")
