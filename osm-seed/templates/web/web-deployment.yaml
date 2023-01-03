@@ -67,8 +67,8 @@ spec:
               value: {{ .Values.web.env.MAILER_FROM }}
             - name: MAILER_PORT
               value: {{ .Values.web.env.MAILER_PORT | default "25" | quote }}
-            - name: OPENSTREETMAP_id_key
-              value: {{ .Values.web.env.OSM_id_key }}
+            - name: ID_APPLICATION
+              value: {{ .Values.web.env.ID_APPLICATION }}
             - name: OAUTH_CLIENT_ID
               value: {{ .Values.web.env.OAUTH_CLIENT_ID }}
             - name: OAUTH_KEY
