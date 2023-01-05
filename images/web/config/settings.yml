@@ -81,7 +81,6 @@ oauth_10_support: true
 nominatim_url: "https://nominatim.openstreetmap.org/"
 # Default editor
 default_editor: "id"
-id_application: ""
 # OAuth application for the web site
 #oauth_application: ""
 # OAuth consumer key for iD
