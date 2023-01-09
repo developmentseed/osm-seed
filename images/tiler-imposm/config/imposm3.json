@@ -25,7 +25,7 @@
         },
         "transport_lines_gen1": {
             "source": "transport_lines",
-            "sql_filter": "type IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link') OR class IN('railway')",
+            "sql_filter": "type IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link') OR class IN('railway', 'route')",
             "tolerance": 50.0
         },
         "water_lines_gen0": {
@@ -209,6 +209,71 @@
                 }
             ],
             "type": "polygon",
+            "mappings": {
+                "landuse": {
+                    "mapping": {
+                        "landuse": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "leisure": {
+                    "mapping": {
+                        "leisure": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "natural": {
+                    "mapping": {
+                        "natural": [
+                            "__any__"
+                        ]
+                    }
+                }
+            }
+        },
+        "landuse_lines": {
+            "fields": [
+                {
+                    "type": "id",
+                    "name": "osm_id",
+                    "key": null
+                },
+                {
+                    "type": "geometry",
+                    "name": "geometry",
+                    "key": null
+                },
+                {
+                    "type": "string",
+                    "name": "name",
+                    "key": "name"
+                },
+                {
+                    "type": "mapping_value",
+                    "name": "type",
+                    "key": null
+                },
+                {
+                    "type": "hstore_tags",
+                    "name": "tags",
+                    "key": null
+                },
+                {
+                    "type": "mapping_key",
+                    "name": "class",
+                    "key": null
+                }
+            ],
+            "type": "linestring",
+            "filters": {
+                "exclude_tags": [
+                    ["area", "yes"],
+                    ["natural", "coastline"],
+                    ["boundary", "administrative"]
+                ]
+            },
             "mappings": {
                 "landuse": {
                     "mapping": {
@@ -444,6 +509,13 @@
                             "__any__"
                         ]
                     }
+                },
+                "route": {
+                    "mapping": {
+                        "route": [
+                            "__any__"
+                        ]
+                    }
                 }
             }
         },
@@ -547,8 +619,16 @@
                             "__any__"
                         ]
                     }
+                },
+                "route": {
+                    "mapping": {
+                        "route": [
+                            "__any__"
+                        ]
+                    }
                 }
             }
+
         },
         "transport_areas": {
             "fields": [
@@ -607,6 +687,13 @@
                 "aeroway": {
                     "mapping": {
                         "aeroway": [
+                            "__any__"
+                        ]
+                    }
+                },
+                "route": {
+                    "mapping": {
+                        "route": [
                             "__any__"
                         ]
                     }
