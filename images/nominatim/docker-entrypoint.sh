@@ -11,3 +11,6 @@ if [[ ! -z "$OSMSEED_WEB_API_DOMAIN" ]]; then
 fi
 
 /app/start.sh
+
+# Because of crashing updates, we are going to run updates every 10 minutes with catch-up action
+watch -n 600 sudo -u nominatim nominatim replication --project-dir ${PROJECT_DIR} --catch-up >> /var/log/replication.log
