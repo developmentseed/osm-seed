@@ -69,6 +69,10 @@ spec:
             - name: postgres-storage
               mountPath: {{ .Values.db.persistenceDisk.mountPath }}
               subPath: {{ .Values.db.persistenceDisk.subPath }}
+            - name: tmp
+              mountPath: /tmp
+            - name: var-run
+              mountPath: /var/run
           {{- if .Values.db.resources.enabled }}
           resources:
             requests:
@@ -86,6 +90,10 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+        - name: tmp
+          emptyDir: {}
+        - name: var-run
+          emptyDir: {}
       {{- if .Values.db.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
