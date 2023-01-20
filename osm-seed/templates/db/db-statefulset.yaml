@@ -23,6 +23,10 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-db
     spec:
+      securityContext:
+        runAsUser: {{ .Values.db.runAsUser | default .Values.runAsUser | default 0 }}
+        runAsGroup: {{ .Values.db.runAsGroup | default .Values.runAsGroup | default 0 }}
+        fsGroup: {{ .Values.db.fsGroup | default .Values.fsGroup | default 0 }}
       containers:
         - name: {{ .Chart.Name }}-db
           image: "{{ .Values.db.image.name }}:{{ .Values.db.image.tag }}"

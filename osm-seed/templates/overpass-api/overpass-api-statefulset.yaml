@@ -23,6 +23,10 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-overpass-api
     spec:
+      securityContext:
+        runAsUser: {{ .Values.overpassApi.runAsUser | default .Values.runAsUser | default 0 }}
+        runAsGroup: {{ .Values.overpassApi.runAsGroup | default .Values.runAsGroup | default 0 }}
+        fsGroup: {{ .Values.overpassApi.fsGroup | default .Values.fsGroup | default 0 }}
       containers:
         - name: {{ .Chart.Name }}-overpass-api
           image: "{{ .Values.overpassApi.image.name }}:{{ .Values.overpassApi.image.tag }}"

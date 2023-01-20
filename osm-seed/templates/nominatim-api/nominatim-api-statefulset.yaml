@@ -23,6 +23,10 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-nominatim-api
     spec:
+      securityContext:
+        runAsUser: {{ .Values.nominatimApi.runAsUser | default .Values.runAsUser | default 0 }}
+        runAsGroup: {{ .Values.nominatimApi.runAsGroup | default .Values.runAsGroup | default 0 }}
+        fsGroup: {{ .Values.nominatimApi.fsGroup | default .Values.fsGroup | default 0 }}
       containers:
         - name: {{ .Chart.Name }}-nominatim-api
           image: "{{ .Values.nominatimApi.image.name }}:{{ .Values.nominatimApi.image.tag }}"
