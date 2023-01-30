@@ -7,5 +7,5 @@ while true; do
     if [ ! $? -ne 0 ]; then
         sudo -u nominatim nominatim replication --project-dir ${PROJECT_DIR} --catch-up >>/var/log/replication.log
     fi
-    sleep 10
+    sleep 60
 done
