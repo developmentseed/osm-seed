@@ -9,3 +9,11 @@ In order to run this container we need environment variables, these can be found
 - [.env.nominatim.example](./../../envs/.env.nominatim.example)
 
 **Note**: Rename the above files as `.env.nominatim`
+
+
+### Log outputs
+
+```
+/var/log/replication.log
+/var/log/cron.log
+```

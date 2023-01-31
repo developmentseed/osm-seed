@@ -13,7 +13,8 @@ RUN apt-get update && \
         libboost-system-dev \
         libboost-filesystem-dev \
         git \
-        wget
+        wget \
+        cron
 # Nominatim install.
 RUN true \
     && git clone https://github.com/osm-search/Nominatim.git \
@@ -55,4 +56,5 @@ RUN true \
 ENV PGDATA=/var/lib/postgresql/14/main
 COPY docker-entrypoint.sh /app/
 COPY update.sh /app/
+RUN crontab -l | { cat; echo "* * * * * bash /app/update.sh >> /var/log/cron.log 2>&1"; } | crontab -
 CMD ["/app/docker-entrypoint.sh"]
