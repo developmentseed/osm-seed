@@ -56,5 +56,5 @@ RUN true \
 ENV PGDATA=/var/lib/postgresql/14/main
 COPY docker-entrypoint.sh /app/
 COPY update.sh /app/
-RUN crontab -l | { cat; echo "* * * * * bash /app/update.sh >> /var/log/cron.log 2>&1"; } | crontab -
+RUN crontab -l | { cat; echo "* * * * * cd /nominatim/ ; bash /app/update.sh >> /var/log/cron.log 2>&1"; } | crontab -
 CMD ["/app/docker-entrypoint.sh"]
