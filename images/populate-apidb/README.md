@@ -31,7 +31,7 @@ Get those files form 👇
     # Docker
     docker run \
     --env-file ./envs/.env.db \
-    --env-file ./envs/.env.populate-apidb \
+    --env-file ./envs/.env.db-utils \
     -v ${PWD}/data/populate-apidb-data:/mnt/data \
     --network osm-seed_default \
     -it osmseed-populate-apidb:v1
