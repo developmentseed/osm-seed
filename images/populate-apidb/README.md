@@ -11,7 +11,7 @@ This container needs some environment variables passed into it in order to run:
 In order to run this container we need environment variables, these can be found in the following files👇:
 
 - [.env.db.example](./../../envs/.env.db.example)
-- [.env.env.db-utils.example](./../../envs/.env.env.db-utils.example)
+- [.env.db-utils.example](./../../envs/.env.db-utils.example)
 
 **Note**: Rename the above files as `.env.db` and `.env.db-utils`
 
@@ -31,7 +31,7 @@ Get those files form 👇
     # Docker
     docker run \
     --env-file ./envs/.env.db \
-    --env-file ./envs/.env.populate-apidb \
+    --env-file ./envs/.env.db-utils \
     -v ${PWD}/data/populate-apidb-data:/mnt/data \
     --network osm-seed_default \
     -it osmseed-populate-apidb:v1
