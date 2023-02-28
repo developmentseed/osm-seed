@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 export VOLUME_DIR=/mnt/data
 
 # osmosis tuning: https://wiki.openstreetmap.org/wiki/Osmosis/Tuning,https://lists.openstreetmap.org/pipermail/talk/2012-October/064771.html
