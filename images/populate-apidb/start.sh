@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 export VOLUME_DIR=/mnt/data
 export PGPASSWORD=$POSTGRES_PASSWORD
 
