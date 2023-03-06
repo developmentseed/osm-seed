@@ -18,6 +18,10 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
+      securityContext:
+        runAsUser: {{ .Values.replicationJob.runAsUser | default .Values.runAsUser | default 0 }}
+        runAsGroup: {{ .Values.replicationJob.runAsGroup | default .Values.runAsGroup | default 0 }}
+        fsGroup: {{ .Values.replicationJob.fsGroup | default .Values.fsGroup | default 0 }}
       containers:
         - name: {{ .Release.Name }}-replication-job-deployment
           image: {{ .Values.replicationJob.image.name }}:{{ .Values.replicationJob.image.tag }}

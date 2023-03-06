@@ -20,6 +20,10 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
+      securityContext:
+        runAsUser: {{ .Values.tilerServerCacheCleaner.runAsUser | default .Values.runAsUser | default 0 }}
+        runAsGroup: {{ .Values.tilerServerCacheCleaner.runAsGroup | default .Values.runAsGroup | default 0 }}
+        fsGroup: {{ .Values.tilerServerCacheCleaner.fsGroup | default .Values.fsGroup | default 0 }}
       containers:
         - name: {{ .Release.Name }}-tiler-server-cache-cleaner-deployment
           image: {{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}

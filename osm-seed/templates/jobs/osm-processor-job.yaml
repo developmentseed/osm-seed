@@ -11,6 +11,10 @@ metadata:
 spec:
     template:
       spec:
+        securityContext:
+          runAsUser: {{ .Values.osmProcessor.runAsUser | default .Values.runAsUser | default 0 }}
+          runAsGroup: {{ .Values.osmProcessor.runAsGroup | default .Values.runAsGroup | default 0 }}
+          fsGroup: {{ .Values.osmProcessor.fsGroup | default .Values.fsGroup | default 0 }}
         containers:
         - name: {{ .Release.Name }}-osm-processor-job
           image: {{ .Values.osmProcessor.image.name }}:{{ .Values.osmProcessor.image.tag }}

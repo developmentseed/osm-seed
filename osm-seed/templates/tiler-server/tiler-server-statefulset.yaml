@@ -24,6 +24,10 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-tiler-server
     spec:
+      securityContext:
+        runAsUser: {{ .Values.tilerServer.runAsUser | default .Values.runAsUser | default 0 }}
+        runAsGroup: {{ .Values.tilerServer.runAsGroup | default .Values.runAsGroup | default 0 }}
+        fsGroup: {{ .Values.tilerServer.fsGroup | default .Values.fsGroup | default 0 }}
       containers:
         - name: {{ .Chart.Name }}-tiler-server
           image: "{{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}"

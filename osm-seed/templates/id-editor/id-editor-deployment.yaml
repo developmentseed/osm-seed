@@ -22,6 +22,10 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-id-editor
     spec:
+      securityContext:
+        runAsUser: {{ .Values.idEditor.runAsUser | default .Values.runAsUser | default 0 }}
+        runAsGroup: {{ .Values.idEditor.runAsGroup | default .Values.runAsGroup | default 0 }}
+        fsGroup: {{ .Values.idEditor.fsGroup | default .Values.fsGroup | default 0 }}
       containers:
         - name: {{ .Chart.Name }}-id-editor
           image: "{{ .Values.idEditor.image }}:{{ .Values.osmSeedVersion }}"

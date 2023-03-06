@@ -18,6 +18,10 @@ spec:
     spec:
       template:
         spec:
+          securityContext:
+            runAsUser: {{ .Values.planetDump.runAsUser | default .Values.runAsUser | default 0 }}
+            runAsGroup: {{ .Values.planetDump.runAsGroup | default .Values.runAsGroup | default 0 }}
+            fsGroup: {{ .Values.planetDump.fsGroup | default .Values.fsGroup | default 0 }}
           containers:
           - name: {{ .Release.Name }}-planet-dump-job
             image: {{ .Values.planetDump.image.name }}:{{ .Values.planetDump.image.tag }}

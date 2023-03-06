@@ -11,6 +11,10 @@ metadata:
 spec:
     template:
       spec:
+        securityContext:
+          runAsUser: {{ .Values.populateApidb.runAsUser | default .Values.runAsUser | default 0 }}
+          runAsGroup: {{ .Values.populateApidb.runAsGroup | default .Values.runAsGroup | default 0 }}
+          fsGroup: {{ .Values.populateApidb.fsGroup | default .Values.fsGroup | default 0 }}
         containers:
         - name: {{ .Release.Name }}-populate-apidb-job
           image: {{ .Values.populateApidb.image.name }}:{{ .Values.populateApidb.image.tag }}

@@ -18,6 +18,10 @@ spec:
     spec:
       template:
         spec:
+          securityContext:
+            runAsUser: {{ .Values.fullHistory.runAsUser | default .Values.runAsUser | default 0 }}
+            runAsGroup: {{ .Values.fullHistory.runAsGroup | default .Values.runAsGroup | default 0 }}
+            fsGroup: {{ .Values.fullHistory.fsGroup | default .Values.fsGroup | default 0 }}
           containers:
           - name: {{ .Release.Name }}-full-history-job
             image: {{ .Values.fullHistory.image.name }}:{{ .Values.fullHistory.image.tag }}

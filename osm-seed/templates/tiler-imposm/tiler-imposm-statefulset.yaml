@@ -20,6 +20,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-tiler-imposm-statefulset
     spec:
+      securityContext:
+        runAsUser: {{ .Values.tilerImposm.runAsUser | default .Values.runAsUser | default 0 }}
+        runAsGroup: {{ .Values.tilerImposm.runAsGroup | default .Values.runAsGroup | default 0 }}
+        fsGroup: {{ .Values.tilerImposm.fsGroup | default .Values.fsGroup | default 0 }}
       containers:
       - name: {{ .Release.Name }}-tiler-imposm-statefulset
         image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}
