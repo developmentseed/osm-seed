@@ -7,5 +7,5 @@ WORKDIR /usr/src/app
 RUN git clone -b cli https://github.com/developmentseed/osm-simple-metrics.git ./
 
 RUN npm install && npm link
-COPY start.sh ./
-CMD ./start.sh
+COPY start.sh /
+CMD /start.sh

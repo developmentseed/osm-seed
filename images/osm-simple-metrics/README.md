@@ -1,9 +1,8 @@
 # OSM Simple Metrics
 
-This is a contianer that allows to extract simple metrics calculations for an OSM database
+This is a container that allows to extract simple metrics calculations for an OSM database.
 
 Repo: https://github.com/developmentseed/osm-simple-metrics
-
 
 #### Building the container
 

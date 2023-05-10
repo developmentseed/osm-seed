@@ -38,3 +38,5 @@ charts:
         valuesPath: overpassApi.image
       taginfo:
         valuesPath: taginfo.image
+      osm-simple-metrics:
+        valuesPath: osmSimpleMetrics.image
