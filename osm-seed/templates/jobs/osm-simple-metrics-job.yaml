@@ -21,8 +21,7 @@ spec:
           containers:
           - name: {{ .Release.Name }}-osm-simple-metrics-job
             image: {{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}
-            command: ['/start.sh']
-            {{- if .Values.osmSimpleMetrics.resources.enabled }}   
+            {{- if .Values.osmSimpleMetrics.resources.enabled }}
             resources:
               requests:
                 memory: {{ .Values.osmSimpleMetrics.resources.requests.memory }}
@@ -47,10 +46,23 @@ spec:
               - name: AWS_S3_BUCKET
                 value: {{ .Values.AWS_S3_BUCKET }}
               {{- end }}
+              # In case cloudProvider=gcp
+              {{- if eq .Values.cloudProvider "gcp" }}
+              - name: GCP_STORAGE_BUCKET
+                value: {{ .Values.GCP_STORAGE_BUCKET }}
+              {{- end }}
+              # In case cloudProvider=azure
+              {{- if eq .Values.cloudProvider "azure" }}
+              - name: AZURE_STORAGE_ACCOUNT
+                value: {{ .Values.AZURE_STORAGE_ACCOUNT }}
+              - name: AZURE_CONTAINER_NAME
+                value: {{ .Values.AZURE_CONTAINER_NAME }}
+              - name: AZURE_STORAGE_CONNECTION_STRING
+                value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
+              {{- end }}
           restartPolicy: OnFailure
           {{- if .Values.osmSimpleMetrics.nodeSelector.enabled }}
           nodeSelector:
-            {{ .Values.osmSimpleMetrics.nodeSelector.label_key }} : {{ .Values.osmSimpleMetrics.nodeSelector.label_value }}
+            {{ .Values.osmSimpleMetrics.nodeSelector.label_key }}: {{ .Values.osmSimpleMetrics.nodeSelector.label_value }}
           {{- end }}
-      backoffLimit: 3
 {{- end }}

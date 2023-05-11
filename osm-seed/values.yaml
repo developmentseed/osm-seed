@@ -665,4 +665,3 @@ osmSimpleMetrics:
       cpu: '2'
   nodeSelector:
     enabled: false
-
