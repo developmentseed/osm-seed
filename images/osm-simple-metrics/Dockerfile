@@ -4,7 +4,7 @@ FROM node:18
 WORKDIR /usr/src/app
 
 # Clone
-RUN git clone -b cli https://github.com/developmentseed/osm-simple-metrics.git ./
+RUN git clone https://github.com/developmentseed/osm-simple-metrics.git ./
 
 RUN npm install && npm link
 COPY start.sh /
