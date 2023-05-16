@@ -646,3 +646,22 @@ taginfo:
       cpu: '2'
   nodeSelector:
     enabled: false
+# ====================================================================================================
+# Variables for osm-simple-metrics
+# ====================================================================================================
+osmSimpleMetrics:
+  enabled: false
+  image:
+    name: ''
+    tag: ''
+  schedule: '* */1 * * *'
+  resources:
+    enabled: false
+    requests:
+      memory: '1Gi'
+      cpu: '2'
+    limits:
+      memory: '2Gi'
+      cpu: '2'
+  nodeSelector:
+    enabled: false
