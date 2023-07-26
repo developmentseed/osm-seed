@@ -18,11 +18,5 @@ spec:
       target:
         type: Utilization
         averageUtilization: {{ .Values.web.autoscaling.cpuUtilization }}
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.web.autoscaling.memoryUtilization }}
 {{- end }}
 {{- end }}
