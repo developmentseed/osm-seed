@@ -24,12 +24,5 @@ spec:
       target:
         type: AverageValue
         averageValue: {{ .Values.web.autoscaling.memoryUtilization }}
-  # - type: Pods
-  #   pods:
-  #     metric:
-  #       name: packets-per-second
-  #     target:
-  #       type: AverageValue
-  #       averageValue: {{ .Values.web.autoscaling.packetsPerSecond }}
 {{- end }}
 {{- end }}
