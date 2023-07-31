@@ -1,5 +1,5 @@
 {{- if .Values.planetDump.enabled -}}
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-planet-dump-job
@@ -18,6 +18,10 @@ spec:
     spec:
       template:
         spec:
+          {{- if .Values.planetDump.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.planetDump.nodeSelector.label_key }} : {{ .Values.planetDump.nodeSelector.label_value }}
+          {{- end }}
           containers:
           - name: {{ .Release.Name }}-planet-dump-job
             image: {{ .Values.planetDump.image.name }}:{{ .Values.planetDump.image.tag }}
@@ -69,9 +73,5 @@ spec:
                 value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}
           restartPolicy: OnFailure
-          {{- if .Values.planetDump.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.planetDump.nodeSelector.label_key }} : {{ .Values.planetDump.nodeSelector.label_value }}
-          {{- end }}
       backoffLimit: 3
 {{- end }}

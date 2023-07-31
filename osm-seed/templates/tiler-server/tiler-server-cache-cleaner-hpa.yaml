@@ -1,0 +1,26 @@
+{{- if .Values.tilerServer.enabled -}}
+{{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "s3" }}
+{{- if .Values.tilerServerCacheCleaner.enabled -}}
+{{- if .Values.tilerServerCacheCleaner.autoscaling.enabled -}}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-hpa-tiler-cachecleaner
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-tiler-server-cache-cleaner
+  minReplicas: {{ .Values.tilerServerCacheCleaner.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.tilerServerCacheCleaner.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.tilerServerCacheCleaner.autoscaling.cpuUtilization }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
