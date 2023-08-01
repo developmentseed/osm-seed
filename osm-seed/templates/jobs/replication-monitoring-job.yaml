@@ -46,8 +46,12 @@ spec:
                 value: {{ .Values.db.env.POSTGRES_USER }}
               - name: CLOUDPROVIDER
                 value: {{ .Values.cloudProvider }}
-              - name: OVERWRITE_PLANET_FILE
-                value: {{ .Values.monitoringReplication.env.OVERWRITE_PLANET_FILE | quote}}
+              - name: REPLICATION_FOLDER
+                value: replication/minute
+              - name: CREATE_MISSING_FILES
+                value: {{ .Values.monitoringReplication.env.CREATE_MISSING_FILES }}
+              - name: REPLICATION_SEQUENCE_NUMBER
+                value: {{ .Values.monitoringReplication.env.REPLICATION_SEQUENCE_NUMBER }}
               # In case cloudProvider=aws
               {{- if eq .Values.cloudProvider "aws" }}
               - name: AWS_S3_BUCKET
