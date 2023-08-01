@@ -2,6 +2,7 @@ import os
 import boto3
 from datetime import datetime
 from botocore.exceptions import ClientError
+import gzip
 
 s3 = boto3.client("s3")
 
@@ -14,29 +15,32 @@ def write_monitoring_status(bucket_name, s3_file_name, list_):
         s3_file_name (str): file name
         list_ (list): list of string to write in the file
     """
+    dir_name = os.path.dirname(s3_file_name)
+    if dir_name:
+        os.makedirs(dir_name, exist_ok=True)
     list_str = "\n".join(map(str, list_)) + "\n"
     with open(s3_file_name, "w") as f:
         f.write(list_str)
     s3.upload_file(s3_file_name, bucket_name, f"replication_monitoring/{s3_file_name}")
 
 
-def get_last_sequence_number(bucket, key):
+def get_value_from_state(bucket, s3_key, file_value):
     """Retrieve the 'sequenceNumber' value from the state file.
 
     Args:
         bucket_name (str): bucket name
-        key (str): status file
+        s3_key (str): status file
 
     Returns:
         number: sequence number
     """
     local_file = "/tmp/state.txt"
-    s3.download_file(bucket, key, local_file)
+    s3.download_file(bucket, s3_key, local_file)
     with open(local_file, "r") as file:
         for line in file:
-            if line.startswith("sequenceNumber="):
-                sequence_number = int(line.split("=")[1].strip())
-                return sequence_number
+            if line.startswith(f"{file_value}="):
+                value = line.split("=")[1].strip()
+                return value
 
 
 def process_sequence(n):
@@ -113,21 +117,47 @@ def get_missing_files(
     return missing_files
 
 
+def create_state_file(bucket, filename):
+    folder = os.path.dirname(filename)
+    current_sequence = int(os.path.splitext(os.path.basename(filename))[0].replace(".state", ""))
+    previous_sequence = current_sequence - 1
+    previous_file = os.path.dirname(filename) + "/" + str(previous_sequence).zfill(3) + ".state.txt"
+    date_str = get_value_from_state(bucket, previous_file, "timestamp")
+    current_sequence_number = int(folder.split("/")[2] + folder.split("/")[3] + str(current_sequence).zfill(3))
+    content = f"sequenceNumber={current_sequence_number} \ntxnMaxQueried=6182454 \ntxnActiveList= \ntxnReadyList= \ntxnMax=6182454 \ntimestamp={date_str}"
+    os.makedirs(folder, exist_ok=True)
+    with open(filename, "w") as f:
+        f.write(content)
+    print(f"Updating missing file... {filename} to s3://{bucket_name}/{filename} ")
+    s3.upload_file(filename, bucket_name, f"{filename}")
+
+def create_osc_file(bucket_name, filename):
+    content = """<?xml version='1.0' encoding='UTF-8'?>\n\t<osmChange version="0.6" generator="Osmosis 0.48.0-SNAPSHOT">\n</osmChange>"""
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    filename_osc = filename.replace(".gz", "")
+    with open(filename_osc, "w") as f:
+        f.write(content)
+    with open(filename_osc, "rb") as f_in:
+        with gzip.open(filename_osc + ".gz", "wb") as f_out:
+            f_out.writelines(f_in)
+    print(f"Updating missing file {filename} to s3://{bucket_name}/{filename} ")
+    s3.upload_file(filename, bucket_name, f"{filename}")
+
+
 if __name__ == "__main__":
     bucket_name = os.environ["AWS_S3_BUCKET"]
     bucket_name = bucket_name.replace("s3://", "")
     replication_folder = os.environ["REPLICATION_FOLDER"]
+    create_missing_files = os.getenv("CREATE_MISSING_FILES", "empty")
 
     ## Get last sequence file from replication/minute
     STATE_FILE = f"{replication_folder}/state.txt"
-    last_replication_sequence = get_last_sequence_number(bucket_name, STATE_FILE)
+    last_replication_sequence = int(get_value_from_state(bucket_name, STATE_FILE, "sequenceNumber"))
 
     ## Get last monitoring sequence number
     try:
         STATE_MISSING_FILE = "replication_monitoring/state.txt"
-        start_monitoring_sequence = get_last_sequence_number(
-            bucket_name, STATE_MISSING_FILE
-        )
+        start_monitoring_sequence = int(get_value_from_state(bucket_name, STATE_MISSING_FILE, "sequenceNumber"))
     except ClientError as e:
         start_monitoring_sequence = int(os.environ["REPLICATION_SEQUENCE_NUMBER"])
 
@@ -144,7 +174,16 @@ if __name__ == "__main__":
             print(f"Error, {f} is missing")
         now = datetime.now()
         date_str = now.strftime("%Y_%m_%d-%H-%M")
-        write_monitoring_status(bucket_name, f"missing_{date_str}.txt", missing_files)
+        write_monitoring_status(bucket_name, f"missing/{date_str}.txt", missing_files)
+
+        # Write missing files in s3
+        if create_missing_files == "empty":
+            for file in missing_files:
+                file_extension = os.path.splitext(file)[1]
+                if file_extension == ".txt":
+                    create_state_file(bucket_name, file)
+                if file_extension == ".gz":
+                    create_osc_file(bucket_name, file)
 
     ## Write state file
     write_monitoring_status(
