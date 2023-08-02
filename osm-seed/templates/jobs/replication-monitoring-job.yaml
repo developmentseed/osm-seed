@@ -25,7 +25,7 @@ spec:
           containers:
           - name: {{ .Release.Name }}-replication-monitoring-job
             image: {{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}
-            command: ['python3 /monitoring.py']
+            command: ['/monitoring.py']
             {{- if .Values.monitoringReplication.resources.enabled }}   
             resources:
               requests:
@@ -51,7 +51,7 @@ spec:
               - name: CREATE_MISSING_FILES
                 value: {{ .Values.monitoringReplication.env.CREATE_MISSING_FILES }}
               - name: REPLICATION_SEQUENCE_NUMBER
-                value: {{ .Values.monitoringReplication.env.REPLICATION_SEQUENCE_NUMBER }}
+                value: {{ .Values.monitoringReplication.env.REPLICATION_SEQUENCE_NUMBER | quote}}
               # In case cloudProvider=aws
               {{- if eq .Values.cloudProvider "aws" }}
               - name: AWS_S3_BUCKET

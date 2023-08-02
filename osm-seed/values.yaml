@@ -672,8 +672,8 @@ osmSimpleMetrics:
 monitoringReplication:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: 'developmentseed/osmseed-replication-job'
+    tag: '0.1.0-n770.hd15c9f2'
   schedule: '* */1 * * *'
   env:
     CREATE_MISSING_FILES: empty
