@@ -25,7 +25,7 @@ spec:
           containers:
           - name: {{ .Release.Name }}-replication-monitoring-job
             image: {{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}
-            command: ['/start.sh']
+            command: ['python3 /monitoring.py']
             {{- if .Values.monitoringReplication.resources.enabled }}   
             resources:
               requests:
