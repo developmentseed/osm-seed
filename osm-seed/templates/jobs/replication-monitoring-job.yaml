@@ -1,0 +1,81 @@
+{{- if .Values.monitoringReplication.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-replication-monitoring-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: replication-monitoring-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ quote .Values.monitoringReplication.schedule }}
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- if .Values.monitoringReplication.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.monitoringReplication.nodeSelector.label_key }} : {{ .Values.monitoringReplication.nodeSelector.label_value }}
+          {{- end }}
+          containers:
+          - name: {{ .Release.Name }}-replication-monitoring-job
+            image: {{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}
+            command: ['/monitoring.py']
+            {{- if .Values.monitoringReplication.resources.enabled }}   
+            resources:
+              requests:
+                memory: {{ .Values.monitoringReplication.resources.requests.memory }}
+                cpu: {{ .Values.monitoringReplication.resources.requests.cpu }}
+              limits:
+                memory: {{ .Values.monitoringReplication.resources.limits.memory }}
+                cpu: {{ .Values.monitoringReplication.resources.limits.cpu }}
+            {{- end }}
+            env:
+              - name: POSTGRES_HOST
+                value: {{ .Release.Name }}-db
+              - name: POSTGRES_DB
+                value: {{ .Values.db.env.POSTGRES_DB }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              - name: POSTGRES_USER
+                value: {{ .Values.db.env.POSTGRES_USER }}
+              - name: CLOUDPROVIDER
+                value: {{ .Values.cloudProvider }}
+              - name: REPLICATION_FOLDER
+                value: replication/minute
+              - name: CREATE_MISSING_FILES
+                value: {{ .Values.monitoringReplication.env.CREATE_MISSING_FILES }}
+              - name: REPLICATION_SEQUENCE_NUMBER
+                value: {{ .Values.monitoringReplication.env.REPLICATION_SEQUENCE_NUMBER | quote}}
+              # In case cloudProvider=aws
+              {{- if eq .Values.cloudProvider "aws" }}
+              - name: AWS_S3_BUCKET
+                value: {{ .Values.AWS_S3_BUCKET }}
+              {{- end }}
+              # In case cloudProvider=gcp
+              {{- if eq .Values.cloudProvider "gcp" }}
+              - name: GCP_STORAGE_BUCKET
+                value: {{ .Values.GCP_STORAGE_BUCKET }}
+              {{- end }}
+            # In case cloudProvider=azure
+            {{- if eq .Values.cloudProvider "azure" }}
+            - name: AZURE_STORAGE_ACCOUNT
+              value: {{ .Values.AZURE_STORAGE_ACCOUNT }}
+            - name: AZURE_CONTAINER_NAME
+              value: {{ .Values.AZURE_CONTAINER_NAME }}
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
+            {{- end }}
+              # Memory optimization for osmosis
+              {{- if .Values.monitoringReplication.resources.enabled }}   
+              - name: MEMORY_JAVACMD_OPTIONS
+                value: {{ .Values.monitoringReplication.resources.requests.memory | default "2Gi" | quote}}
+              {{- end }}
+          restartPolicy: OnFailure
+      backoffLimit: 3
+{{- end }}

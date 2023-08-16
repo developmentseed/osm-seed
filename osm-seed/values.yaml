@@ -665,3 +665,26 @@ osmSimpleMetrics:
       cpu: '2'
   nodeSelector:
     enabled: false
+
+# ====================================================================================================
+# Variables for osm-simple-metrics
+# ====================================================================================================
+monitoringReplication:
+  enabled: false
+  image:
+    name: 'developmentseed/osmseed-replication-job'
+    tag: '0.1.0-n770.hd15c9f2'
+  schedule: '* */1 * * *'
+  env:
+    CREATE_MISSING_FILES: empty
+    REPLICATION_SEQUENCE_NUMBER: "109789"
+  resources:
+    enabled: false
+    requests:
+      memory: '1Gi'
+      cpu: '2'
+    limits:
+      memory: '2Gi'
+      cpu: '2'
+  nodeSelector:
+    enabled: false
