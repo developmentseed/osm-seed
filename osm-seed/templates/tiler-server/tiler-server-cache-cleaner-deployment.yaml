@@ -62,6 +62,12 @@ spec:
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
             - name: TILER_CACHE_MAX_ZOOM
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
+            - name: CLEAN_CACHE_MANUALLY
+              value: {{ .Values.tilerServerCacheCleaner.env.CLEAN_CACHE_MANUALLY }}
+            - name: MAX_PS_TEGOLA
+              value: {{ .Values.tilerServerCacheCleaner.env.MAX_PS_TEGOLA }}
+            - name: CACHE_PROCESS_NAME
+              value: {{ .Values.tilerServerCacheCleaner.env.CACHE_PROCESS_NAME }}
             - name: CLOUDPROVIDER
               value: {{ .Values.cloudProvider }}
             # In case cloudProvider=aws

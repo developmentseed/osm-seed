@@ -443,6 +443,10 @@ tilerServerCacheCleaner:
     limits:
       memory: '2Gi'
       cpu: '2'
+  env:
+    CLEAN_CACHE_MANUALLY: true
+    MAX_PS_TEGOLA: 3
+    CACHE_PROCESS_NAME: tegola
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
