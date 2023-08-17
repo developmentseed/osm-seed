@@ -444,9 +444,9 @@ tilerServerCacheCleaner:
       memory: '2Gi'
       cpu: '2'
   env:
-    CLEAN_CACHE_MANUALLY: true
-    MAX_PS_TEGOLA: 3
-    CACHE_PROCESS_NAME: tegola
+    KILL_PROCESS: manually
+    MAX_NUM_PS: 3
+    PROCESS_NAME: tegola
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
