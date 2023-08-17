@@ -451,6 +451,11 @@ tilerServerCacheCleaner:
     enabled: false
     label_key: nodegroup_type
     label_value: tiler
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    cpuUtilization: 60
 # ====================================================================================================
 # Variables for tiler-visor
 # ====================================================================================================

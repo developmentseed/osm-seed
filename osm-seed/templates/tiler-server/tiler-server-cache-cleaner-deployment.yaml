@@ -63,7 +63,7 @@ spec:
             - name: TILER_CACHE_MAX_ZOOM
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
             - name: CLEAN_CACHE_MANUALLY
-              value: {{ .Values.tilerServerCacheCleaner.env.CLEAN_CACHE_MANUALLY }}
+              value: {{ quote .Values.tilerServerCacheCleaner.env.CLEAN_CACHE_MANUALLY }}
             - name: MAX_PS_TEGOLA
               value: {{ .Values.tilerServerCacheCleaner.env.MAX_PS_TEGOLA }}
             - name: CACHE_PROCESS_NAME
