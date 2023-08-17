@@ -63,7 +63,7 @@ spec:
             - name: TILER_CACHE_MAX_ZOOM
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
             - name: MAX_NUM_PS
-              value: {{ .Values.tilerServerCacheCleaner.env.MAX_NUM_PS }}
+              value: {{ quote .Values.tilerServerCacheCleaner.env.MAX_NUM_PS }}
             - name: PROCESS_NAME
               value: {{ .Values.tilerServerCacheCleaner.env.PROCESS_NAME }}
             - name: KILL_PROCESS
