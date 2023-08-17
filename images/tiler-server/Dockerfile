@@ -52,4 +52,6 @@ COPY ./start.sh .
 COPY ./expire-watcher.sh .
 COPY ./seed-by-diffs.sh .
 COPY ./tile_cache_downloader.sh .
-CMD ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
+COPY ./rm_tegola_ps.sh .
+
+CMD ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh & ./rm_tegola_ps.sh
