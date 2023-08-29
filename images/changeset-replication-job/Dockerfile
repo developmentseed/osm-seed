@@ -10,4 +10,4 @@ RUN gem install pg -v 0.21.0
 RUN gem install libxml-ruby -v 3.1.0
 COPY start.sh .
 RUN chmod +x replicate_changesets.rb
-CMD /start.sh
+CMD /app/start.sh

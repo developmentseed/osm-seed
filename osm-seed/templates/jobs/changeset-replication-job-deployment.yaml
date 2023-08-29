@@ -21,7 +21,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-changeset-replication-job-deployment
           image: {{ .Values.changesetReplicationJob.image.name }}:{{ .Values.changesetReplicationJob.image.tag }}
-          command: ['/start.sh']
+          # command: ['/start.sh']
           {{- if .Values.changesetReplicationJob.resources.enabled }}
           resources:
             requests:
