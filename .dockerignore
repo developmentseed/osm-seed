@@ -41,5 +41,5 @@ data/
 # ignore all markdown files (md) beside all README*.md
 *.md
 !README*.md
-
+changeset-replication-job/config.yaml
 envs/

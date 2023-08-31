@@ -40,3 +40,5 @@ charts:
         valuesPath: taginfo.image
       osm-simple-metrics:
         valuesPath: osmSimpleMetrics.image
+      changeset-replication-job:
+        valuesPath: changesetReplicationJob.image
