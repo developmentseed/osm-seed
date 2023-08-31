@@ -697,3 +697,22 @@ monitoringReplication:
       cpu: '2'
   nodeSelector:
     enabled: false
+
+# ====================================================================================================
+# Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
+# ====================================================================================================
+changesetReplicationJob:
+  enabled: false
+  image:
+    name: ''
+    tag: ''
+  resources:
+    enabled: false
+    requests:
+      memory: '20Gi'
+      cpu: '8'
+    limits:
+      memory: '24Gi'
+      cpu: '10'
+  nodeSelector:
+    enabled: false

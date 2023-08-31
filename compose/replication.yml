@@ -9,16 +9,24 @@ services:
       context: ../images/replication-job
       dockerfile: Dockerfile
     volumes:
-      - ../data/replication-job-data:/mnt/data
+    - ../data/replication-job-data:/mnt/data
     command: >
-      /bin/bash -c "
-      echo Sleep the replication-job for 1 minute;
-      sleep 1m;
-      echo Creating the replication files!;
-      /start.sh
-      "
+      /bin/bash -c " echo Sleep the replication-job for 1 minute; sleep 1m; echo Creating the replication files!; /start.sh "
     env_file:
-      - ../envs/.env.db
-      - ../envs/.env.db-utils
-      - ../envs/.env.cloudprovider
-      
+    - ../envs/.env.db
+    - ../envs/.env.db-utils
+    - ../envs/.env.cloudprovider
+  changeset-replication-job:
+    image: osmseed-changeset-replication-job:v1
+    build:
+      context: ../images/changeset-replication-job
+      dockerfile: Dockerfile
+    volumes:
+    - ../data/changeset-replication-job-data:/mnt/changesets
+    # - ./../images/changeset-replication-job:/openstreetmap-changeset-replication
+    command: >
+      /bin/bash -c "./start.sh"
+    env_file:
+    - ../envs/.env.db
+    - ../envs/.env.db-utils
+    - ../envs/.env.cloudprovider
