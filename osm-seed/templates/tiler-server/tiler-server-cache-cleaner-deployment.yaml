@@ -74,9 +74,25 @@ spec:
             - name: GCP_STORAGE_BUCKET
               value: {{ .Values.GCP_STORAGE_BUCKET }}
             {{- end }}
+
+      # Configuration for Attaching to an EFS 
+      {{- if .Values.tilerServerCacheCleaner.persistenceEFS.enabled }}
+          volumeMounts:
+            - name: tiler-cache-efs-volume
+              mountPath: /mnt/data
+      {{- end }}
+
+       # Configuration for node selector
       {{- if .Values.tilerServerCacheCleaner.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerServerCacheCleaner.nodeSelector.label_key }} : {{ .Values.tilerServerCacheCleaner.nodeSelector.label_value }}
+      {{- end }}
+      # Configuration for Attaching to an EFS 
+      {{- if .Values.tilerServerCacheCleaner.persistenceEFS.enabled }}
+      volumes:
+        - name: tiler-cache-efs-volume
+          persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-tiler-server-cache-cleaner-efs-claim
       {{- end }}
 {{- end }}
 {{- end }}

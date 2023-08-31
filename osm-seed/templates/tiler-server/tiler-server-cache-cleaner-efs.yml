@@ -1,0 +1,53 @@
+{{- if .Values.tilerServer.enabled -}}
+{{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "s3" }}
+{{- if .Values.tilerServerCacheCleaner.enabled -}}
+{{- if .Values.tilerServerCacheCleaner.persistenceEFS.enabled -}}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-tiler-server-cache-cleaner-efs
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-server-cache-cleaner-efs-volume
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  mountOptions:
+    - iam
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: {{ .Values.runner.efs.volumeHandle }}
+    volumeAttributes:
+      path: "/"
+      encryptInTransit: "true" 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-tiler-server-cache-cleaner-efs-claim
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-server-cache-cleaner-efs-volume-claim
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  volumeName: {{ .Release.Name }}-tiler-server-cache-cleaner-efs
+  resources:
+    requests:
+      storage: 5Gi
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

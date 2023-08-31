@@ -443,6 +443,9 @@ tilerServerCacheCleaner:
     limits:
       memory: '2Gi'
       cpu: '2'
+  persistenceEFS:
+    enabled: false
+    volumeHandle: fs-123456789
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
