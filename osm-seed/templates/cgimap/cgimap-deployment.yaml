@@ -1,0 +1,64 @@
+{{- if .Values.cgimap.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-cgimap
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: cgimap-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.cgimap.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-cgimap
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-cgimap
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-cgimap
+          image: "{{ .Values.cgimap.image.name }}:{{ .Values.cgimap.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
+            timeoutSeconds: 30
+          {{- if .Values.cgimap.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.cgimap.resources.requests.memory }}
+              cpu: {{ .Values.cgimap.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.cgimap.resources.limits.memory }}
+              cpu: {{ .Values.cgimap.resources.limits.cpu }}
+          {{- end }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.env.POSTGRES_USER }}
+            - name: API_WEB_HOST
+              value: {{ .Release.Name }}-web
+            - name: API_WEB_PORT
+              value: 80
+      {{- if .Values.cgimap.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

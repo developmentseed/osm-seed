@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -ex
 
+# Make sure that the follow env vars has been declare
+# API_WEB_HOST
+# API_WEB_PORT
+envsubst < lighttpd.conf.template > lighttpd.conf
 /usr/sbin/lighttpd -f lighttpd.conf
 
 /usr/local/bin/openstreetmap-cgimap \

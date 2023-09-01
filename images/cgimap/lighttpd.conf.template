@@ -56,7 +56,7 @@ $HTTP["request-method"] == "PUT" {
 }
 
 $HTTP["url"] =~ "^/(?!(dispatch\.map))" {
-    proxy.server = ( "" => ( ( "host" => "127.0.0.1", "port" => "3000" ) ) )
+    proxy.server = ( "" => ( ( "host" => "${API_WEB_HOST}", "port" => "${API_WEB_PORT}" ) ) )
 }
 
 fastcgi.debug = 1
