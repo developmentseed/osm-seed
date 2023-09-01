@@ -3,16 +3,16 @@ services:
   # #####################################################
   # ## cgmap section
   # #####################################################
-  cgmap:
-    image: osmseed-cgmap:v1
+  cgimap:
+    image: osmseed-cgimap:v1
     build:
-      context: ../images/cgmap
+      context: ../images/cgimap
       dockerfile: Dockerfile
     ports:
     # - '8000:8000'
     - '80:80'
     volumes:
-    - ../data/cgmap-data:/apps/data/
+    - ../data/cgimap-data:/apps/data/
     # command: >
     #   /bin/bash -c " ./start.sh"
     env_file:

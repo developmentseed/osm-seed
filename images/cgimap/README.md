@@ -6,8 +6,8 @@ This container is built using the configuration from Zerebubuth's OpenStreetMap 
 # Build and up 
 
 ```sh
-docker compose -f compose/cgmap.yml build
-docker compose -f compose/cgmap.yml up
+docker compose -f compose/cgimap.yml build
+docker compose -f compose/cgimap.yml up
 ```
 
 Note: Ensure that you are running PostgreSQL on your local machine. For example:
