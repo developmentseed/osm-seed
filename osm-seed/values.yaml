@@ -443,10 +443,19 @@ tilerServerCacheCleaner:
     limits:
       memory: '2Gi'
       cpu: '2'
+  env:
+    KILL_PROCESS: manually
+    MAX_NUM_PS: 3
+    PROCESS_NAME: tegola
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
     label_value: tiler
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    cpuUtilization: 60
 # ====================================================================================================
 # Variables for tiler-visor
 # ====================================================================================================
