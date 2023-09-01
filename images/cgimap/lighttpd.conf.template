@@ -1,0 +1,70 @@
+# default document-root
+server.document-root = "/openstreetmap/cgimap/"
+
+# TCP port
+server.port = 80
+
+server.reject-expect-100-with-417 = "disable"
+
+# selecting modules
+server.modules = ( "mod_access", "mod_rewrite", "mod_fastcgi",  "mod_proxy", "mod_alias" )
+
+# handling unknown routes
+server.error-handler-404   = "/dispatch.map"
+
+# include, relative to dirname of main config file
+#include "mime.types.conf"
+
+# read configuration from output of a command
+#include_shell "/usr/local/bin/confmimetype /etc/mime.types"
+mimetype.assign = (
+  ".html" => "text/html",
+  ".txt" => "text/plain",
+  ".jpg" => "image/jpeg",
+  ".png" => "image/png"
+)
+
+#debug.log-request-handling = "enable"
+
+$HTTP["request-method"] == "GET" {
+  url.rewrite-once = (
+    "^/api/0\.6/map(\.(json|xml))?(\?(.*))?$" => "/dispatch.map",
+    "^/api/0\.6/(node|way|relation)/[[:digit:]]+(\.(json|xml))?$" => "/dispatch.map",
+    "^/api/0\.6/(node|way|relation)/[[:digit:]]+/history.*$" => "/dispatch.map",
+    "^/api/0\.6/(node|way|relation)/[[:digit:]]+/[[:digit:]]+.*$" => "/dispatch.map",
+    "^/api/0\.6/(node|way|relation)/[[:digit:]]+/relations$" => "/dispatch.map",
+    "^/api/0\.6/node/[[:digit:]]+/ways$" => "/dispatch.map",
+    "^/api/0\.6/(way|relation)/[[:digit:]]+/full$" => "/dispatch.map",
+    "^/api/0\.6/changeset/[[:digit:]]+.*$" => "/dispatch.map",
+    "^/api/0\.6/(nodes|ways|relations)(\?(.*))?$" => "/dispatch.map",
+    "^/api/0\.6/changeset/[[:digit:]]+/download$" => "/dispatch.map",
+  )
+}
+
+$HTTP["request-method"] == "POST" {
+  url.rewrite-once = (
+    "^/api/0\.6/changeset/[[:digit:]]+/upload.*$" => "/dispatch.map",
+  )
+}
+
+$HTTP["request-method"] == "PUT" {
+  url.rewrite-once = (
+    "^/api/0\.6/changeset/[[:digit:]]+/close.*$" => "/dispatch.map",
+    "^/api/0\.6/changeset/[[:digit:]]+$" => "/dispatch.map",
+    "^/api/0\.6/changeset/create.*$" => "/dispatch.map",
+  )
+}
+
+$HTTP["url"] =~ "^/(?!(dispatch\.map))" {
+    proxy.server = ( "" => ( ( "host" => "${API_WEB_HOST}", "port" => "${API_WEB_PORT}" ) ) )
+}
+
+fastcgi.debug = 1
+
+fastcgi.server = ( ".map" =>
+  (( "host"   => "127.0.0.1",
+     "port"   => 8000,
+     "check-local" => "disable",
+  ))
+)
+
