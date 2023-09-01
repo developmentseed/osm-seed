@@ -42,3 +42,5 @@ charts:
         valuesPath: osmSimpleMetrics.image
       changeset-replication-job:
         valuesPath: changesetReplicationJob.image
+      cgmap:
+        valuesPath: cgmap.image

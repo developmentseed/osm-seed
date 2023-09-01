@@ -716,3 +716,22 @@ changesetReplicationJob:
       cpu: '10'
   nodeSelector:
     enabled: false
+
+# ====================================================================================================
+# Variables for cgmap config
+# ====================================================================================================
+cgmap:
+  enabled: false
+  image:
+    name: ''
+    tag: ''
+  resources:
+    enabled: false
+    requests:
+      memory: '20Gi'
+      cpu: '8'
+    limits:
+      memory: '24Gi'
+      cpu: '10'
+  nodeSelector:
+    enabled: false
