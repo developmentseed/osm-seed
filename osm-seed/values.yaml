@@ -716,3 +716,56 @@ changesetReplicationJob:
       cpu: '10'
   nodeSelector:
     enabled: false
+
+
+# ====================================================================================================
+# Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
+# ====================================================================================================
+osmcha:
+  enabled: false
+  image:
+    name: ''
+    tag: ''
+  resources:
+    enabled: false
+    requests:
+      memory: '20Gi'
+      cpu: '8'
+    limits:
+      memory: '24Gi'
+      cpu: '10'
+  nodeSelector:
+    enabled: false
+
+
+# ====================================================================================================
+# Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
+# ====================================================================================================
+osmchaDb:
+  enabled: false
+  image:
+    name: ''
+    tag: ''
+  resources:
+    enabled: false
+    requests:
+      memory: '20Gi'
+      cpu: '8'
+    limits:
+      memory: '24Gi'
+      cpu: '10'
+  persistenceDisk:
+    enabled: false
+    accessMode: ReadWriteOnce
+    mountPath: /db
+    # Minikube
+    localVolumeHostPath: /mnt/overpass-api-db-data
+    localVolumeSize: 10Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_size: 50Gi
+    # GCP
+    GCP_gcePersistentDisk_pdName: osmseed-disk-overpass-v1
+    GCP_gcePersistentDisk_size: 50Gi
+  nodeSelector:
+    enabled: false

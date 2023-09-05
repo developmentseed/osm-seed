@@ -1,44 +1,48 @@
 charts:
-  - name: osm-seed
-    imagePrefix: developmentseed/osmseed-
-    repo:
-       git: developmentseed/osm-seed-chart
-       published: https://devseed.com/osm-seed-chart
+- name: osm-seed
+  imagePrefix: developmentseed/osmseed-
+  repo:
+    git: developmentseed/osm-seed-chart
+    published: https://devseed.com/osm-seed-chart
 
-    images:
-      web:
-        valuesPath: web.image
-      db:
-        valuesPath: db.image
-      backup-restore:
-        valuesPath: dbBackupRestore.image
-      planet-dump:
-        valuesPath: planetDump.image
-      full-history:
-        valuesPath: fullHistory.image
-      replication-job:
-        valuesPath: replicationJob.image
-      populate-apidb:
-        valuesPath: populateApidb.image
-      osm-processor:
-        valuesPath: osmProcessor.image
-      tiler-db:
-        valuesPath: tilerDb.image
-      tiler-imposm:
-        valuesPath: tilerImposm.image
-      tiler-server:
-        valuesPath: tilerServer.image
-      tasking-manager-api:
-        valuesPath: tmApi.image
-      # tiler-visor:
-      #   valuesPath: tilerVisor.image
-      nominatim:
-        valuesPath: nominatimApi.image
-      overpass-api:
-        valuesPath: overpassApi.image
-      taginfo:
-        valuesPath: taginfo.image
-      osm-simple-metrics:
-        valuesPath: osmSimpleMetrics.image
-      changeset-replication-job:
-        valuesPath: changesetReplicationJob.image
+  images:
+    web:
+      valuesPath: web.image
+    db:
+      valuesPath: db.image
+    backup-restore:
+      valuesPath: dbBackupRestore.image
+    planet-dump:
+      valuesPath: planetDump.image
+    full-history:
+      valuesPath: fullHistory.image
+    replication-job:
+      valuesPath: replicationJob.image
+    populate-apidb:
+      valuesPath: populateApidb.image
+    osm-processor:
+      valuesPath: osmProcessor.image
+    tiler-db:
+      valuesPath: tilerDb.image
+    tiler-imposm:
+      valuesPath: tilerImposm.image
+    tiler-server:
+      valuesPath: tilerServer.image
+    tasking-manager-api:
+      valuesPath: tmApi.image
+    # tiler-visor:
+    #   valuesPath: tilerVisor.image
+    nominatim:
+      valuesPath: nominatimApi.image
+    overpass-api:
+      valuesPath: overpassApi.image
+    taginfo:
+      valuesPath: taginfo.image
+    osm-simple-metrics:
+      valuesPath: osmSimpleMetrics.image
+    changeset-replication-job:
+      valuesPath: changesetReplicationJob.image
+    osmcha:
+      valuesPath: osmcha.image
+    osmcha-db:
+      valuesPath: osmchaDb.image
