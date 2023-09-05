@@ -1,15 +1,17 @@
 {{- if .Values.dbBackupRestore.enabled -}}
+{{- range .Values.dbBackupRestore.cronJobs }}
+{{- if .enabled -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-db-backup-job
+  name: {{ .Release.Name }}-{{ .name }}-job
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-backup-job
+    component: {{ .name }}-job
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: {{ quote .Values.dbBackupRestore.schedule }}
+  schedule: {{ quote .schedule }}
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2
   startingDeadlineSeconds: 100
@@ -19,19 +21,21 @@ spec:
       template:
         spec:
           containers:
-          - name: {{ .Release.Name }}-db-backup-job
+          - name: {{ .Release.Name }}-{{ .name }}-job
             image: {{ .Values.dbBackupRestore.image.name }}:{{ .Values.dbBackupRestore.image.tag }}
             command: ['/start.sh']
-            {{- if .Values.dbBackupRestore.resources.enabled }}
+            {{- if .resources.enabled }}
             resources:
               requests:
-                memory: {{ .Values.dbBackupRestore.resources.requests.memory }}
-                cpu: {{ .Values.dbBackupRestore.resources.requests.cpu }}
+                memory: {{ .resources.requests.memory }}
+                cpu: {{ .resources.requests.cpu }}
               limits:
-                memory: {{ .Values.dbBackupRestore.resources.limits.memory }}
-                cpu: {{ .Values.dbBackupRestore.resources.limits.cpu }}
+                memory: {{ .resources.limits.memory }}
+                cpu: {{ .resources.limits.cpu }}
             {{- end }}
             env:
+            ########## Web DB section
+            {{ if eq .name "web-db" }}
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-db
               - name: POSTGRES_DB
@@ -48,6 +52,15 @@ spec:
                 value: {{ quote .Values.dbBackupRestore.env.CLEAN_BACKUPS }}
               - name: CLOUDPROVIDER
                 value: {{ .Values.cloudProvider }}
+            {{ else }}
+
+            {{ if eq .name "osmcha-db" }}
+              # TODO
+            {{ else }}
+            {{ if eq .name "task-manager-db" }}
+              # TODO
+            {{ else }}
+
               # In case cloudProvider=aws
               {{- if eq .Values.cloudProvider "aws" }}
               - name: AWS_S3_BUCKET
@@ -72,4 +85,6 @@ spec:
           nodeSelector:
             {{ .Values.dbBackupRestore.nodeSelector.label_key }} : {{ .Values.dbBackupRestore.nodeSelector.label_value }}
           {{- end }}
+{{- end }}
+{{- end }}
 {{- end }}

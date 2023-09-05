@@ -204,19 +204,27 @@ dbBackupRestore:
   image:
     name: ''
     tag: ''
-  schedule: '* * * * *'
-  env:
-    DB_ACTION: backup
-  resources:
+  cronJobs:
+  - name: web-db
     enabled: false
-    requests:
-      memory: '300Mi'
-      cpu: '0.5'
-    limits:
-      memory: '400Mi'
-      cpu: '0.6'
-  nodeSelector:
+    schedule: '* * * * *'
+    env:
+      DB_ACTION: backup
+    resources:
+      enabled: false
+      requests:
+        memory: '300Mi'
+        cpu: '0.5'
+      limits:
+        memory: '400Mi'
+        cpu: '0.6'
+    nodeSelector:
+      enabled: false
+  - name: osmcha-db
     enabled: false
+  - name: task-manager-db
+    enabled: false
+
 
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
