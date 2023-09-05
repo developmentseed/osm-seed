@@ -1,0 +1,24 @@
+version: '3'
+services:
+  osmcha-db:
+    platform: linux/amd64
+    image: osmseed-osmcha-db:v1
+    build:
+      context: ../images/osmcha-db
+      dockerfile: Dockerfile
+    ports:
+    - '5432:5432'
+    volumes:
+    - ../data/osmcha-db-data:/var/lib/postgresql/data
+    env_file:
+    - ../envs/.env.osmcha
+  osmcha-web:
+    platform: linux/amd64
+    image: osmseed-osmcha-web:v1
+    build:
+      context: ../images/osmcha
+      dockerfile: Dockerfile
+    ports:
+    - '80:80'
+    env_file:
+    - ../envs/.env.osmcha
