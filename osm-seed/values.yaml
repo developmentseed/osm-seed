@@ -746,6 +746,10 @@ osmchaDb:
   image:
     name: ''
     tag: ''
+  env:
+    POSTGRES_DB: osmcha-db
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: '1234'
   resources:
     enabled: false
     requests:
@@ -757,7 +761,7 @@ osmchaDb:
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
-    mountPath: /db
+    mountPath: /var/lib/postgresql/data
     # Minikube
     localVolumeHostPath: /mnt/overpass-api-db-data
     localVolumeSize: 10Gi

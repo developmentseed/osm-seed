@@ -31,7 +31,7 @@ spec:
               containerPort: 5432
               protocol: TCP
           env:
-            - name: POSTGRES_HOST
+            - name: PGHOST
               value: {{ .Release.Name }}-osmcha-db
             - name: POSTGRES_DB
               value: {{ .Values.osmchaDb.env.POSTGRES_DB }}
