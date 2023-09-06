@@ -1,0 +1,104 @@
+{{- if .Values.osmchaWeb.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-osmcha-web
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmcha-web-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.osmchaWeb.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-osmcha-web
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-osmcha-web
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-osmcha-web
+          image: "{{ .Values.osmchaWeb.image.name }}:{{ .Values.osmchaWeb.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
+            timeoutSeconds: 30
+          {{- if .Values.osmchaWeb.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.osmchaWeb.resources.requests.memory }}
+              cpu: {{ .Values.osmchaWeb.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.osmchaWeb.resources.limits.memory }}
+              cpu: {{ .Values.osmchaWeb.resources.limits.cpu }}
+          {{- end }}
+          env:
+            - name: POSTGRES_USER
+              value: {{.Value.osmchaDb.env.POSTGRES_USER | quote }}
+            - name: POSTGRES_PASSWORD
+              value: {{.Value.osmchaDb.env.POSTGRES_PASSWORD | quote }}
+            - name: PGHOST
+              value: {{.Value.osmchaDb.env.PGHOST | quote }}
+            - name: DJANGO_CACHES
+              value: {{.Value.osmchaWeb.env.DJANGO_CACHES | quote }}
+            - name: DJANGO_DEBUG
+              value: {{.Value.osmchaWeb.env.DJANGO_DEBUG | quote }}
+            - name: DJANGO_SECRET_KEY
+              value: {{.Value.osmchaWeb.env.DJANGO_SECRET_KEY | quote }}
+            - name: DJANGO_SECURE_BROWSER_XSS_FILTER
+              value: {{.Value.osmchaWeb.env.DJANGO_SECURE_BROWSER_XSS_FILTER | quote }}
+            - name: DJANGO_SECURE_SSL_REDIRECT
+              value: {{.Value.osmchaWeb.env.DJANGO_SECURE_SSL_REDIRECT | quote }}
+            - name: DJANGO_SECURE_CONTENT_TYPE_NOSNIFF
+              value: {{.Value.osmchaWeb.env.DJANGO_SECURE_CONTENT_TYPE_NOSNIFF | quote }}
+            - name: DJANGO_SECURE_FRAME_DENY
+              value: {{.Value.osmchaWeb.env.DJANGO_SECURE_FRAME_DENY | quote }}
+            - name: DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS
+              value: {{.Value.osmchaWeb.env.DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS | quote }}
+            - name: DJANGO_SESSION_COOKIE_HTTPONLY
+              value: {{.Value.osmchaWeb.env.DJANGO_SESSION_COOKIE_HTTPONLY | quote }}
+            - name: DJANGO_SESSION_COOKIE_SECURE
+              value: {{.Value.osmchaWeb.env.DJANGO_SESSION_COOKIE_SECURE | quote }}
+            - name: DJANGO_DEFAULT_FROM_EMAIL
+              value: {{.Value.osmchaWeb.env.DJANGO_DEFAULT_FROM_EMAIL | quote }}
+            - name: DJANGO_SERVER_EMAIL
+              value: {{.Value.osmchaWeb.env.DJANGO_SERVER_EMAIL | quote }}
+            - name: DJANGO_EMAIL_SUBJECT_PREFIX
+              value: {{.Value.osmchaWeb.env.DJANGO_EMAIL_SUBJECT_PREFIX | quote }}
+            - name: DJANGO_CHANGESETS_FILTER
+              value: {{.Value.osmchaWeb.env.DJANGO_CHANGESETS_FILTER | quote }}
+            - name: OAUTH_OSM_KEY
+              value: {{.Value.osmchaWeb.env.OAUTH_OSM_KEY | quote }}
+            - name: OAUTH_OSM_SECRET
+              value: {{.Value.osmchaWeb.env.OAUTH_OSM_SECRET | quote }}
+            - name: DJANGO_ANON_USER_THROTTLE_RATE
+              value: {{.Value.osmchaWeb.env.DJANGO_ANON_USER_THROTTLE_RATE | quote }}
+            - name: DJANGO_COMMON_USER_THROTTLE_RATE
+              value: {{.Value.osmchaWeb.env.DJANGO_COMMON_USER_THROTTLE_RATE | quote }}
+            - name: DJANGO_NON_STAFF_USER_THROTTLE_RATE
+              value: {{.Value.osmchaWeb.env.DJANGO_NON_STAFF_USER_THROTTLE_RATE | quote }}
+            - name: OAUTH_REDIRECT_URI
+              value: {{.Value.osmchaWeb.env.OAUTH_REDIRECT_URI | quote }}
+            - name: OSMCHA_FRONTEND_VERSION
+              value: {{.Value.osmchaWeb.env.OSMCHA_FRONTEND_VERSION | quote }}
+            - name: DJANGO_ENABLE_CHANGESET_COMMENTS
+              value: {{.Value.osmchaWeb.env.DJANGO_ENABLE_CHANGESET_COMMENTS | quote }}
+            - name: DJANGO_OSM_COMMENTS_API_KEY
+              value: {{.Value.osmchaWeb.env.DJANGO_OSM_COMMENTS_API_KEY | quote }}
+      {{- if .Values.osmchaWeb.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.osmchaWeb.nodeSelector.label_key }} : {{ .Values.osmchaWeb.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

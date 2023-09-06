@@ -1,0 +1,26 @@
+{{- if and .Values.osmchaWeb.enabled (eq .Values.serviceType "ClusterIP") }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-ingress-osmcha-web
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+spec:
+  tls:
+    - hosts:
+      - osmcha.{{ .Values.domain }}
+      secretName: {{ template "osm-seed.fullname" . }}-secret-osmcha
+
+  rules:
+  - host: osmcha.{{ .Values.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "osm-seed.fullname" . }}-osmcha-web
+            port:
+              number: 80
+{{- end }}

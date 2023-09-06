@@ -42,7 +42,7 @@ charts:
       valuesPath: osmSimpleMetrics.image
     changeset-replication-job:
       valuesPath: changesetReplicationJob.image
-    osmcha:
-      valuesPath: osmcha.image
+    osmcha-web:
+      valuesPath: osmchaWeb.image
     osmcha-db:
       valuesPath: osmchaDb.image

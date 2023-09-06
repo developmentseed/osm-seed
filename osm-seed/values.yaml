@@ -721,11 +721,35 @@ changesetReplicationJob:
 # ====================================================================================================
 # Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
-osmcha:
+osmchaWeb:
   enabled: false
   image:
     name: ''
     tag: ''
+  env:
+    DJANGO_CACHES: xyz
+    DJANGO_DEBUG: xyz
+    DJANGO_SECRET_KEY: xyz
+    DJANGO_SECURE_BROWSER_XSS_FILTER: xyz
+    DJANGO_SECURE_SSL_REDIRECT: xyz
+    DJANGO_SECURE_CONTENT_TYPE_NOSNIFF: xyz
+    DJANGO_SECURE_FRAME_DENY: xyz
+    DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS: xyz
+    DJANGO_SESSION_COOKIE_HTTPONLY: xyz
+    DJANGO_SESSION_COOKIE_SECURE: xyz
+    DJANGO_DEFAULT_FROM_EMAIL: xyz
+    DJANGO_SERVER_EMAIL: xyz
+    DJANGO_EMAIL_SUBJECT_PREFIX: xyz
+    DJANGO_CHANGESETS_FILTER: xyz
+    OAUTH_OSM_KEY: xyz
+    OAUTH_OSM_SECRET: xyz
+    DJANGO_ANON_USER_THROTTLE_RATE: xyz
+    DJANGO_COMMON_USER_THROTTLE_RATE: xyz
+    DJANGO_NON_STAFF_USER_THROTTLE_RATE: xyz
+    OAUTH_REDIRECT_URI: xyz
+    OSMCHA_FRONTEND_VERSION: xyz
+    DJANGO_ENABLE_CHANGESET_COMMENTS: xyz
+    DJANGO_OSM_COMMENTS_API_KEY: xyz
   resources:
     enabled: false
     requests:
@@ -736,7 +760,6 @@ osmcha:
       cpu: '10'
   nodeSelector:
     enabled: false
-
 
 # ====================================================================================================
 # Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
@@ -763,13 +786,13 @@ osmchaDb:
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     # Minikube
-    localVolumeHostPath: /mnt/overpass-api-db-data
+    localVolumeHostPath: /mnt/db-data/osmcha-data
     localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 50Gi
     # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-disk-overpass-v1
+    GCP_gcePersistentDisk_pdName: osmseed-osmcha-disk--v1
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false

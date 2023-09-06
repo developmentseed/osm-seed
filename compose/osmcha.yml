@@ -16,7 +16,7 @@ services:
     platform: linux/amd64
     image: osmseed-osmcha-web:v1
     build:
-      context: ../images/osmcha
+      context: ../images/osmcha-web
       dockerfile: Dockerfile
     ports:
     - '8000:8000'
