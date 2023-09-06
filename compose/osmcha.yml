@@ -19,6 +19,6 @@ services:
       context: ../images/osmcha
       dockerfile: Dockerfile
     ports:
-    - '80:80'
+    - '8000:8000'
     env_file:
     - ../envs/.env.osmcha
