@@ -23,6 +23,14 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-osmcha-db
     spec:
+      # Remove lost+found in EBS disk
+      initContainers:
+        - name: remove-lost-found
+          image: busybox
+          command: ['sh', '-c', 'rm -rf /var/lib/postgresql/data/lost+found']
+          volumeMounts:
+          - name: postgres-storage
+            mountPath: /var/lib/postgresql/data
       containers:
         - name: {{ .Chart.Name }}-osmcha-db
           image: "{{ .Values.osmchaDb.image.name }}:{{ .Values.osmchaDb.image.tag }}"
@@ -66,7 +74,6 @@ spec:
           volumeMounts:
             - name: postgres-storage
               mountPath: {{ .Values.osmchaDb.persistenceDisk.mountPath }}
-              subPath: {{ .Values.osmchaDb.persistenceDisk.subPath }}
           {{- if .Values.osmchaDb.resources.enabled }}
           resources:
             requests:
