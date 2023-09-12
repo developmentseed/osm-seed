@@ -45,6 +45,8 @@ spec:
               cpu: {{ .Values.osmchaWeb.resources.limits.cpu }}
           {{- end }}
           env:
+            - name: OSM_SERVER_URL
+              value: {{ .Values.osmchaDb.env.OSM_SERVER_URL | quote }}
             - name: POSTGRES_USER
               value: {{ .Values.osmchaDb.env.POSTGRES_USER | quote }}
             - name: POSTGRES_PASSWORD
