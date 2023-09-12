@@ -730,7 +730,7 @@ osmchaWeb:
     OSM_SERVER_URL: 'https://staging.openstreetmap.org'
     DJANGO_CACHES: "{'default': {'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache', 'LOCATION': '127.0.0.1:11211'}}"
     DJANGO_DEBUG: "False"
-    DJANGO_SECRET_KEY: {? {STAGING_OSMCHA_DJANGO_SECRET_KEY: ''} : ''}
+    DJANGO_SECRET_KEY: abc
     DJANGO_SECURE_BROWSER_XSS_FILTER: "True"
     DJANGO_SECURE_SSL_REDIRECT: "True"
     DJANGO_SECURE_CONTENT_TYPE_NOSNIFF: "True"
@@ -742,8 +742,8 @@ osmchaWeb:
     DJANGO_SERVER_EMAIL: "server@openstreetmap.org"
     DJANGO_EMAIL_SUBJECT_PREFIX: "osmcha"
     DJANGO_CHANGESETS_FILTER: "{'some_filter_key': 'some_filter_value'}"
-    OAUTH_OSM_KEY: {? {STAGING_OSMCHA_CONSUMER_KEY: ''} : ''}
-    OAUTH_OSM_SECRET: {? {STAGING_OSMCHA_CONSUMER_SECRET: ''} : ''}
+    OAUTH_OSM_KEY: abc
+    OAUTH_OSM_SECRET: abc
     DJANGO_ANON_USER_THROTTLE_RATE: "10/h"
     DJANGO_COMMON_USER_THROTTLE_RATE: "100/h"
     DJANGO_NON_STAFF_USER_THROTTLE_RATE: "50/h"
