@@ -24,7 +24,6 @@ RUN pip3 install -r requirements/production.txt
 RUN pip3 install -r requirements/local.txt
 
 # Replace social-auth-core by a modified version that provides OHM authentication
-RUN pip3 uninstall social-auth-core
 RUN pip3 install git+https://github.com/OpenHistoricalMap/social-core.git@master
 
 # Upgrading requests to the latest version.
