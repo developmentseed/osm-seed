@@ -32,11 +32,6 @@ RUN pip3 install certifi
 RUN pip3 install django-extensions
 ADD . /app
 
-ENV DJANGO_ROOT /app
-ENV DJANGO_SETTINGS_MODULE config.settings.production
-ENV C_FORCE_ROOT True
-ENV OSMCHA_FRONTEND_VERSION v0.86.0-production
-
 RUN echo "alias python=python3" >> ~/.bashrc
 RUN echo "alias pip=pip3" >> ~/.bashrc
 

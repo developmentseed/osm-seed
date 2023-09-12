@@ -103,6 +103,12 @@ spec:
               value: {{ .Values.osmchaWeb.env.DJANGO_ENABLE_CHANGESET_COMMENTS | quote }}
             - name: DJANGO_OSM_COMMENTS_API_KEY
               value: {{ .Values.osmchaWeb.env.DJANGO_OSM_COMMENTS_API_KEY | quote }}
+            - name: DJANGO_ROOT
+              value: {{ .Values.osmchaWeb.env.DJANGO_ROOT | quote }}
+            - name: DJANGO_SETTINGS_MODULE
+              value: {{ .Values.osmchaWeb.env.DJANGO_SETTINGS_MODULE | quote }}
+            - name: C_FORCE_ROOT
+              value: {{ .Values.osmchaWeb.env.C_FORCE_ROOT | quote }}
       {{- if .Values.osmchaWeb.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.osmchaWeb.nodeSelector.label_key }} : {{ .Values.osmchaWeb.nodeSelector.label_value }}
