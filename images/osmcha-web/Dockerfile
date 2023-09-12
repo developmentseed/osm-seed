@@ -16,14 +16,16 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 
 WORKDIR /app
-ENV BACKEND_VERSION v4.17.0
+ENV BACKEND_VERSION feature/osm-server-config
 RUN git clone https://github.com/willemarcel/osmcha-django .
 RUN git checkout $BACKEND_VERSION
+RUN git pull origin $BACKEND_VERSION
 RUN pip3 install -r requirements/production.txt
 RUN pip3 install -r requirements/local.txt
 
-RUN curl -o /usr/local/bin/watchbot https://s3.amazonaws.com/watchbot-binaries/linux/v5.0.0/watchbot
-RUN chmod +x /usr/local/bin/watchbot
+# Replace social-auth-core by a modified version that provides OHM authentication
+RUN pip3 uninstall social-auth-core
+RUN pip3 install git+https://github.com/OpenHistoricalMap/social-core.git@master
 
 # Upgrading requests to the latest version.
 RUN pip3 install -U requests
@@ -31,12 +33,10 @@ RUN pip3 install certifi
 RUN pip3 install django-extensions
 ADD . /app
 
-# Install decrypt-kms-env
-RUN curl -sL https://github.com/mapbox/decrypt-kms-env/archive/v1.0.3.tar.gz | tar --gunzip --extract --strip-components=1 --exclude=readme.md --directory=/usr/local
-
 ENV DJANGO_ROOT /app
 ENV DJANGO_SETTINGS_MODULE config.settings.production
 ENV C_FORCE_ROOT True
+ENV OSMCHA_FRONTEND_VERSION v0.86.0-production
 
 RUN echo "alias python=python3" >> ~/.bashrc
 RUN echo "alias pip=pip3" >> ~/.bashrc
