@@ -13,7 +13,7 @@ spec:
       secretName: {{ template "osm-seed.fullname" . }}-secret-web
 
   rules:
-  - host: web.{{ .Values.domain }}
+  - host: web-cgimap.{{ .Values.domain }}
     http:
       paths:
       - path: /
