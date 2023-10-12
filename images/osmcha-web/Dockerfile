@@ -30,6 +30,15 @@ RUN pip3 install git+https://github.com/OpenHistoricalMap/social-core.git@master
 RUN pip3 install -U requests
 RUN pip3 install certifi
 RUN pip3 install django-extensions
+# Clone and build the frontend
+RUN git clone git@github.com:mapbox/osmcha-frontend.git
+WORKDIR /app/osmcha-frontend
+RUN yarn
+RUN REACT_APP_VERSION=ohm REACT_APP_STACK=PRODUCTION PUBLIC_URL=$OSMCHA_URL npx react-scripts build
+RUN cp -R ./build/*.html ../osmchadjango/frontend/templates/frontend/
+RUN cp ./build/* ../osmchadjango/static/
+RUN cp  -R ./build/static/* ../osmcha-django/osmchadjango/static
+
 ADD . /app
 
 RUN echo "alias python=python3" >> ~/.bashrc
