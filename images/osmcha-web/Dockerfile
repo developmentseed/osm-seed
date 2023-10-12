@@ -31,7 +31,7 @@ RUN pip3 install -U requests
 RUN pip3 install certifi
 RUN pip3 install django-extensions
 # Clone and build the frontend
-RUN git clone git@github.com:mapbox/osmcha-frontend.git
+RUN git clone https://github.com/mapbox/osmcha-frontend.git
 WORKDIR /app/osmcha-frontend
 RUN yarn
 RUN REACT_APP_VERSION=ohm REACT_APP_STACK=PRODUCTION PUBLIC_URL=$OSMCHA_URL npx react-scripts build
