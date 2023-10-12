@@ -5,7 +5,7 @@ RUN apt-get update -y -qq && \
     apt-get install -y curl python3 \
     python3-dev python3-pip git libgeos-dev \
     libcurl4-gnutls-dev librtmp-dev python3-gdal \
-    libyaml-dev locales && \
+    libyaml-dev locales yarnpkg && \
     locale-gen en_US.UTF-8 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -33,7 +33,7 @@ RUN pip3 install django-extensions
 # Clone and build the frontend
 RUN git clone https://github.com/mapbox/osmcha-frontend.git
 WORKDIR /app/osmcha-frontend
-RUN npm install
+RUN yarn
 RUN REACT_APP_VERSION=ohm REACT_APP_STACK=PRODUCTION PUBLIC_URL=$OSMCHA_URL npx react-scripts build
 RUN cp -R ./build/*.html ../osmchadjango/frontend/templates/frontend/
 RUN cp ./build/* ../osmchadjango/static/
