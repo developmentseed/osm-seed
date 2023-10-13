@@ -756,6 +756,11 @@ osmchaWeb:
     DJANGO_ROOT: /app
     DJANGO_SETTINGS_MODULE: config.settings.local
     C_FORCE_ROOT: True
+    REACT_APP_OSM_URL: https://staging.openstreetmap.org
+    REACT_APP_OSM_API: https://staging.openstreetmap.org/api/0.6
+    REACT_APP_OVERPASS_BASE: https://overpass-api-staging.openstreetmap.org/api/interpreter
+    REACT_APP_NOMINATIM_URL: https://nominatim-api-staging.openstreetmap.org
+    OSMCHA_URL: https://osmcha-staging.openstreetmap.org
   resources:
     enabled: false
     requests:

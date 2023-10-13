@@ -109,8 +109,19 @@ spec:
               value: {{ .Values.osmchaWeb.env.DJANGO_SETTINGS_MODULE | quote }}
             - name: C_FORCE_ROOT
               value: {{ .Values.osmchaWeb.env.C_FORCE_ROOT | quote }}
+            - name: REACT_APP_OSM_URL
+              value: {{ .Values.osmchaWeb.env.REACT_APP_OSM_URL | quote }}
+            - name: REACT_APP_OSM_API
+              value: {{ .Values.osmchaWeb.env.REACT_APP_OSM_API | quote }}
+            - name: REACT_APP_OVERPASS_BASE
+              value: {{ .Values.osmchaWeb.env.REACT_APP_OVERPASS_BASE | quote }}
+            - name: REACT_APP_NOMINATIM_URL
+              value: {{ .Values.osmchaWeb.env.REACT_APP_NOMINATIM_URL | quote }}
+            - name: OSMCHA_URL
+              value: {{ .Values.osmchaWeb.env.OSMCHA_URL | quote }}
       {{- if .Values.osmchaWeb.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.osmchaWeb.nodeSelector.label_key }} : {{ .Values.osmchaWeb.nodeSelector.label_value }}
       {{- end }}
 {{- end }}
+
