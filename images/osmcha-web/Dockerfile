@@ -10,6 +10,12 @@ RUN apt-get update -y -qq && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install yarn.
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update -y
+RUN apt-get remove -y yarnpkg cmdtest && apt-get install -y yarn && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Setting locale is required by unicode-slugify (osmcha-django python requirement)
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -31,13 +37,14 @@ RUN pip3 install -U requests
 RUN pip3 install certifi
 RUN pip3 install django-extensions
 # Clone and build the frontend
-RUN git clone https://github.com/mapbox/osmcha-frontend.git
+RUN git clone https://github.com/mapbox/osmcha-frontend.git /app/osmcha-frontend
 WORKDIR /app/osmcha-frontend
 RUN yarn install
 RUN REACT_APP_VERSION=ohm REACT_APP_STACK=PRODUCTION PUBLIC_URL=$OSMCHA_URL npx react-scripts build
-RUN cp -R ./build/*.html ../osmchadjango/frontend/templates/frontend/
-RUN cp ./build/* ../osmchadjango/static/
-RUN cp  -R ./build/static/* ../osmcha-django/osmchadjango/static
+RUN cp -R build/*.html ../osmchadjango/frontend/templates/frontend/
+RUN cp -R build/* ../osmchadjango/static/
+RUN mkdir -p ../osmcha-django/osmchadjango/static
+RUN cp -R build/static/* ../osmcha-django/osmchadjango/static
 
 ADD . /app
 
