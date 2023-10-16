@@ -43,8 +43,7 @@ RUN yarn install
 RUN REACT_APP_VERSION=ohm REACT_APP_STACK=PRODUCTION PUBLIC_URL=$OSMCHA_URL npx react-scripts build
 RUN cp -R build/*.html ../osmchadjango/frontend/templates/frontend/
 RUN cp -R build/* ../osmchadjango/static/
-RUN mkdir -p ../osmcha-django/osmchadjango/static
-RUN cp -R build/static/* ../osmcha-django/osmchadjango/static
+RUN cp -R build/static/* ../osmchadjango/static/
 
 ADD . /app
 
