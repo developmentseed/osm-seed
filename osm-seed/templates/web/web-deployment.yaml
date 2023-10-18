@@ -29,9 +29,6 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
-            - name: cgimap
-              containerPort: 81
-              protocol: TCP
           livenessProbe:
             httpGet:
               path: /api/0.6/capabilities
