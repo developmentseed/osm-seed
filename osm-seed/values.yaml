@@ -24,7 +24,6 @@ GCP_STORAGE_BUCKET: gs://osm-seed-test
 # ====================================================================================================
 AZURE_STORAGE_ACCOUNT: osmseed
 AZURE_CONTAINER_NAME: osm-seed
-AZURE_STORAGE_ACCESS_KEY: xyz..
 AZURE_STORAGE_CONNECTION_STRING: xyz..
 
 # ====================================================
@@ -33,28 +32,38 @@ AZURE_STORAGE_CONNECTION_STRING: xyz..
 
 AWS_SSL_ARN: false
 
-# ====================================================================================================
-# Ingress variables
-# ====================================================================================================
-ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - chart-example.local
-  tls: []
+# Specify serviceType.
+#
+# serviceType can be one of three values: 'NodePort', 'ClusterIP' or 'LoadBalancer'
+# Use `NodePort` for local testing on minikube.
+#
+# The recommended setting is `ClusterIP`, and then following the instructions to
+# point a DNS record to the cluster IP address. This will setup the ingress rules
+# for all services as subdomains and configure SSL using Lets Encrypt.
+#
+# If you specify `LoadBalancer` as the service type, if you also specify
+# an `AWS_SSL_ARN` that is a wildcart certificate, that will be configured
+# as the SSL certificate for your services. Else, you will need to configure
+# SSL separately. 
+serviceType: NodePort
+
+
+# Domain that is pointed to the clusterIP
+# You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
+# Then, the cluster configuration will setup services at their respective subdomains:
+# - web.osmseed.example.com
+# - overpass.osmseed.example.com
+# - nominatim.osmseed.example.com
+# - etc.
+domain: osmseed.example.com
 
 # ====================================================================================================
-# Domain app configuration
+# Configuration for Lets Encrypt setup
 # ====================================================================================================
-domain:
-  #enabled, If you set  enabled=true, you should uncomment the following configurations
-  enabled: false
-  # domainName, Add here your domain or the fixed IP  where the server is running
-  domainName: example.com
-  protocolo: http
+
+# Admin Email address used when generating Lets Encrypt certificates.
+# You will be notified of expirations, etc. on this email address.
+adminEmail: admin@example.com
 
 # ====================================================================================================
 # ====================================================================================================
@@ -87,6 +96,10 @@ db:
     # GCP
     GCP_gcePersistentDisk_pdName: osmseed-disk-db-v1
     GCP_gcePersistentDisk_size: 50Gi
+    # Azure
+    AZURE_diskName: osmseed-api-db-v1
+    AZURE_diskURI: /subscriptions/../../providers/Microsoft.Compute/disks/osmseed-api-db-v1
+    AZURE_diskSize: 20Gi
   resources:
     enabled: false
     requests:
@@ -107,12 +120,18 @@ web:
     name: ''
     tag: ''
   replicaCount: 1
+  serviceAnnotations: {}
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
-    MAILER_USERNAME: osmseed.test@gmail.com
+    MAILER_USERNAME: example@gmail.com
     MAILER_PASSWORD: '1234'
+    MAILER_FROM: no-reply@example.com
+    MAILER_PORT: 25
     NOMINATIM_URL: 'nominatim'
+    OVERPASS_URL: 'overpassApi'
+    OAUTH_CLIENT_ID: 'abcd' # Create client ID and key as OAuth2 Application
+    OAUTH_KEY: 'xyz'
   resources:
     enabled: false
     requests:
@@ -371,6 +390,7 @@ tilerServer:
     name: ''
     tag: ''
   replicaCount: 1
+  serviceAnnotations: {}
   env:
     TILER_SERVER_PORT: 9090
     TILER_CACHE_TYPE: s3 #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
@@ -423,10 +443,19 @@ tilerServerCacheCleaner:
     limits:
       memory: '2Gi'
       cpu: '2'
+  env:
+    KILL_PROCESS: manually
+    MAX_NUM_PS: 3
+    PROCESS_NAME: tegola
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
     label_value: tiler
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    cpuUtilization: 60
 # ====================================================================================================
 # Variables for tiler-visor
 # ====================================================================================================
@@ -435,6 +464,7 @@ tilerVisor:
   image:
     name: ''
     tag: ''
+  serviceAnnotations: {}
   replicaCount: 1
   env:
     TILER_VISOR_PROTOCOL: http
@@ -463,6 +493,7 @@ tmApi:
   nodeSelector:
     enabled: false
   replicaCount: 1
+  serviceAnnotations: {}
   env:
     POSTGRES_HOST: 'tm'
     POSTGRES_DB: 'tm'
@@ -499,66 +530,33 @@ tmApi:
       memory: '2Gi'
       cpu: '2'
 
-# ====================================================================================================
-# Nominatim image values
-# ====================================================================================================
-
-nominatim:
-  image:
-    name: ''
-    tag: ''
-
-# ====================================================================================================
-# Variables for nominatim db
-# ====================================================================================================
-nominatimDb:
-  enabled: false
-  env:
-    PG_PORT: 5432
-    PG_USER: nominatim
-    PG_PASSWORD: password1234
-    PG_DATABASE: nominatim
-    OSM_URL_FILE: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
-    THREADS: 4
-    REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates
-    REPLICATION_MAXINTERVAL: 86500
-    REPLICATION_UPDATE_INTERVAL: 86500
-    REPLICATION_RECHECK_INTERVAL: 900
-  persistenceDisk:
-    enabled: false
-    accessMode: ReadWriteOnce
-    mountPath: /var/lib/postgresql/data
-    subPath: nominatim-pgdata
-    # Minikube
-    localVolumeHostPath: /mnt/nominatim-db-data
-    localVolumeSize: 10Gi
-    # AWS
-    AWS_ElasticBlockStore_volumeID: vol-037a44560af1076f1
-    AWS_ElasticBlockStore_size: 100Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
-    GCP_gcePersistentDisk_size: 50Gi
-  resources:
-    enabled: false
-    requests:
-      memory: '1Gi'
-      cpu: '1'
-    limits:
-      memory: '2Gi'
-      cpu: '1'
-  nodeSelector:
-    enabled: false
 
 # ====================================================================================================
 # Variables for nominatim api
 # ====================================================================================================
 nominatimApi:
-  enabled: false
+  enabled: true
+  image:
+    name: ''
+    tag: ''
+  serviceAnnotations: {}
   replicaCount: 1
   env:
-    BASE_URL: https://nominatim.osm-seed.test
-    OSMSEED_WEB_API_DOMAIN: openstreetmap.org
-    OSMSEED_OVERPASS_API_DOMAIN: overpass-api.osmseed.org
+    PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
+    REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates
+    REPLICATION_UPDATE_INTERVAL: 86400
+    REPLICATION_RECHECK_INTERVAL: 900
+    FREEZE: false
+    IMPORT_WIKIPEDIA: false
+    IMPORT_US_POSTCODES: false
+    IMPORT_GB_POSTCODES: false
+    IMPORT_TIGER_ADDRESSES: false
+    THREADS: 4
+    NOMINATIM_PASSWORD: psw1234
+    PGDATA: /var/lib/postgresql/14/main
+    NOMINATIM_ADDRESS_LEVEL_CONFIG_URL: https://gist.githubusercontent.com/lonvia/8502c61b3dd159e67eb8be8368d864c1/raw/d05a1d681230632bb2e35cbf363f2baec8acd657/address-levels.json
+    UPDATE_MODE: continuous #Options: `continuous`/`once`/`catch-up`/`none` (default: `none`)
+    OSMSEED_WEB_API_DOMAIN: www.openstreetmap.org
   resources:
     enabled: false
     requests:
@@ -567,6 +565,20 @@ nominatimApi:
     limits:
       memory: '2Gi'
       cpu: '2'
+  persistenceDisk:
+    enabled: true
+    accessMode: ReadWriteOnce
+    mountPath: /var/lib/postgresql/14/main
+    subPath: nominatim-pgdata
+    # Minikube
+    localVolumeHostPath: /mnt/nominatim-db-data
+    localVolumeSize: 10Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: vol-0403ccb65fb4a85e9
+    AWS_ElasticBlockStore_size: 100Gi
+    # GCP
+    GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
+    GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
 
@@ -578,6 +590,7 @@ overpassApi:
   image:
     name: ''
     tag: ''
+  serviceAnnotations: {}
   env:
     OVERPASS_META: 'yes'
     OVERPASS_MODE: init
@@ -586,6 +599,7 @@ overpassApi:
     OVERPASS_RULES_LOAD: 10
     #OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf' # it is in case we pass planet files as PBF file uncommment this line
     OVERPASS_PLANET_PREPROCESS: 'ls'
+    OVERPASS_REPLICATION_SEQUENCE_NUMBER: 5201000
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
@@ -617,6 +631,7 @@ taginfo:
   image:
     name: ''
     tag: ''
+  serviceAnnotations: {}
   env:
     URL_PLANET_FILE_STATE: https://planet.osm.org/pbf/state.txt
     URL_HISTORY_PLANET_FILE_STATE: https://planet.osm.org/pbf/full-history/state.txt
@@ -638,5 +653,66 @@ taginfo:
     limits:
       memory: '2Gi'
       cpu: '2'
+  nodeSelector:
+    enabled: false
+# ====================================================================================================
+# Variables for osm-simple-metrics
+# ====================================================================================================
+osmSimpleMetrics:
+  enabled: false
+  image:
+    name: ''
+    tag: ''
+  schedule: '* */1 * * *'
+  resources:
+    enabled: false
+    requests:
+      memory: '1Gi'
+      cpu: '2'
+    limits:
+      memory: '2Gi'
+      cpu: '2'
+  nodeSelector:
+    enabled: false
+
+# ====================================================================================================
+# Variables for osm-simple-metrics
+# ====================================================================================================
+monitoringReplication:
+  enabled: false
+  image:
+    name: 'developmentseed/osmseed-replication-job'
+    tag: '0.1.0-n770.hd15c9f2'
+  schedule: '* */1 * * *'
+  env:
+    CREATE_MISSING_FILES: empty
+    REPLICATION_SEQUENCE_NUMBER: "109789"
+  resources:
+    enabled: false
+    requests:
+      memory: '1Gi'
+      cpu: '2'
+    limits:
+      memory: '2Gi'
+      cpu: '2'
+  nodeSelector:
+    enabled: false
+
+# ====================================================================================================
+# Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
+# ====================================================================================================
+changesetReplicationJob:
+  enabled: false
+  image:
+    name: ''
+    tag: ''
+  resources:
+    enabled: false
+    requests:
+      memory: '20Gi'
+      cpu: '8'
+    limits:
+      memory: '24Gi'
+      cpu: '10'
   nodeSelector:
     enabled: false

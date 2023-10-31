@@ -1,0 +1,22 @@
+{{- if .Values.tilerServer.enabled -}}
+{{- if .Values.tilerServer.autoscaling.enabled -}}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-hpa-tiler-server
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-tiler-server
+  minReplicas: {{ .Values.tilerServer.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.tilerServer.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.tilerServer.autoscaling.cpuUtilization }}
+{{- end }}
+{{- end }}

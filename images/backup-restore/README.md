@@ -22,7 +22,7 @@ In order to run this container we need environment variables, these can be found
   # Docker compose
   docker run \
     --env-file ./envs/.env.db \
-    --env-file ./envs/.env.backup-restore \
+    --env-file ./envs/.env.db-utils \
     --env-file ./envs/.env.cloudprovider \
     --network osm-seed_default \
     -it osmseed-db-backup-restore:v1 

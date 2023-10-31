@@ -25,11 +25,17 @@ sed -i -e 's/smtp_authentication: null/smtp_authentication: "login"/g' $workdir/
 sed -i -e 's/smtp_user_name: null/smtp_user_name: "'$MAILER_USERNAME'"/g' $workdir/config/settings.yml
 sed -i -e 's/smtp_password: null/smtp_password: "'$MAILER_PASSWORD'"/g' $workdir/config/settings.yml
 sed -i -e 's/openstreetmap@example.com/'$MAILER_FROM'/g' $workdir/config/settings.yml
-[[ -z "$MAILER_PORT" ]] && MAILER_PORT=25
 sed -i -e 's/smtp_port: 25/smtp_port: '$MAILER_PORT'/g' $workdir/config/settings.yml
 
 #### SET UP ID KEY
-sed -i -e 's/#id_key: ""/id_key: "'$OSM_id_key'"/g' $workdir/config/settings.yml
+sed -i -e 's/#id_key: ""/id_key: "'$OPENSTREETMAP_id_key'"/g' $workdir/config/settings.yml
+
+### SET UP OAUTH ID AND KEY
+sed -i -e 's/OAUTH_CLIENT_ID/'$OAUTH_CLIENT_ID'/g' $workdir/config/settings.yml
+sed -i -e 's/OAUTH_KEY/'$OAUTH_KEY'/g' $workdir/config/settings.yml
+
+## SET NOMINATIM URL
+sed -i -e 's/nominatim.openstreetmap.org/'$NOMINATIM_URL'/g' $workdir/config/settings.yml
 
 #### CHECK IF DB IS ALREADY UP AND START THE APP
 flag=true

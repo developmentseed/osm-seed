@@ -3,28 +3,16 @@ services:
   #####################################################
   ## Nominatim DB-API section
   #####################################################
-  nominatim-db:
-    image: nominatim-db:v1
-    build:
-      context: ../images/nominatim
-      dockerfile: Dockerfile
-    ports:
-      - '5434:5432'
-    volumes:
-      - ../data/nominatim-db-data:/var/lib/postgresql/data
-    command: >
-      /bin/bash -c "
-        sh /app/start.sh
-      "
-    env_file:
-      - ../envs/.env.nominatim
   nominatim-api:
     image: nominatim-api:v1
     build:
       context: ../images/nominatim
       dockerfile: Dockerfile
     ports:
-      - '7070:8080'
-    entrypoint: sh /app/startapache.sh
+      - '8080:8080'
+      - '5432:5432'
+    volumes:
+      - ../data/nominatim-data:/var/lib/postgresql/14/main
+      # - ../../Nominatim/nominatim/tokenizer/sanitizers:/usr/local/lib/nominatim/lib-python/nominatim/tokenizer/sanitizers
     env_file:
       - ../envs/.env.nominatim

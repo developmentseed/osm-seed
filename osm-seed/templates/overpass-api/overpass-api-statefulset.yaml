@@ -59,6 +59,8 @@ spec:
               value: {{ .Values.overpassApi.env.OVERPASS_RULES_LOAD | quote}}
             - name: OVERPASS_PLANET_PREPROCESS
               value: {{ .Values.overpassApi.env.OVERPASS_PLANET_PREPROCESS | quote}}
+            - name: OVERPASS_REPLICATION_SEQUENCE_NUMBER
+              value: {{ .Values.overpassApi.env.OVERPASS_REPLICATION_SEQUENCE_NUMBER | quote }}
           volumeMounts:
           - mountPath: /db
             name: overpass-api-storage

@@ -13,6 +13,7 @@ RUN apt-get update && apt-get -y install \
 # Commit ae5a950f7aa4c0de4e706839619a1dc05fc4450a, at 2021-10-18
 RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo
 WORKDIR $workdir/taginfo
+RUN git checkout ae5a950f7aa4c0de4e706839619a1dc05fc4450a
 RUN echo "gem 'thin' " >>Gemfile
 RUN gem install bundler
 RUN bundle install

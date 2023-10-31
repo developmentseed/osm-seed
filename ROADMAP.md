@@ -1,9 +1,3 @@
-# Project Roadmap
-
-The initial release of `v0.1.0` provides the bare minimum needed to run the OpenStreetMap API, connect JOSM to it to edit data, and uses `osmium` to generate regular dumps of the data as `pbf` files.
-
-In the future, this would ideally be a fully customizable version of the OSM website, and include related OSM tools like the HOT Tasking Manager, iD, OSMCha, etc.
-
 ### Short term goals
 
  - Harden stability, automated logging, and monitoring of the Helm chart setup + follow Kubernetes best practices.

@@ -1,0 +1,26 @@
+{{- if and .Values.tilerVisor.enabled (eq .Values.serviceType "ClusterIP") }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-ingress-tiler-visor
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+spec:
+  tls:
+    - hosts:
+      - tiler-visor.{{ .Values.domain }}
+      secretName: {{ template "osm-seed.fullname" . }}-secret-tiler-visor
+
+  rules:
+  - host: tiler-visor.{{ .Values.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "osm-seed.fullname" . }}-tiler-visor
+            port:
+              number: 80
+{{- end }}

@@ -29,9 +29,43 @@ You need to install `helm` onto your cluster, and make sure it has adequate perm
 
 With `minikube` as your cluster backend, this can be accomplished with `helm init`. Depending on your Kubernetes cluster backend, you may need some extra steps to ensure `helm` has adequate permissions on your cluster. See https://github.com/kubernetes/helm/blob/master/docs/rbac.md
 
+### Install dependencies on your cluster
+
+To handle domain routing and SSL, osm-seed needs the nginx ingress controller setup on the cluster as well as Lets Encrypt to handle SSL certificate generation.
+
+You can do this with:
+
+```sh
+    helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
+```
+
+or install using `kubectl`
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/cloud/deploy.yaml
+```
+
+For more options and cloud-specific instructions, see: https://kubernetes.github.io/ingress-nginx/deploy/
+
+To install the Lets Encrypt `cert-manager` helm chart:
+
+```sh
+    helm repo add jetstack https://charts.jetstack.io
+    helm repo update
+    helm install \
+        cert-manager jetstack/cert-manager \
+        --namespace cert-manager \
+        --create-namespace \
+        --version v1.7.1 \
+        --set installCRDs=true
+```
+For further information: https://cert-manager.io/docs/installation/helm/
+
 ### Install osm-seed onto your cluster
 
-Look at the [`values.yaml`](osm-seed/values.yaml) file in the `osm-seed` sub-folder to see the various configuration options and values that you need to configure for your installation. Then create a `myvalues.yaml` file, where you can over-ride any of the values defined in `values.yaml`.
+Look at the [`values.yaml`](values.yaml) file in the `osm-seed` sub-folder to see the various configuration options and values that you need to configure for your installation. Then create a `myvalues.yaml` file, where you can over-ride any of the values defined in `values.yaml`.
 
 You can then install `osm-seed` with:
 

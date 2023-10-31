@@ -22,7 +22,7 @@ This project provides docker container definitions for various aspects of the Op
  - [`planet-dump`](images/planet-dump) A container that exports a planet replication in pbf format.
  - [`full-history`](images/full-history) A container that exports a full planet replication in pbf format.
  - [`replication-job`](images/replication-job)  A container that exports data from the api-db every minute, hour or day.
- - [`db-backup-restore`](images/db-backup-restore) A container that runs database backup.
+ - [`db-backup-restore`](images/backup-restore) A container that runs database backup.
 
  - [`tiler-db`](images/tiler-db) A container that runs tiler database.
  - [`tiler-imposm`](images/tiler-imposm) A container that runs updates from minute replication job.
@@ -43,4 +43,4 @@ If you plan to use data from the main OpenStreetMap project in your OSM Seed ins
 
 ## What's next?
 
-Our immediate next goal is integrate a tile server. Eventually, the goal is include as many tools from the OSM ecosystem part of this stack. Take a look at our [roadmap](https://github.com/developmentseed/osm-seed/blob/master/ROADMAP.md), and help out if this project helps what you're trying to do! We are always interested in collaborations and contributions! If you are interested in contributing, please see the [Contributor Guidelines](CONTRIBUTING.md).
+Eventually, the goal is to include more tools from the OSM ecosystem part of this stack, and continue to try and make the process as simple and reproducible as possible. Take a look at our [roadmap](https://github.com/developmentseed/osm-seed/blob/master/ROADMAP.md), and help out if this project helps what you're trying to do! We are always interested in collaborations and contributions! If you are interested in contributing, please see the [Contributor Guidelines](CONTRIBUTING.md).

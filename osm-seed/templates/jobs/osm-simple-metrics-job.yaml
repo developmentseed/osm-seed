@@ -1,0 +1,68 @@
+{{- if .Values.osmSimpleMetrics.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-osm-simple-metrics-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osm-simple-metrics-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ quote .Values.osmSimpleMetrics.schedule }}
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-osm-simple-metrics-job
+            image: {{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}
+            {{- if .Values.osmSimpleMetrics.resources.enabled }}
+            resources:
+              requests:
+                memory: {{ .Values.osmSimpleMetrics.resources.requests.memory }}
+                cpu: {{ .Values.osmSimpleMetrics.resources.requests.cpu }}
+              limits:
+                memory: {{ .Values.osmSimpleMetrics.resources.limits.memory }}
+                cpu: {{ .Values.osmSimpleMetrics.resources.limits.cpu }}
+            {{- end }}
+            env:
+              - name: POSTGRES_HOST
+                value: {{ .Release.Name }}-db
+              - name: POSTGRES_DB
+                value: {{ .Values.db.env.POSTGRES_DB }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              - name: POSTGRES_USER
+                value: {{ .Values.db.env.POSTGRES_USER }}
+              - name: CLOUDPROVIDER
+                value: {{ .Values.cloudProvider }}
+              # In case cloudProvider=aws
+              {{- if eq .Values.cloudProvider "aws" }}
+              - name: AWS_S3_BUCKET
+                value: {{ .Values.AWS_S3_BUCKET }}
+              {{- end }}
+              # In case cloudProvider=gcp
+              {{- if eq .Values.cloudProvider "gcp" }}
+              - name: GCP_STORAGE_BUCKET
+                value: {{ .Values.GCP_STORAGE_BUCKET }}
+              {{- end }}
+              # In case cloudProvider=azure
+              {{- if eq .Values.cloudProvider "azure" }}
+              - name: AZURE_STORAGE_ACCOUNT
+                value: {{ .Values.AZURE_STORAGE_ACCOUNT }}
+              - name: AZURE_CONTAINER_NAME
+                value: {{ .Values.AZURE_CONTAINER_NAME }}
+              - name: AZURE_STORAGE_CONNECTION_STRING
+                value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
+              {{- end }}
+          restartPolicy: OnFailure
+          {{- if .Values.osmSimpleMetrics.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.osmSimpleMetrics.nodeSelector.label_key }}: {{ .Values.osmSimpleMetrics.nodeSelector.label_value }}
+          {{- end }}
+{{- end }}

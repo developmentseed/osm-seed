@@ -1,0 +1,10 @@
+version: '3'
+services:
+  osm-simple-metrics:
+    image: osm-simple-metrics:v1
+    build:
+      context: ../images/osm-simple-metrics
+      dockerfile: Dockerfile
+    env_file:
+      - ../envs/.env.db
+      - ../envs/.env.cloudprovider

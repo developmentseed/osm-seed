@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 # osmosis tuning: https://wiki.openstreetmap.org/wiki/Osmosis/Tuning,https://lists.openstreetmap.org/pipermail/talk/2012-October/064771.html
 if [ -z "$MEMORY_JAVACMD_OPTIONS" ]; then
     echo JAVACMD_OPTIONS=\"-server\" >~/.osmosis

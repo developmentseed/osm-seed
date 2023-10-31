@@ -1,0 +1,114 @@
+{{- if .Values.nominatimApi.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-nominatim-api
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim-api-statefulset
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1 # we only ever want one replica of the nominatimApi
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-nominatim-api
+  serviceName: {{ .Release.Name }}-nominatim-api
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-nominatim-api
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-nominatim-api
+          image: "{{ .Values.nominatimApi.image.name }}:{{ .Values.nominatimApi.image.tag }}"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+            - name: apache
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PBF_URL
+              value: {{ .Values.nominatimApi.env.PBF_URL }}
+            - name: REPLICATION_URL
+              value: {{ .Values.nominatimApi.env.REPLICATION_URL }}
+            - name: REPLICATION_UPDATE_INTERVAL
+              value: {{ .Values.nominatimApi.env.REPLICATION_UPDATE_INTERVAL | quote}}
+            - name: REPLICATION_RECHECK_INTERVAL
+              value: {{ .Values.nominatimApi.env.REPLICATION_RECHECK_INTERVAL | quote}}   
+            - name: THREADS
+              value: {{ .Values.nominatimApi.env.THREADS | quote}}
+            - name: FREEZE
+              value: {{ .Values.nominatimApi.env.FREEZE | quote}}
+            - name: IMPORT_WIKIPEDIA
+              value: {{ .Values.nominatimApi.env.IMPORT_WIKIPEDIA | quote}}
+            - name: IMPORT_US_POSTCODES
+              value: {{ .Values.nominatimApi.env.IMPORT_US_POSTCODES | quote}}
+            - name: IMPORT_GB_POSTCODES
+              value: {{ .Values.nominatimApi.env.IMPORT_GB_POSTCODES | quote}}
+            - name: IMPORT_TIGER_ADDRESSES
+              value: {{ .Values.nominatimApi.env.IMPORT_TIGER_ADDRESSES | quote}}
+            - name: NOMINATIM_PASSWORD
+              value: {{ .Values.nominatimApi.env.NOMINATIM_PASSWORD | quote}}
+            - name: PGDATA
+              value: {{ .Values.nominatimApi.persistenceDisk.mountPath }}
+            - name: OSMSEED_WEB_API_DOMAIN
+              value: {{ .Values.nominatimApi.env.OSMSEED_WEB_API_DOMAIN }}
+            - name: OSMSEED_OVERPASS_API_DOMAIN
+              value: {{ .Values.nominatimApi.env.OSMSEED_OVERPASS_API_DOMAIN }}
+            - name: NOMINATIM_ADDRESS_LEVEL_CONFIG_URL
+              value: {{ .Values.nominatimApi.env.NOMINATIM_ADDRESS_LEVEL_CONFIG_URL }}
+            - name: UPDATE_MODE
+              value: {{ .Values.nominatimApi.env.UPDATE_MODE | default "none" | quote }}
+          # command: ["/bin/sh"]
+          # args: ["-c", "sh /app/start.sh"]
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #     - sh
+          #     - -c
+          #     - exec pg_isready --host $POD_IP
+          #   initialDelaySeconds: 120
+          #   timeoutSeconds: 5
+          #   failureThreshold: 6
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #     - sh
+          #     - -c
+          #     - exec pg_isready --host $POD_IP
+          #   initialDelaySeconds: 5
+          #   timeoutSeconds: 3
+          #   periodSeconds: 5
+          volumeMounts:
+            - name: nominatim-db-storage
+              mountPath: {{ .Values.nominatimApi.persistenceDisk.mountPath }}
+              subPath: {{ .Values.nominatimApi.persistenceDisk.subPath }}
+          {{- if .Values.nominatimApi.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.nominatimApi.resources.requests.memory }}
+              cpu: {{ .Values.nominatimApi.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.nominatimApi.resources.limits.memory }}
+              cpu: {{ .Values.nominatimApi.resources.limits.cpu }}
+          {{- end }}
+      volumes:
+        - name: nominatim-db-storage
+        {{- if .Values.nominatimApi.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-nominatim-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      {{- if .Values.nominatimApi.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.nominatimApi.nodeSelector.label_key }} : {{ .Values.nominatimApi.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

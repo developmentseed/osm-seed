@@ -1,0 +1,26 @@
+{{- if eq .Values.serviceType "ClusterIP" }}
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+    name: letsencrypt-prod-issuer
+spec:
+    acme:
+        # You must replace this email address with your own.
+        # Let's Encrypt will use this to contact you about expiring
+        # certificates, and issues related to your account.
+        email: {{ .Values.adminEmail }}
+        # ACME server URL for Let’s Encrypt’s staging environment.
+        # Specify custom server here (https://acme-staging-v02.api.letsencrypt.org/directory)
+        # to hit staging LE
+        server: https://acme-v02.api.letsencrypt.org/directory
+        privateKeySecretRef:
+        # Secret resource used to store the account's private key.
+            name: letsencrypt-issuer-key
+        # Enable the HTTP-01 challenge provider
+        # you prove ownership of a domain by ensuring that a particular
+        # file is present at the domain
+        solvers:
+        - http01:
+            ingress:
+                class: nginx
+{{- end }}

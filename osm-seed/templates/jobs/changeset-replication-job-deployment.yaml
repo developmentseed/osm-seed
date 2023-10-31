@@ -1,0 +1,75 @@
+{{- if .Values.changesetReplicationJob.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-changeset-replication-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: changeset-replication-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-changeset-replication-job-deployment
+          image: {{ .Values.changesetReplicationJob.image.name }}:{{ .Values.changesetReplicationJob.image.tag }}
+          # command: ['/start.sh']
+          {{- if .Values.changesetReplicationJob.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.changesetReplicationJob.resources.requests.memory }}
+              cpu: {{ .Values.changesetReplicationJob.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.changesetReplicationJob.resources.limits.memory }}
+              cpu: {{ .Values.changesetReplicationJob.resources.limits.cpu }}
+          {{- end }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.env.POSTGRES_USER }}
+            - name: REPLICATION_FOLDER
+              value: replication/minute
+            - name: CLOUDPROVIDER
+              value: {{ .Values.cloudProvider }}
+            # In case cloudProvider=aws
+            {{- if eq .Values.cloudProvider "aws" }}
+            - name: AWS_S3_BUCKET
+              value: {{ .Values.AWS_S3_BUCKET }}
+            {{- end }}
+            # In case cloudProvider=gcp
+            {{- if eq .Values.cloudProvider "gcp" }}
+            - name: GCP_STORAGE_BUCKET
+              value: {{ .Values.GCP_STORAGE_BUCKET }}
+            {{- end }}
+            # In case cloudProvider=azure
+            {{- if eq .Values.cloudProvider "azure" }}
+            - name: AZURE_STORAGE_ACCOUNT
+              value: {{ .Values.AZURE_STORAGE_ACCOUNT }}
+            - name: AZURE_CONTAINER_NAME
+              value: {{ .Values.AZURE_CONTAINER_NAME }}
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
+            {{- end }}
+              # Memory optimization for osmosis
+            {{- if .Values.changesetReplicationJob.resources.enabled }}
+            - name: MEMORY_JAVACMD_OPTIONS
+              value: {{ .Values.changesetReplicationJob.resources.requests.memory | default "2Gi" | quote}}
+            {{- end }}
+      {{- if .Values.changesetReplicationJob.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.changesetReplicationJob.nodeSelector.label_key }} : {{ .Values.changesetReplicationJob.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

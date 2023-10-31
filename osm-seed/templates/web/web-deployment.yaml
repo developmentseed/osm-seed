@@ -64,18 +64,33 @@ spec:
             - name: MAILER_PASSWORD
               value: {{ quote .Values.web.env.MAILER_PASSWORD }}
             - name: MAILER_FROM
-              value: {{ quote .Values.web.env.MAILER_FROM }}
-            - name: OSM_id_key
+              value: {{ .Values.web.env.MAILER_FROM }}
+            - name: MAILER_PORT
+              value: {{ .Values.web.env.MAILER_PORT | default "25" | quote }}
+            - name: OPENSTREETMAP_id_key
               value: {{ .Values.web.env.OSM_id_key }}
-            - name: OSM_memcache_servers
+            - name: OAUTH_CLIENT_ID
+              value: {{ .Values.web.env.OAUTH_CLIENT_ID }}
+            - name: OAUTH_KEY
+              value: {{ .Values.web.env.OAUTH_KEY }}
+            - name: OPENSTREETMAP_memcache_servers
               value: {{ .Release.Name }}-memcached:11211
-            # Set domain name or pod ip  
-              {{- if .Values.domain.enabled }}
+              # Set SERVER_URL in case we use ingress
+              {{- if eq .Values.serviceType "ClusterIP" }}
             - name: SERVER_URL
-              value: {{ .Values.domain.domainName }}
+              value: web.{{ .Values.domain }}
             - name: SERVER_PROTOCOL
-              value : {{ .Values.domain.protocolo }}
-              {{- else }}
+              value : "https"
+              {{- end }}
+              # Set SERVER_URL in case we use LoadBalancer
+              {{- if eq .Values.serviceType "LoadBalancer" }}
+            - name: SERVER_URL
+              value: {{ .Values.domain }}
+            - name: SERVER_PROTOCOL
+              value : "https"
+              {{- end }}
+              # Set SERVER_URL in case we use NodePort
+              {{- if eq .Values.serviceType "NodePort" }}
             - name: SERVER_URL
               value: dns
             - name: SERVER_PROTOCOL
@@ -84,6 +99,9 @@ spec:
               # Nominatim domain
             - name: NOMINATIM_URL
               value: {{ .Values.web.env.NOMINATIM_URL }}
+              # Nominatim domain
+            - name: OVERPASS_URL
+              value: {{ .Values.web.env.OVERPASS_URL }}
             # Here can be added other Env variables for monitoring, debugging, etc.
             - name: NEW_RELIC_LICENSE_KEY
               value: {{ .Values.web.env.NEW_RELIC_LICENSE_KEY | default ""}}

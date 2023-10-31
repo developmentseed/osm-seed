@@ -1,6 +1,6 @@
 ### Delta replications job container
 
-This contain is responsible for creating the delta replication files it may be set up by minute, hour, etc. Those replications files will be uploaded to a repository in AWs of Gooble Storage, depends on what you are using.
+This contain is responsible for creating the delta replication files it may be set up by minute, hour, etc. Those replications files will be uploaded to a repository in AWS or Google Storage, depends on what you are using.
 
 ### Configuration
 

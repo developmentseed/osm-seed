@@ -17,7 +17,7 @@ RUN cd /go/src/github.com/go-spatial/tegola/cmd/tegola \
 RUN ln -s /opt/tegola /usr/bin/tegola
 
 RUN apk add --update \
-    python \
+    python3 \
     py-pip \
     py-cffi \
     py-cryptography \
@@ -25,14 +25,14 @@ RUN apk add --update \
   && apk add --virtual build-deps \
     gcc \
     libffi-dev \
-    python-dev \
+    python3-dev \
     linux-headers \
     musl-dev \
     openssl-dev \
     curl
 
 # Install aws-cli and  gsutil
-RUN pip install awscli
+RUN pip3 install awscli
 RUN curl -sSL https://sdk.cloud.google.com | bash
 RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
 
@@ -52,4 +52,6 @@ COPY ./start.sh .
 COPY ./expire-watcher.sh .
 COPY ./seed-by-diffs.sh .
 COPY ./tile_cache_downloader.sh .
-CMD ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
+COPY ./rm_tegola_ps.sh .
+
+CMD ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh & ./rm_tegola_ps.sh
