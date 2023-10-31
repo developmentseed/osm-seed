@@ -75,7 +75,7 @@ adminEmail: admin@example.com
 # Variables for osm-seed database
 # ====================================================================================================
 db:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
@@ -115,7 +115,7 @@ db:
 # Variables for osm-seed website
 # ====================================================================================================
 web:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
@@ -195,27 +195,48 @@ fullHistory:
       memory: "16Gi"
       cpu: "4"
 
-# ====================================================================================================
-# Variables for osm-seed database backup and restore
-# ====================================================================================================
+  # ====================================================================================================
+  # Variables for osm-seed database backup and restore
+  # ====================================================================================================
 dbBackupRestore:
-  enabled: false
   image:
     name: ''
     tag: ''
-  schedule: '* * * * *'
-  env:
-    DB_ACTION: backup
-  resources:
-    enabled: false
-    requests:
-      memory: '300Mi'
-      cpu: '0.5'
-    limits:
-      memory: '400Mi'
-      cpu: '0.6'
-  nodeSelector:
-    enabled: false
+  cronjobs:
+  - name: web-db
+    enabled: true
+    schedule: '* * * * *'
+    env:
+      DB_ACTION: backup
+      BACKUP_CLOUD_FOLDER: database/web-db
+      BACKUP_CLOUD_FILE: osmseed-api-web-db
+    resources:
+      enabled: false
+      requests:
+        memory: '300Mi'
+        cpu: '0.5'
+      limits:
+        memory: '400Mi'
+        cpu: '0.6'
+    nodeSelector:
+      enabled: false
+  - name: osmcha-db
+    enabled: true
+    schedule: '* * * * *'
+    env:
+      DB_ACTION: backup
+      BACKUP_CLOUD_FOLDER: database/osmcha-db
+      BACKUP_CLOUD_FILE: osmseed-osmcha-db
+    resources:
+      enabled: false
+      requests:
+        memory: '300Mi'
+        cpu: '0.5'
+      limits:
+        memory: '400Mi'
+        cpu: '0.6'
+    nodeSelector:
+      enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
@@ -534,7 +555,7 @@ tmApi:
 # Variables for nominatim api
 # ====================================================================================================
 nominatimApi:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
@@ -752,7 +773,7 @@ osmchaWeb:
     DJANGO_OSM_COMMENTS_API_KEY: "test"
     DJANGO_ROOT: /app
     DJANGO_SETTINGS_MODULE: config.settings.local
-    C_FORCE_ROOT: True
+    C_FORCE_ROOT: true
     REACT_APP_OSM_URL: https://staging.openstreetmap.org
     REACT_APP_OSM_API: https://staging.openstreetmap.org/api/0.6
     REACT_APP_OVERPASS_BASE: https://overpass-api-staging.openstreetmap.org/api/interpreter
