@@ -1,13 +1,11 @@
 {{- range $i, $job := .Values.dbBackupRestore.cronjobs }}
 {{- if $job.enabled -}}
----
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ $.Release.Name }}-{{ $job.name }}-backup-job
   labels:
     component: {{ $job.name }}-job
-    component: db-pd
     environment: {{ $.Values.environment }}
     release: {{ $.Release.Name }}
 spec:
@@ -98,5 +96,6 @@ spec:
                 cpu: {{ $job.resources.limits.cpu }}
             {{- end }}
           restartPolicy: OnFailure
+---
 {{- end }}
 {{- end }}
