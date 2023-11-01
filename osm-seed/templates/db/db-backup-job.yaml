@@ -65,17 +65,17 @@ spec:
               # Credentials or configurations for each cloud provider
             {{- if eq $.Values.cloudProvider "aws" }}
               - name: AWS_S3_BUCKET
-                value: {{ $.Values.dbBackupRestore.env.AWS_S3_BUCKET }}
+                value: {{ $job.env.AWS_S3_BUCKET }}
             {{- end }}
             {{- if eq $.Values.cloudProvider "gcp" }}
               - name: GCP_STORAGE_BUCKET
-                value: {{ $.Values.GCP_STORAGE_BUCKET }}
+                value: {{ $job.env.GCP_STORAGE_BUCKET }}
             {{- end }}
             {{- if eq $.Values.cloudProvider "azure" }}
               - name: AZURE_STORAGE_ACCOUNT
                 value: {{ $.Values.AZURE_STORAGE_ACCOUNT }}
               - name: AZURE_CONTAINER_NAME
-                value: {{ $.Values.AZURE_CONTAINER_NAME }}
+                value: {{ $job.AZURE_CONTAINER_NAME }}
               - name: AZURE_STORAGE_CONNECTION_STRING
                 value: {{ $.Values.AZURE_STORAGE_CONNECTION_STRING }}
             {{- end }}

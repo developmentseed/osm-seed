@@ -208,8 +208,10 @@ dbBackupRestore:
     schedule: '* * * * *'
     env:
       DB_ACTION: backup
+      SET_DATE: true
       BACKUP_CLOUD_FOLDER: database/web-db
       BACKUP_CLOUD_FILE: osmseed-api-web-db
+      AWS_S3_BUCKET: secure-bucket
     resources:
       enabled: false
       requests:
@@ -225,8 +227,10 @@ dbBackupRestore:
     schedule: '* * * * *'
     env:
       DB_ACTION: backup
+      SET_DATE: true
       BACKUP_CLOUD_FOLDER: database/osmcha-db
       BACKUP_CLOUD_FILE: osmseed-osmcha-db
+      AWS_S3_BUCKET: secure-bucket
     resources:
       enabled: false
       requests:

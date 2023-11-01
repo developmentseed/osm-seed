@@ -10,14 +10,14 @@ cloudStorageOps() {
 
 	case "${CLOUDPROVIDER}" in
 	aws)
-		aws s3 cp ${filepath} ${AWS_S3_BUCKET}/${cloudpath}
-		echo ${AWS_S3_BUCKET}/${cloudpath} >${LOCAL_STATE_FILE}
-		aws s3 cp ${LOCAL_STATE_FILE} ${AWS_S3_BUCKET}/${BACKUP_CLOUD_FOLDER}/state.txt
+		aws s3 cp ${filepath} s3://${AWS_S3_BUCKET}/${cloudpath}
+		echo s3://${AWS_S3_BUCKET}/${cloudpath} >${LOCAL_STATE_FILE}
+		aws s3 cp ${LOCAL_STATE_FILE} s3://${AWS_S3_BUCKET}/${BACKUP_CLOUD_FOLDER}/state.txt
 		;;
 	gcp)
-		gsutil cp ${filepath} ${GCP_STORAGE_BUCKET}/${cloudpath}
-		echo "${GCP_STORAGE_BUCKET}/${CLOUD_BACKUP_FILE}" >${LOCAL_STATE_FILE}
-		gsutil cp ${LOCAL_STATE_FILE} ${GCP_STORAGE_BUCKET}/${BACKUP_CLOUD_FOLDER}/state.txt
+		gsutil cp ${filepath} gs://${GCP_STORAGE_BUCKET}/${cloudpath}
+		echo "gs://${GCP_STORAGE_BUCKET}/${CLOUD_BACKUP_FILE}" >${LOCAL_STATE_FILE}
+		gsutil cp ${LOCAL_STATE_FILE} gs://${GCP_STORAGE_BUCKET}/${BACKUP_CLOUD_FOLDER}/state.txt
 		;;
 	azure)
 		az storage blob upload \
