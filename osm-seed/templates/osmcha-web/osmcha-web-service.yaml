@@ -27,12 +27,12 @@ spec:
   type: {{ .Values.serviceType }}
   ports:
     - port: 80
-      targetPort: 8000
+      targetPort: 5000
       protocol: TCP
       name: http
   {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     - port: 443
-      targetPort: 8000
+      targetPort: 5000
       protocol: TCP
       name: https
   {{- end }}

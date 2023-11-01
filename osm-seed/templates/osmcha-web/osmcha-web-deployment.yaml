@@ -27,12 +27,12 @@ spec:
           image: "{{ .Values.osmchaWeb.image.name }}:{{ .Values.osmchaWeb.image.tag }}"
           ports:
             - name: http
-              containerPort: 8000
+              containerPort: 5000
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /
-              port: 8000
+              port: 5000
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
           {{- if .Values.osmchaWeb.resources.enabled }}
