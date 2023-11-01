@@ -200,47 +200,49 @@ fullHistory:
   # ====================================================================================================
 dbBackupRestore:
   image:
-    name: ''
-    tag: ''
+    name: 'developmentseed/osmseed-backup-restore'
+    tag: '0.1.0-0.dev.git.942.h994af82'
   cronjobs:
-  - name: web-db
-    enabled: true
-    schedule: '* * * * *'
-    env:
-      DB_ACTION: backup
-      SET_DATE: true
-      BACKUP_CLOUD_FOLDER: database/web-db
-      BACKUP_CLOUD_FILE: osmseed-api-web-db
-      AWS_S3_BUCKET: secure-bucket
-    resources:
-      enabled: false
-      requests:
-        memory: '300Mi'
-        cpu: '0.5'
-      limits:
-        memory: '400Mi'
-        cpu: '0.6'
-    nodeSelector:
-      enabled: false
-  - name: osmcha-db
-    enabled: true
-    schedule: '* * * * *'
-    env:
-      DB_ACTION: backup
-      SET_DATE: true
-      BACKUP_CLOUD_FOLDER: database/osmcha-db
-      BACKUP_CLOUD_FILE: osmseed-osmcha-db
-      AWS_S3_BUCKET: secure-bucket
-    resources:
-      enabled: false
-      requests:
-        memory: '300Mi'
-        cpu: '0.5'
-      limits:
-        memory: '400Mi'
-        cpu: '0.6'
-    nodeSelector:
-      enabled: false
+    - name: web-db
+      enabled: true
+      schedule: '* * * * *'
+      env:
+        DB_ACTION: backup
+        SET_DATE: true
+        BACKUP_CLOUD_FOLDER: database/web-db
+        BACKUP_CLOUD_FILE: osmseed-api-web-db
+        AWS_S3_BUCKET: secure-bucket
+        RETENTION_DAYS: "30"
+      resources:
+        enabled: false
+        requests:
+          memory: '300Mi'
+          cpu: '0.5'
+        limits:
+          memory: '400Mi'
+          cpu: '0.6'
+      nodeSelector:
+        enabled: false
+    - name: osmcha-db
+      enabled: true
+      schedule: '* * * * *'
+      env:
+        DB_ACTION: backup
+        SET_DATE: true
+        BACKUP_CLOUD_FOLDER: database/osmcha-db
+        BACKUP_CLOUD_FILE: osmseed-osmcha-db
+        AWS_S3_BUCKET: secure-bucket
+        RETENTION_DAYS: "30"
+      resources:
+        enabled: false
+        requests:
+          memory: '300Mi'
+          cpu: '0.5'
+        limits:
+          memory: '400Mi'
+          cpu: '0.6'
+      nodeSelector:
+        enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
@@ -752,7 +754,8 @@ osmchaWeb:
     tag: ''
   env:
     OSM_SERVER_URL: 'https://staging.openstreetmap.org'
-    DJANGO_CACHES: "{'default': {'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache', 'LOCATION': '127.0.0.1:11211'}}"
+    DJANGO_CACHES: "{'default': {'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',\
+      \ 'LOCATION': '127.0.0.1:11211'}}"
     DJANGO_DEBUG: "False"
     DJANGO_SECRET_KEY: abc
     DJANGO_SECURE_BROWSER_XSS_FILTER: "True"

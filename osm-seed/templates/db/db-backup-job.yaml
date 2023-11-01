@@ -43,6 +43,8 @@ spec:
                 value: {{ $job.env.RESTORE_URL_FILE}}
               - name: CLEAN_BACKUPS
                 value: {{ quote $job.env.CLEAN_BACKUPS }}
+              - name: RETENTION_DAYS
+                value: {{ quote $job.env.RETENTION_DAYS }}
             {{- end }}
             # Env vars for osmcha database
             {{ if eq $job.name "osmcha-db" }}
@@ -64,6 +66,8 @@ spec:
                 value: {{ $job.env.RESTORE_URL_FILE}}
               - name: CLEAN_BACKUPS
                 value: {{ quote $job.env.CLEAN_BACKUPS }}
+              - name: RETENTION_DAYS
+                value: {{ quote $job.env.RETENTION_DAYS }}
             {{- end }}
               # Cloud provider
               - name: CLOUDPROVIDER
