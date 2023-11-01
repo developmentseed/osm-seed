@@ -37,6 +37,10 @@ spec:
                 value: {{ $.Values.db.env.POSTGRES_USER }}
               - name: DB_ACTION
                 value: {{ $job.env.DB_ACTION }}
+              - name: BACKUP_CLOUD_FOLDER
+                value: {{ $job.env.BACKUP_CLOUD_FOLDER }}
+              - name: BACKUP_CLOUD_FILE
+                value: {{ $job.env.BACKUP_CLOUD_FILE }}
               - name: RESTORE_URL_FILE
                 value: {{ $job.env.RESTORE_URL_FILE}}
               - name: CLEAN_BACKUPS
@@ -54,6 +58,10 @@ spec:
                 value: {{ $.Values.osmchaDb.env.POSTGRES_USER }}
               - name: DB_ACTION
                 value: {{ $job.env.DB_ACTION }}
+              - name: BACKUP_CLOUD_FOLDER
+                value: {{ $job.env.BACKUP_CLOUD_FOLDER }}
+              - name: BACKUP_CLOUD_FILE
+                value: {{ $job.env.BACKUP_CLOUD_FILE }}
               - name: RESTORE_URL_FILE
                 value: {{ $job.env.RESTORE_URL_FILE}}
               - name: CLEAN_BACKUPS
