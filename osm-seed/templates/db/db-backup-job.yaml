@@ -91,10 +91,10 @@ spec:
               - name: CLOUDPROVIDER
                 value: {{ $.Values.cloudProvider }}
               # Credentials or configurations for each cloud provider
-            {{- if eq $.Values.cloudProvider "aws" }}
-              - name: AWS_S3_BUCKET
-                value: {{ $job.env.AWS_S3_BUCKET }}
-            {{- end }}
+            # {{- if eq $.Values.cloudProvider "aws" }}
+            #   - name: AWS_S3_BUCKET
+            #     value: {{ $job.env.AWS_S3_BUCKET }}
+            # {{- end }}
             {{- if eq $.Values.cloudProvider "gcp" }}
               - name: GCP_STORAGE_BUCKET
                 value: {{ $job.env.GCP_STORAGE_BUCKET }}

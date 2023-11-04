@@ -44,6 +44,7 @@ backupDB() {
 	fi
 
 	# Backup database with max compression
+	echo "Backing up DB ${POSTGRES_DB} into ${LOCAL_BACKUP_FILE}"
 	pg_dump -h ${POSTGRES_HOST} -U ${POSTGRES_USER} ${POSTGRES_DB} | gzip -9 >${LOCAL_BACKUP_FILE}
 
 	# Handle cloud storage based on the provider
@@ -58,6 +59,7 @@ restoreDB() {
 		pg_isready -h ${POSTGRES_HOST} -p 5432 >/dev/null 2>&2 || continue
 		flag=false
 		wget -O ${RESTORE_FILE} ${RESTORE_URL_FILE}
+		echo "Restoring ${RESTORE_URL_FILE} in ${POSTGRES_DB}"
 		gunzip <${RESTORE_FILE} | psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 		echo "Import data to ${POSTGRES_DB} has finished ..."
 	done
