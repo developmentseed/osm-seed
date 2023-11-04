@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 export PGPASSWORD=$POSTGRES_PASSWORD
-
 # Upload files
 cloudStorageOps() {
 	local LOCAL_STATE_FILE=state.txt
@@ -38,7 +37,7 @@ cloudStorageOps() {
 backupDB() {
 	local LOCAL_BACKUP_FILE=${BACKUP_CLOUD_FILE}.sql.gz
 	local CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}.sql.gz"
-	if [ "$SET_DATE" == "true" ]; then
+	if [ "$SET_DATE_AT_NAME" == "true" ]; then
 		local CURRENT_DATE=$(date '+%Y%m%d-%H%M')
 		LOCAL_BACKUP_FILE="${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.sql.gz"
 		CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.sql.gz"
@@ -101,8 +100,8 @@ restore)
 esac
 
 # Check for the CLEAN_BACKUPS var
-if [ "$CLEAN_BACKUPS" == "true" ]; then
+if [ "$CLEANUP_BACKUPS" == "true" ]; then
     delete_old_s3_files
 else
-    echo "CLEAN_BACKUPS is not set to true. Skipping deletion."
+    echo "CLEANUP_BACKUPS is not set to true. Skipping deletion."
 fi
