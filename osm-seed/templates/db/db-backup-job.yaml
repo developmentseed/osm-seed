@@ -118,6 +118,10 @@ spec:
                 cpu: {{ $job.resources.limits.cpu }}
             {{- end }}
           restartPolicy: OnFailure
+          {{- if $job.nodeSelector.enabled }}
+          nodeSelector:
+            {{ $job.nodeSelector.label_key }} : {{ $job.nodeSelector.label_value }}
+          {{- end }}
 ---
 {{- end }}
 {{- end }}
