@@ -107,6 +107,14 @@ spec:
               value: {{ .Values.web.env.NEW_RELIC_LICENSE_KEY | default ""}}
             - name: NEW_RELIC_APP_NAME
               value: {{ .Values.web.env.NEW_RELIC_APP_NAME | default ""}}
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: shared-memory
+      volumes:
+        - emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.web.sharedMemorySize }}
+          name: shared-memory
       {{- if .Values.web.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.web.nodeSelector.label_key }} : {{ .Values.web.nodeSelector.label_value }}

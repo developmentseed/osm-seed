@@ -147,6 +147,7 @@ web:
     minReplicas: 1
     maxReplicas: 3
     cpuUtilization: 80
+  sharedMemorySize: 256Mi
 # ====================================================================================================
 # Variables for memcached. Memcached is used to store session cookies
 # ====================================================================================================
