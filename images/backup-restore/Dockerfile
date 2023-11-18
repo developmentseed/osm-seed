@@ -7,7 +7,7 @@ RUN apt-get update \
     && curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
     && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
     && apt-get update \
-    && apt-get install -y postgresql-client-14 \
+    && apt-get install -y postgresql-client-14 wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
