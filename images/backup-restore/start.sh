@@ -52,7 +52,8 @@ backupDB() {
 }
 
 restoreDB() {
-	local RESTORE_FILE="backup.sql.gz"
+	local CURRENT_DATE=$(date '+%Y%m%d-%H%M')
+	local LOG_RESULT_FILE="restore_results-${CURRENT_DATE}.log"
 	local flag=true
 
 	while "$flag" = true; do
@@ -60,7 +61,8 @@ restoreDB() {
 		flag=false
 		wget -O ${RESTORE_FILE} ${RESTORE_URL_FILE}
 		echo "Restoring ${RESTORE_URL_FILE} in ${POSTGRES_DB}"
-		gunzip <${RESTORE_FILE} | psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+		gunzip -c <${RESTORE_FILE} | psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} | tee ${LOG_RESULT_FILE}
+		aws s3 cp ${LOG_RESULT_FILE} s3://${AWS_S3_BUCKET}/
 		echo "Import data to ${POSTGRES_DB} has finished ..."
 	done
 }
