@@ -53,6 +53,7 @@ backupDB() {
 
 restoreDB() {
 	local CURRENT_DATE=$(date '+%Y%m%d-%H%M')
+	local RESTORE_FILE="backup.sql.gz"
 	local LOG_RESULT_FILE="restore_results-${CURRENT_DATE}.log"
 	local flag=true
 
