@@ -69,6 +69,8 @@ spec:
             - name: postgres-storage
               mountPath: {{ .Values.db.persistenceDisk.mountPath }}
               subPath: {{ .Values.db.persistenceDisk.subPath }}
+            - name: shared-memory
+              mountPath: /dev/shm
           {{- if .Values.db.resources.enabled }}
           resources:
             requests:
@@ -86,6 +88,10 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+        - name: shared-memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.db.sharedMemorySize }}
       {{- if .Values.db.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
