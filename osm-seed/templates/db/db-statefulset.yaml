@@ -9,7 +9,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  replicas: 1 # we only ever want one replica of the db
+  replicas: 1
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
