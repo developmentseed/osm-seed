@@ -1,0 +1,98 @@
+{{- if .Values.osmchaDb.enabled -}}
+{{- if .Values.osmchaDb.persistenceDisk.enabled -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-osmcha-db-pv
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: db-osmcha-pv
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  ############## Minikube ##############
+  {{- if eq .Values.cloudProvider "minikube" }}
+  storageClassName: local-storage
+  capacity:
+    storage: {{ .Values.osmchaDb.persistenceDisk.localVolumeSize }}
+  hostPath:
+    path: {{ .Values.osmchaDb.persistenceDisk.localVolumeHostPath | quote }}
+  {{- end }}
+
+  ############## AWS Provider ##############
+  {{- if eq .Values.cloudProvider "aws" }}
+  storageClassName: ""
+  capacity:
+    storage: {{ .Values.osmchaDb.persistenceDisk.AWS_ElasticBlockStore_size }}
+  awsElasticBlockStore:
+    volumeID: {{ .Values.osmchaDb.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
+    fsType: ext4
+  {{- end }}
+
+  ############## GCP Provider ##############
+  {{- if eq .Values.cloudProvider "gcp" }}
+  storageClassName: ""
+  capacity:
+    storage: {{ .Values.osmchaDb.persistenceDisk.GCP_gcePersistentDisk_size }}
+  gcePersistentDisk:
+    pdName: {{ .Values.osmchaDb.persistenceDisk.GCP_gcePersistentDisk_pdName }}
+    fsType: ext4
+  {{- end }}
+
+  ############## Azure Provider ##############
+  {{- if eq .Values.cloudProvider "azure" }}
+  storageClassName: ""
+  capacity:
+    storage: {{ .Values.osmchaDb.persistenceDisk.AZURE_diskSize }}
+  persistentVolumeReclaimPolicy: Retain
+  azureDisk:
+    kind: Managed
+    diskName: {{ .Values.osmchaDb.persistenceDisk.AZURE_diskName }}
+    diskURI: {{ .Values.osmchaDb.persistenceDisk.AZURE_diskURI }}
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-osmcha-db-pv-claim
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: db-osmcha-pvc
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  ############## Minikube ##############
+  {{- if eq .Values.cloudProvider "minikube" }}
+  storageClassName: local-storage
+  {{- else }}
+  ############## Other providers ##############
+  storageClassName: ""
+  {{- end }}
+  volumeName: {{ .Release.Name }}-osmcha-db-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      ############## Minikube ##############
+      {{- if eq .Values.cloudProvider "minikube" }}
+      storage: {{ .Values.osmchaDb.persistenceDisk.localVolumeSize }}
+      {{- end }}
+
+      ############## AWS Provider ##############
+      {{- if eq .Values.cloudProvider "aws" }}
+      storage: {{ .Values.osmchaDb.persistenceDisk.AWS_ElasticBlockStore_size }}
+      {{- end }}
+
+      ############## GCP Provider ##############
+      {{- if eq .Values.cloudProvider "gcp" }}
+      storage: {{ .Values.osmchaDb.persistenceDisk.GCP_gcePersistentDisk_size }}
+      {{- end }}
+
+      ############## AZURE Provider ##############
+      {{- if eq .Values.cloudProvider "azure" }}
+      storage: {{ .Values.osmchaDb.persistenceDisk.AZURE_diskSize }}
+      {{- end }}
+{{- end }}
+{{- end }}

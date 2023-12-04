@@ -75,7 +75,7 @@ adminEmail: admin@example.com
 # Variables for osm-seed database
 # ====================================================================================================
 db:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
@@ -110,12 +110,12 @@ db:
       cpu: '1'
   nodeSelector:
     enabled: false
-
+  sharedMemorySize: 64Mi
 # ====================================================================================================
 # Variables for osm-seed website
 # ====================================================================================================
 web:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
@@ -147,7 +147,8 @@ web:
     minReplicas: 1
     maxReplicas: 3
     cpuUtilization: 80
-
+  sharedMemorySize: 256Mi
+  livenessProbeExec: true
 # ====================================================================================================
 # Variables for memcached. Memcached is used to store session cookies
 # ====================================================================================================
@@ -196,27 +197,62 @@ fullHistory:
       memory: "16Gi"
       cpu: "4"
 
-# ====================================================================================================
-# Variables for osm-seed database backup and restore
-# ====================================================================================================
+  # ====================================================================================================
+  # Variables for osm-seed database backup and restore
+  # ====================================================================================================
 dbBackupRestore:
-  enabled: false
   image:
-    name: ''
-    tag: ''
-  schedule: '* * * * *'
-  env:
-    DB_ACTION: backup
-  resources:
-    enabled: false
-    requests:
-      memory: '300Mi'
-      cpu: '0.5'
-    limits:
-      memory: '400Mi'
-      cpu: '0.6'
-  nodeSelector:
-    enabled: false
+    name: 'developmentseed/osmseed-backup-restore'
+    tag: '0.1.0-0.dev.git.942.h994af82'
+  cronjobs:
+  - name: web-db
+    enabled: true
+    schedule: '* * * * *'
+    env:
+      # DB action: backup/restore
+      DB_ACTION: backup
+      # Naming backup files
+      SET_DATE_AT_NAME: true
+      BACKUP_CLOUD_FOLDER: database/web-db
+      BACKUP_CLOUD_FILE: osmseed-api-web-db
+      AWS_S3_BUCKET: secure-bucket
+      # Clean up backups options
+      CLEANUP_BACKUPS: true
+      RETENTION_DAYS: "30"
+    resources:
+      enabled: false
+      requests:
+        memory: '300Mi'
+        cpu: '0.5'
+      limits:
+        memory: '400Mi'
+        cpu: '0.6'
+    nodeSelector:
+      enabled: false
+  - name: osmcha-db
+    enabled: true
+    schedule: '* * * * *'
+    env:
+      # DB action: backup/restore
+      DB_ACTION: backup
+      # Naming backup files
+      SET_DATE_AT_NAME: true
+      BACKUP_CLOUD_FOLDER: database/osmcha-db
+      BACKUP_CLOUD_FILE: osmseed-osmcha-db
+      AWS_S3_BUCKET: secure-bucket
+      # Clean up backups options
+      CLEANUP_BACKUPS: true
+      RETENTION_DAYS: "30"
+    resources:
+      enabled: false
+      requests:
+        memory: '300Mi'
+        cpu: '0.5'
+      limits:
+        memory: '400Mi'
+        cpu: '0.6'
+    nodeSelector:
+      enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
@@ -535,7 +571,7 @@ tmApi:
 # Variables for nominatim api
 # ====================================================================================================
 nominatimApi:
-  enabled: true
+  enabled: false
   image:
     name: ''
     tag: ''
@@ -714,5 +750,94 @@ changesetReplicationJob:
     limits:
       memory: '24Gi'
       cpu: '10'
+  nodeSelector:
+    enabled: false
+
+
+# ====================================================================================================
+# Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
+# ====================================================================================================
+osmchaWeb:
+  enabled: false
+  image:
+    name: ghcr.io/willemarcel/osmcha-django
+    tag: b1f4e6afc90e08707cadc4d74580632ca3b93dd2
+  env:
+    OSM_SERVER_URL: 'https://staging.openstreetmap.org'
+    DJANGO_CACHES: "{'default': {'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache', 'LOCATION': '127.0.0.1:11211'}}"
+    DJANGO_DEBUG: "False"
+    DJANGO_SECRET_KEY: abc
+    DJANGO_SECURE_BROWSER_XSS_FILTER: "True"
+    DJANGO_SECURE_SSL_REDIRECT: "True"
+    DJANGO_SECURE_CONTENT_TYPE_NOSNIFF: "True"
+    DJANGO_SECURE_FRAME_DENY: "True"
+    DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS: "True"
+    DJANGO_SESSION_COOKIE_HTTPONLY: "True"
+    DJANGO_SESSION_COOKIE_SECURE: "True"
+    DJANGO_DEFAULT_FROM_EMAIL: "webmaster@openstreetmap.org"
+    DJANGO_SERVER_EMAIL: "server@openstreetmap.org"
+    DJANGO_EMAIL_SUBJECT_PREFIX: "osmcha"
+    DJANGO_CHANGESETS_FILTER: "{'some_filter_key': 'some_filter_value'}"
+    OAUTH_OSM_KEY: abc
+    OAUTH_OSM_SECRET: abc
+    DJANGO_ANON_USER_THROTTLE_RATE: "10/h"
+    DJANGO_COMMON_USER_THROTTLE_RATE: "100/h"
+    DJANGO_NON_STAFF_USER_THROTTLE_RATE: "50/h"
+    OAUTH_REDIRECT_URI: https://osmcha.openstreetmap.org/oauth-landing.html
+    OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
+    DJANGO_ENABLE_CHANGESET_COMMENTS: "True"
+    DJANGO_OSM_COMMENTS_API_KEY: "test"
+    DJANGO_ROOT: /app
+    DJANGO_SETTINGS_MODULE: config.settings.local
+    C_FORCE_ROOT: true
+    REACT_APP_OSM_URL: https://staging.openstreetmap.org
+    REACT_APP_OSM_API: https://staging.openstreetmap.org/api/0.6
+    REACT_APP_OVERPASS_BASE: https://overpass-api-staging.openstreetmap.org/api/interpreter
+    REACT_APP_NOMINATIM_URL: https://nominatim-api-staging.openstreetmap.org
+    OSMCHA_URL: https://osmcha-staging.openstreetmap.org
+  resources:
+    enabled: false
+    requests:
+      memory: '20Gi'
+      cpu: '8'
+    limits:
+      memory: '24Gi'
+      cpu: '10'
+  nodeSelector:
+    enabled: false
+
+# ====================================================================================================
+# Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
+# ====================================================================================================
+osmchaDb:
+  enabled: false
+  image:
+    name: ''
+    tag: ''
+  env:
+    POSTGRES_DB: osmcha-db
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: '1234'
+  resources:
+    enabled: false
+    requests:
+      memory: '20Gi'
+      cpu: '8'
+    limits:
+      memory: '24Gi'
+      cpu: '10'
+  persistenceDisk:
+    enabled: false
+    accessMode: ReadWriteOnce
+    mountPath: /var/lib/postgresql/data
+    # Minikube
+    localVolumeHostPath: /mnt/db-data/osmcha-data
+    localVolumeSize: 10Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_size: 50Gi
+    # GCP
+    GCP_gcePersistentDisk_pdName: osmseed-osmcha-disk--v1
+    GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false

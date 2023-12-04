@@ -1,15 +1,15 @@
-{{- if .Values.dbBackupRestore.enabled -}}
+{{- range $i, $job := .Values.dbBackupRestore.cronjobs }}
+{{- if $job.enabled -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-db-backup-job
+  name: {{ $.Release.Name }}-{{ $job.name }}-backup-job
   labels:
-    app: {{ template "osm-seed.name" . }}
-    component: db-backup-job
-    environment: {{ .Values.environment }}
-    release: {{ .Release.Name }}
+    component: {{ $job.name }}-job
+    environment: {{ $.Values.environment }}
+    release: {{ $.Release.Name }}
 spec:
-  schedule: {{ quote .Values.dbBackupRestore.schedule }}
+  schedule: {{ quote $job.schedule }}
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2
   startingDeadlineSeconds: 100
@@ -19,57 +19,109 @@ spec:
       template:
         spec:
           containers:
-          - name: {{ .Release.Name }}-db-backup-job
-            image: {{ .Values.dbBackupRestore.image.name }}:{{ .Values.dbBackupRestore.image.tag }}
+          - name: {{ $job.name }}-backup-job
+            image: {{ $.Values.dbBackupRestore.image.name }}:{{ $.Values.dbBackupRestore.image.tag }}
             command: ['/start.sh']
-            {{- if .Values.dbBackupRestore.resources.enabled }}
+            env:
+            # Env vars for api-web database
+            {{ if eq $job.name "web-db" }}
+              # DB credentials
+              - name: POSTGRES_HOST
+                value: {{ $.Release.Name }}-db
+              - name: POSTGRES_DB
+                value: {{ $.Values.db.env.POSTGRES_DB }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote $.Values.db.env.POSTGRES_PASSWORD }}
+              - name: POSTGRES_USER
+                value: {{ $.Values.db.env.POSTGRES_USER }}
+              # DB action: backup/restore
+              - name: DB_ACTION
+                value: {{quote $job.env.DB_ACTION }}
+              # Backup naming 
+              - name: SET_DATE_AT_NAME
+                value: {{quote $job.env.SET_DATE_AT_NAME }}
+              - name: BACKUP_CLOUD_FOLDER
+                value: {{ $job.env.BACKUP_CLOUD_FOLDER }}
+              - name: BACKUP_CLOUD_FILE
+                value: {{ $job.env.BACKUP_CLOUD_FILE }}
+              - name: AWS_S3_BUCKET
+                value: {{ $job.env.AWS_S3_BUCKET }}
+              # Clean up options
+              - name: CLEANUP_BACKUPS
+                value: {{ quote $job.env.CLEANUP_BACKUPS }}
+              - name: RETENTION_DAYS
+                value: {{ quote $job.env.RETENTION_DAYS }}
+              # In case DB_ACTION=restore, adn the backup url
+              - name: RESTORE_URL_FILE
+                value: {{ $job.env.RESTORE_URL_FILE}}
+            {{- end }}
+            # Env vars for osmcha database
+            {{ if eq $job.name "osmcha-db" }}
+              # DB credentials
+              - name: POSTGRES_HOST
+                value: {{ $.Release.Name }}-osmcha-db
+              - name: POSTGRES_DB
+                value: {{ $.Values.osmchaDb.env.POSTGRES_DB }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote $.Values.osmchaDb.env.POSTGRES_PASSWORD }}
+              - name: POSTGRES_USER
+                value: {{ $.Values.osmchaDb.env.POSTGRES_USER }}
+              # DB action: backup/restore
+              - name: DB_ACTION
+                value: {{ quote $job.env.DB_ACTION }}
+              # Backup naming
+              - name: SET_DATE_AT_NAME
+                value: {{quote $job.env.SET_DATE_AT_NAME }}
+              - name: BACKUP_CLOUD_FOLDER
+                value: {{ $job.env.BACKUP_CLOUD_FOLDER }}
+              - name: BACKUP_CLOUD_FILE
+                value: {{ $job.env.BACKUP_CLOUD_FILE }}
+              - name: AWS_S3_BUCKET
+                value: {{ $job.env.AWS_S3_BUCKET }}
+              # Clean up options
+              - name: CLEANUP_BACKUPS
+                value: {{ quote $job.env.CLEANUP_BACKUPS }}
+              - name: RETENTION_DAYS
+                value: {{ quote $job.env.RETENTION_DAYS }}
+              # In case DB_ACTION=restore, adn the backup url
+              - name: RESTORE_URL_FILE
+                value: {{ $job.env.RESTORE_URL_FILE}}
+            {{- end }}
+              # Cloud provider
+              - name: CLOUDPROVIDER
+                value: {{ $.Values.cloudProvider }}
+              # Credentials or configurations for each cloud provider
+            # {{- if eq $.Values.cloudProvider "aws" }}
+            #   - name: AWS_S3_BUCKET
+            #     value: {{ $job.env.AWS_S3_BUCKET }}
+            # {{- end }}
+            {{- if eq $.Values.cloudProvider "gcp" }}
+              - name: GCP_STORAGE_BUCKET
+                value: {{ $job.env.GCP_STORAGE_BUCKET }}
+            {{- end }}
+            {{- if eq $.Values.cloudProvider "azure" }}
+              - name: AZURE_STORAGE_ACCOUNT
+                value: {{ $.Values.AZURE_STORAGE_ACCOUNT }}
+              - name: AZURE_CONTAINER_NAME
+                value: {{ $job.AZURE_CONTAINER_NAME }}
+              - name: AZURE_STORAGE_CONNECTION_STRING
+                value: {{ $.Values.AZURE_STORAGE_CONNECTION_STRING }}
+            {{- end }}
+            # Node selector
+            {{- if $job.resources.enabled }}
             resources:
               requests:
-                memory: {{ .Values.dbBackupRestore.resources.requests.memory }}
-                cpu: {{ .Values.dbBackupRestore.resources.requests.cpu }}
+                memory: {{ $job.resources.requests.memory }}
+                cpu: {{ $job.resources.requests.cpu }}
               limits:
-                memory: {{ .Values.dbBackupRestore.resources.limits.memory }}
-                cpu: {{ .Values.dbBackupRestore.resources.limits.cpu }}
+                memory: {{ $job.resources.limits.memory }}
+                cpu: {{ $job.resources.limits.cpu }}
             {{- end }}
-            env:
-              - name: POSTGRES_HOST
-                value: {{ .Release.Name }}-db
-              - name: POSTGRES_DB
-                value: {{ .Values.db.env.POSTGRES_DB }}
-              - name: POSTGRES_PASSWORD
-                value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
-              - name: POSTGRES_USER
-                value: {{ .Values.db.env.POSTGRES_USER }}
-              - name: DB_ACTION
-                value: {{ .Values.dbBackupRestore.env.DB_ACTION }}
-              - name: RESTORE_URL_FILE
-                value: {{.Values.dbBackupRestore.env.RESTORE_URL_FILE}}
-              - name: CLEAN_BACKUPS
-                value: {{ quote .Values.dbBackupRestore.env.CLEAN_BACKUPS }}
-              - name: CLOUDPROVIDER
-                value: {{ .Values.cloudProvider }}
-              # In case cloudProvider=aws
-              {{- if eq .Values.cloudProvider "aws" }}
-              - name: AWS_S3_BUCKET
-                value: {{ .Values.dbBackupRestore.env.AWS_S3_BUCKET }}
-              {{- end }}
-              # In case cloudProvider=gcp
-              {{- if eq .Values.cloudProvider "gcp" }}
-              - name: GCP_STORAGE_BUCKET
-                value: {{ .Values.GCP_STORAGE_BUCKET }}
-              {{- end }}
-              # In case cloudProvider=azure
-              {{- if eq .Values.cloudProvider "azure" }}
-              - name: AZURE_STORAGE_ACCOUNT
-                value: {{ .Values.AZURE_STORAGE_ACCOUNT }}
-              - name: AZURE_CONTAINER_NAME
-                value: {{ .Values.AZURE_CONTAINER_NAME }}
-              - name: AZURE_STORAGE_CONNECTION_STRING
-                value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
-              {{- end }}
           restartPolicy: OnFailure
-          {{- if .Values.dbBackupRestore.nodeSelector.enabled }}
+          {{- if $job.nodeSelector.enabled }}
           nodeSelector:
-            {{ .Values.dbBackupRestore.nodeSelector.label_key }} : {{ .Values.dbBackupRestore.nodeSelector.label_value }}
+            {{ $job.nodeSelector.label_key }} : {{ $job.nodeSelector.label_value }}
           {{- end }}
+---
+{{- end }}
 {{- end }}

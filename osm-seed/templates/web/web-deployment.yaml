@@ -30,11 +30,23 @@ spec:
               containerPort: 80
               protocol: TCP
           livenessProbe:
+            {{- if .Values.web.livenessProbeExec }}
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - ./liveness.sh
+            initialDelaySeconds: 600
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+            {{- else }}
             httpGet:
               path: /api/0.6/capabilities
               port: 80
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
+            {{- end }}
           {{- if .Values.web.resources.enabled }}
           resources:
             requests:
@@ -107,6 +119,14 @@ spec:
               value: {{ .Values.web.env.NEW_RELIC_LICENSE_KEY | default ""}}
             - name: NEW_RELIC_APP_NAME
               value: {{ .Values.web.env.NEW_RELIC_APP_NAME | default ""}}
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: shared-memory
+      volumes:
+        - emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.web.sharedMemorySize }}
+          name: shared-memory
       {{- if .Values.web.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.web.nodeSelector.label_key }} : {{ .Values.web.nodeSelector.label_value }}
