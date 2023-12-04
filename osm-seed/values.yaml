@@ -148,6 +148,7 @@ web:
     maxReplicas: 3
     cpuUtilization: 80
   sharedMemorySize: 256Mi
+  livenessProbeExec: true
 # ====================================================================================================
 # Variables for memcached. Memcached is used to store session cookies
 # ====================================================================================================
@@ -759,8 +760,8 @@ changesetReplicationJob:
 osmchaWeb:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ghcr.io/willemarcel/osmcha-django
+    tag: b1f4e6afc90e08707cadc4d74580632ca3b93dd2
   env:
     OSM_SERVER_URL: 'https://staging.openstreetmap.org'
     DJANGO_CACHES: "{'default': {'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache', 'LOCATION': '127.0.0.1:11211'}}"

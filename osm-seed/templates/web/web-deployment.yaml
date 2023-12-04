@@ -30,11 +30,23 @@ spec:
               containerPort: 80
               protocol: TCP
           livenessProbe:
+            {{- if .Values.web.livenessProbeExec }}
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - ./liveness.sh
+            initialDelaySeconds: 600
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+            {{- else }}
             httpGet:
               path: /api/0.6/capabilities
               port: 80
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
+            {{- end }}
           {{- if .Values.web.resources.enabled }}
           resources:
             requests:

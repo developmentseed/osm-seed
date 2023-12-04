@@ -101,5 +101,6 @@ RUN chown -R www-data: $workdir
 ADD config/settings.yml $workdir/config/settings.yml
 
 COPY start.sh $workdir/
+COPY liveness.sh $workdir/
 
 CMD $workdir/start.sh
