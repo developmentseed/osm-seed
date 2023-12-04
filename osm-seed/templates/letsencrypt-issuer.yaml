@@ -2,7 +2,7 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-    name: letsencrypt-prod-issuer
+    name: {{ .Release.Name }}-letsencrypt-prod-issuer
 spec:
     acme:
         # You must replace this email address with your own.

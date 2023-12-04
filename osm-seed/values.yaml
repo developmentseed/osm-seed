@@ -313,7 +313,10 @@ populateApidb:
     limits:
       memory: '2Gi'
       cpu: '2.5'
-
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: tiler
 # ====================================================================================================
 # Variables to start a pod to process osm files
 # ====================================================================================================
