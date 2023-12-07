@@ -206,7 +206,7 @@ dbBackupRestore:
     tag: '0.1.0-0.dev.git.942.h994af82'
   cronjobs:
   - name: web-db
-    enabled: true
+    enabled: false
     schedule: '* * * * *'
     env:
       # DB action: backup/restore
@@ -230,7 +230,7 @@ dbBackupRestore:
     nodeSelector:
       enabled: false
   - name: osmcha-db
-    enabled: true
+    enabled: false
     schedule: '* * * * *'
     env:
       # DB action: backup/restore
@@ -757,11 +757,14 @@ changesetReplicationJob:
 # ====================================================================================================
 # Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
-osmchaWeb:
-  enabled: false
+osmchaApi:
+  enabled: true
   image:
-    name: ghcr.io/willemarcel/osmcha-django
-    tag: b1f4e6afc90e08707cadc4d74580632ca3b93dd2
+    name: ''
+    tag: ''
+  ui:
+    name: ghcr.io/sunu/osmcha-frontend
+    tag: test9
   env:
     OSM_SERVER_URL: 'https://staging.openstreetmap.org'
     DJANGO_CACHES: "{'default': {'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache', 'LOCATION': '127.0.0.1:11211'}}"
@@ -806,11 +809,17 @@ osmchaWeb:
   nodeSelector:
     enabled: false
 
+
+osmchaWeb:
+  enabled: true
+  image:
+    name: ''
+    tag: ''
 # ====================================================================================================
 # Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
 osmchaDb:
-  enabled: false
+  enabled: true
   image:
     name: ''
     tag: ''
@@ -841,3 +850,11 @@ osmchaDb:
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
+
+osmchaRedis:
+  enabled: true
+  image:
+    name: 'redis'
+    tag: 'latest'
+  port: 6379
+  replicaCount: 1
