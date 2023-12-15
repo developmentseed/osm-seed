@@ -1,0 +1,14 @@
+{{- if .Values.osmchaRedis.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-osmcha-redis
+spec:
+  ports:
+  - port: {{ .Values.osmchaRedis.port }}
+    targetPort: {{ .Values.osmchaRedis.port }}
+    protocol: TCP
+    name: redis
+  selector:
+    app: {{ .Release.Name }}-osmcha-redis
+{{- end }}

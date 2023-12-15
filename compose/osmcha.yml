@@ -1,6 +1,16 @@
-version: '3'
-services:
-  osmcha-db:
+version: '3.8'
+services: 
+  web:
+    platform: linux/amd64
+    image: developmentseed/osmseed-osmcha-web:v7
+    build:
+      context: ../images/osmcha-web
+      dockerfile: Dockerfile
+    env_file:
+    - ../envs/.env.osmcha
+    volumes:
+    - ../data/osmcha/staticfiles:/staticfiles
+  db:
     platform: linux/amd64
     image: osmseed-osmcha-db:v1
     build:
@@ -12,13 +22,15 @@ services:
     - ../data/osmcha-db-data:/var/lib/postgresql/data
     env_file:
     - ../envs/.env.osmcha
-  osmcha-web:
+  api:
     platform: linux/amd64
-    image: osmseed-osmcha-web:v1
-    build:
-      context: ../images/osmcha-web
-      dockerfile: Dockerfile
+    image: ghcr.io/willemarcel/osmcha-django:b1f4e6afc90e08707cadc4d74580632ca3b93dd2
+    # build:
+    #   context: ../images/osmcha-api
+    #   dockerfile: Dockerfile
     ports:
-    - '8000:8000'
+    - '5000:5000'
     env_file:
     - ../envs/.env.osmcha
+    volumes:
+    - ../data/osmcha/staticfiles:/staticfiles
