@@ -29,10 +29,12 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
+      name: http
   {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     - port: 443
       targetPort: http
       protocol: TCP
+      name: https
   {{- end }}
   selector:
     app: {{ template "osm-seed.name" . }}
