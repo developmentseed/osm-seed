@@ -1,15 +1,15 @@
-version: '3.8'
-services: 
+version: "3.8"
+services:
   web:
     platform: linux/amd64
-    image: developmentseed/osmseed-osmcha-web:v7
+    image: developmentseed/osmseed-osmcha-web:v16
     build:
       context: ../images/osmcha-web
       dockerfile: Dockerfile
     env_file:
-    - ../envs/.env.osmcha
+      - ../envs/.env.osmcha
     volumes:
-    - ../data/osmcha/staticfiles:/staticfiles
+      - ../data/osmcha/staticfiles:/staticfiles
   db:
     platform: linux/amd64
     image: osmseed-osmcha-db:v1
@@ -17,20 +17,44 @@ services:
       context: ../images/osmcha-db
       dockerfile: Dockerfile
     ports:
-    - '5432:5432'
+      - "5432:5432"
     volumes:
-    - ../data/osmcha-db-data:/var/lib/postgresql/data
+      - ../data/osmcha-db-data:/var/lib/postgresql/data
     env_file:
-    - ../envs/.env.osmcha
-  api:
+      - ../envs/.env.osmcha
+  init:
     platform: linux/amd64
     image: ghcr.io/willemarcel/osmcha-django:b1f4e6afc90e08707cadc4d74580632ca3b93dd2
-    # build:
-    #   context: ../images/osmcha-api
-    #   dockerfile: Dockerfile
-    ports:
-    - '5000:5000'
+    command: >
+      /bin/bash -c "
+        set -x
+        python manage.py collectstatic
+        python manage.py migrate
+        mkdir -p /staticfiles/static
+        cp -r /app/staticfiles/* /staticfiles/static/
+      "
     env_file:
-    - ../envs/.env.osmcha
+      - ../envs/.env.osmcha
     volumes:
-    - ../data/osmcha/staticfiles:/staticfiles
+      - ../data/osmcha/staticfiles:/staticfiles
+  # api:
+  #   platform: linux/amd64
+  #   image: developmentseed/osmseed-osmcha-api:v8
+  #   build:
+  #     context: ../images/osmcha-api
+  #     dockerfile: Dockerfile
+  #   command: >
+  #     /bin/bash -c "
+  #       set -x
+  #       python manage.py collectstatic
+  #       python manage.py migrate
+  #       mkdir -p /staticfiles/static
+  #       cp -r /app/staticfiles/* /staticfiles/static/
+  #       gunicorn --workers 4 --bind 0.0.0.0:3000 --log-file - --access-logfile - config.wsgi
+  #     "
+  #   ports:
+  #     - "3000:3000"
+  #   env_file:
+  #     - ../envs/.env.osmcha
+  #   volumes:
+  #     - ../data/osmcha/staticfiles:/staticfiles

@@ -23,34 +23,42 @@ spec:
         run: {{ .Release.Name }}-osmcha-app
     spec:
       initContainers:
-      - name: osmcha-init
+      - name: init
         image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
         command:
         - /bin/sh
         - -c
         - |
           set -x
-          python manage.py collectstatic
-          python manage.py migrate
-          mkdir -p /staticfiles/static
-          cp -r /app/staticfiles/* /staticfiles/static/
+          flag=true
+          while "$flag" = true; do
+            pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
+            flag=false
+            python manage.py migrate
+            python manage.py collectstatic
+            mkdir -p /staticfiles/static
+            cp -r /app/staticfiles/* /staticfiles/static/
+          done
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-osmcha-common-env
         volumeMounts:
         - name: staticfiles
           mountPath: /staticfiles
-        securityContext:
-          runAsUser: 0
+        # securityContext:
+        #   runAsUser: 0
       containers:
-      - name: osmcha-api
+      - name: api
+        # securityContext:
+        #   runAsUser: 0
         image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
         command:
           - /bin/sh
           - -c
           - |
             set -x
-            gunicorn --workers 4 --bind 0.0.0.0:5000 --log-file log-file.log --access-logfile access-logfile.log config.wsgi
+            echo "start app...."
+            gunicorn --workers 4 --bind 0.0.0.0:5000 --log-file - --access-logfile - config.wsgi
         ports:
         - containerPort: 5000
         livenessProbe:
@@ -74,8 +82,11 @@ spec:
             memory: {{ .Values.osmchaApi.resources.limits.memory }}
             cpu: {{ .Values.osmchaApi.resources.limits.cpu }}
         {{- end }}
-      - name: osmcha-nginx
+
+      - name: nginx
         image: "{{ .Values.osmchaWeb.image.name }}:{{ .Values.osmchaWeb.image.tag }}"
+        ports:
+        - containerPort: 80
         volumeMounts:
           - name: osmcha-frontend-nginx-config
             mountPath: /etc/nginx

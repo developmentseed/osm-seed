@@ -36,3 +36,4 @@ overpass-api-db/
 data/*/
 !data/README.md
 images/changeset-replication-job/config.yaml
+values_copy.yaml

@@ -27,7 +27,8 @@ data:
     DJANGO_DEBUG: "False"
     DJANGO_ENV: "production"
     # OSM_SERVER_URL: {{ .Values.osmchaApi.env.OSM_SERVER_URL | quote }}
-    REDIS_URL: {{ .Release.Name }}-osmcha-redis
+    REDIS_URL: "redis://{{ .Release.Name }}-osmcha-redis:6379"
+    OSM_PLANET_BASE_URL: {{ .Values.osmchaApi.env.OSM_PLANET_BASE_URL | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -42,6 +43,9 @@ data:
     }
 
     http {
+      access_log /dev/stdout;
+      error_log /dev/stderr;
+
       include /etc/nginx/mime.types;
       default_type application/octet-stream;
 
@@ -49,7 +53,7 @@ data:
       '$status $body_bytes_sent "$http_referer" '
       '"$http_user_agent" "$http_x_forwarded_for"';
 
-      access_log  /var/log/nginx/access.log  main;
+      # access_log  /var/log/nginx/access.log  main;
 
       sendfile        on;
       #tcp_nopush     on;
