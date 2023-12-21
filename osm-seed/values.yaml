@@ -759,35 +759,38 @@ osmchaWeb:
   enabled: true
   image:
     name: ""
-    tag: ""
 # ====================================================================================================
 # Variables for osmcha Api
 # ====================================================================================================
 osmchaApi:
   enabled: true
   image:
-    name: ""
-    tag: ""
+    name: "ghcr.io/willemarcel/osmcha-django"
+    tag: "10d7f6748d9e55d439339ed2c35509db15f782a6"
   env:
     DJANGO_SETTINGS_MODULE: "config.settings.production"
     OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
-    DJANGO_SECRET_KEY: abc
-    OAUTH_OSM_KEY: abc
-    OAUTH_OSM_SECRET: abc
+    DJANGO_SECRET_KEY: abc..
+    ## ohm
+    OAUTH_OSM_KEY: abc..
+    OAUTH_OSM_SECRET: abc..
     DJANGO_SECURE_SSL_REDIRECT: "False"
-    OSM_SERVER_URL: https://osmcha-staging.openhistoricalmap.org
-    OSMCHA_URL: https://osmcha-staging.openhistoricalmap.org
-    OAUTH_REDIRECT_URI: https://osmcha.openhistoricalmap.org/oauth-landing.html
+    OSM_SERVER_URL: https://www.osmseed.org
+    OSMCHA_URL: https://osmcha.osmseed.org
+    OAUTH_REDIRECT_URI: https://osmcha.osmseed.org/oauth-landing.html
+    OSM_PLANET_BASE_URL: https://planet.osmseed.org/
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      memory: "512Mi"
+      cpu: "1"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      memory: "512Mi"
+      cpu: "1"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: db
 
 # ====================================================================================================
 # Variables for osmcha DB
