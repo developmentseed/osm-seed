@@ -23,6 +23,14 @@ spec:
         run: {{ .Release.Name }}-osmcha-app
     spec:
       initContainers:
+      - name: web-builder
+        image: "{{ .Values.osmchaWeb.image.name }}:{{ .Values.osmchaWeb.image.tag }}"
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-osmcha-common-env
+        volumeMounts:
+        - name: nginx-assets
+          mountPath: /assets
       - name: init
         image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
         command:
@@ -84,7 +92,7 @@ spec:
         {{- end }}
 
       - name: nginx
-        image: "{{ .Values.osmchaWeb.image.name }}:{{ .Values.osmchaWeb.image.tag }}"
+        image: "nginx:latest"
         ports:
         - containerPort: 80
         volumeMounts:
@@ -93,8 +101,12 @@ spec:
             readOnly: true
           - name: staticfiles
             mountPath: /staticfiles
+          - name: nginx-assets
+            mountPath: /assets
       volumes:
         - name: staticfiles
+          emptyDir: {}
+        - name: nginx-assets
           emptyDir: {}
         - name: osmcha-frontend-nginx-config
           configMap:
