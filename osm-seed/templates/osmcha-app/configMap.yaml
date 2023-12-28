@@ -33,7 +33,7 @@ data:
     REACT_APP_OSM_URL: {{ .Values.osmchaApi.env.REACT_APP_OSM_URL | quote }}
     REACT_APP_OSM_API: {{ .Values.osmchaApi.env.REACT_APP_OSM_API | quote }}
     REACT_APP_OVERPASS_BASE: {{ .Values.osmchaApi.env.REACT_APP_OVERPASS_BASE | quote }}
-    REACT_APP_ENABLE_REAL_CHANGESETS: .Values.osmchaApi.env.REACT_APP_ENABLE_REAL_CHANGESETS
+    REACT_APP_ENABLE_REAL_CHANGESETS: {{ .Values.osmchaApi.env.REACT_APP_ENABLE_REAL_CHANGESETS | quote }} 
     REACT_APP_MAPBOX_ACCESS_TOKEN: {{ .Values.osmchaApi.env.REACT_APP_MAPBOX_ACCESS_TOKEN | quote }}
 ---
 apiVersion: v1
