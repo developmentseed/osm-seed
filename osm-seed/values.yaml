@@ -770,15 +770,23 @@ osmchaApi:
   env:
     DJANGO_SETTINGS_MODULE: "config.settings.production"
     OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
-    DJANGO_SECRET_KEY: abc..
+    DJANGO_SECRET_KEY: abc
     ## ohm
-    OAUTH_OSM_KEY: abc..
-    OAUTH_OSM_SECRET: abc..
+    OAUTH_OSM_KEY: abc
+    OAUTH_OSM_SECRET: bdc
     DJANGO_SECURE_SSL_REDIRECT: "False"
     OSM_SERVER_URL: https://www.osmseed.org
-    OSMCHA_URL: https://osmcha.osmseed.org
-    OAUTH_REDIRECT_URI: https://osmcha.osmseed.org/oauth-landing.html
-    OSM_PLANET_BASE_URL: https://planet.osmseed.org/
+    OAUTH_REDIRECT_URI: https://osmcha-staging.osmseed.org/oauth-landing.html
+    OSM_PLANET_BASE_URL: https://s3.amazonaws.com/planet.osmseed.org/replication/changesets/
+
+    ## frontend
+    OSMCHA_URL: https://osmcha-staging.osmseed.org
+    OSMCHA_API_URL: www.osmseed.org
+    REACT_APP_OSM_URL: https://www.osmseed.org
+    REACT_APP_OSM_API: https://www.osmseed.org/api/0.6
+    REACT_APP_OVERPASS_BASE: //overpass-api.osmseed.org/api/interpreter
+    REACT_APP_DISABLE_REAL_CHANGESETS: 1
+    REACT_APP_MAPBOX_ACCESS_TOKEN: "pk.abc.df"
   resources:
     enabled: false
     requests:
