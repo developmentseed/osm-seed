@@ -10,14 +10,8 @@ metadata:
     release: {{ .Release.Name }}
   annotations:
     {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
-    # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
-    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
-    meta.helm.sh/release-name: dev
-    meta.helm.sh/release-namespace: default
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:618380242247:certificate/9bc4e15c-2652-47ed-bfa8-3e078d708b87
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
     {{- end }}
     {{- if eq .Values.serviceType "ClusterIP" }}
@@ -47,4 +41,3 @@ spec:
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-osmcha-app
 {{- end }}
-
