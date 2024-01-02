@@ -103,6 +103,10 @@ spec:
             mountPath: /staticfiles
           - name: nginx-assets
             mountPath: /assets
+      - name: redis
+        image: "redis:latest"
+        ports:
+        - containerPort: 6379
       volumes:
         - name: staticfiles
           emptyDir: {}

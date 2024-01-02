@@ -29,4 +29,8 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-osmcha-common-env
           restartPolicy: Never
+          {{- if .Values.osmchaApi.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.osmchaApi.nodeSelector.label_key }} : {{ .Values.osmchaApi.nodeSelector.label_value }}
+          {{- end }}
 {{- end }}

@@ -205,54 +205,54 @@ dbBackupRestore:
     name: "developmentseed/osmseed-backup-restore"
     tag: "0.1.0-0.dev.git.942.h994af82"
   cronjobs:
-    - name: web-db
+  - name: web-db
+    enabled: false
+    schedule: "* * * * *"
+    env:
+      # DB action: backup/restore
+      DB_ACTION: backup
+      # Naming backup files
+      SET_DATE_AT_NAME: true
+      BACKUP_CLOUD_FOLDER: database/web-db
+      BACKUP_CLOUD_FILE: osmseed-api-web-db
+      AWS_S3_BUCKET: secure-bucket
+      # Clean up backups options
+      CLEANUP_BACKUPS: true
+      RETENTION_DAYS: "30"
+    resources:
       enabled: false
-      schedule: "* * * * *"
-      env:
-        # DB action: backup/restore
-        DB_ACTION: backup
-        # Naming backup files
-        SET_DATE_AT_NAME: true
-        BACKUP_CLOUD_FOLDER: database/web-db
-        BACKUP_CLOUD_FILE: osmseed-api-web-db
-        AWS_S3_BUCKET: secure-bucket
-        # Clean up backups options
-        CLEANUP_BACKUPS: true
-        RETENTION_DAYS: "30"
-      resources:
-        enabled: false
-        requests:
-          memory: "300Mi"
-          cpu: "0.5"
-        limits:
-          memory: "400Mi"
-          cpu: "0.6"
-      nodeSelector:
-        enabled: false
-    - name: osmcha-db
+      requests:
+        memory: "300Mi"
+        cpu: "0.5"
+      limits:
+        memory: "400Mi"
+        cpu: "0.6"
+    nodeSelector:
       enabled: false
-      schedule: "* * * * *"
-      env:
-        # DB action: backup/restore
-        DB_ACTION: backup
-        # Naming backup files
-        SET_DATE_AT_NAME: true
-        BACKUP_CLOUD_FOLDER: database/osmcha-db
-        BACKUP_CLOUD_FILE: osmseed-osmcha-db
-        AWS_S3_BUCKET: secure-bucket
-        # Clean up backups options
-        CLEANUP_BACKUPS: true
-        RETENTION_DAYS: "30"
-      resources:
-        enabled: false
-        requests:
-          memory: "300Mi"
-          cpu: "0.5"
-        limits:
-          memory: "400Mi"
-          cpu: "0.6"
-      nodeSelector:
-        enabled: false
+  - name: osmcha-db
+    enabled: false
+    schedule: "* * * * *"
+    env:
+      # DB action: backup/restore
+      DB_ACTION: backup
+      # Naming backup files
+      SET_DATE_AT_NAME: true
+      BACKUP_CLOUD_FOLDER: database/osmcha-db
+      BACKUP_CLOUD_FILE: osmseed-osmcha-db
+      AWS_S3_BUCKET: secure-bucket
+      # Clean up backups options
+      CLEANUP_BACKUPS: true
+      RETENTION_DAYS: "30"
+    resources:
+      enabled: false
+      requests:
+        memory: "300Mi"
+        cpu: "0.5"
+      limits:
+        memory: "400Mi"
+        cpu: "0.6"
+    nodeSelector:
+      enabled: false
 
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
@@ -754,11 +754,11 @@ changesetReplicationJob:
 # ====================================================================================================
 # Variables for osmcha web builder
 # ====================================================================================================
-
 osmchaWeb:
   enabled: true
   image:
     name: ""
+    tag: ""
 # ====================================================================================================
 # Variables for osmcha Api
 # ====================================================================================================
@@ -827,14 +827,3 @@ osmchaDb:
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
-# ====================================================================================================
-# Variables for osmcha redis
-# ====================================================================================================
-
-osmchaRedis:
-  enabled: true
-  image:
-    name: "redis"
-    tag: "latest"
-  port: 6379
-  replicaCount: 1

@@ -5,8 +5,7 @@ ENV REACT_APP_PRODUCTION_API_URL=/api/v1
 RUN apt-get update && apt-get install -y git
 RUN mkdir /app
 WORKDIR /app
-RUN git clone https://github.com/Rub21/osmcha-frontend.git /app
-RUN git checkout env/realchangesets
+RUN git clone https://github.com/osmus/osmcha-frontend.git /app
 RUN yarn install
 COPY start.sh .
 CMD [ "/app/start.sh" ]
