@@ -38,6 +38,7 @@ done
 function startAPIServer(){
   envsubst '${OVERPASS_MAX_TIMEOUT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
   echo "Starting supervisord process"
+  /app/bin/dispatcher --osm-base --db-dir=/db/db/ --${OVERPASS_META} &
   exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 }
 
