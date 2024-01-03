@@ -27,7 +27,7 @@ spec:
         - name: {{ .Chart.Name }}-overpass-api
           image: "{{ .Values.overpassApi.image.name }}:{{ .Values.overpassApi.image.tag }}"
           command: ["/bin/sh", "-c"]
-          args: ["/app/docker-entrypoint.sh && sleep 60 && /app/bin/dispatcher --osm-base --db-dir=/db/db --attic"]
+          args: ["/app/docker-entrypoint.sh & sleep 60 && /app/bin/dispatcher --osm-base --db-dir=/db/db --attic"]
           ports:
             - name: http
               containerPort: 80
