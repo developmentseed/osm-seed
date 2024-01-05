@@ -26,18 +26,16 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-overpass-api
           image: "{{ .Values.overpassApi.image.name }}:{{ .Values.overpassApi.image.tag }}"
-          # command: ["/bin/sh", "-c"]
-          # args: ["/app/docker-entrypoint.sh"]
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 80
-          #   initialDelaySeconds: 600 # 10 min, because the compile process takes time.
-          #   timeoutSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 14400 # Normal update takes 2 hours aprrox, afther that start checking liveness 
+            timeoutSeconds: 30
           {{- if .Values.overpassApi.resources.enabled }}
           resources:
             requests:
@@ -48,7 +46,6 @@ spec:
               cpu: {{ .Values.overpassApi.resources.limits.cpu }}
           {{- end }}
           env:
-              # overpass-api env variables
             - name: OVERPASS_META
               value: {{ .Values.overpassApi.env.OVERPASS_META | quote}}
             - name: OVERPASS_MODE
