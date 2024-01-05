@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -xe
 
 WORKDIR=/apps
 DATA_DIR=$WORKDIR/data
