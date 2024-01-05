@@ -15,7 +15,7 @@ cloudProvider: minikube
 AWS_S3_BUCKET: s3://osm-seed
 
 # ====================================================================================================
-# GCP: In case you are using the cloudProvider=gcp set the below variables, We are assuming the nodes has a policies to upload files to cloud storage 
+# GCP: In case you are using the cloudProvider=gcp set the below variables, We are assuming the nodes has a policies to upload files to cloud storage
 # ====================================================================================================
 GCP_STORAGE_BUCKET: gs://osm-seed-test
 
@@ -44,9 +44,9 @@ AWS_SSL_ARN: false
 # If you specify `LoadBalancer` as the service type, if you also specify
 # an `AWS_SSL_ARN` that is a wildcart certificate, that will be configured
 # as the SSL certificate for your services. Else, you will need to configure
-# SSL separately. 
-serviceType: NodePort
-
+# SSL separately.
+# serviceType: NodePort
+serviceType: LoadBalancer
 
 # Domain that is pointed to the clusterIP
 # You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
@@ -77,12 +77,12 @@ adminEmail: admin@example.com
 db:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: '1234'
+    POSTGRES_PASSWORD: "1234"
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
@@ -103,11 +103,11 @@ db:
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '1'
+      memory: "1Gi"
+      cpu: "1"
     limits:
-      memory: '2Gi'
-      cpu: '1'
+      memory: "2Gi"
+      cpu: "1"
   nodeSelector:
     enabled: false
   sharedMemorySize: 64Mi
@@ -117,29 +117,29 @@ db:
 web:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   replicaCount: 1
   serviceAnnotations: {}
   env:
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
     MAILER_USERNAME: example@gmail.com
-    MAILER_PASSWORD: '1234'
+    MAILER_PASSWORD: "1234"
     MAILER_FROM: no-reply@example.com
     MAILER_PORT: 25
-    NOMINATIM_URL: 'nominatim'
-    OVERPASS_URL: 'overpassApi'
-    OAUTH_CLIENT_ID: 'abcd' # Create client ID and key as OAuth2 Application
-    OAUTH_KEY: 'xyz'
+    NOMINATIM_URL: "nominatim"
+    OVERPASS_URL: "overpassApi"
+    OAUTH_CLIENT_ID: "abcd" # Create client ID and key as OAuth2 Application
+    OAUTH_KEY: "xyz"
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
   autoscaling:
@@ -161,11 +161,11 @@ memcached:
   resources:
     enabled: false
     requests:
-      memory: '8Gi'
-      cpu: '2'
+      memory: "8Gi"
+      cpu: "2"
     limits:
-      memory: '8Gi'
-      cpu: '2'
+      memory: "8Gi"
+      cpu: "2"
 
 # ====================================================================================================
 # Variables for id-editor
@@ -179,13 +179,13 @@ idEditor:
 fullHistory:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   nodeSelector:
     enabled: false
     label_key: nodegroup-type
     label_value: ohm-non-tiler
-  schedule: '* * * * *'
+  schedule: "* * * * *"
   env:
     OVERWRITE_FHISTORY_FILE: false
   resources:
@@ -202,12 +202,12 @@ fullHistory:
   # ====================================================================================================
 dbBackupRestore:
   image:
-    name: 'developmentseed/osmseed-backup-restore'
-    tag: '0.1.0-0.dev.git.942.h994af82'
+    name: "developmentseed/osmseed-backup-restore"
+    tag: "0.1.0-0.dev.git.942.h994af82"
   cronjobs:
   - name: web-db
-    enabled: true
-    schedule: '* * * * *'
+    enabled: false
+    schedule: "* * * * *"
     env:
       # DB action: backup/restore
       DB_ACTION: backup
@@ -222,16 +222,16 @@ dbBackupRestore:
     resources:
       enabled: false
       requests:
-        memory: '300Mi'
-        cpu: '0.5'
+        memory: "300Mi"
+        cpu: "0.5"
       limits:
-        memory: '400Mi'
-        cpu: '0.6'
+        memory: "400Mi"
+        cpu: "0.6"
     nodeSelector:
       enabled: false
   - name: osmcha-db
-    enabled: true
-    schedule: '* * * * *'
+    enabled: false
+    schedule: "* * * * *"
     env:
       # DB action: backup/restore
       DB_ACTION: backup
@@ -246,11 +246,11 @@ dbBackupRestore:
     resources:
       enabled: false
       requests:
-        memory: '300Mi'
-        cpu: '0.5'
+        memory: "300Mi"
+        cpu: "0.5"
       limits:
-        memory: '400Mi'
-        cpu: '0.6'
+        memory: "400Mi"
+        cpu: "0.6"
     nodeSelector:
       enabled: false
 
@@ -260,19 +260,19 @@ dbBackupRestore:
 planetDump:
   enabled: false
   image:
-    name: ''
-    tag: ''
-  schedule: '* * * * *'
+    name: ""
+    tag: ""
+  schedule: "* * * * *"
   env:
     OVERWRITE_PLANET_FILE: false
   resources:
     enabled: false
     requests:
-      memory: '14Gi'
-      cpu: '4'
+      memory: "14Gi"
+      cpu: "4"
     limits:
-      memory: '16Gi'
-      cpu: '4'
+      memory: "16Gi"
+      cpu: "4"
   nodeSelector:
     enabled: false
 
@@ -282,16 +282,16 @@ planetDump:
 replicationJob:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   resources:
     enabled: false
     requests:
-      memory: '20Gi'
-      cpu: '8'
+      memory: "20Gi"
+      cpu: "8"
     limits:
-      memory: '24Gi'
-      cpu: '10'
+      memory: "24Gi"
+      cpu: "10"
   nodeSelector:
     enabled: false
 
@@ -301,18 +301,18 @@ replicationJob:
 populateApidb:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   env:
-    URL_FILE_TO_IMPORT: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
+    URL_FILE_TO_IMPORT: "http://download.geofabrik.de/europe/monaco-latest.osm.pbf"
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2.5'
+      memory: "2Gi"
+      cpu: "2.5"
 
 # ====================================================================================================
 # Variables to start a pod to process osm files
@@ -320,19 +320,19 @@ populateApidb:
 osmProcessor:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   env:
-    URL_FILE_TO_PROCESS: 'http://download.geofabrik.de/europe/monaco-latest.osm.pbf'
+    URL_FILE_TO_PROCESS: "http://download.geofabrik.de/europe/monaco-latest.osm.pbf"
     OSM_FILE_ACTION: simple_pbf
   resources:
     enabled: false
     requests:
-      memory: '14Gi'
-      cpu: '4'
+      memory: "14Gi"
+      cpu: "4"
     limits:
-      memory: '16Gi'
-      cpu: '4'
+      memory: "16Gi"
+      cpu: "4"
 
 # ====================================================================================================
 # Variables for tiler-db
@@ -340,13 +340,13 @@ osmProcessor:
 tilerDb:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
     POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: '1234'
+    POSTGRES_PASSWORD: "1234"
     POSTGRES_PORT: 5432
     POSTGRES_DB_MAX_CONNECTIONS: 100
     POSTGRES_DB_SHARED_BUFFERS: 128MB
@@ -370,11 +370,11 @@ tilerDb:
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2.5'
+      memory: "2Gi"
+      cpu: "2.5"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -386,8 +386,8 @@ tilerDb:
 tilerImposm:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -408,11 +408,11 @@ tilerImposm:
   resources:
     enabled: false
     requests:
-      memory: '20Gi'
-      cpu: '8'
+      memory: "20Gi"
+      cpu: "8"
     limits:
-      memory: '24Gi'
-      cpu: '10'
+      memory: "24Gi"
+      cpu: "10"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -423,8 +423,8 @@ tilerImposm:
 tilerServer:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   replicaCount: 1
   serviceAnnotations: {}
   env:
@@ -437,7 +437,7 @@ tilerServer:
     TILER_CACHE_REGION: us-east-1
     TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
     TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
-  command: './start.sh' # ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
+  command: "./start.sh" # ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
   # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
     enabled: false
@@ -455,30 +455,30 @@ tilerServer:
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
     label_value: tiler
 # ====================================================================================================
-# Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3  
+# Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3
 # ====================================================================================================
 tilerServerCacheCleaner:
   enabled: false
   replicaCount: 1
-  command: './tile_cache_downloader.sh & ./expire-watcher.sh'
+  command: "./tile_cache_downloader.sh & ./expire-watcher.sh"
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
+      memory: "2Gi"
+      cpu: "2"
   env:
     KILL_PROCESS: manually
     MAX_NUM_PS: 3
@@ -498,8 +498,8 @@ tilerServerCacheCleaner:
 tilerVisor:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   serviceAnnotations: {}
   replicaCount: 1
   env:
@@ -508,11 +508,11 @@ tilerVisor:
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -524,48 +524,47 @@ tilerVisor:
 tmApi:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   nodeSelector:
     enabled: false
   replicaCount: 1
   serviceAnnotations: {}
   env:
-    POSTGRES_HOST: 'tm'
-    POSTGRES_DB: 'tm'
-    POSTGRES_PASSWORD: 'tm'
-    POSTGRES_USER: 'postgres'
+    POSTGRES_HOST: "tm"
+    POSTGRES_DB: "tm"
+    POSTGRES_PASSWORD: "tm"
+    POSTGRES_USER: "postgres"
     POSTGRES_PORT: 5432
-    TM_ORG_NAME: 'OpenStreetMap'
-    TM_ORG_CODE: 'OSM'
-    TM_ORG_URL: 'openstreetmap.org'
-    TM_ORG_PRIVACY_POLICY_URL: 'openstreetmap.org/copyright'
-    TM_ORG_GITHUB: 'github.com/openstreetmap'
-    OSM_SERVER_URL: 'https://openstreetmap.org'
-    OSM_NOMINATIM_SERVER_URL: 'https://nominatim.openstreetmap.org'
-    OSM_REGISTER_URL: 'https://openstreetmap.org/user/new'
-    ID_EDITOR_URL: 'https://openstreetmap.org/edit?editor=id'
-    POTLATCH2_EDITOR_URL: 'https://openstreetmap.org/edit?editor=potlatch2'
-    TM_SECRET: 's0m3l0ngr4nd0mstr1ng-b3cr34tiv3'
-    TM_CONSUMER_KEY: 'example'
-    TM_CONSUMER_SECRET: 'example'
-    TM_EMAIL_FROM_ADDRESS: 'no-reply@openstreetmap.org'
-    TM_SMTP_HOST: 'email-smtp.us-east-1.amazonaws.com'
+    TM_ORG_NAME: "OpenStreetMap"
+    TM_ORG_CODE: "OSM"
+    TM_ORG_URL: "openstreetmap.org"
+    TM_ORG_PRIVACY_POLICY_URL: "openstreetmap.org/copyright"
+    TM_ORG_GITHUB: "github.com/openstreetmap"
+    OSM_SERVER_URL: "https://openstreetmap.org"
+    OSM_NOMINATIM_SERVER_URL: "https://nominatim.openstreetmap.org"
+    OSM_REGISTER_URL: "https://openstreetmap.org/user/new"
+    ID_EDITOR_URL: "https://openstreetmap.org/edit?editor=id"
+    POTLATCH2_EDITOR_URL: "https://openstreetmap.org/edit?editor=potlatch2"
+    TM_SECRET: "s0m3l0ngr4nd0mstr1ng-b3cr34tiv3"
+    TM_CONSUMER_KEY: "example"
+    TM_CONSUMER_SECRET: "example"
+    TM_EMAIL_FROM_ADDRESS: "no-reply@openstreetmap.org"
+    TM_SMTP_HOST: "email-smtp.us-east-1.amazonaws.com"
     TM_SMTP_PORT: 25
-    TM_SMTP_USER: ''
-    TM_SMTP_PASSWORD: ''
-    TM_DEFAULT_LOCALE: 'en'
-    TM_APP_API_URL: ''
-    TM_APP_BASE_URL: ''
+    TM_SMTP_USER: ""
+    TM_SMTP_PASSWORD: ""
+    TM_DEFAULT_LOCALE: "en"
+    TM_APP_API_URL: ""
+    TM_APP_BASE_URL: ""
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
-
+      memory: "2Gi"
+      cpu: "2"
 
 # ====================================================================================================
 # Variables for nominatim api
@@ -573,8 +572,8 @@ tmApi:
 nominatimApi:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   serviceAnnotations: {}
   replicaCount: 1
   env:
@@ -596,11 +595,11 @@ nominatimApi:
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
+      memory: "2Gi"
+      cpu: "2"
   persistenceDisk:
     enabled: true
     accessMode: ReadWriteOnce
@@ -624,17 +623,16 @@ nominatimApi:
 overpassApi:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   serviceAnnotations: {}
   env:
-    OVERPASS_META: 'yes'
+    OVERPASS_META: "yes"
     OVERPASS_MODE: init
     OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
     OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/monaco/minute/
     OVERPASS_RULES_LOAD: 10
-    #OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf' # it is in case we pass planet files as PBF file uncommment this line
-    OVERPASS_PLANET_PREPROCESS: 'ls'
+    OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf'
     OVERPASS_REPLICATION_SEQUENCE_NUMBER: 5201000
   persistenceDisk:
     enabled: false
@@ -652,11 +650,11 @@ overpassApi:
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 # ====================================================================================================
@@ -665,8 +663,8 @@ overpassApi:
 taginfo:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   serviceAnnotations: {}
   env:
     URL_PLANET_FILE_STATE: https://planet.osm.org/pbf/state.txt
@@ -679,16 +677,16 @@ taginfo:
     INSTANCE_ICON: /img/logo/world.png
     INSTANCE_CONTACT: Anonymous
     TAGINFO_PROJECT_REPO: https://github.com/taginfo/taginfo-projects.git
-    DOWNLOAD_DB: 'languages wiki'
-    CREATE_DB: 'db projects chronology'
+    DOWNLOAD_DB: "languages wiki"
+    CREATE_DB: "db projects chronology"
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 # ====================================================================================================
@@ -697,17 +695,17 @@ taginfo:
 osmSimpleMetrics:
   enabled: false
   image:
-    name: ''
-    tag: ''
-  schedule: '* */1 * * *'
+    name: ""
+    tag: ""
+  schedule: "* */1 * * *"
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 
@@ -717,20 +715,20 @@ osmSimpleMetrics:
 monitoringReplication:
   enabled: false
   image:
-    name: 'developmentseed/osmseed-replication-job'
-    tag: '0.1.0-n770.hd15c9f2'
-  schedule: '* */1 * * *'
+    name: "developmentseed/osmseed-replication-job"
+    tag: "0.1.0-n770.hd15c9f2"
+  schedule: "* */1 * * *"
   env:
     CREATE_MISSING_FILES: empty
     REPLICATION_SEQUENCE_NUMBER: "109789"
   resources:
     enabled: false
     requests:
-      memory: '1Gi'
-      cpu: '2'
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '2Gi'
-      cpu: '2'
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 
@@ -740,92 +738,87 @@ monitoringReplication:
 changesetReplicationJob:
   enabled: false
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   resources:
     enabled: false
     requests:
-      memory: '20Gi'
-      cpu: '8'
+      memory: "20Gi"
+      cpu: "8"
     limits:
-      memory: '24Gi'
-      cpu: '10'
+      memory: "24Gi"
+      cpu: "10"
   nodeSelector:
     enabled: false
-
-
 # ====================================================================================================
-# Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
+# Variables for osmcha web builder
 # ====================================================================================================
 osmchaWeb:
-  enabled: false
+  enabled: true
   image:
-    name: ghcr.io/willemarcel/osmcha-django
-    tag: b1f4e6afc90e08707cadc4d74580632ca3b93dd2
+    name: ""
+    tag: ""
+# ====================================================================================================
+# Variables for osmcha Api
+# ====================================================================================================
+osmchaApi:
+  enabled: true
+  image:
+    name: "ghcr.io/willemarcel/osmcha-django"
+    tag: "10d7f6748d9e55d439339ed2c35509db15f782a6"
   env:
-    OSM_SERVER_URL: 'https://staging.openstreetmap.org'
-    DJANGO_CACHES: "{'default': {'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache', 'LOCATION': '127.0.0.1:11211'}}"
-    DJANGO_DEBUG: "False"
-    DJANGO_SECRET_KEY: abc
-    DJANGO_SECURE_BROWSER_XSS_FILTER: "True"
-    DJANGO_SECURE_SSL_REDIRECT: "True"
-    DJANGO_SECURE_CONTENT_TYPE_NOSNIFF: "True"
-    DJANGO_SECURE_FRAME_DENY: "True"
-    DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS: "True"
-    DJANGO_SESSION_COOKIE_HTTPONLY: "True"
-    DJANGO_SESSION_COOKIE_SECURE: "True"
-    DJANGO_DEFAULT_FROM_EMAIL: "webmaster@openstreetmap.org"
-    DJANGO_SERVER_EMAIL: "server@openstreetmap.org"
-    DJANGO_EMAIL_SUBJECT_PREFIX: "osmcha"
-    DJANGO_CHANGESETS_FILTER: "{'some_filter_key': 'some_filter_value'}"
-    OAUTH_OSM_KEY: abc
-    OAUTH_OSM_SECRET: abc
-    DJANGO_ANON_USER_THROTTLE_RATE: "10/h"
-    DJANGO_COMMON_USER_THROTTLE_RATE: "100/h"
-    DJANGO_NON_STAFF_USER_THROTTLE_RATE: "50/h"
-    OAUTH_REDIRECT_URI: https://osmcha.openstreetmap.org/oauth-landing.html
+    DJANGO_SETTINGS_MODULE: "config.settings.production"
     OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
-    DJANGO_ENABLE_CHANGESET_COMMENTS: "True"
-    DJANGO_OSM_COMMENTS_API_KEY: "test"
-    DJANGO_ROOT: /app
-    DJANGO_SETTINGS_MODULE: config.settings.local
-    C_FORCE_ROOT: true
-    REACT_APP_OSM_URL: https://staging.openstreetmap.org
-    REACT_APP_OSM_API: https://staging.openstreetmap.org/api/0.6
-    REACT_APP_OVERPASS_BASE: https://overpass-api-staging.openstreetmap.org/api/interpreter
-    REACT_APP_NOMINATIM_URL: https://nominatim-api-staging.openstreetmap.org
-    OSMCHA_URL: https://osmcha-staging.openstreetmap.org
+    DJANGO_SECRET_KEY: abc
+    ## ohm
+    OAUTH_OSM_KEY: abc
+    OAUTH_OSM_SECRET: bdc
+    DJANGO_SECURE_SSL_REDIRECT: "False"
+    OSM_SERVER_URL: https://www.osmseed.org
+    OAUTH_REDIRECT_URI: https://osmcha-staging.osmseed.org/oauth-landing.html
+    OSM_PLANET_BASE_URL: https://s3.amazonaws.com/planet.osmseed.org/replication/changesets/
+
+    ## frontend
+    OSMCHA_URL: https://osmcha-staging.osmseed.org
+    OSMCHA_API_URL: www.osmseed.org
+    REACT_APP_OSM_URL: https://www.osmseed.org
+    REACT_APP_OSM_API: https://www.osmseed.org/api/0.6
+    REACT_APP_OVERPASS_BASE: //overpass-api.osmseed.org/api/interpreter
+    REACT_APP_DISABLE_REAL_CHANGESETS: 1
+    REACT_APP_MAPBOX_ACCESS_TOKEN: "pk.abc.df"
   resources:
     enabled: false
     requests:
-      memory: '20Gi'
-      cpu: '8'
+      memory: "512Mi"
+      cpu: "1"
     limits:
-      memory: '24Gi'
-      cpu: '10'
+      memory: "512Mi"
+      cpu: "1"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: db
 
 # ====================================================================================================
-# Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
+# Variables for osmcha DB
 # ====================================================================================================
 osmchaDb:
-  enabled: false
+  enabled: true
   image:
-    name: ''
-    tag: ''
+    name: ""
+    tag: ""
   env:
     POSTGRES_DB: osmcha-db
     POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: '1234'
+    POSTGRES_PASSWORD: "1234"
   resources:
     enabled: false
     requests:
-      memory: '20Gi'
-      cpu: '8'
+      memory: "20Gi"
+      cpu: "8"
     limits:
-      memory: '24Gi'
-      cpu: '10'
+      memory: "24Gi"
+      cpu: "10"
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce

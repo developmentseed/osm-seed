@@ -1,15 +1,8 @@
 #!/usr/bin/env bash
-set -ex
-
-# Build frontend
-cd /osmcha-frontend
-REACT_APP_VERSION=ohm REACT_APP_STACK=PRODUCTION PUBLIC_URL=$OSMCHA_URL npx react-scripts build
-cp -R build/*.html /app/osmchadjango/frontend/templates/frontend/
-cp -R build/* /app/osmchadjango/static/
-cp -R build/static/* /app/osmchadjango/static/
-
-# Start service
-cd /app
-python3 manage.py collectstatic --noinput
-python3 manage.py migrate
-supervisord -c /etc/supervisor/supervisord.conf
+set -x
+export BUILD_ENV=prod
+export REACT_APP_PRODUCTION_API_URL=/api/v1
+sed -i "s|https://osmcha.org|$OSMCHA_URL|g" package.json
+yarn build:${BUILD_ENV}
+find /app/build -type f -exec sed -i "s/www.openstreetmap.org/$OSMCHA_API_URL/g" {} +
+cp -r /app/build/* /assets/

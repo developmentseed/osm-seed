@@ -1,18 +1,18 @@
-{{- if .Values.osmchaWeb.enabled -}}
+{{- if .Values.osmchaApi.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-osmcha-web
+  name: {{ template "osm-seed.fullname" . }}-osmcha-app
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmcha-web-service
+    component: osmcha-app-service
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   annotations:
     {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https    
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
     {{- end }}
     {{- if eq .Values.serviceType "ClusterIP" }}
     kubernetes.io/ingress.class: nginx
@@ -20,24 +20,24 @@ metadata:
     {{- else }}
     fake.annotation: fake
     {{- end }}
-    {{- with .Values.osmchaWeb.serviceAnnotations }}
+    {{- with .Values.osmchaApi.serviceAnnotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
   type: {{ .Values.serviceType }}
   ports:
-    - port: 80
-      targetPort: http
-      protocol: TCP
+    - protocol: TCP
+      port: 80
+      targetPort: 80
       name: http
   {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     - port: 443
-      targetPort: http
+      targetPort: 80
       protocol: TCP
       name: https
   {{- end }}
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-osmcha-web
+    run: {{ .Release.Name }}-osmcha-app
 {{- end }}

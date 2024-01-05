@@ -46,3 +46,4 @@ charts:
       valuesPath: osmchaWeb.image
     osmcha-db:
       valuesPath: osmchaDb.image
+      
