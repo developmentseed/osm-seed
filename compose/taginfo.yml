@@ -4,16 +4,15 @@ services:
   # ## Taginfo section
   # #####################################################
   taginfo:
-    image: osmseed-taginfo:v1
+    image: developmentseed/osmseed-taginfo:v15
     build:
       context: ../images/taginfo
       dockerfile: Dockerfile
     ports:
-      - '4567:80'
+    - '4567:80'
     volumes:
-      - ../data/taginfo-data:/apps/data/
+    - ../data/taginfo-data:/apps/data/
     command: >
-      /bin/bash -c "
-      ./start.sh"
+      /bin/bash -c " ./start.sh"
     env_file:
-      - ../envs/.env.taginfo
+    - ../envs/.env.taginfo
