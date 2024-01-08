@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-set -xe
-
+set -x
 WORKDIR=/apps
 DATA_DIR=$WORKDIR/data
 UPDATE_DIR=$DATA_DIR/update
@@ -15,10 +14,10 @@ set_taginfo_config() {
         jq '.paths.bin_dir                       = "'$WORKDIR'/taginfo-tools/build/src"' |
         jq '.sources.db.planetfile               = "'$UPDATE_DIR'/planet/planet.osm.pbf"' |
         jq '.sources.chronology.osm_history_file = "'$UPDATE_DIR'/planet/history-planet.osh.pbf"' |
-        jq '.sources.db.bindir                   = "'$UPDATE_DIR'/build/src"' |
         jq '.paths.data_dir                      = "'$DATA_DIR'"' \
             >$WORKDIR/taginfo-config.json
-    
+            # jq '.sources.db.bindir                   = "'$UPDATE_DIR'/build/src"' |
+
     # languages wiki databases will be downloaded from OSM
     [[ ! -z $DOWNLOAD_DB+z} ]] && jq --arg a "${DOWNLOAD_DB}" '.sources.download = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
 
@@ -80,7 +79,7 @@ update() {
     $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
     # Copy db files into data folder
     cp $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
-    cp $UPDATE_DIR/taginfo-*.db $DATA_DIR/
+    # cp $UPDATE_DIR/taginfo-*.db $DATA_DIR/
     # Link to download db zip files
     chmod a=r $UPDATE_DIR/download
     ln -sf $UPDATE_DIR/download $WORKDIR/taginfo/web/public/download
@@ -88,7 +87,7 @@ update() {
 
 start_web() {
     echo "Start...Taginfo web service"
-    cd $WORKDIR/taginfo/web && bundle exec rackup --host 0.0.0.0 -p 80
+    cd $WORKDIR/taginfo/web && ./taginfo.rb
 }
 
 continuous_update() {
@@ -101,6 +100,7 @@ continuous_update() {
 main() {
     set_taginfo_config
     updates_source_code
+    update
     # Check if db files are store in the $DATA_DIR in order to start the service or start procesing the file
     NUM_DB_FILES=$(ls $DATA_DIR/*.db | wc -l)
     if [ $NUM_DB_FILES -lt 7 ]; then
