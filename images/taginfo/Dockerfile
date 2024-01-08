@@ -1,9 +1,5 @@
-# Use a specific version of the ruby image for better reproducibility
 FROM ruby:3.0
-
-# Set the working directory
 WORKDIR /apps
-
 # Update and install dependencies in a single layer to reduce image size
 RUN apt-get update && apt-get install -y \
     curl \
@@ -32,14 +28,6 @@ RUN apt-get update && apt-get install -y \
     nano \
     vim \
     && rm -rf /var/lib/apt/lists/*
-
-# Clone and set up Taginfo
-RUN git clone https://github.com/taginfo/taginfo.git taginfo \
-    && cd taginfo \
-    # && echo "gem 'thin'" >> Gemfile \
-    && gem install bundler \
-    && bundle install
-
 # Clone and set up Taginfo tools
 RUN git clone https://github.com/taginfo/taginfo-tools.git taginfo-tools \
     && cd taginfo-tools \
@@ -49,8 +37,12 @@ RUN git clone https://github.com/taginfo/taginfo-tools.git taginfo-tools \
     && cmake .. \
     && make
 
-# Copy necessary files
-COPY overwrite_config.py start.sh ./
+# Clone and set up Taginfo
+RUN git clone https://github.com/taginfo/taginfo.git taginfo \
+    && cd taginfo \
+    && echo "gem 'thin'" >> Gemfile \
+    && gem install bundler \
+    && bundle install
 
-# Set the command to start the application
+COPY overwrite_config.py start.sh ./
 CMD ["./start.sh"]
