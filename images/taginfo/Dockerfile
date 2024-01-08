@@ -1,25 +1,13 @@
-FROM ruby:3.0
+FROM ruby:2.4
 ENV workdir /apps
-
-# Install Taginfo site
-RUN apt-get update && apt-get -y install \
+WORKDIR $workdir
+RUN apt-get update && apt-get install -y \
     curl \
     sqlite3 \
     sqlite3-pcre \
     ruby-passenger \
     libapache2-mod-passenger \
-    git
-
-# Commit ae5a950f7aa4c0de4e706839619a1dc05fc4450a, at 2021-10-18
-RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo
-WORKDIR $workdir/taginfo
-RUN git checkout ae5a950f7aa4c0de4e706839619a1dc05fc4450a
-RUN echo "gem 'thin' " >>Gemfile
-RUN gem install bundler
-RUN bundle install
-
-# Install Taginfo tools
-RUN apt-get -y install \
+    git \
     cmake \
     libbz2-dev \
     libexpat1-dev \
@@ -31,25 +19,31 @@ RUN apt-get -y install \
     make \
     zlib1g-dev \
     jq \
-    ca-certificates
-
-# Other useful packages
-RUN apt-get install -y \
-    git \
+    ca-certificates \
     osmium-tool \
     pyosmium \
     rsync \
     tmux \
-    zsh
+    zsh \
+    nano \
+    vim \
+    && rm -rf /var/lib/apt/lists/* # Clean up to reduce image size
 
-RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools
-WORKDIR $workdir/taginfo-tools
-RUN git submodule update --init
-RUN  mkdir build && cd build && cmake .. && make
+# Clone and setup taginfo-tools
+RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools && \
+    cd $workdir/taginfo-tools && \
+    git submodule update --init && \
+    mkdir build && cd build && \
+    cmake .. && make
 
-RUN apt-get install -y nano vim
+# Clone and setup taginfo
+RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo && \
+    cd $workdir/taginfo && \
+    git checkout ae5a950f7aa4c0de4e706839619a1dc05fc4450a && \
+    echo "gem 'thin' " >> Gemfile && \
+    gem install bundler -v 2.3.27 && \
+    bundle install
+
 COPY overwrite_config.py $workdir/
 COPY start.sh $workdir/
-
-WORKDIR $workdir/
 CMD $workdir/start.sh
