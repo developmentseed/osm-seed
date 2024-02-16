@@ -55,7 +55,5 @@ WORKDIR $IMPOSMDATA
 VOLUME $IMPOSMDATA
 
 WORKDIR /osm
-COPY config config
-COPY scripts scripts
-COPY start.sh start.sh
+COPY . .
 CMD ./start.sh

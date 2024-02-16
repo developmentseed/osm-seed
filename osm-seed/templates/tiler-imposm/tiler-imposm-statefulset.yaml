@@ -24,6 +24,16 @@ spec:
       - name: {{ .Release.Name }}-tiler-imposm-statefulset
         image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}
         command: ['./start.sh']
+        livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - ./liveness.sh
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
         {{- if .Values.tilerImposm.resources.enabled }}
         resources:
           requests:
