@@ -392,6 +392,7 @@ tilerImposm:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
     TILER_IMPORT_LIMIT: https://gist.githubusercontent.com/Rub21/96bdcac5eb11f0b36ba8d0352ac537f4/raw/2606f2e207d4a0d895897a83efa1efacefd36eb4/monaco.geojson
+    UPLOAD_EXPIRED_FILES: true
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce

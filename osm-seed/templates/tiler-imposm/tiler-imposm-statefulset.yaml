@@ -65,7 +65,7 @@ spec:
           - name: OVERWRITE_STATE
             value: {{ .Values.tilerImposm.env.OVERWRITE_STATE | quote }}
           - name: UPLOAD_EXPIRED_FILES
-            value: {{ .Values.tilerImposm.env.UPLOAD_EXPIRED_FILES | quote }}
+            value: {{ .Values.tilerImposm.env.UPLOAD_EXPIRED_FILES | default "true" | quote }}
           - name: CLOUDPROVIDER
             value: {{ .Values.cloudProvider }}
           # In case cloudProvider=aws
