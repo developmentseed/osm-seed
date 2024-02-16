@@ -47,23 +47,25 @@ spec:
           - name: POSTGRES_HOST
             value: {{ .Release.Name }}-tiler-db
           - name: POSTGRES_DB
-            value: {{ .Values.tilerDb.env.POSTGRES_DB }}
+            value: {{ .Values.tilerDb.env.POSTGRES_DB | quote }}
           - name: POSTGRES_PASSWORD
-            value: {{ quote .Values.tilerDb.env.POSTGRES_PASSWORD }}
+            value: {{ .Values.tilerDb.env.POSTGRES_PASSWORD | quote }}
           - name: POSTGRES_USER
-            value: {{ .Values.tilerDb.env.POSTGRES_USER }}
+            value: {{ .Values.tilerDb.env.POSTGRES_USER | quote }}
           - name: POSTGRES_PORT
             value: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
           - name: TILER_IMPORT_FROM
-            value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM }}
+            value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM | quote }}
           - name: TILER_IMPORT_PBF_URL
-            value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL }}
+            value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL | quote }}
           - name: REPLICATION_URL
-            value: {{ .Values.tilerImposm.env.REPLICATION_URL }}
+            value: {{ .Values.tilerImposm.env.REPLICATION_URL | quote }}
           - name: SEQUENCE_NUMBER
-            value: {{ .Values.tilerImposm.env.SEQUENCE_NUMBER | quote}}
+            value: {{ .Values.tilerImposm.env.SEQUENCE_NUMBER | quote }}
           - name: OVERWRITE_STATE
-            value: {{ quote .Values.tilerImposm.env.OVERWRITE_STATE }}
+            value: {{ .Values.tilerImposm.env.OVERWRITE_STATE | quote }}
+          - name: UPLOAD_EXPIRED_FILES
+            value: {{ .Values.tilerImposm.env.UPLOAD_EXPIRED_FILES | quote }}
           - name: CLOUDPROVIDER
             value: {{ .Values.cloudProvider }}
           # In case cloudProvider=aws

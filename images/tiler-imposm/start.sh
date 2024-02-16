@@ -49,18 +49,41 @@ function getData() {
     fi
 }
 
-function uploadExpiredFiles() {
-    ### Upload the expired files to the cloud provider
-    for file in $(find $IMPOSM3_EXPIRE_DIR -type f -cmin -1); do
-        bucketFile=${file#*"$WORKDIR"}
-        echo $(date +%F_%H:%M:%S)":" $file
-        # AWS
-        if [ "$CLOUDPROVIDER" == "aws" ]; then
-            aws s3 cp $file ${AWS_S3_BUCKET}/${BUCKET_IMPOSM_FOLDER}${bucketFile} --acl public-read
+getFormattedDate() {
+    local file_path="$1"
+    if command -v stat >/dev/null 2>&1; then
+        local modification_date=$(stat -c %Y "$file_path")
+        if [ $? -eq 0 ]; then
+            local formatted_date=$(date -d "@$modification_date" "+%Y-%m-%d:%H:%M:%S")
+            echo "Created/Updated date of $file_path: $formatted_date"
+        else
+            echo "Error: Unable to get file modification date for file ${file_path}"
         fi
-        # Google Storage
-        if [ "$CLOUDPROVIDER" == "gcp" ]; then
-            gsutil cp -a public-read $file ${GCP_STORAGE_BUCKET}${BUCKET_IMPOSM_FOLDER}${bucketFile}
+    else
+        echo "Error: 'stat' command not found. Unable to get file modification date, for file ${file_path}"
+    fi
+}
+
+function uploadExpiredFiles() {
+    # Upload the expired files to the cloud provider
+    for file in $(find "$IMPOSM3_EXPIRE_DIR" -type f -cmin -1); do
+        bucketFile=${file#*"$WORKDIR"}
+        getFormattedDate "$file"
+        # UPLOAD_EXPIRED_FILES=true to upload the expired to cloud provider
+        if [ "$UPLOAD_EXPIRED_FILES" == "true" ]; then
+            echo "Uploading expired file ${file} to ${AWS_S3_BUCKET}"
+            
+            # AWS
+            if [ "$CLOUDPROVIDER" == "aws" ]; then
+                aws s3 cp "$file" "${AWS_S3_BUCKET}/${BUCKET_IMPOSM_FOLDER}${bucketFile}" --acl public-read
+            fi
+
+            # Google Storage
+            if [ "$CLOUDPROVIDER" == "gcp" ]; then
+                gsutil cp -a public-read "$file" "${GCP_STORAGE_BUCKET}${BUCKET_IMPOSM_FOLDER}${bucketFile}"
+            fi
+        else
+            echo "Expired files were not uploaded because UPLOAD_EXPIRED_FILES=${UPLOAD_EXPIRED_FILES}"
         fi
     done
 }
