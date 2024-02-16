@@ -7,7 +7,7 @@ LIMITFILE="limitFile.geojson"
 
 # directories to keep the imposm's cache for updating the db
 WORKDIR=/mnt/data
-CACHEDIR=$WORKDIR/cachedir
+CACHE_DIR=$WORKDIR/cachedir
 DIFF_DIR=$WORKDIR/diff
 IMPOSM3_EXPIRE_DIR=$WORKDIR/imposm3_expire_dir
 
@@ -31,9 +31,7 @@ mkdir -p "$CACHE_DIR" "$DIFF_DIR" "$IMPOSM3_EXPIRE_DIR"
 } >"$WORKDIR/config.json"
 
 function getData() {
-    """
-    Get the PBF file from the cloud provider or public URL
-    """
+    ### Get the PBF file from the cloud provider or public URL
     if [ "$TILER_IMPORT_FROM" == "osm" ]; then
         wget "$TILER_IMPORT_PBF_URL" -O "$PBFFILE"
     elif [ "$TILER_IMPORT_FROM" == "osmseed" ]; then
@@ -52,9 +50,7 @@ function getData() {
 }
 
 function uploadExpiredFiles() {
-    """
-    Upload the expired files to the cloud provider
-    """
+    ### Upload the expired files to the cloud provider
     for file in $(find $IMPOSM3_EXPIRE_DIR -type f -cmin -1); do
         bucketFile=${file#*"$WORKDIR"}
         echo $(date +%F_%H:%M:%S)":" $file
@@ -70,10 +66,7 @@ function uploadExpiredFiles() {
 }
 
 function updateData() {
-    """
-    Update the DB with the new data form minute replication
-    """
-
+    ### Update the DB with the new data form minute replication
     if [ "$OVERWRITE_STATE" = "true" ]; then
         rm $DIFF_DIR/last.state.txt
     fi
@@ -103,9 +96,7 @@ function updateData() {
 }
 
 function importData() {
-    """
-    Import the PBF  and Natural Earth files to the DB
-    """
+    ### Import the PBF  and Natural Earth files to the DB
     echo "Execute the missing functions"
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f config/postgis_helpers.sql
 
