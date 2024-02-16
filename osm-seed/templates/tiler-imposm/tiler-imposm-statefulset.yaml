@@ -30,7 +30,7 @@ spec:
               - /bin/bash
               - -c
               - ./liveness.sh
-            initialDelaySeconds: 120
+            initialDelaySeconds: 3600
             timeoutSeconds: 5
             periodSeconds: 10
             failureThreshold: 3
