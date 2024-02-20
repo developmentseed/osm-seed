@@ -86,5 +86,4 @@ services:
     - '.../data/full-history-data:/usr/share/nginx/html/server/static-files/full-planet'
     - '../data/changeset-replication-job-data:/usr/share/nginx/html/server/static-files/changesets'
     # Development mode
-    # - ./../images/planet-files/server:/usr/share/nginx/html/server/
     # - ./../images/planet-files/:/usr/share/nginx/html/
