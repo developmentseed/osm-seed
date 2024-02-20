@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planet Replication</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+      }
+      th {
+        text-align: left;
+        padding-right: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <table id="fileList"></table>
+    <script>
+      // const API_FILES = "http://localhost:3000";
+      const HOST_NAME= window.location.hostname
+      const API_FILES = `http://${HOST_NAME}:3000`;
+      document.title = HOST_NAME;
+      async function fetchFiles(directory) {
+        const response = await fetch(`${API_FILES}/${directory}`);
+        const files = await response.json();
+        return files;
+      }
+      async function updateFileList() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefix = urlParams.get("prefix") || "";
+        const files = await fetchFiles(prefix);
+        const fileList = document.getElementById("fileList");
+        fileList.innerHTML = "";
+
+        // Add header row
+        const headerRow = document.createElement("tr");
+        const headerLastModified = document.createElement("th");
+        const headerSize = document.createElement("th");
+        const headerKey = document.createElement("th");
+        headerLastModified.textContent = "Last Modified";
+        headerSize.textContent = "Size";
+        headerKey.textContent = "Key";
+        headerRow.appendChild(headerLastModified);
+        headerRow.appendChild(headerSize);
+        headerRow.appendChild(headerKey);
+        fileList.appendChild(headerRow);
+        const separatorRow = document.createElement("tr");
+        const separatorCell = document.createElement("td");
+        separatorCell.colSpan = 3;
+        separatorCell.innerHTML =
+          '<hr style="border-top: 1px dashed #000; margin-bottom: 10px;">';
+        separatorRow.appendChild(separatorCell);
+        fileList.appendChild(separatorRow);
+
+        // Add row for parent directory
+        if (prefix) {
+          const parentRow = document.createElement("tr");
+          const parentLastModifiedCell = document.createElement("td");
+          const parentSizeCell = document.createElement("td");
+          const parentKeyCell = document.createElement("td");
+          parentLastModifiedCell.textContent = "";
+          parentSizeCell.textContent = "";
+          const parentKeyLink = document.createElement("a");
+          const parentDirectory = prefix.substring(0, prefix.lastIndexOf("/"));
+          parentKeyLink.href = `?prefix=${parentDirectory}`;
+          parentKeyLink.textContent = "../";
+          parentKeyCell.appendChild(parentKeyLink);
+          parentRow.appendChild(parentLastModifiedCell);
+          parentRow.appendChild(parentSizeCell);
+          parentRow.appendChild(parentKeyCell);
+          fileList.appendChild(parentRow);
+        }
+
+        // Add data rows
+        files.forEach((file) => {
+          const row = document.createElement("tr");
+          const lastModifiedCell = document.createElement("td");
+          lastModifiedCell.textContent = file.creationDate || "";
+          row.appendChild(lastModifiedCell);
+          const sizeCell = document.createElement("td");
+          sizeCell.textContent = file.size || "0";
+          row.appendChild(sizeCell);
+          const keyCell = document.createElement("td");
+          const keyLink = document.createElement("a");
+          if (file.isDirectory) {
+            keyLink.href = `?prefix=${file.path.replace("static-files", "")}`;
+          } else {
+            keyLink.href = `server/${file.path}`;
+          }
+          keyLink.textContent = file.name;
+          keyCell.appendChild(keyLink);
+          row.appendChild(keyCell);
+          fileList.appendChild(row);
+        });
+      }
+      window.onload = function () {
+        updateFileList();
+      };
+    </script>
+  </body>
+</html>

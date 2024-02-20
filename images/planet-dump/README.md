@@ -12,18 +12,8 @@ In order to run this container we need environment variables, these can be found
 
 **Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
 
-#### Running planet-dump container
-
+### Build and bring up the container
 ```sh
-    # Docker compose
-    docker-compose run planet-dump
-
-    # Docker
-    docker run \
-    --env-file ./envs/.env.db \
-    --env-file ./envs/.env.planet-dump \
-    --env-file ./envs/.env.cloudprovider \
-    -v ${PWD}/data/planet-dump-data:/mnt/data \
-    --network osm-seed_default \
-    -it osmseed-planet-dump:v1
+docker compose -f ./compose/planet.yml build
+docker compose -f ./compose/planet.yml up planet-dump
 ```

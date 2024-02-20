@@ -1,0 +1,90 @@
+version: '3'
+services:
+  ######################################################
+  ### OSM minute replication files section
+  ######################################################
+  replication-job:
+    image: osmseed-replication-job:v1
+    build:
+      context: ../images/replication-job
+      dockerfile: Dockerfile
+    volumes:
+    - ../data/replication-job-data:/mnt/data
+    # - ./../images/replication-job:/app
+    command: /start.sh
+    env_file:
+    - ../envs/.env.db
+    - ../envs/.env.db-utils
+    - ../envs/.env.cloudprovider
+
+  ######################################################
+  ### Planet replication section
+  ######################################################
+  planet-dump:
+    image: osmseed-planet-dump:v1
+    build:
+      context: ../images/planet-dump
+      dockerfile: Dockerfile
+    volumes:
+    - ../data/planet-dump-data:/mnt/data
+    command: /start.sh;
+    env_file:
+    - ../envs/.env.db
+    - ../envs/.env.db-utils
+    - ../envs/.env.cloudprovider
+
+  #####################################################
+  ## OSM full planet replication
+  #####################################################
+  full-history:
+    image: osmseed-full-history:v1
+    build:
+      context: ../images/full-history
+      dockerfile: Dockerfile
+    volumes:
+    - ../data/full-history-data:/mnt/data
+    command: /start.sh
+    env_file:
+    - ../envs/.env.db
+    - ../envs/.env.db-utils
+    - ../envs/.env.cloudprovider
+
+  #####################################################
+  ## Changeset replications
+  #####################################################
+  changeset-replication-job:
+    image: osmseed-changeset-replication-job:v1
+    build:
+      context: ../images/changeset-replication-job
+      dockerfile: Dockerfile
+    volumes:
+    - ../data/changeset-replication-job-data:/mnt/changesets
+    command: >
+      /bin/bash -c "./start.sh"
+    env_file:
+    - ../envs/.env.db
+    - ../envs/.env.db-utils
+    - ../envs/.env.cloudprovider
+
+  ######################################################
+  ### NGINX container for serving files
+  ######################################################
+  planet-files:
+    image: osmseed-planet-files:v1
+    build:
+      context: ../images/planet-files
+      dockerfile: Dockerfile
+    ports:
+    - "8081:80"
+    - "3000:3000"
+    volumes:
+    # Serve minute replication files
+    - ../data/replication-job-data:/usr/share/nginx/html/server/static-files/replication/minute
+    # Serve planet dump files
+    - ../data/planet-dump-data:/usr/share/nginx/html/server/static-files/planet
+    # Serve full history planet file
+    - '.../data/full-history-data:/usr/share/nginx/html/server/static-files/full-planet'
+    - '../data/changeset-replication-job-data:/usr/share/nginx/html/server/static-files/changesets'
+    # Development mode
+    # - ./../images/planet-files/server:/usr/share/nginx/html/server/
+    # - ./../images/planet-files/:/usr/share/nginx/html/

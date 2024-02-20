@@ -12,18 +12,8 @@ In order to run this container we need environment variables, these can be found
 
 **Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
 
-#### Running full-history container
-
+### Build and bring up the container
 ```sh
-    # Docker compose
-    docker-compose run full-history
-
-    # Docker
-    docker run \
-    --env-file ./envs/.env.db \
-    --env-file ./envs/.env.full-history \
-    --env-file ./envs/.env.cloudprovider \
-    -v ${PWD}/data/full-history-data:/mnt/data \
-    --network osm-seed_default \
-    -it osmseed-full-history:v1
+docker compose -f ./compose/planet.yml build
+docker compose -f ./compose/planet.yml up full-history
 ```
