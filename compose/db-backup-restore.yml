@@ -10,11 +10,7 @@ services:
       dockerfile: Dockerfile
     volumes:
     - ../data/db-backup-restore-data:/mnt/data
-    command: >
-      /bin/bash -c "
-        echo 'Set cron job for backing up DB, every 4 minutes';
-        while :; do echo 'Creating DB backup...'; /start.sh; sleep 4m; done;
-      "
+    command: /start.sh
     env_file:
     - ../envs/.env.db
     - ../envs/.env.osmcha

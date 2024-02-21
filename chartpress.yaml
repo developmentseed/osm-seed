@@ -46,4 +46,6 @@ charts:
       valuesPath: osmchaWeb.image
     osmcha-db:
       valuesPath: osmchaDb.image
-      
+    planet-files:
+      valuesPath: planetFiles.image
+

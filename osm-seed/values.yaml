@@ -755,7 +755,7 @@ changesetReplicationJob:
 # Variables for osmcha web builder
 # ====================================================================================================
 osmchaWeb:
-  enabled: true
+  enabled: false
   image:
     name: ""
     tag: ""
@@ -763,7 +763,7 @@ osmchaWeb:
 # Variables for osmcha Api
 # ====================================================================================================
 osmchaApi:
-  enabled: true
+  enabled: false
   image:
     name: "ghcr.io/willemarcel/osmcha-django"
     tag: "10d7f6748d9e55d439339ed2c35509db15f782a6"
@@ -804,7 +804,7 @@ osmchaApi:
 # Variables for osmcha DB
 # ====================================================================================================
 osmchaDb:
-  enabled: true
+  enabled: false
   image:
     name: ""
     tag: ""
@@ -835,3 +835,12 @@ osmchaDb:
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
+
+# ====================================================================================================
+# Planet server files
+# ====================================================================================================
+planetFiles:
+  enabled: false
+  image:
+    name: ""
+    tag: ""
