@@ -1,16 +1,33 @@
 version: '3'
 services:
-  ######################################################
-  ### Tasking Manager section
-  ######################################################
-  tasking-manager-api:
+  tasking-manager-db:
+    image: mdillon/postgis:11
+    ports:
+    - '5432:5432'
+    # volumes:
+    # - ../data/tasking-manager-api-db:/db
+    env_file:
+    - ../envs/.env.tasking-manager-db
+  migration:
     image: osmseed-tasking-manager-api:v1
     build:
       context: ../images/tasking-manager-api
       dockerfile: Dockerfile
-    ports:
-      - '5000:5000'
-    volumes:
-      - ../data/tasking-manager-api-db:/db
+    restart: on-failure
+    command: >
+      sh -c "python3 manage.py db upgrade"
     env_file:
-      - ../envs/.env.tasking-manager
+    - ../envs/.env.tasking-manager
+    - ../envs/.env.tasking-manager-db
+  tasking-manager-api:
+    build:
+      context: ../images/tasking-manager-api
+      dockerfile: Dockerfile
+    image: osmseed-tasking-manager-api:v1
+    ports:
+    - '5001:5000'
+    # volumes:
+    #   - ../data/tasking-manager-api:/db
+    env_file:
+    - ../envs/.env.tasking-manager
+    - ../envs/.env.tasking-manager-db
