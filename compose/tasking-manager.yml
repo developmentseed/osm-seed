@@ -1,11 +1,11 @@
 version: '3'
 services:
-  tasking-manager-db:
+  tmdb:
     image: mdillon/postgis:11
     ports:
     - '5432:5432'
-    # volumes:
-    # - ../data/tasking-manager-api-db:/db
+    volumes:
+    - ../data/tasking-manager-api-db:/db
     env_file:
     - ../envs/.env.tasking-manager-db
   migration:
@@ -19,15 +19,13 @@ services:
     env_file:
     - ../envs/.env.tasking-manager
     - ../envs/.env.tasking-manager-db
-  tasking-manager-api:
+  tmapi:
     build:
       context: ../images/tasking-manager-api
       dockerfile: Dockerfile
     image: osmseed-tasking-manager-api:v1
     ports:
-    - '5001:5000'
-    # volumes:
-    #   - ../data/tasking-manager-api:/db
+    - '5000:5000'
     env_file:
     - ../envs/.env.tasking-manager
     - ../envs/.env.tasking-manager-db

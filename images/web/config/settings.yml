@@ -1,17 +1,17 @@
 # The server protocol and host
 server_protocol: "http"
-server_url: "osmseed.example.com"
+server_url: "openstreetmap.example.com"
 # Publisher
 #publisher_url: ""
 # The generator
-generator: "osmseed server"
-copyright_owner: "osmseed and contributors"
-attribution_url: "http://www.osmseed.org/copyright"
+generator: "openstreetmap server"
+copyright_owner: "openstreetmap and contributors"
+attribution_url: "http://www.openstreetmap.org/copyright"
 license_url: "http://opendatacommons.org/licenses/odbl/1-0/"
 # Support email address
 support_email: "openstreetmap@example.com"
 # Sender addresses for emails
-email_from: "osmseed <openstreetmap@example.com>"
+email_from: "openstreetmap <openstreetmap@example.com>"
 email_return_path: "openstreetmap@example.com"
 # API version
 api_version: "0.6"
@@ -77,7 +77,7 @@ basic_auth_support: true
 # Enable legacy OAuth 1.0 support
 oauth_10_support: true
 # URL of Nominatim instance to use for geocoding
-nominatim_url: "https://nominatim.osmseed.org/"
+nominatim_url: "https://nominatim.openstreetmap.org/"
 # Default editor
 default_editor: "id"
 # OAuth application for the web site
@@ -146,4 +146,4 @@ min_changeset_comments_per_hour: 1
 initial_changeset_comments_per_hour: 6
 max_changeset_comments_per_hour: 60
 moderator_changeset_comments_per_hour: 36000
-embed_server_url: "https://embed.osmseed.org/"
+embed_server_url: "https://embed.openstreetmap.org/"

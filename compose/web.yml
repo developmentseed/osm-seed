@@ -11,8 +11,8 @@ services:
       dockerfile: Dockerfile
     ports:
     - '5432:5432'
-    # volumes:
-    #   - ../data/db-data:/var/lib/postgresql/data
+    volumes:
+    - ../data/db-data:/var/lib/postgresql/data
     env_file:
     - ../envs/.env.db
   web:
@@ -27,3 +27,7 @@ services:
     - ../envs/.env.db
     depends_on:
     - db
+  memcache:
+    image: memcached:latest
+    ports:
+    - '11211:11211'
