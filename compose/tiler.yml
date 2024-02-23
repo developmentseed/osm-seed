@@ -65,26 +65,4 @@ services:
     - ../envs/.env.tiler-db
     - ../envs/.env.tiler-server
     restart: always
-  # ######################################################
-  # ### Tiler cache cleaner
-  # ######################################################
-  # tiler-cache-cleaner:
-  #   image: osmseed-tiler-server:v1
-  #   build:
-  #     context: ../images/tiler-server
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #   - ../images/tiler-server:/go
-  #   - ../data/tiler-imposm-data:/mnt/data/imposm
-  #   depends_on:
-  #   - tiler-db
-  #   - tiler-imposm
-  #   command:
-  #   - sh
-  #   - -c
-  #   - "./expire-watcher.sh"
-  #   # - "sleep 60 && ./expire-watcher.sh"
-  #   env_file:
-  #   - ../envs/.env.tiler-db
-  #   - ../envs/.env.tiler-server
-  #   restart: always
+  
