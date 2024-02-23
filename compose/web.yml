@@ -15,6 +15,7 @@ services:
     - ../data/db-data:/var/lib/postgresql/data
     env_file:
     - ../envs/.env.db
+    restart: always
   web:
     image: osmseed-web:v1
     build:
@@ -27,7 +28,9 @@ services:
     - ../envs/.env.db
     depends_on:
     - db
+    restart: always
   memcache:
     image: memcached:latest
     ports:
     - '11211:11211'
+    restart: always

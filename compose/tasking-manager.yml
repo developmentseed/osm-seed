@@ -2,12 +2,13 @@ version: '3'
 services:
   tmdb:
     image: mdillon/postgis:11
-    ports:
-    - '5432:5432'
+    # ports:
+    # - '5432:5432'
     volumes:
-    - ../data/tasking-manager-api-db:/db
+    - ../data/tasking-manager-db:/db
     env_file:
     - ../envs/.env.tasking-manager-db
+    restart: always
   migration:
     image: osmseed-tasking-manager-api:v1
     build:
@@ -15,7 +16,7 @@ services:
       dockerfile: Dockerfile
     restart: on-failure
     command: >
-      sh -c "python3 manage.py db upgrade"
+      sh -c "sleep 10s && python3 manage.py db upgrade"
     env_file:
     - ../envs/.env.tasking-manager
     - ../envs/.env.tasking-manager-db
@@ -29,3 +30,4 @@ services:
     env_file:
     - ../envs/.env.tasking-manager
     - ../envs/.env.tasking-manager-db
+    restart: always
