@@ -10,6 +10,6 @@ while true ; do
   if [ "$sum" != "$new_sum" ]; then
     ./seed-by-diffs.sh
   else
-    sleep 1
+    sleep 30s
   fi
 done
