@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 workdir="/var/www"
 export RAILS_ENV=production
 
@@ -49,6 +48,12 @@ sed -i -e 's/overpass-api.de/'$OVERPASS_URL'/g' $workdir/app/assets/javascripts/
 chmod 0775 /var/www/log
 touch /var/www/log/production.log
 chmod 0664 /var/www/log/production.log
+
+# Add DOORKEEPER_SIGNING_KEY
+openssl genpkey -algorithm RSA -out private.pem
+chmod 400 /var/www/private.pem
+export DOORKEEPER_SIGNING_KEY=$(cat /var/www/private.pem | sed -e '1d;$d' | tr -d '\n')
+sed -i "s#PRIVATE_KEY#${DOORKEEPER_SIGNING_KEY}#" $workdir/config/settings.yml
 
 #### CHECK IF DB IS ALREADY UP AND START THE APP
 flag=true
