@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 workdir="/var/www"
 export RAILS_ENV=production
 
@@ -31,7 +32,7 @@ sed -i -e 's/id_application: ""/id_application: "'$OPENSTREETMAP_id_key'"/g' $wo
 
 ## SET UP OAUTH ID AND KEY
 sed -i -e 's/OAUTH_CLIENT_ID/'$OAUTH_CLIENT_ID'/g' $workdir/config/settings.yml
-sed -i -e 's/OAUTH_KEY/'$OAUTH_KEY'/g' $workdir/config/settings.yml
+# sed -i -e 's/OAUTH_KEY/'$OAUTH_KEY'/g' $workdir/config/settings.yml
 
 #### Setup env vars for memcached server
 sed -i -e 's/#memcache_servers: \[\]/memcache_servers: "'$OPENSTREETMAP_memcache_servers'"/g' $workdir/config/settings.yml
@@ -43,6 +44,11 @@ sed -i -e 's/nominatim.openstreetmap.org/'$NOMINATIM_URL'/g' $workdir/config/set
 sed -i -e 's/overpass-api.de/'$OVERPASS_URL'/g' $workdir/config/settings.yml
 sed -i -e 's/overpass-api.de/'$OVERPASS_URL'/g' $workdir/app/views/site/export.html.erb
 sed -i -e 's/overpass-api.de/'$OVERPASS_URL'/g' $workdir/app/assets/javascripts/index/export.js
+
+## Set Permissions 
+chmod 0775 /var/www/log
+touch /var/www/log/production.log
+chmod 0664 /var/www/log/production.log
 
 #### CHECK IF DB IS ALREADY UP AND START THE APP
 flag=true
@@ -60,19 +66,17 @@ while "$flag" = true; do
     sleep 2
   done &
 
-  time bundle exec rake i18n:js:export assets:precompile
-
   bundle exec rails db:migrate
 
-  # /usr/local/bin/openstreetmap-cgimap \
-  #   --port=8000 \
-  #   --daemon \
-  #   --instances=10 \
-  #   --dbname=$POSTGRES_DB \
-  #   --host=$POSTGRES_HOST \
-  #   --username=$POSTGRES_USER \
-  #   --password=$POSTGRES_PASSWORD \
-  #   --logfile log/cgimap.log
+  /usr/local/bin/openstreetmap-cgimap \
+    --port=8000 \
+    --daemon \
+    --instances=10 \
+    --dbname=$POSTGRES_DB \
+    --host=$POSTGRES_HOST \
+    --username=$POSTGRES_USER \
+    --password=$POSTGRES_PASSWORD \
+    --logfile log/cgimap.log
   bundle exec rake jobs:work &
   apachectl -k start -DFOREGROUND
 done

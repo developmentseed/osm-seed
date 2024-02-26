@@ -12,12 +12,12 @@ RUN apt-get update \
     apache2 apache2-dev build-essential git-core postgresql-client \
     libpq-dev libsasl2-dev imagemagick libffi-dev libgd-dev libarchive-dev libbz2-dev curl \
     default-jre-headless file gpg-agent libvips-dev locales software-properties-common tzdata unzip \
-    advancecomp gifsicle libjpeg-progs jhead jpegoptim optipng pngcrush pngquant \
+    advancecomp gifsicle libjpeg-progs jhead jpegoptim optipng pngcrush pngquant libyaml-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 ## Install node
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get install -y nodejs yarn && \
@@ -50,7 +50,7 @@ RUN npm install -g svgo
 RUN rm -rf $workdir/html
 
 ## Sep 2023
-ENV OPENSTREETMAP_WEBSITE_GITSHA=926229e286520ed23fb5e8add94c6048aa592412
+ENV OPENSTREETMAP_WEBSITE_GITSHA=f31c81c3f3200b2fb3b2703caa35238652e18e74
 RUN curl -L https://github.com/openstreetmap/openstreetmap-website/archive/$OPENSTREETMAP_WEBSITE_GITSHA.zip --output website.zip && unzip website.zip 
 RUN mv openstreetmap-website-$OPENSTREETMAP_WEBSITE_GITSHA/* $workdir/
 WORKDIR $workdir
@@ -64,14 +64,12 @@ RUN touch $workdir/config/settings.local.yml
 RUN cp $workdir/config/example.storage.yml $workdir/config/storage.yml
 RUN echo "#session key \n\
 production: \n\
-  secret_key_base: $(bundle exec rake secret)" > $workdir/config/secrets.yml
+  secret_key_base: $(rails secret)" > $workdir/config/secrets.yml
 # Protect sensitive information
 RUN chmod 600 $workdir/config/database.yml $workdir/config/secrets.yml
+RUN bundle exec bin/yarn install
 
-RUN yarn install
-RUN bundle exec rake yarn:install
-RUN bundle exec rake i18n:js:export
-RUN bundle exec rake assets:precompile
+RUN rails i18n:js:export assets:precompile
 
 # The rack interface requires a `tmp` directory to use openstreetmap-cgimap
 RUN ln -s /tmp /var/www/tmp
