@@ -63,7 +63,7 @@ restoreDB() {
 		wget -O ${RESTORE_FILE} ${RESTORE_URL_FILE}
 		echo "Restoring ${RESTORE_URL_FILE} in ${POSTGRES_DB}"
 		gunzip -c <${RESTORE_FILE} | psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} | tee ${LOG_RESULT_FILE}
-		aws s3 cp ${LOG_RESULT_FILE} s3://${AWS_S3_BUCKET}/${LOG_RESULT_FILE}
+		# aws s3 cp ${LOG_RESULT_FILE} s3://${AWS_S3_BUCKET}/${LOG_RESULT_FILE}
 		echo "Import data to ${POSTGRES_DB} has finished ..."
 	done
 }
