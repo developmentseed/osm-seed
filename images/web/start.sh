@@ -81,7 +81,7 @@ while "$flag" = true; do
   #   --host=$POSTGRES_HOST \
   #   --username=$POSTGRES_USER \
   #   --password=$POSTGRES_PASSWORD \
-    --logfile log/cgimap.log
+  # --logfile log/cgimap.log
   bundle exec rake jobs:work &
   apachectl -k start -DFOREGROUND
 done
