@@ -9,10 +9,10 @@ services:
     build:
       context: ../images/db
       dockerfile: Dockerfile
-    ports:
-    - '5432:5432'
+    # ports:
+    # - '5432:5432'
     volumes:
-    - ../data/db-data:/var/lib/postgresql/data
+    - ../data/db-data-pg14:/var/lib/postgresql/data
     env_file:
     - ../envs/.env.db
     restart: always

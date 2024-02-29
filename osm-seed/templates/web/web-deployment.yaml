@@ -119,6 +119,8 @@ spec:
               value: {{ .Values.web.env.NEW_RELIC_LICENSE_KEY | default ""}}
             - name: NEW_RELIC_APP_NAME
               value: {{ .Values.web.env.NEW_RELIC_APP_NAME | default ""}}
+            - name: ORGANIZATION_NAME
+              value: {{ .Values.web.env.ORGANIZATION_NAME | default "OpenStreetMap"}}
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory

@@ -132,6 +132,7 @@ web:
     OVERPASS_URL: "overpassApi"
     OAUTH_CLIENT_ID: "abcd" # Create client ID and key as OAuth2 Application
     OAUTH_KEY: "xyz"
+    ORGANIZATION_NAME: "OSMSeed"
   resources:
     enabled: false
     requests:

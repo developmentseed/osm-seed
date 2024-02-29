@@ -26,30 +26,30 @@ sed -i -e 's/smtp_password: null/smtp_password: "'$MAILER_PASSWORD'"/g' $workdir
 sed -i -e 's/openstreetmap@example.com/'$MAILER_FROM'/g' $workdir/config/settings.yml
 sed -i -e 's/smtp_port: 25/smtp_port: '$MAILER_PORT'/g' $workdir/config/settings.yml
 
-### SET UP ID KEY
+### SETTING UP UP OAUTH-2 ID KEY FOR iD
 sed -i -e 's/id_application: ""/id_application: "'$OPENSTREETMAP_id_key'"/g' $workdir/config/settings.yml
 
-## SET UP OAUTH ID AND KEY
+### SETTING UP OAUTH-2 ID KEY WEBSITE
 sed -i -e 's/OAUTH_CLIENT_ID/'$OAUTH_CLIENT_ID'/g' $workdir/config/settings.yml
-# sed -i -e 's/OAUTH_KEY/'$OAUTH_KEY'/g' $workdir/config/settings.yml
+sed -i -e 's/OAUTH_KEY/'$OAUTH_KEY'/g' $workdir/config/settings.yml
 
-#### Setup env vars for memcached server
+#### SETTING UP ENV VARS FOR MEMCACHED SERVER
 sed -i -e 's/#memcache_servers: \[\]/memcache_servers: "'$OPENSTREETMAP_memcache_servers'"/g' $workdir/config/settings.yml
 
-## SET NOMINATIM URL
+### SETTING UP NOMINATIM URL
 sed -i -e 's/nominatim.openstreetmap.org/'$NOMINATIM_URL'/g' $workdir/config/settings.yml
 
-# SET OVERPASS URL
+#### SETTING UP OVERPASS URL
 sed -i -e 's/overpass-api.de/'$OVERPASS_URL'/g' $workdir/config/settings.yml
 sed -i -e 's/overpass-api.de/'$OVERPASS_URL'/g' $workdir/app/views/site/export.html.erb
 sed -i -e 's/overpass-api.de/'$OVERPASS_URL'/g' $workdir/app/assets/javascripts/index/export.js
 
-## Set Permissions 
-chmod 0775 /var/www/log
-touch /var/www/log/production.log
-chmod 0664 /var/www/log/production.log
+### SETTING UP ORGANIZATION
+sed -i -e 's/OpenStreetMap/'$ORGANIZATION_NAME'/g' $workdir/config/settings.yml
+ORGANIZATION_NAME_LOWER=$(echo "$ORGANIZATION_NAME" | tr '[:upper:]' '[:lower:]')
+sed -i -e 's/openstreetmap/'"$ORGANIZATION_NAME_LOWER"'/g' "$workdir/config/settings.yml"
 
-# Add DOORKEEPER_SIGNING_KEY
+# ADDING DOORKEEPER_SIGNING_KEY
 openssl genpkey -algorithm RSA -out private.pem
 chmod 400 /var/www/private.pem
 export DOORKEEPER_SIGNING_KEY=$(cat /var/www/private.pem | sed -e '1d;$d' | tr -d '\n')
@@ -70,9 +70,8 @@ while "$flag" = true; do
     fi
     sleep 2
   done &
-
+  # time rails i18n:js:export assets:precompile
   bundle exec rails db:migrate
-
   /usr/local/bin/openstreetmap-cgimap \
     --port=8000 \
     --daemon \
