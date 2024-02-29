@@ -50,10 +50,11 @@ ORGANIZATION_NAME_LOWER=$(echo "$ORGANIZATION_NAME" | tr '[:upper:]' '[:lower:]'
 sed -i -e 's/openstreetmap/'"$ORGANIZATION_NAME_LOWER"'/g' "$workdir/config/settings.yml"
 
 # ADDING DOORKEEPER_SIGNING_KEY
-openssl genpkey -algorithm RSA -out private.pem
+openssl genpkey -algorithm RSA -out private.pem -aes256
 chmod 400 /var/www/private.pem
 export DOORKEEPER_SIGNING_KEY=$(cat /var/www/private.pem | sed -e '1d;$d' | tr -d '\n')
 sed -i "s#PRIVATE_KEY#${DOORKEEPER_SIGNING_KEY}#" $workdir/config/settings.yml
+
 
 #### CHECK IF DB IS ALREADY UP AND START THE APP
 flag=true
@@ -70,7 +71,7 @@ while "$flag" = true; do
     fi
     sleep 2
   done &
-  time rails i18n:js:export assets:precompile
+  # time rails i18n:js:export assets:precompile
   bundle exec rails db:migrate
   # /usr/local/bin/openstreetmap-cgimap \
   #   --port=8000 \
