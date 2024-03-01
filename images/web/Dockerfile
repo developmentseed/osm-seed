@@ -50,7 +50,7 @@ RUN npm install -g svgo
 RUN rm -rf $workdir/html
 
 ## Sep 2023
-ENV OPENSTREETMAP_WEBSITE_GITSHA=f31c81c3f3200b2fb3b2703caa35238652e18e74
+ENV OPENSTREETMAP_WEBSITE_GITSHA=d23763d6cdbf5ec11f0e83f8e6e8fb32ed973e6a
 RUN curl -L https://github.com/openstreetmap/openstreetmap-website/archive/$OPENSTREETMAP_WEBSITE_GITSHA.zip --output website.zip && unzip website.zip 
 RUN mv openstreetmap-website-$OPENSTREETMAP_WEBSITE_GITSHA/* $workdir/
 WORKDIR $workdir
