@@ -22,7 +22,7 @@
     <script>
       // const API_FILES = "http://localhost:3000";
       const HOST_NAME= window.location.hostname
-      const API_FILES = `http://${HOST_NAME}:8082`;
+      const API_FILES = "API_FILES_SERVICES";
       document.title = HOST_NAME;
       async function fetchFiles(directory) {
         const response = await fetch(`${API_FILES}/${directory}`);
