@@ -8,30 +8,24 @@ osmSeedVersion: develop-9302179
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, azure, minikube
 cloudProvider: minikube
-
 # ====================================================================================================
 # AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
 # ====================================================================================================
 AWS_S3_BUCKET: s3://osm-seed
-
 # ====================================================================================================
 # GCP: In case you are using the cloudProvider=gcp set the below variables, We are assuming the nodes has a policies to upload files to cloud storage
 # ====================================================================================================
 GCP_STORAGE_BUCKET: gs://osm-seed-test
-
 # ====================================================================================================
 # AZURE: In case you are using the cloudProvider=azure set the below variables
 # ====================================================================================================
 AZURE_STORAGE_ACCOUNT: osmseed
 AZURE_CONTAINER_NAME: osm-seed
 AZURE_STORAGE_CONNECTION_STRING: xyz..
-
 # ====================================================
 # AWS: Specify ARN for SSL certificate, currently assumes a single wildcard cert
 # ====================================================
-
 AWS_SSL_ARN: false
-
 # Specify serviceType.
 #
 # serviceType can be one of three values: 'NodePort', 'ClusterIP' or 'LoadBalancer'
@@ -47,7 +41,6 @@ AWS_SSL_ARN: false
 # SSL separately.
 # serviceType: NodePort
 serviceType: LoadBalancer
-
 # Domain that is pointed to the clusterIP
 # You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
 # Then, the cluster configuration will setup services at their respective subdomains:
@@ -56,7 +49,6 @@ serviceType: LoadBalancer
 # - nominatim.osmseed.example.com
 # - etc.
 domain: osmseed.example.com
-
 # ====================================================================================================
 # Configuration for Lets Encrypt setup
 # ====================================================================================================
@@ -64,7 +56,6 @@ domain: osmseed.example.com
 # Admin Email address used when generating Lets Encrypt certificates.
 # You will be notified of expirations, etc. on this email address.
 adminEmail: admin@example.com
-
 # ====================================================================================================
 # ====================================================================================================
 # ==================================Pods Configurations===============================================
@@ -167,13 +158,11 @@ memcached:
     limits:
       memory: "8Gi"
       cpu: "2"
-
 # ====================================================================================================
 # Variables for id-editor
 # ====================================================================================================
 idEditor:
   enabled: false
-
 # ====================================================================================================
 # Variables for full-history container
 # ====================================================================================================
@@ -197,64 +186,62 @@ fullHistory:
     limits:
       memory: "16Gi"
       cpu: "4"
-
-  # ====================================================================================================
-  # Variables for osm-seed database backup and restore
-  # ====================================================================================================
+      # ====================================================================================================
+      # Variables for osm-seed database backup and restore
+      # ====================================================================================================
 dbBackupRestore:
   image:
     name: "developmentseed/osmseed-backup-restore"
     tag: "0.1.0-0.dev.git.942.h994af82"
   cronjobs:
-  - name: web-db
-    enabled: false
-    schedule: "* * * * *"
-    env:
-      # DB action: backup/restore
-      DB_ACTION: backup
-      # Naming backup files
-      SET_DATE_AT_NAME: true
-      BACKUP_CLOUD_FOLDER: database/web-db
-      BACKUP_CLOUD_FILE: osmseed-api-web-db
-      AWS_S3_BUCKET: secure-bucket
-      # Clean up backups options
-      CLEANUP_BACKUPS: true
-      RETENTION_DAYS: "30"
-    resources:
+    - name: web-db
       enabled: false
-      requests:
-        memory: "300Mi"
-        cpu: "0.5"
-      limits:
-        memory: "400Mi"
-        cpu: "0.6"
-    nodeSelector:
+      schedule: "* * * * *"
+      env:
+        # DB action: backup/restore
+        DB_ACTION: backup
+        # Naming backup files
+        SET_DATE_AT_NAME: true
+        BACKUP_CLOUD_FOLDER: database/web-db
+        BACKUP_CLOUD_FILE: osmseed-api-web-db
+        AWS_S3_BUCKET: secure-bucket
+        # Clean up backups options
+        CLEANUP_BACKUPS: true
+        RETENTION_DAYS: "30"
+      resources:
+        enabled: false
+        requests:
+          memory: "300Mi"
+          cpu: "0.5"
+        limits:
+          memory: "400Mi"
+          cpu: "0.6"
+      nodeSelector:
+        enabled: false
+    - name: osmcha-db
       enabled: false
-  - name: osmcha-db
-    enabled: false
-    schedule: "* * * * *"
-    env:
-      # DB action: backup/restore
-      DB_ACTION: backup
-      # Naming backup files
-      SET_DATE_AT_NAME: true
-      BACKUP_CLOUD_FOLDER: database/osmcha-db
-      BACKUP_CLOUD_FILE: osmseed-osmcha-db
-      AWS_S3_BUCKET: secure-bucket
-      # Clean up backups options
-      CLEANUP_BACKUPS: true
-      RETENTION_DAYS: "30"
-    resources:
-      enabled: false
-      requests:
-        memory: "300Mi"
-        cpu: "0.5"
-      limits:
-        memory: "400Mi"
-        cpu: "0.6"
-    nodeSelector:
-      enabled: false
-
+      schedule: "* * * * *"
+      env:
+        # DB action: backup/restore
+        DB_ACTION: backup
+        # Naming backup files
+        SET_DATE_AT_NAME: true
+        BACKUP_CLOUD_FOLDER: database/osmcha-db
+        BACKUP_CLOUD_FILE: osmseed-osmcha-db
+        AWS_S3_BUCKET: secure-bucket
+        # Clean up backups options
+        CLEANUP_BACKUPS: true
+        RETENTION_DAYS: "30"
+      resources:
+        enabled: false
+        requests:
+          memory: "300Mi"
+          cpu: "0.5"
+        limits:
+          memory: "400Mi"
+          cpu: "0.6"
+      nodeSelector:
+        enabled: false
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
@@ -276,7 +263,6 @@ planetDump:
       cpu: "4"
   nodeSelector:
     enabled: false
-
 # ====================================================================================================
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
@@ -295,7 +281,6 @@ replicationJob:
       cpu: "10"
   nodeSelector:
     enabled: false
-
 # ====================================================================================================
 # Variables for osm-seed to pupulate the apidb
 # ====================================================================================================
@@ -314,7 +299,6 @@ populateApidb:
     limits:
       memory: "2Gi"
       cpu: "2.5"
-
 # ====================================================================================================
 # Variables to start a pod to process osm files
 # ====================================================================================================
@@ -334,7 +318,6 @@ osmProcessor:
     limits:
       memory: "16Gi"
       cpu: "4"
-
 # ====================================================================================================
 # Variables for tiler-db
 # ====================================================================================================
@@ -380,7 +363,6 @@ tilerDb:
     enabled: false
     label_key: nodegroup_type
     label_value: tiler
-
 # ====================================================================================================
 # Variables for tiler-imposm
 # ====================================================================================================
@@ -567,7 +549,6 @@ tmApi:
     limits:
       memory: "2Gi"
       cpu: "2"
-
 # ====================================================================================================
 # Variables for nominatim api
 # ====================================================================================================
@@ -618,7 +599,6 @@ nominatimApi:
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
-
 # ====================================================================================================
 # Variables for overpass-api
 # ====================================================================================================
@@ -710,7 +690,6 @@ osmSimpleMetrics:
       cpu: "2"
   nodeSelector:
     enabled: false
-
 # ====================================================================================================
 # Variables for osm-simple-metrics
 # ====================================================================================================
@@ -733,7 +712,6 @@ monitoringReplication:
       cpu: "2"
   nodeSelector:
     enabled: false
-
 # ====================================================================================================
 # Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
@@ -767,7 +745,7 @@ osmchaApi:
   enabled: false
   image:
     name: "ghcr.io/willemarcel/osmcha-django"
-    tag: "10d7f6748d9e55d439339ed2c35509db15f782a6"
+    tag: "bb038f164f174783775927d14ccc63366f9f2761"
   env:
     DJANGO_SETTINGS_MODULE: "config.settings.production"
     OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
@@ -779,7 +757,6 @@ osmchaApi:
     OSM_SERVER_URL: https://www.osmseed.org
     OAUTH_REDIRECT_URI: https://osmcha-staging.osmseed.org/oauth-landing.html
     OSM_PLANET_BASE_URL: https://s3.amazonaws.com/planet.osmseed.org/replication/changesets/
-
     ## frontend
     OSMCHA_URL: https://osmcha-staging.osmseed.org
     OSMCHA_API_URL: www.osmseed.org
@@ -800,7 +777,6 @@ osmchaApi:
     enabled: false
     label_key: nodegroup_type
     label_value: db
-
 # ====================================================================================================
 # Variables for osmcha DB
 # ====================================================================================================
@@ -836,7 +812,6 @@ osmchaDb:
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
-
 # ====================================================================================================
 # Planet server files
 # ====================================================================================================
