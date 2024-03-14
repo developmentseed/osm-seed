@@ -8,8 +8,8 @@ services:
     build:
       context: ../images/tiler-db
       dockerfile: Dockerfile
-    ports:
-    - "5433:5432"
+    # ports:
+    # - "5433:5432"
     volumes:
     - ../data/tiler-db-data:/var/lib/postgresql/data
     env_file:
@@ -42,7 +42,7 @@ services:
       retries: 3
     restart: always
   # ######################################################
-  # ### Tiler imposm for importing data
+  # ### Tiler server
   # ######################################################
   tiler-server:
     image: osmseed-tiler-server:v1
@@ -51,6 +51,7 @@ services:
       dockerfile: Dockerfile
     volumes:
     - ../data/tiler-server-data:/mnt/data
+    - ../data/tiler-imposm-data:/mnt/data/imposm
     depends_on:
     - tiler-db
     - tiler-imposm
@@ -59,8 +60,9 @@ services:
     command:
     - sh
     - -c
-    - "sleep 60 && ./start.sh"
+    - "./start.sh & ./expire-watcher.sh"
     env_file:
     - ../envs/.env.tiler-db
     - ../envs/.env.tiler-server
     restart: always
+  

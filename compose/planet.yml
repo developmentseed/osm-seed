@@ -16,6 +16,7 @@ services:
     - ../envs/.env.db
     - ../envs/.env.db-utils
     - ../envs/.env.cloudprovider
+    restart: always
 
   ######################################################
   ### Planet replication section
@@ -32,6 +33,7 @@ services:
     - ../envs/.env.db
     - ../envs/.env.db-utils
     - ../envs/.env.cloudprovider
+    restart: always
 
   #####################################################
   ## OSM full planet replication
@@ -48,6 +50,7 @@ services:
     - ../envs/.env.db
     - ../envs/.env.db-utils
     - ../envs/.env.cloudprovider
+    restart: always
 
   #####################################################
   ## Changeset replications
@@ -65,6 +68,7 @@ services:
     - ../envs/.env.db
     - ../envs/.env.db-utils
     - ../envs/.env.cloudprovider
+    restart: always
 
   ######################################################
   ### NGINX container for serving files
@@ -76,7 +80,7 @@ services:
       dockerfile: Dockerfile
     ports:
     - "8081:80"
-    - "3000:3000"
+    - "8082:3000"
     volumes:
     # Serve minute replication files
     - ../data/replication-job-data:/usr/share/nginx/html/server/static-files/replication/minute
@@ -87,3 +91,7 @@ services:
     - '../data/changeset-replication-job-data:/usr/share/nginx/html/server/static-files/changesets'
     # Development mode
     # - ./../images/planet-files/:/usr/share/nginx/html/
+    restart: always
+networks:
+  osm-seed:
+    driver: bridge
