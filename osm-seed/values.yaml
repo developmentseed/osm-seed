@@ -766,8 +766,8 @@ osmchaWeb:
 osmchaApi:
   enabled: false
   image:
-    name: "ghcr.io/willemarcel/osmcha-django"
-    tag: "bb038f164f174783775927d14ccc63366f9f2761"
+    name: "ghcr.io/osmcha/osmcha-django"
+    tag: "61a80e897b45fb9b1a177bf433fb79bfa7fda59d"
   env:
     DJANGO_SETTINGS_MODULE: "config.settings.production"
     OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
