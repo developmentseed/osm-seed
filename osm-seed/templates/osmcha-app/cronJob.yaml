@@ -24,7 +24,9 @@ spec:
             command:
             - /bin/sh
             - -c
-            - python manage.py fetchchangesets
+            - |
+              python manage.py fetchchangesets
+              python manage.py backfill_changesets $(date -d "yesterday" +%Y-%m-%d) $(date +%Y-%m-%d)
             envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-osmcha-common-env
