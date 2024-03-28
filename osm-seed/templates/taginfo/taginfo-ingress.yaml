@@ -7,13 +7,17 @@ metadata:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
 spec:
+  ingressClassName: nginx
   tls:
-    - hosts:
-      - taginfo.{{ .Values.domain }}
-      secretName: {{ template "osm-seed.fullname" . }}-secret-taginfo
-
+  - hosts:
+    {{- if .Values.taginfo.ingressDomain }}
+    - {{ .Values.taginfo.ingressDomain }}
+    {{- else }}
+    - taginfo.{{ .Values.domain }}
+    {{- end }}
+    secretName: {{ template "osm-seed.fullname" . }}-secret-taginfo
   rules:
-  - host: taginfo.{{ .Values.domain }}
+  - host: {{ if .Values.taginfo.ingressDomain }}{{ .Values.taginfo.ingressDomain }}{{ else }}taginfo.{{ .Values.domain }}{{ end }}
     http:
       paths:
       - path: /

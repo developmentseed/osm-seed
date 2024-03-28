@@ -650,6 +650,7 @@ taginfo:
     name: ""
     tag: ""
   serviceAnnotations: {}
+  ingressDomain: taginfo.dev.osmseed.org
   env:
     URL_PLANET_FILE_STATE: https://planet.osm.org/pbf/state.txt
     URL_HISTORY_PLANET_FILE_STATE: https://planet.osm.org/pbf/full-history/state.txt
