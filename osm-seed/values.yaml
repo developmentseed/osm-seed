@@ -514,6 +514,7 @@ tmApi:
   nodeSelector:
     enabled: false
   replicaCount: 1
+  ingressDomain: tm-api.dev.osmseed.org
   serviceAnnotations: {}
   env:
     POSTGRES_HOST: "tm"
