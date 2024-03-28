@@ -7,13 +7,17 @@ metadata:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
 spec:
+  ingressClassName: nginx
   tls:
-    - hosts:
-      - nominatim.{{ .Values.domain }}
-      secretName: {{ template "osm-seed.fullname" . }}-secret-nominatim
-
+  - hosts:
+    {{- if .Values.nominatimApi.ingressDomain }}
+    - {{ .Values.nominatimApi.ingressDomain }}
+    {{- else }}
+    - nominatim-api.{{ .Values.domain }}
+    {{- end }}
+    secretName: {{ template "osm-seed.fullname" . }}-secret-nominatim
   rules:
-  - host: nominatim.{{ .Values.domain }}
+  - host: {{ if .Values.nominatimApi.ingressDomain }}{{ .Values.nominatimApi.ingressDomain }}{{ else }}nominatim-api.{{ .Values.domain }}{{ end }}
     http:
       paths:
       - path: /
