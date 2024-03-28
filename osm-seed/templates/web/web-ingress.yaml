@@ -2,18 +2,22 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-ingress-web
+  name: {{ template "osm-seed.fullname" . }}-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
 spec:
+  ingressClassName: nginx
   tls:
-    - hosts:
-      - web.{{ .Values.domain }}
-      secretName: {{ template "osm-seed.fullname" . }}-secret-web
-
+  - hosts:
+    {{- if .Values.web.ingressDomain }}
+    - {{ .Values.web.ingressDomain }}
+    {{- else }}
+    - web.{{ .Values.domain }}
+    {{- end }}
+    secretName: {{ template "osm-seed.fullname" . }}-tls-secret
   rules:
-  - host: web.{{ .Values.domain }}
+  - host: {{ if .Values.web.ingressDomain }}{{ .Values.web.ingressDomain }}{{ else }}web.{{ .Values.domain }}{{ end }}
     http:
       paths:
       - path: /
