@@ -412,6 +412,7 @@ tilerServer:
     tag: ""
   replicaCount: 1
   serviceAnnotations: {}
+  ingressDomain: tiler2.dev.openhistoricalmap.org
   env:
     TILER_SERVER_PORT: 9090
     TILER_CACHE_TYPE: s3 #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
@@ -449,6 +450,8 @@ tilerServer:
     enabled: false
     label_key: nodegroup_type
     label_value: tiler
+  autoscaling:
+    enabled: false
 # ====================================================================================================
 # Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3
 # ====================================================================================================
