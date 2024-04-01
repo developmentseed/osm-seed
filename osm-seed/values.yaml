@@ -564,6 +564,7 @@ nominatimApi:
     tag: ""
   serviceAnnotations: {}
   replicaCount: 1
+  ingressDomain: nominatim-api.dev.osmseed.org
   env:
     PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
     REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates
