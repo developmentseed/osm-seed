@@ -16,7 +16,7 @@ spec:
     - web.{{ .Values.domain }}
     {{- end }}
     - api.{{ .Values.domain }}
-    - {{ .Values.domain }}
+    # - {{ .Values.domain }}
     secretName: {{ template "osm-seed.fullname" . }}-tls-secret
   rules:
   - host: {{ if .Values.web.ingressDomain }}{{ .Values.web.ingressDomain }}{{ else }}web.{{ .Values.domain }}{{ end }}
@@ -39,14 +39,14 @@ spec:
             name: {{ template "osm-seed.fullname" . }}-web
             port:
               number: 80
-  - host: {{ .Values.domain }}
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ template "osm-seed.fullname" . }}-web
-            port:
-              number: 80
+  # - host: {{ .Values.domain }}
+  #   http:
+  #     paths:
+  #     - path: /
+  #       pathType: Prefix
+  #       backend:
+  #         service:
+  #           name: {{ template "osm-seed.fullname" . }}-web
+  #           port:
+  #             number: 80
 {{- end }}
