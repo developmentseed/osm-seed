@@ -83,29 +83,22 @@ update() {
     # Link to download db zip files
     chmod a=r $UPDATE_DIR/download
     ln -sf $UPDATE_DIR/download $WORKDIR/taginfo/web/public/download
+    # Upload db to s3
+    aws s3 sync $DATA_DIR s3://$AWS_S3_BUCKET/$ENVIRONMENT --exclude "*" --include "*.db"
 }
 
 start_web() {
     echo "Start...Taginfo web service"
+    aws s3 sync s3://$AWS_S3_BUCKET/$ENVIRONMENT/ $DATA_DIR/
     cd $WORKDIR/taginfo/web && bundle exec rackup --host 0.0.0.0 -p 80
 }
 
-continuous_update() {
-    while true; do
-        update
-        sleep $TIME_UPDATE_INTERVAL
-    done
-}
-
-main() {
-    set_taginfo_config
-    updates_source_code
-    # Check if db files are store in the $DATA_DIR in order to start the service or start procesing the file
-    NUM_DB_FILES=$(ls $DATA_DIR/*.db | wc -l)
-    if [ $NUM_DB_FILES -lt 7 ]; then
-        update
-    fi
-    start_web &
-    continuous_update
-}
-main
+ACTION=$1
+set_taginfo_config
+updates_source_code
+mkdir -p $DATA_DIR/update/log/
+if [ "$ACTION" = "web" ]; then
+    start_web
+elif [ "$ACTION" = "data" ]; then
+    update
+fi

@@ -25,9 +25,10 @@ RUN apt-get update && apt-get install -y \
     rsync \
     tmux \
     zsh \
-    nano \
-    vim \
-    && rm -rf /var/lib/apt/lists/* # Clean up to reduce image size
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install awscli
 
 # Clone and setup taginfo-tools
 RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools && \
