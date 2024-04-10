@@ -1,4 +1,4 @@
-FROM ruby:3.3 as builder
+FROM ruby:3.0 as builder
 ARG workdir=/usr/src/app
 WORKDIR $workdir
 RUN apt-get update && apt-get install -y \
@@ -17,9 +17,11 @@ RUN apt-get update && apt-get install -y \
     sqlite3-pcre \
     passenger \
     libapache2-mod-passenger \
+    libreadline-dev \
+    tcl \
     git \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Clone and setup taginfo-tools
 RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools && \
@@ -28,8 +30,13 @@ RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tool
     mkdir build && cd build && \
     cmake .. && make
 
-RUN apt-get update && apt-get install -y passenger libapache2-mod-passenger git jq python3-pip
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    passenger \
+    libapache2-mod-passenger \
+    git \
+    jq \
+    python3-pip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN gem install json rack-contrib puma
 RUN gem install sinatra -v '< 3'
@@ -38,7 +45,8 @@ RUN gem install sinatra-r18n -v '5.0.2'
 # Install AWS CLI
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
-    ./aws/install
+    ./aws/install && \
+    rm awscliv2.zip
 
 # Clone and setup taginfo
 RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo && \
@@ -46,10 +54,5 @@ RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo && \
     bundle install
 
 COPY config/taginfo-config.json $workdir/
-
-COPY overwrite_config.py  $workdir/scripts/
-COPY start.sh $workdir/scripts/
-
-# COPY overwrite_config.py .
-# COPY start.sh .
-# sqlite3 sqlite3-pcre
+COPY overwrite_config.py .
+COPY start.sh .
