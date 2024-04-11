@@ -27,11 +27,12 @@ sed -i -e 's/openstreetmap@example.com/'$MAILER_FROM'/g' $workdir/config/setting
 sed -i -e 's/smtp_port: 25/smtp_port: '$MAILER_PORT'/g' $workdir/config/settings.yml
  
 ### SETTING UP UP OAUTH-2 ID KEY FOR iD
-sed -i -e 's/id_application: ""/id_application: "'$OPENSTREETMAP_id_key'"/g' $workdir/config/settings.yml
+[[ ! -z ${OPENSTREETMAP_id_key} ]] && sed -i -e 's/#id_application: ""/id_application: "'$OPENSTREETMAP_id_key'"/g' $workdir/config/settings.yml
 
 ### SETTING UP OAUTH-2 ID KEY WEBSITE
-sed -i -e 's/OAUTH_CLIENT_ID/'$OAUTH_CLIENT_ID'/g' $workdir/config/settings.yml
-sed -i -e 's/OAUTH_KEY/'$OAUTH_KEY'/g' $workdir/config/settings.yml
+[[ ! -z ${OAUTH_CLIENT_ID} ]] && sed -i -e 's/#oauth_application: ""/oauth_application: "'$OAUTH_CLIENT_ID'"/g' $workdir/config/settings.yml
+[[ ! -z ${OAUTH_KEY} ]] && sed -i -e 's/#oauth_key: ""/oauth_key: "'$OAUTH_KEY'"/g' $workdir/config/settings.yml
+
 
 #### SETTING UP ENV VARS FOR MEMCACHED SERVER
 sed -i -e 's/#memcache_servers: \[\]/memcache_servers: "'$OPENSTREETMAP_memcache_servers'"/g' $workdir/config/settings.yml

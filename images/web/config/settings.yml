@@ -105,10 +105,10 @@ nominatim_url: "https://nominatim.openstreetmap.org/"
 # Default editor
 default_editor: "id"
 # OAuth application for the web site
-oauth_application: "OAUTH_CLIENT_ID"
-oauth_key: "OAUTH_KEY"
+#oauth_application: ""
+#oauth_key: ""
 # OAuth application for iD
-id_application: ""
+#id_application: ""
 # Imagery to return in capabilities as blacklisted
 imagery_blacklist: []
 # URL of Overpass instance to use for feature queries
