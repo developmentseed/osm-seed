@@ -56,6 +56,10 @@ chmod 400 /var/www/private.pem
 export DOORKEEPER_SIGNING_KEY=$(cat /var/www/private.pem | sed -e '1d;$d' | tr -d '\n')
 sed -i "s#PRIVATE_KEY#${DOORKEEPER_SIGNING_KEY}#" $workdir/config/settings.yml
 
+# Overwrite some values that allowed uploading large changes at the start.
+sed -i 's/min_changes_per_hour int4 := 100;/min_changes_per_hour int4 := 10000000;/' db/structure.sql
+sed -i 's/initial_changes_per_hour int4 := 1000;/initial_changes_per_hour int4 := 100000000;/' db/structure.sql
+
 #### CHECK IF DB IS ALREADY UP AND START THE APP
 flag=true
 site_loading=true
