@@ -24,7 +24,7 @@ api_version: "0.6"
 #   gpx_offline - gpx storage offline
 status: "online"
 # The maximum area you're allowed to request, in square degrees
-max_request_area: 0.25
+max_request_area: 5
 # Number of GPS trace/trackpoints returned per-page
 tracepoints_per_page: 5000
 # Default limit on the number of changesets returned by the changeset query api method
@@ -67,9 +67,9 @@ initial_changeset_comments_per_hour: 6
 max_changeset_comments_per_hour: 60
 moderator_changeset_comments_per_hour: 36000
 # Rate limit for changes
-min_changes_per_hour: 100
-initial_changes_per_hour: 1000
-max_changes_per_hour: 100000
+min_changes_per_hour: 10000
+initial_changes_per_hour: 100000
+max_changes_per_hour: 10000000
 days_to_max_changes: 7
 importer_changes_per_hour: 1000000
 moderator_changes_per_hour: 1000000
