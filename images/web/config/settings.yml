@@ -28,9 +28,9 @@ max_request_area: 5
 # Number of GPS trace/trackpoints returned per-page
 tracepoints_per_page: 5000
 # Default limit on the number of changesets returned by the changeset query api method
-default_changeset_query_limit: 100
+default_changeset_query_limit: 1000
 # Maximum limit on the number of changesets returned by the changeset query api method
-max_changeset_query_limit: 100
+max_changeset_query_limit: 1000
 # Maximum number of nodes that will be returned by the api in a map request
 max_number_of_nodes: 50000
 # Maximum number of nodes that can be in a way (checked on save)
@@ -52,7 +52,7 @@ postcode_zoom: 15
 # Timeout for API calls in seconds
 api_timeout: 300
 # Timeout for web pages in seconds
-web_timeout: 30
+web_timeout: 300
 # Periods (in hours) which are allowed for user blocks
 user_block_periods: [0, 1, 3, 6, 12, 24, 48, 96, 168, 336, 731, 4383, 8766, 87660]
 # Account deletion cooldown period (in hours) since last changeset close; null to disable, 0 to make sure there aren't any open changesets when the deletion happens
@@ -62,8 +62,8 @@ max_messages_per_hour: 60
 # Rate limit for friending
 max_friends_per_hour: 60
 # Rate limit for changeset comments
-min_changeset_comments_per_hour: 1
-initial_changeset_comments_per_hour: 6
+min_changeset_comments_per_hour: 10
+initial_changeset_comments_per_hour: 60
 max_changeset_comments_per_hour: 60
 moderator_changeset_comments_per_hour: 36000
 # Rate limit for changes
