@@ -90,7 +90,11 @@ spec:
               # Set SERVER_URL in case we use ingress
               {{- if eq .Values.serviceType "ClusterIP" }}
             - name: SERVER_URL
-              value: web.{{ .Values.domain }}
+              {{- if .Values.web.ingressDomain }}
+              value: {{ .Values.web.ingressDomain }}
+              {{- else }}
+              value: {{ .Values.domain }}
+              {{- end }}
             - name: SERVER_PROTOCOL
               value : "https"
               {{- end }}
