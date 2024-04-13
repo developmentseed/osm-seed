@@ -49,19 +49,20 @@
         "tags": "osm openstreetmap tag tags taginfo"
     },
     "sources": {
-        "download": "languages projects wiki ",
-        "create": "db chronology",
+        "download": "languages wiki wikidata",
+        "create": "db projects chronology",
         "db": {
-            "planetfile": "/osm/planet/var/current-planet.osm.pbf"
+            "planetfile": "/osm/planet/var/current-planet.osm.pbf",
+            "bindir": "/apps/data/update/build/src"
         },
         "chronology": {
             "osm_history_file": "/osm/planet/var/current-history-planet.osh.pbf"
         },
         "master": {
-            "min_count_tags": 10000,
-            "min_tag_combination_count": 1000,
-            "min_count_for_map": 1000,
-            "min_count_relations_per_type": 100
+            "min_count_tags": 10,
+            "min_tag_combination_count": 10,
+            "min_count_for_map": 10,
+            "min_count_relations_per_type": 10
         }
     },
     "logging": {
