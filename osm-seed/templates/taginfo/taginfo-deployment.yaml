@@ -29,17 +29,17 @@ spec:
             - /bin/sh
             - -c
             - |
-              /apps/start.sh web
+              /usr/src/app/start.sh web
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 4567
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 60
-            timeoutSeconds: 30
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 4567
+          #   initialDelaySeconds: 60
+          #   timeoutSeconds: 30
           {{- if .Values.taginfo.resources.enabled }}
           resources:
             requests:

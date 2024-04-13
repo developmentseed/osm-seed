@@ -4,11 +4,11 @@ DATADIR=/usr/src/app/data
 DATADOWNLOAD=/osm/planet/var
 mkdir -p $DATADIR/
 mkdir -p $DATADOWNLOAD/
-
-sed -i 's/"env -/"/g' $WORKDIR/taginfo/sources/util.sh
+mkdir -p $DATA_DIR/update/log/
 
 updates_source_code() {
     echo "Update...Procesor source code"
+    sed -i 's/"env -/"/g' $WORKDIR/taginfo/sources/util.sh
     # Function to replace the projects repo to get the projects information
     TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
     sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
@@ -44,25 +44,37 @@ process_data() {
     chronology/update.sh $DATADIR
     mv $DATADIR/taginfo-*.db $DATADIR/
     mv $DATADIR/*/taginfo-*.db $DATADIR/
-    # if BUCKET_NAME is set upload data 
+    # if BUCKET_NAME is set upload data
     if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
         aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/$ENVIRONMENT/  --exclude "*" --include "*.db"
     fi
 }
 
+get_taginfo_data() {
+    while true
+    do
+        # if BUCKET_NAME is set download data
+        if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
+            aws s3 sync s3://$AWS_S3_BUCKET/$ENVIRONMENT/ $DATADIR/
+        fi
+        sleep $INTERVAL_DOWNLOAD_DATA
+    done
+    
+}
+
 start_web() {
     echo "Start...Taginfo web service"
-    if BUCKET_NAME is set download data 
-    if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
-        aws s3 sync s3://$AWS_S3_BUCKET/$ENVIRONMENT/ $DATADIR/
-    fi
+    get_taginfo_data
     cd $WORKDIR/taginfo/web && ./taginfo.rb
 }
 
 ACTION=$1
-mkdir -p $DATA_DIR/update/log/
+
+# Overwrite the config file
+[[ ! -z ${OVERWRITE_CONFIG_URL} ]] && wget $OVERWRITE_CONFIG_URL -o /usr/src/app/taginfo-config.json
+
 if [ "$ACTION" = "web" ]; then
     start_web
-elif [ "$ACTION" = "data" ]; then
+    elif [ "$ACTION" = "data" ]; then
     process_data
 fi
