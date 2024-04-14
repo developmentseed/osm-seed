@@ -9,11 +9,11 @@ services:
       context: ../images/taginfo
       dockerfile: Dockerfile
     ports:
-      - '4567:80'
+      - '8000:80'
     volumes:
-      - ../data/taginfo-data:/apps/data/
+      - ../data/taginfo-data:/usr/src/app/data
     command: >
-      /bin/bash -c "
-      ./start.sh"
+      /bin/bash -c "/usr/src/app/start.sh web"
+
     env_file:
       - ../envs/.env.taginfo

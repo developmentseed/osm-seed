@@ -1,6 +1,6 @@
 {
     "instance": {
-        "url": "http://localhost:4567",
+        "url": "http://localhost:80",
         "name": "OpenStreetMap Taginfo",
         "description": "This is a <b>taginfo test instance</b>. Change this text in your <tt>taginfo-config.json</tt>.",
         "about": "<p>This site is maintained by osm-seed",

@@ -32,12 +32,12 @@ spec:
               /usr/src/app/start.sh web
           ports:
             - name: http
-              containerPort: 4567
+              containerPort: 80
               protocol: TCP
           # livenessProbe:
           #   httpGet:
           #     path: /
-          #     port: 4567
+          #     port: 80
           #   initialDelaySeconds: 60
           #   timeoutSeconds: 30
           {{- if .Values.taginfo.resources.enabled }}

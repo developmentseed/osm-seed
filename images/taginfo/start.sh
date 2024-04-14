@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 WORKDIR=/usr/src/app
 DATADIR=/usr/src/app/data
-DATADOWNLOAD=/osm/planet/var
+DATADOWNLOAD=/usr/src/app/osm
 mkdir -p $DATADIR/
 mkdir -p $DATADOWNLOAD/
-mkdir -p $DATA_DIR/update/log/
+mkdir -p $DATADIR/update/log/
 
 updates_source_code() {
     echo "Update...Procesor source code"
     sed -i 's/"env -/"/g' $WORKDIR/taginfo/sources/util.sh
+    sed -i '/configure do/a \ \ \ \ set :port, 80' $WORKDIR/taginfo/web/taginfo.rb
+    sed -i "/configure do/a \ \ \ \ set :bind, '0.0.0.0'" $WORKDIR/taginfo/web/taginfo.rb
     # Function to replace the projects repo to get the projects information
     TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
     sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
-}
+} 
 
 download_planet_files() {
     # Check if URL_PLANET_FILE_STATE exist and set URL_PLANET_FILE
@@ -31,7 +33,6 @@ download_planet_files() {
 }
 
 process_data() {
-    updates_source_code
     download_planet_files
     cd $WORKDIR/taginfo/sources/
     ./update_all.sh $DATADIR
@@ -50,29 +51,18 @@ process_data() {
     fi
 }
 
-get_taginfo_data() {
-    while true
-    do
-        # if BUCKET_NAME is set download data
-        if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
-            aws s3 sync s3://$AWS_S3_BUCKET/$ENVIRONMENT/ $DATADIR/
-        fi
-        sleep $INTERVAL_DOWNLOAD_DATA
-    done
-    
-}
-
 start_web() {
     echo "Start...Taginfo web service"
-    get_taginfo_data
+    if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
+        aws s3 sync s3://$AWS_S3_BUCKET/$ENVIRONMENT/ $DATADIR/
+    fi
     cd $WORKDIR/taginfo/web && ./taginfo.rb
 }
 
 ACTION=$1
-
 # Overwrite the config file
-[[ ! -z ${OVERWRITE_CONFIG_URL} ]] && wget $OVERWRITE_CONFIG_URL -o /usr/src/app/taginfo-config.json
-
+[[ ! -z ${OVERWRITE_CONFIG_URL} ]] && wget $OVERWRITE_CONFIG_URL -O /usr/src/app/taginfo-config.json
+updates_source_code
 if [ "$ACTION" = "web" ]; then
     start_web
     elif [ "$ACTION" = "data" ]; then
