@@ -9,7 +9,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: "0 * * * *"
+  schedule: "0 0 * * 0"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 10
   successfulJobsHistoryLimit: 2
