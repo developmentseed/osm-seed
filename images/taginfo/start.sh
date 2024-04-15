@@ -61,8 +61,8 @@ compress_files() {
 }
 
 download_db_files() {
-    if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
-        aws s3 sync "s3://$BUCKET_NAME/$ENVIRONMENT/" "$DATADIR/"
+    if ! aws s3 ls "s3://$AWS_S3_BUCKET/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
+        aws s3 sync "s3://$AWS_S3_BUCKET/$ENVIRONMENT/" "$DATADIR/"
     fi
     compress_files
 }
