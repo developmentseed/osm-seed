@@ -14,7 +14,7 @@ updates_source_code() {
     # Function to replace the projects repo to get the projects information
     TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
     sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
-} 
+}
 
 download_planet_files() {
     # Check if URL_PLANET_FILE_STATE exist and set URL_PLANET_FILE
@@ -46,14 +46,13 @@ process_data() {
     mv $DATADIR/taginfo-*.db $DATADIR/
     mv $DATADIR/*/taginfo-*.db $DATADIR/
     # if BUCKET_NAME is set upload data
-
+    
     if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
         aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/$ENVIRONMENT/  --exclude "*" --include "*.db"
     fi
-
 }
 
-# Compress files to download 
+# Compress files to download
 compress_files() {
     mkdir -p download
     for file in data/*; do
@@ -61,13 +60,25 @@ compress_files() {
     done
 }
 
+download_db_files() {
+    if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
+        aws s3 sync "s3://$BUCKET_NAME/$ENVIRONMENT/" "$DATADIR/"
+    fi
+    compress_files
+}
+
+
+sync_latest_db_version() {
+    while true; do
+        download_db_files
+        sleep "$INTERVAL_DOWNLOAD_DATA"
+    done
+}
+
 start_web() {
     echo "Start...Taginfo web service"
-    if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
-        aws s3 sync s3://$AWS_S3_BUCKET/$ENVIRONMENT/ $DATADIR/
-    fi
-    compress_files &
-    cd $WORKDIR/taginfo/web && ./taginfo.rb
+    download_db_files
+    cd $WORKDIR/taginfo/web && ./taginfo.rb & sync_latest_db_version
 }
 
 ACTION=$1
