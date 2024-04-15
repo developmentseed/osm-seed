@@ -46,9 +46,19 @@ process_data() {
     mv $DATADIR/taginfo-*.db $DATADIR/
     mv $DATADIR/*/taginfo-*.db $DATADIR/
     # if BUCKET_NAME is set upload data
+
     if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
         aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/$ENVIRONMENT/  --exclude "*" --include "*.db"
     fi
+
+}
+
+# Compress files to download 
+compress_files() {
+    mkdir -p download
+    for file in data/*; do
+        bzip2 -k -9 -c "$file" > "download/$(basename "$file").bz2"
+    done
 }
 
 start_web() {
@@ -56,6 +66,7 @@ start_web() {
     if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
         aws s3 sync s3://$AWS_S3_BUCKET/$ENVIRONMENT/ $DATADIR/
     fi
+    compress_files &
     cd $WORKDIR/taginfo/web && ./taginfo.rb
 }
 
