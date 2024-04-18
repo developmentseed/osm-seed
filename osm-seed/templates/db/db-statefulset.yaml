@@ -36,15 +36,15 @@ spec:
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-db
             - name: POSTGRES_DB
-              value: {{ .Values.db.env.POSTGRES_DB | quote }}
+              value: {{ .Values.db.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.db.env.POSTGRES_PASSWORD | quote }}
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
               value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
             - name: PGUSER
               value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
             - name: PGDATA
-              value: {{ .Values.db.persistenceDisk.mountPath | quote }}
+              value: {{ .Values.db.persistenceDisk.mountPath }}
             - name: POSTGRES_DB_MAX_CONNECTIONS
               value: {{ default 100 .Values.db.env.POSTGRES_DB_MAX_CONNECTIONS | quote }}
             - name: POSTGRES_DB_SHARED_BUFFERS
