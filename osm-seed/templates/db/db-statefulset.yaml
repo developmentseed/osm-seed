@@ -45,24 +45,6 @@ spec:
               value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
             - name: PGDATA
               value: {{ .Values.db.persistenceDisk.mountPath }}
-            - name: POSTGRES_DB_MAX_CONNECTIONS
-              value: {{ default 100 .Values.db.env.POSTGRES_DB_MAX_CONNECTIONS | quote }}
-            - name: POSTGRES_DB_SHARED_BUFFERS
-              value: {{ default "128MB" .Values.db.env.POSTGRES_DB_SHARED_BUFFERS | quote }}
-            - name: POSTGRES_DB_TEMP_BUFFERS
-              value: {{ default "8MB" .Values.db.env.POSTGRES_DB_TEMP_BUFFERS | quote }}
-            - name: POSTGRES_DB_WORK_MEM
-              value: {{ default "4MB" .Values.db.env.POSTGRES_DB_WORK_MEM | quote }}
-            - name: POSTGRES_DB_MAINTENANCE_WORK_MEM
-              value: {{ default "128MB" .Values.db.env.POSTGRES_DB_MAINTENANCE_WORK_MEM | quote }}
-            - name: POSTGRES_DB_EFFECTIVE_CACHE_SIZE
-              value: {{ default "4GB" .Values.db.env.POSTGRES_DB_EFFECTIVE_CACHE_SIZE | quote }}
-            - name: POSTGRES_DB_MAX_WAL_SIZE
-              value: {{ default "16MB" .Values.db.env.POSTGRES_DB_MAX_WAL_SIZE | quote }}
-            - name: POSTGRES_DB_MIN_WAL_SIZE
-              value: {{ default "5MB" .Values.db.env.POSTGRES_DB_MIN_WAL_SIZE | quote }}
-            - name: POSTGRES_DB_RANDOM_PAGE_COST
-              value: {{ default "4.0" .Values.db.env.POSTGRES_DB_RANDOM_PAGE_COST | quote }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
           livenessProbe:
