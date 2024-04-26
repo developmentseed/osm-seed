@@ -74,6 +74,7 @@ db:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "1234"
+    ENVIRONMENT: "production"
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
@@ -505,6 +506,30 @@ tilerVisor:
     enabled: false
     label_key: nodegroup_type
     label_value: tiler
+# ====================================================================================================
+# Variables for Tasking Manager DB
+# ====================================================================================================
+tmDb:
+  enabled: false
+  image:
+    name: "postgres"
+    tag: "11"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  env:
+    POSTGRES_DB: tm
+    POSTGRES_PASSWORD: tm
+    POSTGRES_USER: postgres
+  resources:
+    enabled: false
+    requests:
+      memory: "1Gi"
+      cpu: "2"
+    limits:
+      memory: "2Gi"
+      cpu: "2"
 # ====================================================================================================
 # Variables for Tasking Manager API
 # ====================================================================================================
