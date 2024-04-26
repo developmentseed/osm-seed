@@ -44,7 +44,7 @@ spec:
             - name: PGUSER
               value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
             - name: ENVIRONMENT
-              value: {{ default "production" .Values.db.env.ENVIRONMENT | quote }}
+              value: {{ .Values.environment }}
             - name: PGDATA
               value: {{ .Values.db.persistenceDisk.mountPath }}
             - name: POD_IP
