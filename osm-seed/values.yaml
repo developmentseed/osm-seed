@@ -74,6 +74,7 @@ db:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: 1234
+    ENVIRONMENT: production
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
