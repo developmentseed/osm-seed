@@ -66,6 +66,10 @@ spec:
             value: {{ .Values.tilerImposm.env.OVERWRITE_STATE | quote }}
           - name: UPLOAD_EXPIRED_FILES
             value: {{ .Values.tilerImposm.env.UPLOAD_EXPIRED_FILES | default "true" | quote }}
+          - name: IMPORT_NATURAL_EARTH
+            value: {{ .Values.tilerImposm.env.IMPORT_NATURAL_EARTH | default "true" | quote }}
+          - name: IMPORT_OSM_LAND
+            value: {{ .Values.tilerImposm.env.IMPORT_OSM_LAND | default "true" | quote }}
           - name: CLOUDPROVIDER
             value: {{ .Values.cloudProvider }}
           # In case cloudProvider=aws

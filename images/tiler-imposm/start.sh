@@ -1,9 +1,5 @@
 #!/bin/bash
-set -e
-
-STATEFILE="state.txt"
-PBFFILE="osm.pbf"
-LIMITFILE="limitFile.geojson"
+set -ex
 
 # directories to keep the imposm's cache for updating the db
 WORKDIR=/mnt/data
@@ -11,6 +7,9 @@ CACHE_DIR=$WORKDIR/cachedir
 DIFF_DIR=$WORKDIR/diff
 IMPOSM3_EXPIRE_DIR=$WORKDIR/imposm3_expire_dir
 
+PBFFILE="${WORKDIR}/osm.pbf"
+STATEFILE="state.txt"
+LIMITFILE="limitFile.geojson"
 # # Setting directory
 # settingDir=/osm
 # Folder to store the imposm expider files in s3 or gs
@@ -33,18 +32,9 @@ mkdir -p "$CACHE_DIR" "$DIFF_DIR" "$IMPOSM3_EXPIRE_DIR"
 function getData() {
     ### Get the PBF file from the cloud provider or public URL
     if [ "$TILER_IMPORT_FROM" == "osm" ]; then
-        wget "$TILER_IMPORT_PBF_URL" -O "$PBFFILE"
-    elif [ "$TILER_IMPORT_FROM" == "osmseed" ]; then
-        if [ "$CLOUDPROVIDER" == "aws" ]; then
-            # Get the state.txt file from S3
-            aws s3 cp "$AWS_S3_BUCKET/planet/full-history/$STATEFILE" .
-            PBFCloudPath=$(tail -n +1 "$STATEFILE")
-            aws s3 cp "$PBFCloudPath" "$PBFFILE"
-        elif [ "$CLOUDPROVIDER" == "gcp" ]; then
-            # Get the state.txt file from GS
-            gsutil cp "$GCP_STORAGE_BUCKET/planet/full-history/$STATEFILE" .
-            PBFCloudPath=$(tail -n +1 "$STATEFILE")
-            gsutil cp "$PBFCloudPath" "$PBFFILE"
+        if [ ! -f "$PBFFILE" ]; then
+          echo "$PBFFILE does not exist, downloading..."
+          wget "$TILER_IMPORT_PBF_URL" -O "$PBFFILE"
         fi
     fi
 }
@@ -123,26 +113,30 @@ function importData() {
     echo "Execute the missing functions"
     psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB" -a -f config/postgis_helpers.sql
 
-    echo "Import Natural Earth..."
-    ./scripts/natural_earth.sh
+    if [ "$IMPORT_NATURAL_EARTH" = "true" ]; then
+        echo "Importing Natural Earth..."
+        ./scripts/natural_earth.sh
+    fi
 
-    echo "Import OSM Land..."
-    ./scripts/osm_land.sh
-
+    if [ "$IMPORT_OSM_LAND" = "true" ]; then
+        echo "Import OSM Land..."
+        ./scripts/osm_land.sh
+    fi
+    
     echo "Import PBF file..."
     if [ -z "$TILER_IMPORT_LIMIT" ]; then
         imposm import \
             -config $WORKDIR/config.json \
             -read $PBFFILE \
             -write \
-            -diff -cachedir $CACHE_DIR -diffdir $DIFF_DIR
+            -diff -cachedir $CACHE_DIR -overwritecache -diffdir $DIFF_DIR
     else
         wget $TILER_IMPORT_LIMIT -O $WORKDIR/$LIMITFILE
         imposm import \
             -config $WORKDIR/config.json \
             -read $PBFFILE \
             -write \
-            -diff -cachedir $CACHE_DIR -diffdir $DIFF_DIR \
+            -diff -cachedir $CACHE_DIR -overwritecache -diffdir $DIFF_DIR \
             -limitto $WORKDIR/$LIMITFILE
     fi
 

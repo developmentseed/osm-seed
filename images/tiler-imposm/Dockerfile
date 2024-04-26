@@ -41,6 +41,8 @@ ENV PATH $PATH:/usr/local/go/bin
 WORKDIR /go
 ENV GOPATH /go
 RUN go get github.com/omniscale/imposm3
+WORKDIR $GOPATH/src/github.com/omniscale/imposm3
+RUN git checkout v0.11.1
 RUN go install github.com/omniscale/imposm3/cmd/imposm
 ENV PATH $PATH:$GOPATH/bin
 
