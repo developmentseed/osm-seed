@@ -34,12 +34,12 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 80
-          #   initialDelaySeconds: 120
-          #   timeoutSeconds: 60
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 120
+            timeoutSeconds: 60
           {{- if .Values.taginfo.resources.enabled }}
           resources:
             requests:
