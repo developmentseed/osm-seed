@@ -126,6 +126,8 @@ web:
     OAUTH_KEY: "xyz"
     ORGANIZATION_NAME: "OSMSeed"
     WEBSITE_STATUS: "online"
+    API_TIMEOUT: 30
+    WEB_TIMEOUT: 30
   resources:
     enabled: false
     requests:
