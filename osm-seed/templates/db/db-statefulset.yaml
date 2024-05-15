@@ -49,6 +49,8 @@ spec:
               value: {{ .Values.db.persistenceDisk.mountPath }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
+            - name: LOG_STATEMENT
+              value: {{ default "none" .Values.db.env.LOG_STATEMENT | quote }}
           livenessProbe:
             exec:
               command:

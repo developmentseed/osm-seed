@@ -74,6 +74,8 @@ db:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: 1234
+    LOG_STATEMENT: "all"
+    # LOG_STATEMENT=all, ddl, mod
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
