@@ -1,5 +1,4 @@
 {{- if .Values.tilerImposm.enabled -}}
-{{- if .Values.tilerImposm.persistenceDisk.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -98,5 +97,4 @@ spec:
       nodeSelector:
         {{ .Values.tilerImposm.nodeSelector.label_key }} : {{ .Values.tilerImposm.nodeSelector.label_value }}
       {{- end }}
-{{- end }}
 {{- end }}
