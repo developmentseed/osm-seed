@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 WORKDIR=/usr/src/app
 DATADIR=/usr/src/app/data
 DATADOWNLOAD=/osm/planet/var
@@ -39,14 +40,14 @@ process_data() {
     db/update.sh $DATADIR
     master/update.sh $DATADIR
     projects/update.sh $DATADIR
-    # # languages/update.sh $DATADIR
-    # # wiki/update.sh $DATADIR
-    # # wikidata/update.sh $DATADIR
+    cp $DATADIR/selection.db $DATADIR/../
+    # languages/update.sh $DATADIR
+    # wiki/update.sh $DATADIR
+    # wikidata/update.sh $DATADIR
     chronology/update.sh $DATADIR
     ./update_all.sh $DATADIR
     mv $DATADIR/*.db $DATADIR/
     mv $DATADIR/*/*.db $DATADIR/
-
     # if BUCKET_NAME is set upload data
     if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
         aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/$ENVIRONMENT/  --exclude "*" --include "*.db"
@@ -64,6 +65,8 @@ compress_files() {
 download_db_files() {
     if ! aws s3 ls "s3://$AWS_S3_BUCKET/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
         aws s3 sync "s3://$AWS_S3_BUCKET/$ENVIRONMENT/" "$DATADIR/"
+        mv $DATADIR/*.db $DATADIR/
+        mv $DATADIR/*/*.db $DATADIR/
         compress_files
     fi
 }

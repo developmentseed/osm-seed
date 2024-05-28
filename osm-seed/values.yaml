@@ -75,6 +75,7 @@ db:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "1234"
     ENVIRONMENT: "production"
+    LOG_STATEMENT: "all"
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
@@ -126,6 +127,9 @@ web:
     OAUTH_CLIENT_ID: "abcd" # Create client ID and key as OAuth2 Application
     OAUTH_KEY: "xyz"
     ORGANIZATION_NAME: "OSMSeed"
+    WEBSITE_STATUS: "online"
+    API_TIMEOUT: 30
+    WEB_TIMEOUT: 30
   resources:
     enabled: false
     requests:
@@ -378,6 +382,8 @@ tilerImposm:
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
     TILER_IMPORT_LIMIT: https://gist.githubusercontent.com/Rub21/96bdcac5eb11f0b36ba8d0352ac537f4/raw/2606f2e207d4a0d895897a83efa1efacefd36eb4/monaco.geojson
     UPLOAD_EXPIRED_FILES: true
+    IMPORT_NATURAL_EARTH: true
+    IMPORT_OSM_LAND: true
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
