@@ -56,7 +56,7 @@ spec:
             - name: POSTGRES_PORT
               value: "5432"
             - name: TM_DB
-              value: {{ printf "postgresql://%s:%s@%s/%s" .Values.tmApi.env.POSTGRES_USER .Values.tmApi.env.POSTGRES_PASSWORD .Values.tmApi.env.POSTGRES_HOST .Values.tmApi.env.POSTGRES_DB }}
+              value: {{ printf "postgresql://%s:%s@%s-tm-db/%s" .Values.tmDb.env.POSTGRES_USER .Values.tmDb.env.POSTGRES_PASSWORD .Release.Name .Values.tmDb.env.POSTGRES_DB }}
             - name: TM_ORG_NAME
               value: {{ .Values.tmApi.env.TM_ORG_NAME }}
             - name: TM_ORG_CODE
