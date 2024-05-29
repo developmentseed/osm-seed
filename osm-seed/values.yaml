@@ -41,6 +41,7 @@ AWS_SSL_ARN: false
 # SSL separately.
 # serviceType: NodePort
 serviceType: clusterIP
+createClusterIssuer: true
 # Domain that is pointed to the clusterIP
 # You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
 # Then, the cluster configuration will setup services at their respective subdomains:

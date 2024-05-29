@@ -1,4 +1,4 @@
-{{- if eq .Values.serviceType "ClusterIP" }}
+{{- if eq .Values.serviceType "ClusterIP" && createClusterIssuer == true }}
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
