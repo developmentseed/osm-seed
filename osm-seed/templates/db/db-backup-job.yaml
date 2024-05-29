@@ -56,6 +56,38 @@ spec:
                 value: {{ $job.env.RESTORE_URL_FILE}}
             {{- end }}
             # Env vars for osmcha database
+            {{ if eq $job.name "tm-db" }}
+              # DB credentials
+              - name: POSTGRES_HOST
+                value: {{ $.Release.Name }}-tm-db
+              - name: POSTGRES_DB
+                value: {{ $.Values.tmDb.env.POSTGRES_DB }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote $.Values.tmDb.env.POSTGRES_PASSWORD }}
+              - name: POSTGRES_USER
+                value: {{ $.Values.tmDb.env.POSTGRES_USER }}
+              # DB action: backup/restore
+              - name: DB_ACTION
+                value: {{ quote $job.env.DB_ACTION }}
+              # Backup naming
+              - name: SET_DATE_AT_NAME
+                value: {{quote $job.env.SET_DATE_AT_NAME }}
+              - name: BACKUP_CLOUD_FOLDER
+                value: {{ $job.env.BACKUP_CLOUD_FOLDER }}
+              - name: BACKUP_CLOUD_FILE
+                value: {{ $job.env.BACKUP_CLOUD_FILE }}
+              - name: AWS_S3_BUCKET
+                value: {{ $job.env.AWS_S3_BUCKET }}
+              # Clean up options
+              - name: CLEANUP_BACKUPS
+                value: {{ quote $job.env.CLEANUP_BACKUPS }}
+              - name: RETENTION_DAYS
+                value: {{ quote $job.env.RETENTION_DAYS }}
+              # In case DB_ACTION=restore, adn the backup url
+              - name: RESTORE_URL_FILE
+                value: {{ $job.env.RESTORE_URL_FILE}}
+            {{- end }}
+            # Env vars for osmcha database
             {{ if eq $job.name "osmcha-db" }}
               # DB credentials
               - name: POSTGRES_HOST
