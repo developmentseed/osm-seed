@@ -59,7 +59,7 @@ spec:
             {{ if eq $job.name "tm-db" }}
               # DB credentials
               - name: POSTGRES_HOST
-                value: {{ .Release.Name }}-tasking-manager-db
+                value: {{ $.Release.Name }}-tasking-manager-db
               - name: POSTGRES_DB
                 value: {{ $.Values.tmDb.env.POSTGRES_DB }}
               - name: POSTGRES_PASSWORD
