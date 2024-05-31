@@ -90,7 +90,7 @@ spec:
         - name: postgres-storage
         {{- if .Values.tmDb.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-tm-db-pv-claim
+            claimName: {{ .Release.Name }}-tasking-manager-db-pv-claim
         {{- else }}
           emptyDir: {}
         {{- end }}
