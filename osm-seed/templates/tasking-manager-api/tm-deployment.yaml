@@ -46,7 +46,7 @@ spec:
           {{- end }}
           env:
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-tm-db
+              value: {{ .Release.Name }}-tasking-manager-db
             - name: POSTGRES_DB
               value: {{ .Values.tmDb.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
