@@ -25,7 +25,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ template "osm-seed.fullname" . }}-tasking-manager-api
+            name: {{ .Release.Name }}-tasking-manager-api
             port:
               number: 80
 {{- end }}
