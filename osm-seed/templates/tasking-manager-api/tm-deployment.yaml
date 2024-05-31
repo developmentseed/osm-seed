@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-tasking-manager-api
+  name: {{ .Release.Name }}-tasking-manager-api 
   labels:
     app: {{ template "osm-seed.name" . }}
     component: tasking-manager-api-deployment
