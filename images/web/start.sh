@@ -70,17 +70,17 @@ while "$flag" = true; do
     fi
     sleep 2
   done &
-  # time rails i18n:js:export assets:precompile
+  time rails i18n:js:export assets:precompile
   bundle exec rails db:migrate
-  # /usr/local/bin/openstreetmap-cgimap \
-  #   --port=8000 \
-  #   --daemon \
-  #   --instances=10 \
-  #   --dbname=$POSTGRES_DB \
-  #   --host=$POSTGRES_HOST \
-  #   --username=$POSTGRES_USER \
-  #   --password=$POSTGRES_PASSWORD \
-  #   --logfile log/cgimap.log
+  /usr/local/bin/openstreetmap-cgimap \
+    --port=8000 \
+    --daemon \
+    --instances=3 \
+    --dbname=$POSTGRES_DB \
+    --host=$POSTGRES_HOST \
+    --username=$POSTGRES_USER \
+    --password=$POSTGRES_PASSWORD \
+    --logfile log/cgimap.log
   bundle exec rake jobs:work &
   apachectl -k start -DFOREGROUND
 done
