@@ -131,6 +131,10 @@ spec:
               value: {{ .Values.web.env.API_TIMEOUT | default "30" | quote }}
             - name: WEB_TIMEOUT
               value: {{ .Values.web.env.WEB_TIMEOUT | default "30" | quote }}
+            # This parameter is specifically if you want to restore a any backup to db, 
+            # you done need to set this values.yaml in case you don't use
+            - name: BACKUP_FILE_URL
+              value: {{ .Values.web.env.BACKUP_FILE_URL | default "none" | quote }}
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory
