@@ -1,0 +1,124 @@
+{{- if .Values.osmchaApi.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-osmcha-app
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmcha-app-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.osmchaApi.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-osmcha-app
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-osmcha-app
+    spec:
+      initContainers:
+      - name: web-builder
+        image: "{{ .Values.osmchaWeb.image.name }}:{{ .Values.osmchaWeb.image.tag }}"
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-osmcha-common-env
+        volumeMounts:
+        - name: nginx-assets
+          mountPath: /assets
+      - name: init
+        image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -x
+          flag=true
+          while "$flag" = true; do
+            pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
+            flag=false
+            python manage.py migrate
+            python manage.py collectstatic
+            mkdir -p /staticfiles/static
+            cp -r /app/staticfiles/* /staticfiles/static/
+          done
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-osmcha-common-env
+        volumeMounts:
+        - name: staticfiles
+          mountPath: /staticfiles
+        # securityContext:
+        #   runAsUser: 0
+      containers:
+      - name: api
+        # securityContext:
+        #   runAsUser: 0
+        image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
+        command:
+          - /bin/sh
+          - -c
+          - |
+            set -x
+            echo "start app...."
+            gunicorn --workers 4 --bind 0.0.0.0:5000 --log-file - --access-logfile - config.wsgi
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 60
+          timeoutSeconds: 30
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-osmcha-common-env
+        volumeMounts:
+        - name: staticfiles
+          mountPath: /staticfiles
+        {{- if .Values.osmchaApi.resources.enabled }}
+        resources:
+          requests:
+            memory: {{ .Values.osmchaApi.resources.requests.memory }}
+            cpu: {{ .Values.osmchaApi.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.osmchaApi.resources.limits.memory }}
+            cpu: {{ .Values.osmchaApi.resources.limits.cpu }}
+        {{- end }}
+
+      - name: nginx
+        image: "nginx:latest"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: osmcha-frontend-nginx-config
+            mountPath: /etc/nginx
+            readOnly: true
+          - name: staticfiles
+            mountPath: /staticfiles
+          - name: nginx-assets
+            mountPath: /assets
+      - name: redis
+        image: "redis:latest"
+        ports:
+        - containerPort: 6379
+      volumes:
+        - name: staticfiles
+          emptyDir: {}
+        - name: nginx-assets
+          emptyDir: {}
+        - name: osmcha-frontend-nginx-config
+          configMap:
+            name: {{ .Release.Name }}-osmcha-nginx-config
+            defaultMode: 0777
+      {{- if .Values.osmchaApi.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.osmchaApi.nodeSelector.label_key }} : {{ .Values.osmchaApi.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}
+

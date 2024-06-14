@@ -1,0 +1,126 @@
+{{- if .Values.osmchaApi.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-osmcha-common-env
+data:
+    # DB
+    POSTGRES_HOST: {{ .Release.Name }}-osmcha-db
+    PGHOST: {{ .Release.Name }}-osmcha-db
+    POSTGRES_PORT: "5432"
+    POSTGRES_USER: {{ .Values.osmchaDb.env.POSTGRES_USER | quote }}
+    POSTGRES_PASSWORD: {{ .Values.osmchaDb.env.POSTGRES_PASSWORD | quote }}
+    POSTGRES_DATABASE: {{ .Values.osmchaDb.env.POSTGRES_DB | quote }}
+    POSTGRES_DB: {{ .Values.osmchaDb.env.POSTGRES_DB | quote }}
+    # API
+    DJANGO_SECRET_KEY: {{ .Values.osmchaApi.env.DJANGO_SECRET_KEY | quote }}
+    DJANGO_SETTINGS_MODULE: {{ .Values.osmchaApi.env.DJANGO_SETTINGS_MODULE | quote }}
+    OSMCHA_FRONTEND_VERSION: {{ .Values.osmchaApi.env.OSMCHA_FRONTEND_VERSION | quote }}
+    OAUTH_OSM_KEY: {{ .Values.osmchaApi.env.OAUTH_OSM_KEY | quote }}
+    OAUTH_OSM_SECRET: {{ .Values.osmchaApi.env.OAUTH_OSM_SECRET | quote }}
+    OAUTH_REDIRECT_URI: {{ .Values.osmchaApi.env.OAUTH_REDIRECT_URI | quote }}
+    DJANGO_SECURE_SSL_REDIRECT: "False"
+    DJANGO_DEBUG: "False"
+    DJANGO_ENV: "production"
+    OSM_SERVER_URL: {{ .Values.osmchaApi.env.OSM_SERVER_URL | quote }}
+    DJANGO_DEBUG: "False"
+    DJANGO_ENV: "production"
+    REDIS_URL: "redis://localhost:6379"
+    OSM_PLANET_BASE_URL: {{ .Values.osmchaApi.env.OSM_PLANET_BASE_URL | quote }}
+    # frontend
+    OSMCHA_URL: {{ .Values.osmchaApi.env.OSMCHA_URL | quote }}
+    OSMCHA_API_URL: {{ .Values.osmchaApi.env.OSMCHA_API_URL | quote }}
+    REACT_APP_OSM_URL: {{ .Values.osmchaApi.env.REACT_APP_OSM_URL | quote }}
+    REACT_APP_OSM_API: {{ .Values.osmchaApi.env.REACT_APP_OSM_API | quote }}
+    REACT_APP_OVERPASS_BASE: {{ .Values.osmchaApi.env.REACT_APP_OVERPASS_BASE | quote }}
+    REACT_APP_DISABLE_REAL_CHANGESETS: {{ .Values.osmchaApi.env.REACT_APP_DISABLE_REAL_CHANGESETS | quote }} 
+    REACT_APP_MAPBOX_ACCESS_TOKEN: {{ .Values.osmchaApi.env.REACT_APP_MAPBOX_ACCESS_TOKEN | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-osmcha-nginx-config
+data:
+  nginx.conf: |
+    worker_processes  4;
+
+    events {
+      worker_connections  1024;
+    }
+
+    http {
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+
+      log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+      '$status $body_bytes_sent "$http_referer" '
+      '"$http_user_agent" "$http_x_forwarded_for"';
+
+      access_log  /var/log/nginx/access.log  main;
+
+      sendfile        on;
+      #tcp_nopush     on;
+
+      keepalive_timeout  65;
+
+      #gzip  on;
+
+      upstream app {
+        server localhost:5000;
+      }
+
+      server {
+        listen 80;
+        charset     utf-8;
+
+        location ~ ^/static.* {
+          root /staticfiles;
+          try_files $uri @proxy_to_frontend;
+        }
+
+        location @proxy_to_frontend {
+          root /assets;
+          try_files $uri $uri/ =404;
+        }
+
+        location /api {
+          try_files $uri $uri/ @django;
+        }
+
+        location /admin {
+          try_files $uri $uri/ @django;
+        }
+
+        location @django {
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header Host $http_host;
+          proxy_redirect off;
+          proxy_pass   http://app;
+        }
+
+        location / {
+          root /assets;
+          # checks for static file, if not found proxy to app
+          try_files $uri $uri/ /index.html;
+        }
+      }
+    }
+  mime.types: |
+    types {
+      text/html                                        html htm shtml;
+      text/css                                         css;
+      text/xml                                         xml;
+      image/gif                                        gif;
+      image/jpeg                                       jpeg jpg;
+      application/javascript                           js;
+      image/png                                        png;
+      image/svg+xml                                    svg svgz;
+      image/tiff                                       tif tiff;
+      image/x-icon                                     ico;
+      image/x-jng                                      jng;
+      application/font-woff                            woff;
+      application/json                                 json;
+      application/zip                                  zip;
+    }
+
+{{- end }}

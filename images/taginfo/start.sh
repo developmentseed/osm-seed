@@ -1,50 +1,23 @@
 #!/usr/bin/env bash
-
-WORKDIR=/apps
-DATA_DIR=$WORKDIR/data
-UPDATE_DIR=$DATA_DIR/update
-DOWNLOAD_DIR=$DATA_DIR/download
-
-set_taginfo_config() {
-    echo "Setting up...$WORKDIR/taginfo-config.json"
-    # Update dir values in taginfo-config.json
-    grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
-        jq '.logging.directory                   = "'$UPDATE_DIR'/log"' |
-        jq '.paths.download_dir                  = "'$UPDATE_DIR'/download"' |
-        jq '.paths.bin_dir                       = "'$WORKDIR'/taginfo-tools/build/src"' |
-        jq '.sources.db.planetfile               = "'$UPDATE_DIR'/planet/planet.osm.pbf"' |
-        jq '.sources.chronology.osm_history_file = "'$UPDATE_DIR'/planet/history-planet.osh.pbf"' |
-        jq '.sources.db.bindir                   = "'$UPDATE_DIR'/build/src"' |
-        jq '.paths.data_dir                      = "'$DATA_DIR'"' \
-            >$WORKDIR/taginfo-config.json
-    
-    # languages wiki databases will be downloaded from OSM
-    [[ ! -z $DOWNLOAD_DB+z} ]] && jq --arg a "${DOWNLOAD_DB}" '.sources.download = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
-
-    # Update instance values in taginfo-config.json
-    python3 overwrite_config.py -u $OVERWRITE_CONFIG_URL -f $WORKDIR/taginfo-config.json
-
-}
-
-updates_create_db() {
-    local CREATE_DB="$1"
-    [[ ! -z $CREATE_DB+z} ]] && jq --arg a "${CREATE_DB}" '.sources.create = $a' $WORKDIR/taginfo-config.json >tmp.json && mv tmp.json $WORKDIR/taginfo-config.json
-}
+set -x
+WORKDIR=/usr/src/app
+DATADIR=/usr/src/app/data
+DATADOWNLOAD=/osm/planet/var
+mkdir -p $DATADIR/
+mkdir -p $DATADOWNLOAD/
+mkdir -p $DATADIR/update/log/
 
 updates_source_code() {
     echo "Update...Procesor source code"
+    sed -i 's/"env -/"/g' $WORKDIR/taginfo/sources/util.sh
+    sed -i '/configure do/a \ \ \ \ set :port, 80' $WORKDIR/taginfo/web/taginfo.rb
+    sed -i "/configure do/a \ \ \ \ set :bind, '0.0.0.0'" $WORKDIR/taginfo/web/taginfo.rb
     # Function to replace the projects repo to get the projects information
     TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
     sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
-    # The follow line is requiered to avoid sqlite3 issues
-    sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
-    sed -i -e 's/run_ruby "$SRCDIR\/import.rb"/ruby "$SRCDIR\/import.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
-    sed -i -e 's/run_ruby "$SRCDIR\/parse.rb"/ruby "$SRCDIR\/parse.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
-    sed -i -e 's/run_ruby "$SRCDIR\/get_icons.rb"/ruby "$SRCDIR\/get_icons.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
 }
 
 download_planet_files() {
-    mkdir -p $UPDATE_DIR/planet/
     # Check if URL_PLANET_FILE_STATE exist and set URL_PLANET_FILE
     if [[ ${URL_PLANET_FILE_STATE} && ${URL_PLANET_FILE_STATE-x} ]]; then
         wget -q -O state.planet.txt --no-check-certificate - $URL_PLANET_FILE_STATE
@@ -56,56 +29,67 @@ download_planet_files() {
         URL_HISTORY_PLANET_FILE=$(cat state.history.txt)
     fi
     # Download pbf files
-    echo "Downloading...$URL_PLANET_FILE"
-    wget -q -O $UPDATE_DIR/planet/planet.osm.pbf --no-check-certificate - $URL_PLANET_FILE
-    echo "Downloading...$URL_HISTORY_PLANET_FILE"
-    wget -q -O $UPDATE_DIR/planet/history-planet.osh.pbf --no-check-certificate - $URL_HISTORY_PLANET_FILE
-    rm state.planet.txt
-    rm state.history.txt
+    wget -O $DATADOWNLOAD/current-planet.osm.pbf $URL_PLANET_FILE
+    wget -O $DATADOWNLOAD/current-history-planet.osh.pbf $URL_HISTORY_PLANET_FILE
 }
 
-update() {
-    echo "Update...sqlite databases at $(date +%Y-%m-%d:%H-%M)"
-    # Download OSM planet replication and full-history files
+process_data() {
     download_planet_files
-    # In order to make it work we need to pass first one by one the creation and then all of them "db projects chronology"
-    for db in $CREATE_DB; do
-        echo "Update...taginfo-$db.db"
-        updates_create_db $db
-        $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
+    cd $WORKDIR/taginfo/sources/
+    ./update_all.sh $DATADIR
+    db/update.sh $DATADIR
+    master/update.sh $DATADIR
+    projects/update.sh $DATADIR
+    cp $DATADIR/selection.db $DATADIR/../
+    # languages/update.sh $DATADIR
+    # wiki/update.sh $DATADIR
+    # wikidata/update.sh $DATADIR
+    chronology/update.sh $DATADIR
+    ./update_all.sh $DATADIR
+    mv $DATADIR/*.db $DATADIR/
+    mv $DATADIR/*/*.db $DATADIR/
+    # if BUCKET_NAME is set upload data
+    if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
+        aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/$ENVIRONMENT/  --exclude "*" --include "*.db"
+    fi
+}
+
+# Compress files to download
+compress_files() {
+    mkdir -p download
+    for file in data/*; do
+        bzip2 -k -9 -c "$file" > "download/$(basename "$file").bz2"
     done
-    echo "Update...$CREATE_DB"
-    updates_create_db $CREATE_DB
-    $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
-    # Copy db files into data folder
-    cp $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
-    cp $UPDATE_DIR/taginfo-*.db $DATA_DIR/
-    # Link to download db zip files
-    chmod a=r $UPDATE_DIR/download
-    ln -sf $UPDATE_DIR/download $WORKDIR/taginfo/web/public/download
+}
+
+download_db_files() {
+    if ! aws s3 ls "s3://$AWS_S3_BUCKET/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
+        aws s3 sync "s3://$AWS_S3_BUCKET/$ENVIRONMENT/" "$DATADIR/"
+        mv $DATADIR/*.db $DATADIR/
+        mv $DATADIR/*/*.db $DATADIR/
+        compress_files
+    fi
+}
+
+sync_latest_db_version() {
+    while true; do
+        sleep "$INTERVAL_DOWNLOAD_DATA"
+        download_db_files
+    done
 }
 
 start_web() {
     echo "Start...Taginfo web service"
-    cd $WORKDIR/taginfo/web && bundle exec rackup --host 0.0.0.0 -p 80
+    download_db_files
+    cd $WORKDIR/taginfo/web && ./taginfo.rb & sync_latest_db_version
 }
 
-continuous_update() {
-    while true; do
-        update
-        sleep $TIME_UPDATE_INTERVAL
-    done
-}
-
-main() {
-    set_taginfo_config
-    updates_source_code
-    # Check if db files are store in the $DATA_DIR in order to start the service or start procesing the file
-    NUM_DB_FILES=$(ls $DATA_DIR/*.db | wc -l)
-    if [ $NUM_DB_FILES -lt 7 ]; then
-        update
-    fi
-    start_web &
-    continuous_update
-}
-main
+ACTION=$1
+# Overwrite the config file
+[[ ! -z ${OVERWRITE_CONFIG_URL} ]] && wget $OVERWRITE_CONFIG_URL -O /usr/src/app/taginfo-config.json
+updates_source_code
+if [ "$ACTION" = "web" ]; then
+    start_web
+    elif [ "$ACTION" = "data" ]; then
+    process_data
+fi

@@ -10,7 +10,7 @@ RUN apk add musl-dev=1.1.24-r3 \
 
 RUN mkdir -p /go/src/github.com/go-spatial/tegola
 RUN git clone https://github.com/go-spatial/tegola.git /go/src/github.com/go-spatial/tegola
-RUN cd /go/src/github.com/go-spatial/tegola && git checkout v0.8.1
+RUN cd /go/src/github.com/go-spatial/tegola && git checkout v0.13.0
 RUN cd /go/src/github.com/go-spatial/tegola/cmd/tegola \
 	&& go build -gcflags "-N -l" -o /opt/tegola \ 
 	&& chmod a+x /opt/tegola
@@ -36,7 +36,7 @@ RUN pip3 install awscli
 RUN curl -sSL https://sdk.cloud.google.com | bash
 RUN ln -f -s /root/google-cloud-sdk/bin/gsutil /usr/bin/gsutil
 
-RUN pip install mercantile \
+RUN pip3 install mercantile \
     && apk del build-deps \
     && rm -rf /var/cache/apk/* \
     && apk --purge -v del py-pip

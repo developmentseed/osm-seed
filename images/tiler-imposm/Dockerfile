@@ -19,12 +19,14 @@ RUN apt-get install -y \
     curl \
     wget \
     unzip \
-    software-properties-common
+    software-properties-common && \
+    rm -rf /var/lib/apt/lists/*
 
 # # Install python
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y build-essential python3.6 python3.6-dev python3-pip && \
+    rm -rf /var/lib/apt/lists/* && \
     python3 -m pip install pip --upgrade && \
     python3 -m pip install wheel
 
@@ -39,6 +41,8 @@ ENV PATH $PATH:/usr/local/go/bin
 WORKDIR /go
 ENV GOPATH /go
 RUN go get github.com/omniscale/imposm3
+WORKDIR $GOPATH/src/github.com/omniscale/imposm3
+RUN git checkout v0.11.1
 RUN go install github.com/omniscale/imposm3/cmd/imposm
 ENV PATH $PATH:$GOPATH/bin
 
@@ -53,7 +57,5 @@ WORKDIR $IMPOSMDATA
 VOLUME $IMPOSMDATA
 
 WORKDIR /osm
-COPY config config
-COPY scripts scripts
-COPY start.sh start.sh
+COPY . .
 CMD ./start.sh

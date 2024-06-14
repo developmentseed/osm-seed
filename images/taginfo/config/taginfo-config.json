@@ -1,0 +1,75 @@
+{
+    "instance": {
+        "url": "http://localhost:80",
+        "name": "OpenStreetMap Taginfo",
+        "description": "This is a <b>taginfo test instance</b>. Change this text in your <tt>taginfo-config.json</tt>.",
+        "about": "<p>This site is maintained by osm-seed",
+        "icon": "/img/logo/test.png",
+        "contact": "info@osm-seed.org",
+        "area": "World",
+        "access_control_allow_origin": "*",
+        "sections": ["download", "taginfo"]
+    },
+    "geodistribution": {
+        "left": -180,
+        "bottom": -90,
+        "right": 180,
+        "top": 90,
+        "width": 360,
+        "height": 180,
+        "scale_image": 2,
+        "scale_compare_image" : 1,
+        "background_image": "/img/mapbg/world.png",
+        "image_attribution": "osm-seed"
+    },
+    "paths": {
+        "data_dir": "/usr/src/app/data",
+        "download_dir": "/usr/src/app/taginfo/web/public/download",
+        "bin_dir": "/usr/src/app/taginfo-tools/build/src",
+        "sqlite3_pcre_extension": "/usr/lib/sqlite3/pcre.so"
+    },
+    "xapi": {
+        "max_results": 1000,
+        "url_prefix": "https://overpass-api.de/api/xapi_meta?"
+    },
+    "turbo": {
+        "max_auto": 1000,
+        "url_prefix": "https://overpass-turbo.eu/?",
+        "wizard_area": "global"
+    },
+    "level0": {
+        "max_results": 50,
+        "overpass_url_prefix": "https://overpass-api.de/api/interpreter?",
+        "level0_url_prefix": "http://level0.osmz.ru/?"
+    },
+    "opensearch": {
+        "shortname": "Taginfo Test Instance",
+        "contact": "somebody@example.com",
+        "description": "Find metadata about OpenStreetMap tags",
+        "tags": "osm openstreetmap tag tags taginfo"
+    },
+    "sources": {
+        "download": "languages wiki wikidata",
+        "create": "db projects chronology",
+        "db": {
+            "planetfile": "/osm/planet/var/current-planet.osm.pbf",
+            "bindir": "/apps/data/update/build/src"
+        },
+        "chronology": {
+            "osm_history_file": "/osm/planet/var/current-history-planet.osh.pbf"
+        },
+        "master": {
+            "min_count_tags": 10,
+            "min_tag_combination_count": 10,
+            "min_count_for_map": 10,
+            "min_count_relations_per_type": 10
+        }
+    },
+    "logging": {
+        "directory": "/usr/src/app/logs",
+        "min_duration": 0.1
+    },
+    "tagstats": {
+        "geodistribution": "FlexMem"
+    }
+}

@@ -9,7 +9,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  replicas: 1 # we only ever want one replica of the db
+  replicas: 1
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
@@ -43,10 +43,14 @@ spec:
               value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
             - name: PGUSER
               value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
+            - name: ENVIRONMENT
+              value: {{ .Values.environment }}
             - name: PGDATA
               value: {{ .Values.db.persistenceDisk.mountPath }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
+            - name: LOG_STATEMENT
+              value: {{ default "none" .Values.db.env.LOG_STATEMENT | quote }}
           livenessProbe:
             exec:
               command:
@@ -69,6 +73,8 @@ spec:
             - name: postgres-storage
               mountPath: {{ .Values.db.persistenceDisk.mountPath }}
               subPath: {{ .Values.db.persistenceDisk.subPath }}
+            - name: shared-memory
+              mountPath: /dev/shm
           {{- if .Values.db.resources.enabled }}
           resources:
             requests:
@@ -86,6 +92,10 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+        - name: shared-memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.db.sharedMemorySize }}
       {{- if .Values.db.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}

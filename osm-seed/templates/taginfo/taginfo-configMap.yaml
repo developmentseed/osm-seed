@@ -1,0 +1,19 @@
+{{- if .Values.taginfo.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-taginfo-common-env
+data:
+    URL_PLANET_FILE_STATE: {{ .Values.taginfo.env.URL_PLANET_FILE_STATE | quote }}
+    URL_PLANET_FILE: {{ .Values.taginfo.env.URL_PLANET_FILE | quote }}
+    URL_HISTORY_PLANET_FILE_STATE: {{ .Values.taginfo.env.URL_HISTORY_PLANET_FILE_STATE | quote }}
+    URL_HISTORY_PLANET_FILE: {{ .Values.taginfo.env.URL_HISTORY_PLANET_FILE | quote }}
+    OVERWRITE_CONFIG_URL: {{ .Values.taginfo.env.OVERWRITE_CONFIG_URL | quote }}
+    TAGINFO_PROJECT_REPO: {{ .Values.taginfo.env.TAGINFO_PROJECT_REPO | quote }}
+    DOWNLOAD_DB: {{ .Values.taginfo.env.DOWNLOAD_DB | quote }}
+    CREATE_DB: {{ .Values.taginfo.env.CREATE_DB | quote }}
+    TIME_UPDATE_INTERVAL: {{ .Values.taginfo.env.TIME_UPDATE_INTERVAL | quote }}
+    AWS_S3_BUCKET: {{ .Values.taginfo.env.AWS_S3_BUCKET | quote }}
+    ENVIRONMENT: {{ .Values.taginfo.env.ENVIRONMENT | quote }}
+    INTERVAL_DOWNLOAD_DATA: {{ .Values.taginfo.env.INTERVAL_DOWNLOAD_DATA | quote}}
+{{- end }}

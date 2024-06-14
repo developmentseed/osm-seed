@@ -9,21 +9,28 @@ services:
     build:
       context: ../images/db
       dockerfile: Dockerfile
-    ports:
-      - '5432:5432'
+    # ports:
+    # - '5432:5432'
     volumes:
-      - ../data/db-data:/var/lib/postgresql/data
+    - ../data/db-data-pg14:/var/lib/postgresql/data
     env_file:
-      - ../envs/.env.db
+    - ../envs/.env.db
+    restart: always
   web:
     image: osmseed-web:v1
     build:
       context: ../images/web
       dockerfile: Dockerfile
     ports:
-      - '80:80'
+    - '80:80'
     env_file:
-      - ../envs/.env.web
-      - ../envs/.env.db
+    - ../envs/.env.web
+    - ../envs/.env.db
     depends_on:
-      - db
+    - db
+    restart: always
+  memcache:
+    image: memcached:latest
+    ports:
+    - '11211:11211'
+    restart: always

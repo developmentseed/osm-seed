@@ -1,0 +1,101 @@
+{{- if .Values.tmDb.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-tasking-manager-db
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: db-tm-statefulset
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-tasking-manager-db
+  serviceName: {{ .Release.Name }}-tasking-manager-db
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-tasking-manager-db
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-tm-db
+          image: "{{ .Values.tmDb.image.name }}:{{ .Values.tmDb.image.tag }}"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-tasking-manager-db
+            - name: POSTGRES_DB
+              value: {{ .Values.tmDb.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.tmDb.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ default "postgres" .Values.tmDb.env.POSTGRES_USER | quote }}
+            - name: PGUSER
+              value: {{ default "postgres" .Values.tmDb.env.POSTGRES_USER | quote }}
+            - name: PGDATA
+              value: {{ .Values.tmDb.persistenceDisk.mountPath }}
+            - name: POSTGRES_DB_MAX_CONNECTIONS
+              value: {{ default 100 .Values.tmDb.env.POSTGRES_DB_MAX_CONNECTIONS | quote }}
+            - name: POSTGRES_DB_SHARED_BUFFERS
+              value: {{ default "128MB" .Values.tmDb.env.POSTGRES_DB_SHARED_BUFFERS | quote }}
+            - name: POSTGRES_DB_WORK_MEM
+              value: {{ default "4MB" .Values.tmDb.env.POSTGRES_DB_WORK_MEM | quote }}
+            - name: POSTGRES_DB_MAINTENANCE_WORK_MEM
+              value: {{ default "64MB" .Values.tmDb.env.POSTGRES_DB_MAINTENANCE_WORK_MEM | quote }}
+            - name: POSTGRES_DB_EFFECTIVE_CACHE_SIZE
+              value: {{ default "4GB" .Values.tmDb.env.POSTGRES_DB_EFFECTIVE_CACHE_SIZE | quote }}
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: {{ .Values.tmDb.persistenceDisk.mountPath }}
+              subPath: {{ .Values.tmDb.persistenceDisk.subPath }}
+          {{- if .Values.tmDb.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.tmDb.resources.requests.memory }}
+              cpu: {{ .Values.tmDb.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.tmDb.resources.limits.memory }}
+              cpu: {{ .Values.tmDb.resources.limits.cpu }}
+          {{- end }}
+      volumes:
+        - name: postgres-storage
+        {{- if .Values.tmDb.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-tasking-manager-db-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      {{- if .Values.tmDb.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.tmDb.nodeSelector.label_key }} : {{ .Values.tmDb.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

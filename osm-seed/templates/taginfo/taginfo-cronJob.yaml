@@ -1,0 +1,40 @@
+{{- if .Values.taginfo.enabled -}}
+{{- if .Values.taginfo.cronjob.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-taginfo-cronjob
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: taginfo-cronjob
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ .Values.taginfo.cronjob.schedule | quote}}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 10
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-taginfo-job
+            image: "{{ .Values.taginfo.image.name }}:{{ .Values.taginfo.image.tag }}"
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - |
+              /usr/src/app/start.sh data
+            envFrom:
+              - configMapRef:
+                  name: {{ .Release.Name }}-taginfo-common-env
+          restartPolicy: Never
+          {{- if .Values.taginfo.cronjob.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.taginfo.cronjob.nodeSelector.label_key }} : {{ .Values.taginfo.cronjob.nodeSelector.label_value }}
+          {{- end }}
+{{- end }}
+{{- end }}

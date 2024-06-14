@@ -1,0 +1,98 @@
+{{- if .Values.osmchaDb.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-osmcha-db
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: db-tiler-statefulset
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-osmcha-db
+  serviceName: {{ .Release.Name }}-osmcha-db
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-osmcha-db
+    spec:
+      # Remove lost+found in EBS disk
+      initContainers:
+        - name: remove-lost-found
+          image: busybox
+          command: ['sh', '-c', 'rm -rf /var/lib/postgresql/data/lost+found']
+          volumeMounts:
+          - name: postgres-storage
+            mountPath: /var/lib/postgresql/data
+      containers:
+        - name: {{ .Chart.Name }}-osmcha-db
+          image: "{{ .Values.osmchaDb.image.name }}:{{ .Values.osmchaDb.image.tag }}"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: PGHOST
+              value: {{ .Release.Name }}-osmcha-db
+            - name: POSTGRES_DB
+              value: {{ .Values.osmchaDb.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.osmchaDb.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ default "postgres" .Values.osmchaDb.env.POSTGRES_USER | quote }}
+            - name: PGUSER
+              value: {{ default "postgres" .Values.osmchaDb.env.POSTGRES_USER | quote }}
+            - name: PGDATA
+              value: {{ .Values.osmchaDb.persistenceDisk.mountPath }}
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: {{ .Values.osmchaDb.persistenceDisk.mountPath }}
+          {{- if .Values.osmchaDb.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.osmchaDb.resources.requests.memory }}
+              cpu: {{ .Values.osmchaDb.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.osmchaDb.resources.limits.memory }}
+              cpu: {{ .Values.osmchaDb.resources.limits.cpu }}
+          {{- end }}
+      volumes:
+        - name: postgres-storage
+        {{- if .Values.osmchaDb.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-osmcha-db-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      {{- if .Values.osmchaDb.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.osmchaDb.nodeSelector.label_key }} : {{ .Values.osmchaDb.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

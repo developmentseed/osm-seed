@@ -1,0 +1,85 @@
+{{- if .Values.tmDb.enabled -}}
+{{- if .Values.tmDb.persistenceDisk.enabled -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-tasking-manager-db-pv
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tm-db-pd
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  ############## Minikube ##############
+  {{- if eq .Values.cloudProvider "minikube" }}
+  storageClassName: local-storage
+  capacity:
+    storage: {{ .Values.tmDb.persistenceDisk.localVolumeSize }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {{ .Values.tmDb.persistenceDisk.localVolumeHostPath | quote }}
+  {{- end }}
+
+  ############## AWS Provider ##############
+  {{- if eq .Values.cloudProvider "aws" }}
+  storageClassName: ""
+  capacity:
+    storage: {{ .Values.tmDb.persistenceDisk.AWS_ElasticBlockStore_size }}
+  accessModes:
+    - ReadWriteOnce
+  awsElasticBlockStore:
+    volumeID: {{ .Values.tmDb.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
+    fsType: ext4
+  {{- end }}
+
+  ############## GCP Provider ##############
+  {{- if eq .Values.cloudProvider "gcp" }}
+  storageClassName: ""
+  capacity:
+    storage: {{ .Values.tmDb.persistenceDisk.GCP_gcePersistentDisk_size }}
+  accessModes:
+    - ReadWriteOnce
+  gcePersistentDisk:
+    pdName: {{ .Values.tmDb.persistenceDisk.GCP_gcePersistentDisk_pdName }}
+    fsType: ext4
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-tasking-manager-db-pv-claim
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: db-pd
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  ############## Minikube ##############
+  {{- if eq .Values.cloudProvider "minikube" }}
+  storageClassName: local-storage
+  {{- else }}
+  ############## Other providers ##############
+  storageClassName: ""
+  {{- end }}
+  volumeName: {{ .Release.Name }}-tasking-manager-db-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      ############# Minikube ##############
+      {{- if eq .Values.cloudProvider "minikube" }}
+      storage: {{ .Values.tmDb.persistenceDisk.localVolumeSize }}
+      {{- end }}
+
+      ############## AWS Provider ##############
+      {{- if eq .Values.cloudProvider "aws" }}
+      storage: {{ .Values.tmDb.persistenceDisk.AWS_ElasticBlockStore_size }}
+      {{- end }}
+
+      ############## GCP Provider ##############
+      {{- if eq .Values.cloudProvider "gcp" }}
+      storage: {{ .Values.tmDb.persistenceDisk.GCP_gcePersistentDisk_size }}
+      {{- end }}
+{{- end }}
+{{- end }}

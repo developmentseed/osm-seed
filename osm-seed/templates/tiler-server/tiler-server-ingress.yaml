@@ -6,14 +6,19 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+    nginx.ingress.kubernetes.io/proxy-body-size: 5m
 spec:
+  ingressClassName: nginx
   tls:
-    - hosts:
-      - tiler-server.{{ .Values.domain }}
-      secretName: {{ template "osm-seed.fullname" . }}-secret-tiler-server
-
+  - hosts:
+    {{- if .Values.tilerServer.ingressDomain }}
+    - {{ .Values.tilerServer.ingressDomain }}
+    {{- else }}
+    - tiler.{{ .Values.domain }}
+    {{- end }}
+    secretName: {{ template "osm-seed.fullname" . }}-secret-tiler-server
   rules:
-  - host: tiler-server.{{ .Values.domain }}
+  - host: {{ if .Values.tilerServer.ingressDomain }}{{ .Values.tilerServer.ingressDomain }}{{ else }}tiler.{{ .Values.domain }}{{ end }}
     http:
       paths:
       - path: /

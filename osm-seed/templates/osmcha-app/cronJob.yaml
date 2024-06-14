@@ -1,0 +1,74 @@
+{{- if .Values.osmchaApi.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-osmcha-fetch-changesets-cronjob
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmcha-app-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: "*/2 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-osmcha-fetch-changesets
+            image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - |
+              python manage.py fetchchangesets
+            envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-osmcha-common-env
+          restartPolicy: Never
+          {{- if .Values.osmchaApi.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.osmchaApi.nodeSelector.label_key }} : {{ .Values.osmchaApi.nodeSelector.label_value }}
+          {{- end }}
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-osmcha-process-changesets-cronjob
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmcha-app-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: "0 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-osmcha-process-changesets
+            image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - |
+              python manage.py backfill_changesets $(date -d "yesterday" +%Y-%m-%d) $(date +%Y-%m-%d)
+            envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-osmcha-common-env
+          restartPolicy: Never
+          {{- if .Values.osmchaApi.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.osmchaApi.nodeSelector.label_key }} : {{ .Values.osmchaApi.nodeSelector.label_value }}
+          {{- end }}
+{{- end }}

@@ -10,9 +10,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - '8080:8080'
-      - '5432:5432'
+    #   - '5432:5432'
     volumes:
       - ../data/nominatim-data:/var/lib/postgresql/14/main
       # - ../../Nominatim/nominatim/tokenizer/sanitizers:/usr/local/lib/nominatim/lib-python/nominatim/tokenizer/sanitizers
     env_file:
       - ../envs/.env.nominatim
+    restart: always

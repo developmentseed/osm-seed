@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-tasking-manager-api
+  name: {{ .Release.Name }}-tasking-manager-api 
   labels:
     app: {{ template "osm-seed.name" . }}
     component: tasking-manager-api-deployment
@@ -46,17 +46,17 @@ spec:
           {{- end }}
           env:
             - name: POSTGRES_HOST
-              value: {{ .Values.tmApi.env.POSTGRES_HOST }}
+              value: {{ .Release.Name }}-tasking-manager-db
             - name: POSTGRES_DB
-              value: {{ .Values.tmApi.env.POSTGRES_DB }}
+              value: {{ .Values.tmDb.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.tmApi.env.POSTGRES_PASSWORD }}
+              value: {{ quote .Values.tmDb.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
-              value: {{ .Values.tmApi.env.POSTGRES_USER }}
+              value: {{ .Values.tmDb.env.POSTGRES_USER }}
             - name: POSTGRES_PORT
-              value: {{ .Values.tmApi.env.POSTGRES_PORT | quote }}
+              value: "5432"
             - name: TM_DB
-              value: {{ printf "postgresql://%s:%s@%s/%s" .Values.tmApi.env.POSTGRES_USER .Values.tmApi.env.POSTGRES_PASSWORD .Values.tmApi.env.POSTGRES_HOST .Values.tmApi.env.POSTGRES_DB }}
+              value: {{ printf "postgresql://%s:%s@%s-tasking-manager-db/%s" .Values.tmDb.env.POSTGRES_USER .Values.tmDb.env.POSTGRES_PASSWORD .Release.Name .Values.tmDb.env.POSTGRES_DB }}
             - name: TM_ORG_NAME
               value: {{ .Values.tmApi.env.TM_ORG_NAME }}
             - name: TM_ORG_CODE
