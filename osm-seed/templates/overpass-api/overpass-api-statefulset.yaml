@@ -60,6 +60,8 @@ spec:
               value: {{ .Values.overpassApi.env.OVERPASS_PLANET_PREPROCESS | quote}}
             - name: OVERPASS_REPLICATION_SEQUENCE_NUMBER
               value: {{ .Values.overpassApi.env.OVERPASS_REPLICATION_SEQUENCE_NUMBER | quote }}
+            - name: OVERPASS_ALLOW_DUPLICATE_QUERIES
+              value: {{ .Values.overpassApi.env.OVERPASS_ALLOW_DUPLICATE_QUERIES | quote }}
           volumeMounts:
           - mountPath: /db
             name: overpass-api-storage
