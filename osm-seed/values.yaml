@@ -655,6 +655,7 @@ overpassApi:
     OVERPASS_RULES_LOAD: 10
     OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf'
     OVERPASS_REPLICATION_SEQUENCE_NUMBER: 5201000
+    OVERPASS_ALLOW_DUPLICATE_QUERIES: "yes"
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
