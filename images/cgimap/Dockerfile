@@ -37,32 +37,8 @@ RUN mkdir build && cd build && \
     ctest --output-on-failure && \
     strip openstreetmap-cgimap && \
     cp openstreetmap-cgimap /usr/local/bin
-
-FROM ubuntu:24.04
-
-RUN apt-get update -qq && \
-    apt-get install -y \
-    libfcgi-bin libmemcached11 libboost-program-options1.83.0 \
-    libxml2 libcrypto++8 libyajl2 libpqxx-7.8t64 zlib1g libbrotli1 libfmt9 \
-    wget \
-    --no-install-recommends && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install Argon2 runtime library
-RUN wget https://github.com/P-H-C/phc-winner-argon2/archive/refs/tags/20190702.tar.gz && \
-    tar -xzf 20190702.tar.gz && \
-    cd phc-winner-argon2-20190702 && \
-    make && \
-    make install && \
-    ldconfig
-
-COPY --from=builder /usr/local/bin/openstreetmap-cgimap /usr/local/bin
-
-RUN groupadd -g 61000 cgimap && \
-    useradd -g 61000 -l -M -s /bin/false -u 61000 cgimap
-
-USER cgimap
+    
+RUN rm -rf /app/.git
 
 COPY start.sh /
 
