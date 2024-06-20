@@ -9,37 +9,34 @@ RUN apt-get update -qq && \
     libpqxx-dev zlib1g-dev libfmt-dev git \
     ca-certificates \
     postgresql-16 postgresql-server-dev-all \
+    wget \
     --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-
-    RUN apt-get update -qq && \
-    apt-get install -y wget
-
-    # Install Argon2 from source
+# Install Argon2 from source
 RUN wget https://github.com/P-H-C/phc-winner-argon2/archive/refs/tags/20190702.tar.gz && \
-tar -xzf 20190702.tar.gz && \
-cd phc-winner-argon2-20190702 && \
-make && \
-make install
+    tar -xzf 20190702.tar.gz && \
+    cd phc-winner-argon2-20190702 && \
+    make && \
+    make install && \
+    ldconfig
 
 WORKDIR /app
 
 # Copy the main application.
-
 ENV CGIMAP_GITSHA=26cd7fa10affe5dbd13dbe16de34421059f53f18
-RUN git clone https://github.com/zerebubuth/openstreetmap-cgimap.git /app
-RUN git checkout $CGIMAP_GITSHA
-
+RUN git clone https://github.com/zerebubuth/openstreetmap-cgimap.git /app && \
+    cd /app && \
+    git checkout $CGIMAP_GITSHA
 
 # Compile, install and remove source
 RUN mkdir build && cd build && \
     CXXFLAGS="-Wall -Wextra -Wpedantic -Wno-unused-parameter" cmake .. -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release && \
-    make -j${nproc} && \
+    make -j$(nproc) && \
     ctest --output-on-failure && \
     strip openstreetmap-cgimap && \
-    cp openstreetmap-cgimap ../
+    cp openstreetmap-cgimap /usr/local/bin
 
 FROM ubuntu:24.04
 
@@ -47,20 +44,28 @@ RUN apt-get update -qq && \
     apt-get install -y \
     libfcgi-bin libmemcached11 libboost-program-options1.83.0 \
     libxml2 libcrypto++8 libyajl2 libpqxx-7.8t64 zlib1g libbrotli1 libfmt9 \
+    wget \
     --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/openstreetmap-cgimap /usr/local/bin
+# Install Argon2 runtime library
+RUN wget https://github.com/P-H-C/phc-winner-argon2/archive/refs/tags/20190702.tar.gz && \
+    tar -xzf 20190702.tar.gz && \
+    cd phc-winner-argon2-20190702 && \
+    make && \
+    make install && \
+    ldconfig
+
+COPY --from=builder /usr/local/bin/openstreetmap-cgimap /usr/local/bin
 
 RUN groupadd -g 61000 cgimap && \
     useradd -g 61000 -l -M -s /bin/false -u 61000 cgimap
 
 USER cgimap
 
-COPY start.sh  /
+COPY start.sh /
 
 EXPOSE 8000
 
-# ENTRYPOINT 
-CMD [ "/start.sh" ]
+CMD ["/start.sh"]
