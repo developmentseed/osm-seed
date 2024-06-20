@@ -22,15 +22,26 @@ RUN apt-get install -y \
     software-properties-common && \
     rm -rf /var/lib/apt/lists/*
 
-# # Install python
+# Install Python 3.6
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
+    add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update && \
-    apt-get install -y build-essential python3.6 python3.6-dev python3-pip && \
-    rm -rf /var/lib/apt/lists/* && \
-    python3 -m pip install pip --upgrade && \
-    python3 -m pip install wheel
+    apt-get install -y gcc-8 g++-8 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100 && \
+    apt-get install -y build-essential wget libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev && \
+    wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz && \
+    tar xzf Python-3.6.15.tgz && \
+    cd Python-3.6.15 && \
+    ./configure --enable-optimizations && \
+    make altinstall && \
+    cd .. && \
+    rm -rf Python-3.6.15 Python-3.6.15.tgz && \
+    apt-get install -y python3-pip && \
+    python3.6 -m pip install pip --upgrade && \
+    python3.6 -m pip install wheel && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install postgresql-client
 RUN apt-get update && apt-get install -y postgresql-client && \
