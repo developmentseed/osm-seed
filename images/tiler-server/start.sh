@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 flag=true
+mkdir -p $TILER_CACHE_BASEPATH
 while "$flag" = true; do
   pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
   flag=false

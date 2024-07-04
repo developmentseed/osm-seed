@@ -18,6 +18,9 @@ RUN apk --no-cache add \
 
 RUN pip install --upgrade pip && pip3 install awscli mercantile 
 
+
+RUN ln -s /opt/tegola /usr/bin/tegola
+
 # Volumen
 VOLUME /mnt/data
 # Copy config and  exec files
@@ -29,4 +32,5 @@ COPY ./seed-by-diffs.sh .
 COPY ./tile_cache_downloader.sh .
 COPY ./rm_tegola_ps.sh .
 
+ENTRYPOINT ["/bin/bash", "-c"]
 CMD ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh & ./rm_tegola_ps.sh

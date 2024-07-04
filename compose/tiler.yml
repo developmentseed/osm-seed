@@ -55,10 +55,10 @@ services:
     - tiler-imposm
     ports:
     - "9090:9090"
-    command:
-    - sh
-    - -c
-    - "./start.sh & ./expire-watcher.sh"
+    # command:
+    # - sh
+    # - -c
+    # - "./start.sh & ./expire-watcher.sh"
     env_file:
     - ../envs/.env.tiler-db
     - ../envs/.env.tiler-server
