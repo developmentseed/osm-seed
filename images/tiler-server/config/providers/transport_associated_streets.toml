@@ -13,7 +13,12 @@ SELECT
     m.name, 
     m.relname, 
     m.index, 
-    r.type
+    r.type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_relations r, 
     osm_relation_members m 

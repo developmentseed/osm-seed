@@ -9,7 +9,12 @@ SELECT
     ABS(osm_id) as osm_id, 
     name, 
     type, 
-    area
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_water_areas_gen0 
 WHERE 
@@ -29,7 +34,12 @@ SELECT
     ABS(osm_id) as osm_id, 
     name, 
     type, 
-    area
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_water_areas_gen0 
 WHERE 
@@ -50,7 +60,12 @@ SELECT
     ABS(osm_id) as osm_id, 
     name, 
     type, 
-    area
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_water_areas_gen0 
 WHERE 
@@ -71,7 +86,12 @@ SELECT
     ABS(osm_id) as osm_id, 
     name, 
     type, 
-    area
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_water_areas_gen0 
 WHERE 
@@ -91,7 +111,12 @@ SELECT
     ABS(osm_id) as osm_id, 
     name, 
     type, 
-    area
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_water_areas_gen1 
 WHERE 
@@ -111,7 +136,12 @@ SELECT
     osm_id, 
     name, 
     type, 
-    area
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_water_areas 
 WHERE 
@@ -131,7 +161,12 @@ SELECT
     osm_id, 
     name, 
     type, 
-    area
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_water_areas 
 WHERE 

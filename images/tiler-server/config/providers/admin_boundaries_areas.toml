@@ -11,7 +11,12 @@ SELECT
     osm_id, 
     admin_level, 
     name, 
-    type
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_admin_areas 
 WHERE 
@@ -32,7 +37,12 @@ SELECT
     osm_id, 
     admin_level, 
     name, 
-    type
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_admin_areas 
 WHERE 
@@ -53,7 +63,12 @@ SELECT
     osm_id, 
     admin_level, 
     name, 
-    type
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_admin_areas 
 WHERE 
@@ -74,7 +89,12 @@ SELECT
     osm_id, 
     admin_level, 
     name, 
-    type
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_admin_areas 
 WHERE 
@@ -95,7 +115,12 @@ SELECT
     osm_id, 
     admin_level, 
     name, 
-    type
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_admin_areas 
 WHERE 
@@ -116,7 +141,12 @@ SELECT
     osm_id, 
     admin_level, 
     name, 
-    type
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_admin_areas 
 WHERE 
@@ -137,7 +167,12 @@ SELECT
     osm_id, 
     admin_level, 
     name, 
-    type
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
 FROM 
     osm_admin_areas 
 WHERE 
