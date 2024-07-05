@@ -1,0 +1,131 @@
+[[providers.layers]]
+name = "ne_110m_admin_0_boundary_lines_land"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+FROM ne_110m_admin_0_boundary_lines_land 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_50m_admin_0_boundary_lines_land"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+FROM ne_50m_admin_0_boundary_lines_land 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_10m_admin_0_boundary_lines_land"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+FROM ne_10m_admin_0_boundary_lines_land 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_50m_admin_0_boundary_lines_disputed_areas"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+FROM ne_50m_admin_0_boundary_lines_disputed_areas 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_10m_admin_0_boundary_lines_disputed_areas"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+FROM ne_10m_admin_0_boundary_lines_disputed_areas 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_110m_admin_0_countries"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, name_long, abbrev, adm0_a3, min_zoom, min_label, max_label 
+FROM ne_110m_admin_0_countries 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_50m_admin_0_countries"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, name_long, abbrev, adm0_a3, min_zoom, min_label, max_label 
+FROM ne_50m_admin_0_countries 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_10m_admin_0_countries"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, name_long, abbrev, adm0_a3, min_zoom, min_label, max_label 
+FROM ne_10m_admin_0_countries 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_110m_admin_1_states_provinces_lines"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, adm0_name, min_zoom 
+FROM ne_110m_admin_1_states_provinces_lines 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_50m_admin_1_states_provinces_lines"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, adm0_name, min_zoom 
+FROM ne_50m_admin_1_states_provinces_lines 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_10m_admin_1_states_provinces_lines"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, adm0_name, min_zoom, min_label 
+FROM ne_10m_admin_1_states_provinces_lines 
+WHERE wkb_geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "ne_10m_admin_0_label_points"
+geometry_fieldname = "geometry"
+geometry_type = "point"
+id_fieldname = "ogc_fid"
+sql = """
+SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, sr_subunit, scalerank 
+FROM ne_10m_admin_0_label_points 
+WHERE wkb_geometry && !BBOX!
+"""
