@@ -21,6 +21,14 @@ RUN pip install --upgrade pip && pip3 install awscli mercantile
 
 RUN ln -s /opt/tegola /usr/bin/tegola
 
+COPY ./config  /opt/config/
+COPY build_config.py  /opt/
+RUN mkdir /opt/tegola_config
+RUN cd /opt/ && python build_config.py \
+    --template config/config.template.toml \
+    --providers config/providers \
+    --output /opt/tegola_config/config.toml
+
 # Volumen
 VOLUME /mnt/data
 # Copy config and  exec files
