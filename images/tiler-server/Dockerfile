@@ -29,10 +29,7 @@ RUN cd /opt/ && python build_config.py \
     --providers config/providers \
     --output /opt/tegola_config/config.toml
 
-# Volumen
-VOLUME /mnt/data
 # Copy config and  exec files
-COPY ./config/config.toml  /opt/tegola_config/config.toml
 COPY ./tile2bounds.py .
 COPY ./start.sh .
 COPY ./expire-watcher.sh .
