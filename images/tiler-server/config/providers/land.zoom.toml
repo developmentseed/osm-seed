@@ -1,0 +1,43 @@
+[[maps.layers]]
+name = "land"
+provider_layer = "osm.land_0-2"
+min_zoom = 0
+max_zoom = 2
+
+[[maps.layers]]
+name = "land"
+provider_layer = "osm.land_3-5"
+min_zoom = 3
+max_zoom = 5
+
+[[maps.layers]]
+name = "land"
+provider_layer = "osm.land_6-7"
+min_zoom = 6
+max_zoom = 7
+
+[[maps.layers]]
+name = "land"
+provider_layer = "osm.land_8-9"
+min_zoom = 8
+max_zoom = 9
+
+[[maps.layers]]
+name = "land"
+provider_layer = "osm.land_10-12"
+min_zoom = 10
+max_zoom = 12
+
+[[maps.layers]]
+name = "land"
+provider_layer = "osm.land_13-15"
+min_zoom = 13
+max_zoom = 15
+
+[[maps.layers]]
+name = "land"
+provider_layer = "osm.land_16-20"
+min_zoom = 16
+max_zoom = 20
+
+

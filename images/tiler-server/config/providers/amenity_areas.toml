@@ -1,0 +1,17 @@
+# Layer configuration for amenity areas
+[[providers.layers]]
+name = "amenity_areas"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "osm_id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    osm_id, 
+    name, 
+    type
+FROM 
+    osm_amenity_areas 
+WHERE 
+    geometry && !BBOX!
+"""

@@ -1,0 +1,24 @@
+# Other Areas
+[[maps.layers]]
+name = "other_areas"
+provider_layer = "osm.other_areas_6-8"
+min_zoom = 6
+max_zoom = 8
+
+[[maps.layers]]
+name = "other_areas"
+provider_layer = "osm.other_areas_9-11"
+min_zoom = 9
+max_zoom = 11
+
+[[maps.layers]]
+name = "other_areas"
+provider_layer = "osm.other_areas_12-14"
+min_zoom = 12
+max_zoom = 14
+
+[[maps.layers]]
+name = "other_areas"
+provider_layer = "osm.other_areas_15-20"
+min_zoom = 15
+max_zoom = 20

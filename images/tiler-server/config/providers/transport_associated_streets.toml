@@ -1,0 +1,24 @@
+# Layer configuration for transport associated streets
+[[providers.layers]]
+name = "transport_associated_streets"
+geometry_fieldname = "geometry"
+geometry_type = "LineString"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    r.id, 
+    m.member, 
+    r.osm_id, 
+    m.name, 
+    m.relname, 
+    m.index, 
+    r.type
+FROM 
+    osm_relations r, 
+    osm_relation_members m 
+WHERE 
+    r.osm_id = m.osm_id 
+    AND r.type = 'associatedStreet' 
+    AND geometry && !BBOX!
+"""

@@ -1,0 +1,19 @@
+# Layer configuration for transport points
+[[providers.layers]]
+name = "transport_points"
+geometry_fieldname = "geometry"
+geometry_type = "point"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    class, 
+    type
+FROM 
+    osm_transport_points 
+WHERE 
+    geometry && !BBOX!
+"""

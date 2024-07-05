@@ -1,0 +1,19 @@
+# Layer configuration for other lines
+[[providers.layers]]
+name = "other_lines"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    class, 
+    type
+FROM 
+    osm_other_lines 
+WHERE 
+    geometry && !BBOX!
+"""

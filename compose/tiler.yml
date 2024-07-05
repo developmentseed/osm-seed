@@ -48,17 +48,17 @@ services:
       context: ../images/tiler-server
       dockerfile: Dockerfile
     volumes:
-    - ../data/tiler-server-data:/mnt/data
+    - ../images/tiler-server:/app
     - ../data/tiler-imposm-data:/mnt/data/imposm
     depends_on:
     - tiler-db
     - tiler-imposm
     ports:
     - "9090:9090"
-    # command:
-    # - sh
-    # - -c
-    # - "./start.sh & ./expire-watcher.sh"
+    command:
+    - sh
+    - -c
+    - "./start.sh"
     env_file:
     - ../envs/.env.tiler-db
     - ../envs/.env.tiler-server
