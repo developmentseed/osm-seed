@@ -105,6 +105,7 @@ db:
   nodeSelector:
     enabled: false
   sharedMemorySize: 64Mi
+  # To use postgresqlConfig, you need to have already $PGDATA set up
   postgresqlConfig:
     enabled: false
     values: |
