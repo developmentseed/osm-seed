@@ -76,7 +76,6 @@ db:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "1234"
     ENVIRONMENT: "production"
-    LOG_STATEMENT: "all"
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
