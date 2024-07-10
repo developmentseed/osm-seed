@@ -51,6 +51,12 @@ spec:
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
             - name: LOG_STATEMENT
               value: {{ default "none" .Values.db.env.LOG_STATEMENT | quote }}
+          {{- if .Values.db.postgresqlConfig.enabled }}
+          command:
+            - "sh"
+            - "-c"
+            - "su postgres -c 'postgres -c config_file=/etc/postgresql/postgresql.conf'"
+           {{- end }}
           livenessProbe:
             exec:
               command:
@@ -71,10 +77,14 @@ spec:
             periodSeconds: 5
           volumeMounts:
             - name: postgres-storage
-              mountPath: {{ .Values.db.persistenceDisk.mountPath }}
+              mountPath: /var/lib/postgresql/data
               subPath: {{ .Values.db.persistenceDisk.subPath }}
             - name: shared-memory
               mountPath: /dev/shm
+            {{- if .Values.db.postgresqlConfig.enabled }}
+            - name: db-postgresql-config
+              mountPath: /etc/postgresql/
+            {{- end }}
           {{- if .Values.db.resources.enabled }}
           resources:
             requests:
@@ -96,6 +106,11 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: {{ .Values.db.sharedMemorySize }}
+        {{- if .Values.db.postgresqlConfig.enabled }}
+        - name: db-postgresql-config
+          configMap:
+            name: {{ .Release.Name }}-db-postgresql-config
+        {{- end }}
       {{- if .Values.db.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
