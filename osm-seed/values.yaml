@@ -67,7 +67,7 @@ adminEmail: admin@osmseed.org
 # Variables for osm-seed database
 # ====================================================================================================
 db:
-  enabled: true
+  enabled: false
   image:
     name: ""
     tag: ""
@@ -349,21 +349,21 @@ osmProcessor:
 # Variables for tiler-db
 # ====================================================================================================
 tilerDb:
-  enabled: false
+  enabled: true
   image:
-    name: ""
-    tag: ""
+    name: "ghcr.io/openhistoricalmap/tiler-db"
+    tag: "0.0.1-0.dev.git.1334.hc76c99d"
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "1234"
     POSTGRES_PORT: 5432
-    POSTGRES_DB_MAX_CONNECTIONS: 100
-    POSTGRES_DB_SHARED_BUFFERS: 128MB
-    POSTGRES_DB_WORK_MEM: 4MB
-    POSTGRES_DB_MAINTENANCE_WORK_MEM: 64MB
-    POSTGRES_DB_EFFECTIVE_CACHE_SIZE: 4GB
+    # POSTGRES_DB_MAX_CONNECTIONS: 100
+    # POSTGRES_DB_SHARED_BUFFERS: 128MB
+    # POSTGRES_DB_WORK_MEM: 4MB
+    # POSTGRES_DB_MAINTENANCE_WORK_MEM: 64MB
+    # POSTGRES_DB_EFFECTIVE_CACHE_SIZE: 4GB
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
@@ -373,8 +373,8 @@ tilerDb:
     localVolumeHostPath: /mnt/tiler-db-data
     localVolumeSize: 10Gi
     # AWS
-    AWS_ElasticBlockStore_volumeID: vol-1234bcd
-    AWS_ElasticBlockStore_size: 50Gi
+    AWS_ElasticBlockStore_volumeID: vol-0cf316caac04fc623
+    AWS_ElasticBlockStore_size: 20Gi
     # GCP
     GCP_gcePersistentDisk_pdName: osmseed-disk-tilerdb-v1
     GCP_gcePersistentDisk_size: 50Gi
@@ -390,6 +390,26 @@ tilerDb:
     enabled: false
     label_key: nodegroup_type
     label_value: tiler
+  # To use postgresqlConfig, you need to have already $PGDATA set up in a persistent disk
+  postgresqlConfig:
+    enabled: false
+    values: |
+      listen_addresses = '*'
+      max_connections = 100
+      shared_buffers = 128MB
+      effective_cache_size = 256MB
+      maintenance_work_mem = 64MB
+      checkpoint_completion_target = 0.7
+      wal_buffers = 16MB
+      default_statistics_target = 100
+      random_page_cost = 1.1
+      effective_io_concurrency = 200
+      work_mem = 4MB
+      min_wal_size = 80MB
+      max_wal_size = 1GB
+      max_worker_processes = 4
+      max_parallel_workers_per_gather = 2
+      max_parallel_workers = 4
 # ====================================================================================================
 # Variables for tiler-imposm
 # ====================================================================================================

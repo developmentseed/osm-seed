@@ -1,0 +1,14 @@
+{{- if .Values.tilerDb.enabled -}}
+{{- if .Values.tilerDb.postgresqlConfig.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-tiler-db-postgresql-config
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+data:
+  postgresql.conf: |
+{{ .Values.tilerDb.postgresqlConfig.values | indent 4 }}
+{{- end }}
+{{- end }}

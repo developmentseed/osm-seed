@@ -45,18 +45,14 @@ spec:
               value: {{ default "postgres" .Values.tilerDb.env.POSTGRES_USER | quote }}
             - name: PGDATA
               value: {{ .Values.tilerDb.persistenceDisk.mountPath }}
-            - name: POSTGRES_DB_MAX_CONNECTIONS
-              value: {{ default 100 .Values.tilerDb.env.POSTGRES_DB_MAX_CONNECTIONS | quote }}
-            - name: POSTGRES_DB_SHARED_BUFFERS
-              value: {{ default "128MB" .Values.tilerDb.env.POSTGRES_DB_SHARED_BUFFERS | quote }}
-            - name: POSTGRES_DB_WORK_MEM
-              value: {{ default "4MB" .Values.tilerDb.env.POSTGRES_DB_WORK_MEM | quote }}
-            - name: POSTGRES_DB_MAINTENANCE_WORK_MEM
-              value: {{ default "64MB" .Values.tilerDb.env.POSTGRES_DB_MAINTENANCE_WORK_MEM | quote }}
-            - name: POSTGRES_DB_EFFECTIVE_CACHE_SIZE
-              value: {{ default "4GB" .Values.tilerDb.env.POSTGRES_DB_EFFECTIVE_CACHE_SIZE | quote }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
+           {{- if and .Values.tilerDb.postgresqlConfig.enabled .Values.tilerDb.persistenceDisk.enabled }}
+          command:
+            - "sh"
+            - "-c"
+            - "su postgres -c 'postgres -c config_file=/etc/postgresql/postgresql.conf'"
+           {{- end }}
           livenessProbe:
             exec:
               command:
@@ -79,6 +75,10 @@ spec:
             - name: postgres-storage
               mountPath: {{ .Values.tilerDb.persistenceDisk.mountPath }}
               subPath: {{ .Values.tilerDb.persistenceDisk.subPath }}
+            {{- if and .Values.tilerDb.postgresqlConfig.enabled .Values.tilerDb.persistenceDisk.enabled }}
+            - name: tiler-db-postgresql-config
+              mountPath: /etc/postgresql/
+            {{- end }}
           {{- if .Values.tilerDb.resources.enabled }}
           resources:
             requests:
@@ -95,6 +95,11 @@ spec:
             claimName: {{ .Release.Name }}-tiler-db-pv-claim
         {{- else }}
           emptyDir: {}
+        {{- end }}
+        {{- if and .Values.tilerDb.postgresqlConfig.enabled .Values.tilerDb.persistenceDisk.enabled }}
+        - name: tiler-db-postgresql-config
+          configMap:
+            name: {{ .Release.Name }}-tiler-db-postgresql-config
         {{- end }}
       {{- if .Values.tilerDb.nodeSelector.enabled }}
       nodeSelector:
