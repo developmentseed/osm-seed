@@ -351,8 +351,8 @@ osmProcessor:
 tilerDb:
   enabled: true
   image:
-    name: "ghcr.io/openhistoricalmap/tiler-db"
-    tag: "0.0.1-0.dev.git.1334.hc76c99d"
+    name: ""
+    tag: ""
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
