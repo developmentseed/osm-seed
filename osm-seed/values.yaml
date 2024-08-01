@@ -40,8 +40,8 @@ AWS_SSL_ARN: false
 # as the SSL certificate for your services. Else, you will need to configure
 # SSL separately.
 # serviceType: NodePort
-serviceType: clusterIP
-createClusterIssuer: true
+serviceType: ClusterIP
+createClusterIssuer: false
 # Domain that is pointed to the clusterIP
 # You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
 # Then, the cluster configuration will setup services at their respective subdomains:
@@ -349,7 +349,7 @@ osmProcessor:
 # Variables for tiler-db
 # ====================================================================================================
 tilerDb:
-  enabled: true
+  enabled: false
   image:
     name: ""
     tag: ""
@@ -728,7 +728,7 @@ taginfo:
     name: ""
     tag: ""
   serviceAnnotations: {}
-  ingressDomain: taginfo.dev.osmseed.org
+  ingressDomain: taginfo-dev.staging.openhistoricalmap.org
   env:
     URL_PLANET_FILE_STATE: https://planet.osm.org/pbf/state.txt
     URL_HISTORY_PLANET_FILE_STATE: https://planet.osm.org/pbf/full-history/state.txt
@@ -754,7 +754,24 @@ taginfo:
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
-    enabled: false
+    enabled: true
+    label_key: nodegroup_type
+    label_value: web
+  cronjob:
+      enabled: true
+      schedule: "0 2 */3 * *"
+      nodeSelector:
+        enabled: true
+        label_key: nodegroup_type
+        label_value: job_xlarge
+      resources:
+        enabled: false
+        requests:
+          memory: "13Gi"
+          cpu: "3600m"
+        limits:
+          memory: "14Gi"
+          cpu: "3800m"
 # ====================================================================================================
 # Variables for osm-simple-metrics
 # ====================================================================================================

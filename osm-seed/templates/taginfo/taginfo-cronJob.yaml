@@ -10,7 +10,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: {{ .Values.taginfo.cronjob.schedule | quote}}
+  schedule: {{ .Values.taginfo.cronjob.schedule | quote }}
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 10
   successfulJobsHistoryLimit: 2
@@ -31,10 +31,19 @@ spec:
             envFrom:
               - configMapRef:
                   name: {{ .Release.Name }}-taginfo-common-env
+            {{- if .Values.taginfo.cronjob.resources.enabled }}
+            resources:
+              requests:
+                memory: {{ .Values.taginfo.cronjob.resources.requests.memory }}
+                cpu: {{ .Values.taginfo.cronjob.resources.requests.cpu }}
+              limits:
+                memory: {{ .Values.taginfo.cronjob.resources.limits.memory }}
+                cpu: {{ .Values.taginfo.cronjob.resources.limits.cpu }}
+            {{- end }}
           restartPolicy: Never
           {{- if .Values.taginfo.cronjob.nodeSelector.enabled }}
           nodeSelector:
-            {{ .Values.taginfo.cronjob.nodeSelector.label_key }} : {{ .Values.taginfo.cronjob.nodeSelector.label_value }}
+            {{ .Values.taginfo.cronjob.nodeSelector.label_key }}: {{ .Values.taginfo.cronjob.nodeSelector.label_value }}
           {{- end }}
 {{- end }}
 {{- end }}
