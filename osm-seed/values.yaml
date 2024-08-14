@@ -569,6 +569,10 @@ tmDb:
     POSTGRES_DB: tm
     POSTGRES_PASSWORD: tm
     POSTGRES_USER: postgres
+  persistenceDisk:
+    enabled: false
+    mountPath: /var/lib/postgresql/data
+    subPath: postgresql-db
   resources:
     enabled: false
     requests:
