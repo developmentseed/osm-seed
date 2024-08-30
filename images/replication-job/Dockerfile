@@ -1,4 +1,4 @@
-FROM developmentseed/osmseed-osm-processor:v2
+FROM developmentseed/osmseed-osm-processor:v3
 
 # Install Nginx
 RUN apt-get update && \
