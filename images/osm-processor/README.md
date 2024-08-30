@@ -10,7 +10,7 @@ Base container for other containers in osmseed ecosystem, it contains:
 
 ```
   cd osm-processor/
-  docker build -t osmseed-osm-processor:v1 .
+  docker build -t osmseed-osm-processor:v3 .
 ```
 
 #### Access the container
@@ -19,5 +19,5 @@ Base container for other containers in osmseed ecosystem, it contains:
   docker run --env-file ./../.env \
   --network osm-seed_default \
   -v $(pwd)/../osm-processor-data:/mnt/data \
-  -i -t osmseed-osm-processor:v1 bash
+  -i -t osmseed-osm-processor:v3 bash
 ```
