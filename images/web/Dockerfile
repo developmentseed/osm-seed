@@ -32,7 +32,7 @@ RUN apt-get update &&  apt-get -y install libxml2-dev libpqxx-dev libfcgi-dev zl
   rm -rf /var/lib/apt/lists/*
 
 # Install cgimap
-ENV cgimap /tmp/openstreetmap-cgimap
+ENV cgimap /openstreetmap-cgimap
 ENV CGIMAP_GITSHA=v2.0.1
 RUN git clone -b master https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap \
     && cd $cgimap \
