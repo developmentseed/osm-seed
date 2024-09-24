@@ -31,9 +31,9 @@ RUN apt-get update &&  apt-get -y install libxml2-dev libpqxx-dev libfcgi-dev zl
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-# Install cgimap
+# Install cgimap, before remove basic auth
 ENV cgimap /openstreetmap-cgimap
-ENV CGIMAP_GITSHA=v2.0.1
+ENV CGIMAP_GITSHA=26cd7fa10affe5dbd13dbe16de34421059f53f18
 RUN git clone -b master https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap \
     && cd $cgimap \
     && git checkout $CGIMAP_GITSHA \
