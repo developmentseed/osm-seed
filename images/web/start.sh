@@ -72,7 +72,7 @@ while "$flag" = true; do
   done &
   time rails i18n:js:export assets:precompile
   bundle exec rails db:migrate
-  /usr/local/bin/openstreetmap-cgimap \
+  /openstreetmap-cgimap/build/openstreetmap-cgimap \
     --port=8000 \
     --daemon \
     --instances=3 \
