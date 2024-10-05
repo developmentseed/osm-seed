@@ -4,7 +4,7 @@ charts:
   repo:
     git: developmentseed/osm-seed-chart
     published: https://devseed.com/osm-seed-chart
-
+    
   images:
     web:
       valuesPath: web.image
