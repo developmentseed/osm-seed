@@ -35,7 +35,23 @@ spec:
               command:
               - /bin/bash
               - -c
-              - ./liveness.sh
+              - >
+                # Check PostgreSQL connection
+                PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -c "SELECT 1;" > /dev/null 2>&1;
+                if [ $? -ne 0 ]; then
+                  echo "Failed to connect to PostgreSQL";
+                  exit 1;
+                fi;
+                
+                # Check apache status
+                ./liveness.sh;
+                if [ $? -ne 0 ]; then
+                  echo "liveness.sh script failed";
+                  exit 1;
+                fi;
+
+                echo "All checks passed";
+                exit 0;
             initialDelaySeconds: 600
             timeoutSeconds: 5
             periodSeconds: 10
