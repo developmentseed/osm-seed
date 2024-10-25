@@ -186,11 +186,6 @@ memcached:
       memory: "8Gi"
       cpu: "2"
 # ====================================================================================================
-# Variables for id-editor
-# ====================================================================================================
-idEditor:
-  enabled: false
-# ====================================================================================================
 # Variables for full-history container
 # ====================================================================================================
 fullHistory:
@@ -528,31 +523,6 @@ tilerServerCacheCleaner:
     minReplicas: 1
     maxReplicas: 2
     cpuUtilization: 60
-# ====================================================================================================
-# Variables for tiler-visor
-# ====================================================================================================
-tilerVisor:
-  enabled: false
-  image:
-    name: ""
-    tag: ""
-  serviceAnnotations: {}
-  replicaCount: 1
-  env:
-    TILER_VISOR_PROTOCOL: http
-    TILER_VISOR_PORT: 8081
-  resources:
-    enabled: false
-    requests:
-      memory: "1Gi"
-      cpu: "2"
-    limits:
-      memory: "2Gi"
-      cpu: "2"
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: tiler
 # ====================================================================================================
 # Variables for Tasking Manager DB
 # ====================================================================================================
