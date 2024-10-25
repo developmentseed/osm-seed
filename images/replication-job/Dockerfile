@@ -1,4 +1,4 @@
-FROM developmentseed/osmseed-osm-processor:0.1.0-n795.h1c8d32f
+FROM developmentseed/osmseed-osm-processor:0.1.0-n802.h0d9f574
 
 RUN apt-get update && \
     apt-get install -y nginx python3-pip python3-venv && \
@@ -14,3 +14,4 @@ COPY monitoring.py /
 WORKDIR /mnt/data
 
 CMD /start.sh
+
