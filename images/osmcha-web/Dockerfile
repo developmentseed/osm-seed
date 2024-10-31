@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y git \
     && rm -rf /var/lib/apt/lists/*
 RUN mkdir /app
 WORKDIR /app
-ARG GIT_TAG=master
-RUN git clone --branch $GIT_TAG https://github.com/osmus/osmcha-frontend.git /app
+ARG GIT_TAG=ohm
+RUN git clone --branch $GIT_TAG https://github.com/OpenHistoricalMap/osmcha-django.git /app
 RUN yarn install
 COPY start.sh .
 CMD [ "/app/start.sh" ]
