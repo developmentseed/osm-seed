@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-tm-common-env
 data:
-  POSTGRES_HOST: {{ quote .Release.Name }}-tasking-manager-db
+  POSTGRES_HOST: {{ .Release.Name }}-tasking-manager-db
   POSTGRES_DB: {{ quote .Values.tmDb.env.POSTGRES_DB | default "" }}
   POSTGRES_PASSWORD: {{ quote .Values.tmDb.env.POSTGRES_PASSWORD | default "" }}
   POSTGRES_USER: {{ quote .Values.tmDb.env.POSTGRES_USER | default "" }}
