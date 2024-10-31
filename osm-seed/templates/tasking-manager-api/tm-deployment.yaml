@@ -33,7 +33,7 @@ spec:
             httpGet:
               path: /
               port: 5000
-            initialDelaySeconds: 120 # 10 min, because the compile process takes time.
+            initialDelaySeconds: 120
             timeoutSeconds: 30
           {{- if .Values.tmApi.resources.enabled }}
           resources:
@@ -44,88 +44,9 @@ spec:
               memory: {{ .Values.tmApi.resources.limits.memory }}
               cpu: {{ .Values.tmApi.resources.limits.cpu }}
           {{- end }}
-          env:
-            - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-tasking-manager-db
-            - name: POSTGRES_DB
-              value: {{ .Values.tmDb.env.POSTGRES_DB }}
-            - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.tmDb.env.POSTGRES_PASSWORD }}
-            - name: POSTGRES_USER
-              value: {{ .Values.tmDb.env.POSTGRES_USER }}
-            - name: POSTGRES_PORT
-              value: "5432"
-            - name: TM_DB
-              value: {{ printf "postgresql://%s:%s@%s-tasking-manager-db/%s" .Values.tmDb.env.POSTGRES_USER .Values.tmDb.env.POSTGRES_PASSWORD .Release.Name .Values.tmDb.env.POSTGRES_DB }}
-            - name: TM_ORG_NAME
-              value: {{ .Values.tmApi.env.TM_ORG_NAME }}
-            - name: TM_ORG_CODE
-              value: {{ .Values.tmApi.env.TM_ORG_CODE }}
-            - name: TM_ORG_URL
-              value: {{ .Values.tmApi.env.TM_ORG_URL }}
-            - name: TM_ORG_PRIVACY_POLICY_URL
-              value: {{ quote .Values.tmApi.env.TM_ORG_PRIVACY_POLICY_URL }}
-            - name: TM_ORG_TWITTER
-              value: {{ quote .Values.tmApi.env.TM_ORG_TWITTER }}
-            - name: TM_ORG_FB
-              value: {{ quote .Values.tmApi.env.TM_ORG_FB }}
-            - name: TM_ORG_INSTAGRAM
-              value: {{ quote .Values.tmApi.env.TM_ORG_INSTAGRAM }}
-            - name: TM_ORG_YOUTUBE
-              value: {{ quote .Values.tmApi.env.TM_ORG_YOUTUBE }}
-            - name: TM_ORG_GITHUB
-              value: {{ quote .Values.tmApi.env.TM_ORG_GITHUB }}
-            - name: OSM_SERVER_URL
-              value: {{ quote .Values.tmApi.env.OSM_SERVER_URL }}
-            - name: OSM_NOMINATIM_SERVER_URL
-              value: {{ quote .Values.tmApi.env.OSM_NOMINATIM_SERVER_URL }}
-            - name: OSM_REGISTER_URL
-              value: {{ quote .Values.tmApi.env.OSM_REGISTER_URL }}
-            - name: ID_EDITOR_URL
-              value: {{ quote .Values.tmApi.env.ID_EDITOR_URL }}
-            - name: POTLATCH2_EDITOR_URL
-              value: {{ quote .Values.tmApi.env.POTLATCH2_EDITOR_URL }}
-            - name: TM_SECRET
-              value: {{ quote .Values.tmApi.env.TM_SECRET }}
-            - name: TM_CONSUMER_SECRET
-              value: {{ quote .Values.tmApi.env.TM_CONSUMER_SECRET }}
-            - name: TM_CONSUMER_KEY
-              value: {{ quote .Values.tmApi.env.TM_CONSUMER_KEY }}
-            - name: TM_EMAIL_FROM_ADDRESS
-              value: {{ quote .Values.tmApi.env.TM_EMAIL_FROM_ADDRESS }}
-            - name: TM_EMAIL_CONTACT_ADDRESS
-              value: {{ quote .Values.tmApi.env.TM_EMAIL_CONTACT_ADDRESS }}
-            - name: TM_SMTP_HOST
-              value: {{ quote .Values.tmApi.env.TM_SMTP_HOST }}
-            - name: TM_SMTP_PORT
-              value: {{ quote .Values.tmApi.env.TM_SMTP_PORT }}
-            - name: TM_SMTP_USER
-              value: {{ quote .Values.tmApi.env.TM_SMTP_USER }}
-            - name: TM_SMTP_PASSWORD
-              value: {{ quote .Values.tmApi.env.TM_SMTP_PASSWORD }}
-            - name: TM_DEFAULT_LOCALE
-              value: {{ quote .Values.tmApi.env.TM_DEFAULT_LOCALE }}
-            - name: TM_APP_API_URL
-              value: {{ .Values.tmApi.env.TM_APP_API_URL }}
-            - name: TM_APP_BASE_URL
-              value: {{ .Values.tmApi.env.TM_APP_BASE_URL }}
-            - name: TM_IMPORT_MAX_FILESIZE
-              value: {{ .Values.tmApi.env.TM_IMPORT_MAX_FILESIZE | default "1000000" | quote }}
-            - name: TM_MAX_AOI_AREA
-              value: {{ .Values.tmApi.env.TM_MAX_AOI_AREA | default "5000" | quote }}
-              
-            - name: TM_CLIENT_ID
-              value: {{ .Values.tmApi.env.TM_CLIENT_ID | quote }}
-            - name: TM_CLIENT_SECRET
-              value: {{ .Values.tmApi.env.TM_CLIENT_SECRET | quote }}
-            - name: TM_DEFAULT_CHANGESET_COMMENT
-              value: {{ .Values.tmApi.env.TM_DEFAULT_CHANGESET_COMMENT | quote }}
-            - name: TM_REDIRECT_URI
-              value: {{ .Values.tmApi.env.TM_REDIRECT_URI | quote }}
-            - name: TM_SCOPE
-              value: {{ .Values.tmApi.env.TM_SCOPE | quote }}
-            - name: TM_APP_API_VERSION
-              value: {{ .Values.tmApi.env.TM_APP_API_VERSION | quote }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-tm-common-env
 
       {{- if .Values.tmApi.nodeSelector.enabled }}
       nodeSelector:
