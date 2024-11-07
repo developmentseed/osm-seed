@@ -49,6 +49,10 @@ function get_current_state_file() {
                     --file $workingDirectory/state.txt --query="name"
             fi
         fi
+    else
+        echo "File $workingDirectory/state.txt exist in local storage"
+        echo "File $workingDirectory/state.txt content:"
+        cat $workingDirectory/state.txt
     fi
 }
 
@@ -71,15 +75,10 @@ function upload_file_cloud() {
 }
 
 function monitor_minute_replication() {
-    # Function to handle continuous monitoring, minutminutes replication and upload to cloud provider
-    # Directory to store a log of processed files
+    # Function to handle continuous monitoring, minute replication, and sequential upload to cloud provider
+    # Directory to store a log of the last processed file
     processed_files_log="$workingDirectory/processed_files.log"
     max_log_size_mb=1
-
-    while true; do
-        upload_file_cloud /mnt/data/state.txt
-        sleep 60s
-    done &
 
     while true; do
         if [ -e "$processed_files_log" ]; then
@@ -87,13 +86,32 @@ function monitor_minute_replication() {
             if [ "$log_size" -gt "$max_log_size_mb" ]; then
                 echo $(date +%F_%H:%M:%S)": Cleaning processed_files_log..." >"$processed_files_log"
             fi
-            for local_minute_file in $(find $workingDirectory/ -cmin -1); do
+            # Find new .gz files created within the last minute
+            for local_minute_file in $(find $workingDirectory/ -name "*.gz" -cmin -1); do
                 if [ -f "$local_minute_file" ]; then
-                    if grep -q "$local_minute_file" "$processed_files_log"; then
-                        continue
+                    echo "Processing $local_minute_file..."
+                    # Ensure the file is uploaded only once
+                    if ! grep -q "$local_minute_file: SUCCESS" "$processed_files_log" && ! grep -q "$local_minute_file: FAILURE" "$processed_files_log"; then
+                        # Verify gz file integrity
+                        if gzip -t "$local_minute_file" 2>/dev/null; then
+                            # Upload the file sequentially
+                            upload_file_cloud $local_minute_file
+                            echo "$local_minute_file: SUCCESS" >>"$processed_files_log"
+                            # Upload and update state.txt after successful upload
+                            upload_file_cloud "$workingDirectory/state.txt"
+                        else
+                            echo $(date +%F_%H:%M:%S)": $local_minute_file is corrupted and will not be uploaded." >>"$processed_files_log"
+                            echo "$local_minute_file: FAILURE" >>"$processed_files_log"
+                            # Ensure state.txt maintains the current ID to regenerate the corrupted file
+                            current_state_id=$(( $(echo "$local_minute_file" | sed 's/[^0-9]//g' | sed 's/^0*//') - 1 ))
+                            sed -i "s/sequenceNumber=.*/sequenceNumber=$current_state_id/" "$workingDirectory/state.txt"
+                            rm "$local_minute_file"
+                            echo "Stopping any existing Osmosis processes..."
+                            pkill -f "osmosis.*--replicate-apidb"
+                            echo "Regenerating $local_minute_file..."
+                            generate_replication
+                        fi
                     fi
-                    upload_file_cloud $local_minute_file
-                    echo "$local_minute_file" >>"$processed_files_log"
                 fi
             done
         else
@@ -119,23 +137,6 @@ function generate_replication() {
         --write-replication \
         workingDirectory=$workingDirectory
 }
-
-# function start_nginx() {
-#     if [ "$STAR_NGINX_SERVER" = "true" ]; then
-#         echo 'server {
-#             listen 8080;
-#             server_name localhost;
-
-#             location / {
-#                 root /mnt/data;
-#                 index index.html;
-#             }
-#         }' >/etc/nginx/nginx.conf
-#         service nginx restart
-#     else
-#         echo "STAR_NGINX_SERVER is either not set or not set to true."
-#     fi
-# }
 
 ######################## Start minutes replication process ########################
 get_current_state_file
