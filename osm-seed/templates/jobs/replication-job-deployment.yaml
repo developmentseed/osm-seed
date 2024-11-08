@@ -78,6 +78,12 @@ spec:
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.replicationJob.resources.requests.memory | default "2Gi" | quote}}
             {{- end }}
+            - name: ENABLE_SEND_SLACK_MESSAGE
+              value: {{ .Values.replicationJob.env.ENABLE_SEND_SLACK_MESSAGE | quote}}
+            - name: SLACK_WEBHOOK_URL
+              value: {{ .Values.replicationJob.env.SLACK_WEBHOOK_URL | quote}}
+            - name: ENVIROMENT
+              value: {{ .Values.environment | quote}}
       {{- if .Values.replicationJob.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.replicationJob.nodeSelector.label_key }} : {{ .Values.replicationJob.nodeSelector.label_value }}

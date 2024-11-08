@@ -8,6 +8,9 @@ else
     echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" >~/.osmosis
 fi
 
+slack_message_count=0
+max_slack_messages=2
+
 workingDirectory="/mnt/data"
 mkdir -p $workingDirectory
 
@@ -74,6 +77,32 @@ function upload_file_cloud() {
     fi
 }
 
+function send_slack_message() {
+    # Check if Slack messaging is enabled
+    if [ "${ENABLE_SEND_SLACK_MESSAGE}" != "true" ]; then
+        echo "Slack messaging is disabled. Set ENABLE_SEND_SLACK_MESSAGE to true to enable."
+        return
+    fi
+
+    # Check if the Slack webhook URL is set
+    if [ -z "${SLACK_WEBHOOK_URL}" ]; then
+        echo "SLACK_WEBHOOK_URL is not set. Unable to send message to Slack."
+        return 1
+    fi
+
+    # Limit Slack message count to 3
+    if [ "$slack_message_count" -ge "$max_slack_messages" ]; then
+        echo "Max Slack messages limit reached. No further messages will be sent."
+        return
+    fi
+
+    local message="$1"
+    curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"$message\"}" "$SLACK_WEBHOOK_URL"
+    echo "Message sent to Slack: $message"
+    slack_message_count=$((slack_message_count + 1))
+}
+
+
 function monitor_minute_replication() {
     # Function to handle continuous monitoring, minute replication, and sequential upload to cloud provider
     # Directory to store a log of the last processed file
@@ -109,6 +138,7 @@ function monitor_minute_replication() {
                             echo "Stopping any existing Osmosis processes..."
                             pkill -f "osmosis.*--replicate-apidb"
                             echo "Regenerating $local_minute_file..."
+                            send_slack_message "${ENVIROMENT}: Corrupted file $local_minute_file detected. Regenerating the file..."
                             generate_replication
                         fi
                     fi

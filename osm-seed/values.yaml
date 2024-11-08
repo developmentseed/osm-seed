@@ -293,6 +293,9 @@ replicationJob:
   image:
     name: ""
     tag: ""
+  env:
+    ENABLE_SEND_SLACK_MESSAGE: "false"
+    SLACK_WEBHOOK_URL: "null"
   resources:
     enabled: false
     requests:
