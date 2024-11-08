@@ -125,6 +125,8 @@ function monitor_minute_replication() {
                         if gzip -t "$local_minute_file" 2>/dev/null; then
                             # Upload the file sequentially
                             upload_file_cloud $local_minute_file
+                            local_state_file="${local_minute_file%.osc.gz}.state.txt"
+                            upload_file_cloud $local_state_file
                             echo "$local_minute_file: SUCCESS" >>"$processed_files_log"
                             # Upload and update state.txt after successful upload
                             upload_file_cloud "$workingDirectory/state.txt"
