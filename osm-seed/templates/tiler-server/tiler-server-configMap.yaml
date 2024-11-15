@@ -1,0 +1,27 @@
+{{- if .Values.tilerServer.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-tiler-server-cm
+data:
+    POSTGRES_HOST: {{ .Release.Name }}-tiler-db
+    POSTGRES_DB: {{ quote .Values.tilerDb.env.POSTGRES_DB }}
+    POSTGRES_PASSWORD: {{ quote .Values.tilerDb.env.POSTGRES_PASSWORD }}
+    POSTGRES_USER: {{ quote .Values.tilerDb.env.POSTGRES_USER }}
+    POSTGRES_PORT: {{ quote .Values.tilerDb.env.POSTGRES_PORT }}
+    TILER_SERVER_PORT: {{ quote .Values.tilerServer.env.TILER_SERVER_PORT }}
+    TILER_CACHE_TYPE: {{ quote .Values.tilerServer.env.TILER_CACHE_TYPE }}
+    TILER_CACHE_REGION: {{ quote .Values.tilerServer.env.TILER_CACHE_REGION }}
+    TILER_CACHE_BUCKET: {{ quote .Values.tilerServer.env.TILER_CACHE_BUCKET }}
+    TILER_CACHE_BASEPATH: {{ quote .Values.tilerServer.env.TILER_CACHE_BASEPATH }}
+    TILER_CACHE_AWS_ACCESS_KEY_ID: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_ACCESS_KEY_ID }}
+    TILER_CACHE_AWS_SECRET_ACCESS_KEY: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
+    TILER_CACHE_MAX_ZOOM: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
+    CLOUDPROVIDER: {{ quote .Values.cloudProvider }}
+    {{- if eq .Values.cloudProvider "aws" }}
+    AWS_S3_BUCKET: {{ quote .Values.AWS_S3_BUCKET }}
+    {{- end }}
+    {{- if eq .Values.cloudProvider "gcp" }}
+    GCP_STORAGE_BUCKET: {{ quote .Values.GCP_STORAGE_BUCKET }}
+    {{- end }}
+{{- end }}
