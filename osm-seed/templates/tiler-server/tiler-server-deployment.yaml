@@ -31,9 +31,6 @@ spec:
             - name: http
               containerPort: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
               protocol: TCP
-            - name: prometheus
-              containerPort: 9091
-              protocol: TCP
           livenessProbe:
             httpGet:
               path: /
