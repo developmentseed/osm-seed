@@ -376,6 +376,7 @@ tilerDb:
     # GCP
     GCP_gcePersistentDisk_pdName: osmseed-disk-tilerdb-v1
     GCP_gcePersistentDisk_size: 50Gi
+  sharedMemorySize: 64Mi
   resources:
     enabled: false
     requests:
@@ -526,6 +527,21 @@ tilerServerCacheCleaner:
     minReplicas: 1
     maxReplicas: 2
     cpuUtilization: 60
+
+tilerCacheCleanerJob:
+  enabled: false
+  tilesFile: imposm/imposm3_expire_dir/latest.tiles
+  minZoom: 0
+  maxZoom: 20
+  overwrite: true
+  resources:
+    enabled: false
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1"
 # ====================================================================================================
 # Variables for Tasking Manager DB
 # ====================================================================================================

@@ -79,6 +79,8 @@ spec:
             - name: tiler-db-postgresql-config
               mountPath: /etc/postgresql/
             {{- end }}
+            - name: shared-memory
+              mountPath: /dev/shm
           {{- if .Values.tilerDb.resources.enabled }}
           resources:
             requests:
@@ -101,6 +103,10 @@ spec:
           configMap:
             name: {{ .Release.Name }}-tiler-db-postgresql-config
         {{- end }}
+        - name: shared-memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.tilerDb.sharedMemorySize }}
       {{- if .Values.tilerDb.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerDb.nodeSelector.label_key }} : {{ .Values.tilerDb.nodeSelector.label_value }}
