@@ -106,7 +106,7 @@ spec:
         - name: shared-memory
           emptyDir:
             medium: Memory
-            sizeLimit: {{ .Values.tilerDb.sharedMemorySize }}
+            sizeLimit: {{ .Values.tilerDb.sharedMemorySize | default "64Mi" }}
       {{- if .Values.tilerDb.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerDb.nodeSelector.label_key }} : {{ .Values.tilerDb.nodeSelector.label_value }}
