@@ -11,10 +11,11 @@ metadata:
 spec:
   schedule: "*/2 * * * *"
   concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 2
-  failedJobsHistoryLimit: 2
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 120
       template:
         spec:
           containers:
@@ -32,12 +33,12 @@ spec:
           restartPolicy: Never
           {{- if .Values.osmchaApi.nodeSelector.enabled }}
           nodeSelector:
-            {{ .Values.osmchaApi.nodeSelector.label_key }} : {{ .Values.osmchaApi.nodeSelector.label_value }}
+            {{ .Values.osmchaApi.nodeSelector.label_key }}: {{ .Values.osmchaApi.nodeSelector.label_value }}
           {{- end }}
 
 ---
 apiVersion: batch/v1
-kind: CronJob
+kind: CronJob 
 metadata:
   name: {{ .Release.Name }}-osmcha-process-changesets-cronjob
   labels:
@@ -48,10 +49,11 @@ metadata:
 spec:
   schedule: "0 * * * *"
   concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 2
-  failedJobsHistoryLimit: 2
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 120
       template:
         spec:
           containers:
@@ -62,13 +64,19 @@ spec:
             - /bin/sh
             - -c
             - |
-              python manage.py backfill_changesets $(date -d "yesterday" +%Y-%m-%d) $(date +%Y-%m-%d)
+              YESTERDAY=$(date -d "yesterday" +%Y-%m-%d)
+              TODAY=$(date +%Y-%m-%d)
+
+              python manage.py backfill_changesets "$YESTERDAY" "$TODAY"
+              EXIT_CODE=$?
+
+              exit $EXIT_CODE
             envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-osmcha-common-env
           restartPolicy: Never
           {{- if .Values.osmchaApi.nodeSelector.enabled }}
           nodeSelector:
-            {{ .Values.osmchaApi.nodeSelector.label_key }} : {{ .Values.osmchaApi.nodeSelector.label_value }}
+            {{ .Values.osmchaApi.nodeSelector.label_key }}: {{ .Values.osmchaApi.nodeSelector.label_value }}
           {{- end }}
 {{- end }}
