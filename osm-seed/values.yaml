@@ -424,6 +424,7 @@ tilerImposm:
     UPLOAD_EXPIRED_FILES: true
     IMPORT_NATURAL_EARTH: true
     IMPORT_OSM_LAND: true
+    IMPOSM3_IMPORT_LAYERS: all
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
