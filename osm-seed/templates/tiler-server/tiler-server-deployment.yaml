@@ -35,7 +35,7 @@ spec:
             httpGet:
               path: /
               port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
-            initialDelaySeconds: 1000
+            initialDelaySeconds: 1500
             timeoutSeconds: 30
           {{- if .Values.tilerServer.resources.enabled }}
           resources:

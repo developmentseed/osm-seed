@@ -5,23 +5,25 @@ metadata:
   name: {{ .Release.Name }}-tiler-server-cm
 data:
     POSTGRES_HOST: {{ .Release.Name }}-tiler-db
-    POSTGRES_DB: {{ quote .Values.tilerDb.env.POSTGRES_DB }}
-    POSTGRES_PASSWORD: {{ quote .Values.tilerDb.env.POSTGRES_PASSWORD }}
-    POSTGRES_USER: {{ quote .Values.tilerDb.env.POSTGRES_USER }}
-    POSTGRES_PORT: {{ quote .Values.tilerDb.env.POSTGRES_PORT }}
-    TILER_SERVER_PORT: {{ quote .Values.tilerServer.env.TILER_SERVER_PORT }}
-    TILER_CACHE_TYPE: {{ quote .Values.tilerServer.env.TILER_CACHE_TYPE }}
-    TILER_CACHE_REGION: {{ quote .Values.tilerServer.env.TILER_CACHE_REGION }}
-    TILER_CACHE_BUCKET: {{ quote .Values.tilerServer.env.TILER_CACHE_BUCKET }}
-    TILER_CACHE_BASEPATH: {{ quote .Values.tilerServer.env.TILER_CACHE_BASEPATH }}
-    TILER_CACHE_AWS_ACCESS_KEY_ID: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_ACCESS_KEY_ID }}
-    TILER_CACHE_AWS_SECRET_ACCESS_KEY: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
-    TILER_CACHE_MAX_ZOOM: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
-    CLOUDPROVIDER: {{ quote .Values.cloudProvider }}
+    POSTGRES_DB: {{ .Values.tilerDb.env.POSTGRES_DB | quote }}
+    POSTGRES_PASSWORD: {{ .Values.tilerDb.env.POSTGRES_PASSWORD | quote }}
+    POSTGRES_USER: {{ .Values.tilerDb.env.POSTGRES_USER | quote }}
+    POSTGRES_PORT: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
+    TILER_SERVER_PORT: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
+    TILER_CACHE_TYPE: {{ .Values.tilerServer.env.TILER_CACHE_TYPE | quote }}
+    TILER_CACHE_REGION: {{ .Values.tilerServer.env.TILER_CACHE_REGION | quote }}
+    TILER_CACHE_BUCKET: {{ .Values.tilerServer.env.TILER_CACHE_BUCKET | quote }}
+    TILER_CACHE_BASEPATH: {{ .Values.tilerServer.env.TILER_CACHE_BASEPATH | quote }}
+    TILER_CACHE_AWS_ACCESS_KEY_ID: {{ .Values.tilerServer.env.TILER_CACHE_AWS_ACCESS_KEY_ID | quote }}
+    TILER_CACHE_AWS_SECRET_ACCESS_KEY: {{ .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY | quote }}
+    TILER_CACHE_MAX_ZOOM: {{ .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM | quote }}
+    EXECUTE_REINDEX: {{ .Values.tilerServer.env.EXECUTE_REINDEX | quote }}
+    EXECUTE_VACUUM_ANALYZE: {{ .Values.tilerServer.env.EXECUTE_VACUUM_ANALYZE | quote }}
+    CLOUDPROVIDER: {{ .Values.cloudProvider | quote }}
     {{- if eq .Values.cloudProvider "aws" }}
-    AWS_S3_BUCKET: {{ quote .Values.AWS_S3_BUCKET }}
+    AWS_S3_BUCKET: {{ .Values.AWS_S3_BUCKET | quote }}
     {{- end }}
     {{- if eq .Values.cloudProvider "gcp" }}
-    GCP_STORAGE_BUCKET: {{ quote .Values.GCP_STORAGE_BUCKET }}
+    GCP_STORAGE_BUCKET: {{ .Values.GCP_STORAGE_BUCKET | quote }}
     {{- end }}
 {{- end }}
