@@ -471,6 +471,8 @@ tilerServer:
     TILER_CACHE_REGION: us-east-1
     TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
     TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
+    EXECUTE_REINDEX: false
+    EXECUTE_VACUUM_ANALYZE: false
   command: "./start.sh" # ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
   # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
