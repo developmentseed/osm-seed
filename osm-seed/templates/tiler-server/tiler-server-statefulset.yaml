@@ -74,6 +74,8 @@ spec:
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
             - name: TILER_CACHE_MAX_ZOOM
               value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
+            - name: TILER_CACHE_REGION
+              value: {{ .Values.tilerServer.env.TILER_CACHE_REGION }}
             - name: CLOUDPROVIDER
               value: {{ .Values.cloudProvider }}
             # In case cloudProvider=aws
