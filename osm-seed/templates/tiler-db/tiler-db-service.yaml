@@ -1,4 +1,5 @@
 {{- if .Values.tilerDb.enabled -}}
+{{- if not .Values.tilerDb.useExternalHost.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -16,4 +17,5 @@ spec:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-tiler-db
+{{- end }}
 {{- end }}

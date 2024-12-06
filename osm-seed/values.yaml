@@ -348,6 +348,8 @@ osmProcessor:
 # ====================================================================================================
 tilerDb:
   enabled: false
+  useExternalHost: # In case you are using an external host for the database, make sure you add POSTGRES_HOST
+    enabled: false
   image:
     name: ""
     tag: ""

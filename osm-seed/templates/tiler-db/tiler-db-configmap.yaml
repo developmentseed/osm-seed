@@ -1,14 +1,17 @@
 {{- if .Values.tilerDb.enabled -}}
-{{- if .Values.tilerDb.postgresqlConfig.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-tiler-db-postgresql-config
-  labels:
-    app: {{ template "osm-seed.name" . }}
-    release: {{ .Release.Name }}
+  name: {{ .Release.Name }}-tiler-db-common-env
 data:
-  postgresql.conf: |
-{{ .Values.tilerDb.postgresqlConfig.values | indent 4 }}
-{{- end }}
+  {{- if not .Values.tilerDb.useExternalHost.enabled }}
+  POSTGRES_HOST: {{ .Release.Name }}-tiler-db
+  PGDATA: {{ .Values.tilerDb.persistenceDisk.mountPath }}
+  {{- else }}
+  POSTGRES_HOST: {{ .Values.tilerDb.env.POSTGRES_HOST }}
+  {{- end }}
+  POSTGRES_DB: {{ .Values.tilerDb.env.POSTGRES_DB }}
+  POSTGRES_PASSWORD: {{ .Values.tilerDb.env.POSTGRES_PASSWORD | quote }}
+  POSTGRES_USER: {{ .Values.tilerDb.env.POSTGRES_USER | default "postgres" | quote }}
+  PGUSER: {{ .Values.tilerDb.env.POSTGRES_USER | default "postgres" | quote }}
 {{- end }}

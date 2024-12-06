@@ -42,17 +42,10 @@ spec:
             memory: {{ .Values.tilerImposm.resources.limits.memory }}
             cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
         {{- end }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-tiler-db-common-env
         env:
-          - name: POSTGRES_HOST
-            value: {{ .Release.Name }}-tiler-db
-          - name: POSTGRES_DB
-            value: {{ .Values.tilerDb.env.POSTGRES_DB | quote }}
-          - name: POSTGRES_PASSWORD
-            value: {{ .Values.tilerDb.env.POSTGRES_PASSWORD | quote }}
-          - name: POSTGRES_USER
-            value: {{ .Values.tilerDb.env.POSTGRES_USER | quote }}
-          - name: POSTGRES_PORT
-            value: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
           - name: TILER_IMPORT_FROM
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM | quote }}
           - name: TILER_IMPORT_PBF_URL

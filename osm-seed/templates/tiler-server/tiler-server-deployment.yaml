@@ -46,19 +46,10 @@ spec:
               memory: {{ .Values.tilerServer.resources.limits.memory }}
               cpu: {{ .Values.tilerServer.resources.limits.cpu }}
           {{- end }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-tiler-db-common-env
           env:
-              # tiler-db env variables
-            - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-tiler-db
-            - name: POSTGRES_DB
-              value: {{ .Values.tilerDb.env.POSTGRES_DB }}
-            - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.tilerDb.env.POSTGRES_PASSWORD }}
-            - name: POSTGRES_USER
-              value: {{ .Values.tilerDb.env.POSTGRES_USER }}
-            - name: POSTGRES_PORT
-              value: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
-              # tiler-server env variables
             - name: TILER_SERVER_PORT
               value: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
             - name: TILER_CACHE_TYPE

@@ -1,4 +1,5 @@
 {{- if .Values.tilerDb.enabled -}}
+{{- if not .Values.tilerDb.useExternalHost.enabled -}}
 {{- if .Values.tilerDb.persistenceDisk.enabled -}}
 apiVersion: v1
 kind: PersistentVolume
@@ -81,5 +82,6 @@ spec:
       {{- if eq .Values.cloudProvider "gcp" }}
       storage: {{ .Values.tilerDb.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
