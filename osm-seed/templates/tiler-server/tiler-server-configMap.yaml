@@ -4,11 +4,6 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-tiler-server-cm
 data:
-    POSTGRES_HOST: {{ .Release.Name }}-tiler-db
-    POSTGRES_DB: {{ .Values.tilerDb.env.POSTGRES_DB | quote }}
-    POSTGRES_PASSWORD: {{ .Values.tilerDb.env.POSTGRES_PASSWORD | quote }}
-    POSTGRES_USER: {{ .Values.tilerDb.env.POSTGRES_USER | quote }}
-    POSTGRES_PORT: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
     TILER_SERVER_PORT: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
     TILER_CACHE_TYPE: {{ .Values.tilerServer.env.TILER_CACHE_TYPE | quote }}
     TILER_CACHE_REGION: {{ .Values.tilerServer.env.TILER_CACHE_REGION | quote }}
