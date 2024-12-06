@@ -47,9 +47,6 @@ spec:
               memory: {{ .Values.tilerServer.resources.limits.memory }}
               cpu: {{ .Values.tilerServer.resources.limits.cpu }}
           {{- end }}
-          envFrom:
-          - configMapRef:
-              name: {{ .Release.Name }}-tiler-db-common-env
           env:
             - name: TILER_SERVER_PORT
               value: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
@@ -79,6 +76,11 @@ spec:
             - name: GCP_STORAGE_BUCKET
               value: {{ .Values.GCP_STORAGE_BUCKET }}
             {{- end }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-tiler-server-cm
+           - configMapRef:
+              name: {{ .Release.Name }}-tiler-db-cm
           volumeMounts:
           - mountPath: /mnt/data
             name: tiler-server-storage

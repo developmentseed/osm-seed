@@ -378,6 +378,7 @@ tilerDb:
     # GCP
     GCP_gcePersistentDisk_pdName: osmseed-disk-tilerdb-v1
     GCP_gcePersistentDisk_size: 50Gi
+  sharedMemorySize: 64Mi
   resources:
     enabled: false
     requests:
@@ -425,6 +426,7 @@ tilerImposm:
     UPLOAD_EXPIRED_FILES: true
     IMPORT_NATURAL_EARTH: true
     IMPORT_OSM_LAND: true
+    IMPOSM3_IMPORT_LAYERS: all
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
@@ -471,6 +473,8 @@ tilerServer:
     TILER_CACHE_REGION: us-east-1
     TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
     TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
+    EXECUTE_REINDEX: false
+    EXECUTE_VACUUM_ANALYZE: false
   command: "./start.sh" # ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
   # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
@@ -528,6 +532,21 @@ tilerServerCacheCleaner:
     minReplicas: 1
     maxReplicas: 2
     cpuUtilization: 60
+
+tilerCacheCleanerJob:
+  enabled: false
+  tilesFile: imposm/imposm3_expire_dir/latest.tiles
+  minZoom: 0
+  maxZoom: 20
+  overwrite: true
+  resources:
+    enabled: false
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1"
 # ====================================================================================================
 # Variables for Tasking Manager DB
 # ====================================================================================================

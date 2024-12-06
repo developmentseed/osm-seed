@@ -42,9 +42,6 @@ spec:
             memory: {{ .Values.tilerImposm.resources.limits.memory }}
             cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
         {{- end }}
-        envFrom:
-        - configMapRef:
-            name: {{ .Release.Name }}-tiler-db-common-env
         env:
           - name: TILER_IMPORT_FROM
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM | quote }}
@@ -76,6 +73,9 @@ spec:
           - name: GCP_STORAGE_BUCKET
             value: {{ .Values.GCP_STORAGE_BUCKET }}
           {{- end }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-tiler-db-cm
         volumeMounts:
         - mountPath: {{ .Values.tilerImposm.persistenceDisk.mountPath }}
           name: tiler-imposm-storage

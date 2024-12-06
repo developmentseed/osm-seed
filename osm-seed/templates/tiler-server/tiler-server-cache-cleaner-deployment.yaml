@@ -33,53 +33,9 @@ spec:
               memory: {{ .Values.tilerServerCacheCleaner.resources.limits.memory }}
               cpu: {{ .Values.tilerServerCacheCleaner.resources.limits.cpu }}
           {{- end }}
-          env:
-              # tiler-db env variables
-            - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-tiler-db
-            - name: POSTGRES_DB
-              value: {{ .Values.tilerDb.env.POSTGRES_DB }}
-            - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.tilerDb.env.POSTGRES_PASSWORD }}
-            - name: POSTGRES_USER
-              value: {{ .Values.tilerDb.env.POSTGRES_USER }}
-            - name: POSTGRES_PORT
-              value: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
-              # tiler-server env variables
-            - name: TILER_SERVER_PORT
-              value: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
-            - name: TILER_CACHE_TYPE
-              value: {{ .Values.tilerServer.env.TILER_CACHE_TYPE }}
-            - name: TILER_CACHE_REGION
-              value: {{ .Values.tilerServer.env.TILER_CACHE_REGION }}
-            - name: TILER_CACHE_BUCKET
-              value: {{ .Values.tilerServer.env.TILER_CACHE_BUCKET }}
-            - name: TILER_CACHE_BASEPATH
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_BASEPATH }}
-            - name: TILER_CACHE_AWS_ACCESS_KEY_ID
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_ACCESS_KEY_ID }}
-            - name: TILER_CACHE_AWS_SECRET_ACCESS_KEY
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
-            - name: TILER_CACHE_MAX_ZOOM
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
-            - name: MAX_NUM_PS
-              value: {{ quote .Values.tilerServerCacheCleaner.env.MAX_NUM_PS }}
-            - name: PROCESS_NAME
-              value: {{ .Values.tilerServerCacheCleaner.env.PROCESS_NAME }}
-            - name: KILL_PROCESS
-              value: {{ .Values.tilerServerCacheCleaner.env.KILL_PROCESS }}
-            - name: CLOUDPROVIDER
-              value: {{ .Values.cloudProvider }}
-            # In case cloudProvider=aws
-            {{- if eq .Values.cloudProvider "aws" }}
-            - name: AWS_S3_BUCKET
-              value: {{ .Values.AWS_S3_BUCKET }}
-            {{- end }}
-            # In case cloudProvider=gcp
-            {{- if eq .Values.cloudProvider "gcp" }}
-            - name: GCP_STORAGE_BUCKET
-              value: {{ .Values.GCP_STORAGE_BUCKET }}
-            {{- end }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-tiler-server-cm
       {{- if .Values.tilerServerCacheCleaner.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerServerCacheCleaner.nodeSelector.label_key }} : {{ .Values.tilerServerCacheCleaner.nodeSelector.label_value }}
