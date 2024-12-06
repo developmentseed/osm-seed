@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-tiler-db-common-env
+  name: {{ .Release.Name }}-tiler-db-cm
 data:
   {{- if not .Values.tilerDb.useExternalHost.enabled }}
   POSTGRES_HOST: {{ .Release.Name }}-tiler-db
