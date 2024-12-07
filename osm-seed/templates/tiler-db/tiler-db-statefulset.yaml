@@ -1,4 +1,5 @@
 {{- if .Values.tilerDb.enabled -}}
+{{- if not .Values.tilerDb.useExternalHost.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -100,4 +101,5 @@ spec:
       nodeSelector:
         {{ .Values.tilerDb.nodeSelector.label_key }} : {{ .Values.tilerDb.nodeSelector.label_value }}
       {{- end }}
+{{- end }}
 {{- end }}
