@@ -14,5 +14,4 @@ data:
   POSTGRES_PASSWORD: {{ .Values.tilerDb.env.POSTGRES_PASSWORD | quote }}
   POSTGRES_USER: {{ .Values.tilerDb.env.POSTGRES_USER | quote }}
   POSTGRES_PORT: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
-  PGUSER: {{ .Values.tilerDb.env.POSTGRES_USER | quote }}
 {{- end }}

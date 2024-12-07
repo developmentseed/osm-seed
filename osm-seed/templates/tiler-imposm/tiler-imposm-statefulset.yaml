@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-tiler-imposm-statefulset
+  name: {{ .Release.Name }}-tiler-imposm-sts
   labels:
     app: {{ template "osm-seed.name" . }}
     component: tiler-imposm
@@ -11,16 +11,16 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app:  {{ .Release.Name }}-tiler-imposm-statefulset
+      app:  {{ .Release.Name }}-tiler-imposm-sts
   serviceName: {{ .Release.Name }}-tiler-imposm
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-tiler-imposm-statefulset
+        app: {{ .Release.Name }}-tiler-imposm-sts
     spec:
       containers:
-      - name: {{ .Release.Name }}-tiler-imposm-statefulset
+      - name: {{ .Release.Name }}-tiler-imposm-sts
         image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}
         command: ['./start.sh']
         livenessProbe:
@@ -43,6 +43,7 @@ spec:
             cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
         {{- end }}
         env:
+            # Tiler
           - name: TILER_IMPORT_FROM
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM | quote }}
           - name: TILER_IMPORT_PBF_URL

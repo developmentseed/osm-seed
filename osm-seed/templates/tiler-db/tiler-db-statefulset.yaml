@@ -1,26 +1,25 @@
 {{- if .Values.tilerDb.enabled -}}
-{{- if not .Values.tilerDb.useExternalHost.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-tiler-db
   labels:
-    app: {{ template "osm-seed.name" . }}
+    app: {{ .Release.Name }}-tiler-db
     component: db-tiler-statefulset
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  replicas: 1 # we only ever want one replica of the db
+  replicas: 1
   selector:
     matchLabels:
-      app: {{ template "osm-seed.name" . }}
+      app: {{ .Release.Name }}-tiler-db
       release: {{ .Release.Name }}
       run: {{ .Release.Name }}-tiler-db
   serviceName: {{ .Release.Name }}-tiler-db
   template:
     metadata:
       labels:
-        app: {{ template "osm-seed.name" . }}
+        app: {{ .Release.Name }}-tiler-db
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-tiler-db
     spec:
@@ -34,6 +33,9 @@ spec:
           envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-tiler-db-cm
+          env:
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
            {{- if and .Values.tilerDb.postgresqlConfig.enabled .Values.tilerDb.persistenceDisk.enabled }}
           command:
             - "sh"
@@ -98,5 +100,4 @@ spec:
       nodeSelector:
         {{ .Values.tilerDb.nodeSelector.label_key }} : {{ .Values.tilerDb.nodeSelector.label_value }}
       {{- end }}
-{{- end }}
 {{- end }}
