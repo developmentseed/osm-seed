@@ -135,8 +135,8 @@ spec:
             # you done need to set this values.yaml in case you don't use
             - name: BACKUP_FILE_URL
               value: {{ .Values.web.env.BACKUP_FILE_URL | default "none" | quote }}
-            - name: CREDENTIALS_YML_ENC
-              value: {{ .Values.web.env.CREDENTIALS_YML_ENC | quote }}
+            - name: RAILS_CREDENTIALS_YML_ENC
+              value: {{ .Values.web.env.RAILS_CREDENTIALS_YML_ENC | quote }}
             - name: RAILS_MASTER_KEY
               value: {{ .Values.web.env.RAILS_MASTER_KEY | quote }}
           volumeMounts:

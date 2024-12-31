@@ -151,6 +151,8 @@ web:
     WEBSITE_STATUS: "online"
     API_TIMEOUT: 30
     WEB_TIMEOUT: 30
+    RAILS_MASTER_KEY: none
+    RAILS_CREDENTIALS_YML_ENC: none
   resources:
     enabled: false
     requests:
