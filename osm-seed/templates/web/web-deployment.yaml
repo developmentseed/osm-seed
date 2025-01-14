@@ -139,6 +139,8 @@ spec:
               value: {{ .Values.web.env.RAILS_CREDENTIALS_YML_ENC | quote }}
             - name: RAILS_MASTER_KEY
               value: {{ .Values.web.env.RAILS_MASTER_KEY | quote }}
+            - name: RAILS_ENV
+              value: {{ .Values.web.env.RAILS_ENV | quote }}
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory
