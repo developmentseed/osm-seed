@@ -141,6 +141,8 @@ spec:
               value: {{ .Values.web.env.RAILS_MASTER_KEY | quote }}
             - name: RAILS_ENV
               value: {{ .Values.web.env.RAILS_ENV | quote }}
+            - name: RAILS_LOG_LEVEL
+              value: {{ .Values.web.env.RAILS_LOG_LEVEL | default "info" | quote }}
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory

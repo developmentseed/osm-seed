@@ -153,6 +153,7 @@ web:
     WEB_TIMEOUT: 30
     RAILS_MASTER_KEY: none
     RAILS_CREDENTIALS_YML_ENC: none
+    RAILS_LOG_LEVEL: info
   resources:
     enabled: false
     requests:
