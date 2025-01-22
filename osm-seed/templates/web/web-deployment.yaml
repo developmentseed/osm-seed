@@ -143,6 +143,12 @@ spec:
               value: {{ .Values.web.env.RAILS_ENV | quote }}
             - name: RAILS_LOG_LEVEL
               value: {{ .Values.web.env.RAILS_LOG_LEVEL | default "info" | quote }}
+            - name: RAILS_STORAGE_SERVICE
+              value: {{ .Values.web.env.RAILS_STORAGE_SERVICE | default "local" | quote }}
+            - name: RAILS_STORAGE_REGION
+              value: {{ .Values.web.env.RAILS_STORAGE_REGION | quote }}
+            - name: RAILS_STORAGE_BUCKET
+              value: {{ .Values.web.env.RAILS_STORAGE_BUCKET | quote }}
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory

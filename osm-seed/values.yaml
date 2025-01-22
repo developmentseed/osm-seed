@@ -154,6 +154,9 @@ web:
     RAILS_MASTER_KEY: none
     RAILS_CREDENTIALS_YML_ENC: none
     RAILS_LOG_LEVEL: info
+    RAILS_STORAGE_SERVICE: local
+    RAILS_STORAGE_REGION: us-east-1
+    RAILS_STORAGE_BUCKET: osmseed-website-bucket
   resources:
     enabled: false
     requests:
