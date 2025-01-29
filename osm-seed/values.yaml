@@ -871,6 +871,8 @@ osmchaApi:
     REACT_APP_OVERPASS_BASE: //overpass-api.osmseed.org/api/interpreter
     REACT_APP_DISABLE_REAL_CHANGESETS: 1
     REACT_APP_MAPBOX_ACCESS_TOKEN: "pk.abc.df"
+    OAUTH2_OSM_KEY: abc
+    OAUTH2_OSM_SECRET: xyz
   resources:
     enabled: false
     requests:
