@@ -44,6 +44,4 @@ data:
   TM_REDIRECT_URI: {{ quote .Values.tmApi.env.TM_REDIRECT_URI | default "" }}
   TM_SCOPE: {{ quote .Values.tmApi.env.TM_SCOPE | default "" }}
   TM_APP_API_VERSION: {{ quote .Values.tmApi.env.TM_APP_API_VERSION | default "v2" }}
-  OAUTH2_OSM_KEY: {{ quote .Values.tmApi.env.OAUTH2_OSM_KEY }}
-  OAUTH2_OSM_SECRET: {{ quote .Values.tmApi.env.OAUTH2_OSM_SECRET }}
 {{- end }}

@@ -35,6 +35,8 @@ data:
     REACT_APP_OVERPASS_BASE: {{ .Values.osmchaApi.env.REACT_APP_OVERPASS_BASE | quote }}
     REACT_APP_DISABLE_REAL_CHANGESETS: {{ .Values.osmchaApi.env.REACT_APP_DISABLE_REAL_CHANGESETS | quote }} 
     REACT_APP_MAPBOX_ACCESS_TOKEN: {{ .Values.osmchaApi.env.REACT_APP_MAPBOX_ACCESS_TOKEN | quote }}
+    OAUTH2_OSM_KEY: {{ quote .Values.osmchaApi.env.OAUTH2_OSM_KEY }}
+    OAUTH2_OSM_SECRET: {{ quote .Values.osmchaApi.env.OAUTH2_OSM_SECRET }}
 ---
 apiVersion: v1
 kind: ConfigMap
