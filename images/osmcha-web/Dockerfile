@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y git \
     && rm -rf /var/lib/apt/lists/*
 RUN mkdir /app
 WORKDIR /app
-ARG GITSHA=9925beeabcbc3b50eccc83dd92d71f2cf6791b04
-RUN git clone --branch master https://github.com/osmus/osmcha-frontend.git /app
+ARG GITSHA=3cd987bd2ed02bbb60b121ecad0bb556a115aca1
+RUN git clone https://github.com/osmus/osmcha-frontend.git /app
 RUN git checkout $GITSHA
 RUN yarn install
 COPY start.sh .
