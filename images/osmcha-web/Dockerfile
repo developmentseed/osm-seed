@@ -10,7 +10,8 @@ ARG GITSHA=3cd987bd2ed02bbb60b121ecad0bb556a115aca1
 RUN git clone https://github.com/osmus/osmcha-frontend.git /app
 RUN git checkout $GITSHA
 RUN yarn install
-COPY start.sh .
-CMD [ "/app/start.sh" ]
+RUN yarn build:prod
+# COPY start.sh .
+# CMD [ "/app/start.sh" ]
 
 

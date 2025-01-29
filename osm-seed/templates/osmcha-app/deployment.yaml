@@ -71,7 +71,7 @@ spec:
         - containerPort: 5000
         livenessProbe:
           httpGet:
-            path: /
+            path: /api/v1/health
             port: 5000
           initialDelaySeconds: 60
           timeoutSeconds: 30
