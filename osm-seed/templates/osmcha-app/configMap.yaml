@@ -12,6 +12,10 @@ data:
     POSTGRES_PASSWORD: {{ .Values.osmchaDb.env.POSTGRES_PASSWORD | quote }}
     POSTGRES_DATABASE: {{ .Values.osmchaDb.env.POSTGRES_DB | quote }}
     POSTGRES_DB: {{ .Values.osmchaDb.env.POSTGRES_DB | quote }}
+    PGPORT: "5432"
+    PGUSER: {{ .Values.osmchaDb.env.POSTGRES_USER | quote }}
+    PGPASSWORD: {{ .Values.osmchaDb.env.POSTGRES_PASSWORD | quote }}
+    PGDATABASE: {{ .Values.osmchaDb.env.POSTGRES_DB | quote }}
     # API
     DJANGO_SECRET_KEY: {{ .Values.osmchaApi.env.DJANGO_SECRET_KEY | quote }}
     DJANGO_SETTINGS_MODULE: {{ .Values.osmchaApi.env.DJANGO_SETTINGS_MODULE | quote }}
@@ -37,6 +41,10 @@ data:
     REACT_APP_MAPBOX_ACCESS_TOKEN: {{ .Values.osmchaApi.env.REACT_APP_MAPBOX_ACCESS_TOKEN | quote }}
     OAUTH2_OSM_KEY: {{ quote .Values.osmchaApi.env.OAUTH2_OSM_KEY }}
     OAUTH2_OSM_SECRET: {{ quote .Values.osmchaApi.env.OAUTH2_OSM_SECRET }}
+
+
+
+
 ---
 apiVersion: v1
 kind: ConfigMap

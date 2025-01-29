@@ -43,7 +43,7 @@ spec:
             pg_isready -h $POSTGRES_HOST -p 5432 >/dev/null 2>&2 || continue
             flag=false
             python manage.py migrate
-            python manage.py collectstatic
+            python manage.py collectstatic --noinput
             mkdir -p /staticfiles/static
             cp -r /app/staticfiles/* /staticfiles/static/
           done
