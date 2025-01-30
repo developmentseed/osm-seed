@@ -28,8 +28,7 @@ data:
     DJANGO_ENV: "production"
     OSM_SERVER_URL: {{ .Values.osmchaApi.env.OSM_SERVER_URL | quote }}
     DJANGO_DEBUG: "False"
-    DJANGO_ENV: "production"
-    REDIS_URL: "redis://localhost:6379"
+    REDIS_URL: redis://osmcha-redis:6379
     OSM_PLANET_BASE_URL: {{ .Values.osmchaApi.env.OSM_PLANET_BASE_URL | quote }}
     # frontend
     OSMCHA_URL: {{ .Values.osmchaApi.env.OSMCHA_URL | quote }}
@@ -41,9 +40,6 @@ data:
     REACT_APP_MAPBOX_ACCESS_TOKEN: {{ .Values.osmchaApi.env.REACT_APP_MAPBOX_ACCESS_TOKEN | quote }}
     OAUTH2_OSM_KEY: {{ quote .Values.osmchaApi.env.OAUTH2_OSM_KEY }}
     OAUTH2_OSM_SECRET: {{ quote .Values.osmchaApi.env.OAUTH2_OSM_SECRET }}
-
-
-
 
 ---
 apiVersion: v1

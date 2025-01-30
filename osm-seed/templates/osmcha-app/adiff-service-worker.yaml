@@ -26,10 +26,11 @@ spec:
             - -c
             - yarn update-queue
           env:
+            ### Redis Server comes from osmcha-api
+            - name: RedisServer
+              value: redis://osmcha-redis:6379
             - name: OsmchaAdminToken
               value: {{ .Values.adiffService.env.OSMCHAADMINTOKEN }}
-            - name: RedisServer
-              value: {{ .Values.adiffService.env.REDIS_URL }}
             - name: NumberOfWorkers
               value: {{ .Values.adiffService.env.WORKER_COUNT | quote }}
             - name: NODE_OPTIONS
