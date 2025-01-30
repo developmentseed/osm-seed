@@ -76,7 +76,7 @@ spec:
           - name: staticfiles
             mountPath: /srv/www/static/django
             readOnly: true
-      - name: redis
+      - name: osmcha-redis
         image: "redis:latest"
         ports:
         - containerPort: 6379
