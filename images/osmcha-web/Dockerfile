@@ -11,7 +11,5 @@ RUN git clone https://github.com/osmus/osmcha-frontend.git /app
 RUN git checkout $GITSHA
 RUN yarn install
 RUN yarn build:prod
-# COPY start.sh .
-# CMD [ "/app/start.sh" ]
-
-
+COPY start.sh .
+CMD [ "/app/start.sh" ]

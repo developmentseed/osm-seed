@@ -31,7 +31,7 @@ spec:
         volumeMounts:
         - name: nginx-assets
           mountPath: /assets
-      - name: init
+      - name: migrations
         image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
         command:
         - /bin/sh
