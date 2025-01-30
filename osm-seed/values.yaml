@@ -920,6 +920,31 @@ osmchaDb:
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
+
+# ====================================================================================================
+# Variables for osmcha DB
+# ====================================================================================================
+adiffService:
+  enabled: false
+  image:
+    name: "ghcr.io/osmcha/osm-adiff-service"
+    tag: "b0b2bcaf1d7428e48146c70ea80e129fcd864686"
+  env:
+    OSMCHAADMINTOKEN: abc
+    REDIS_URL: postgres
+    WORKER_COUNT: 2
+    NODE_OPTIONS: --max-old-space-size=8192
+  resources:
+    enabled: false
+    requests:
+      memory: "20Gi"
+      cpu: "8"
+    limits:
+      memory: "24Gi"
+      cpu: "10"
+  nodeSelector:
+    enabled: false
+
 # ====================================================================================================
 # Planet server files
 # ====================================================================================================
