@@ -1,60 +1,39 @@
-version: "3.8"
 services:
-  web:
-    platform: linux/amd64
-    image: developmentseed/osmseed-osmcha-web:v16
+  django:
+    image: "ghcr.io/openhistoricalmap/osmcha-django:upstream_main"
+    depends_on:
+      - redis
+    volumes:
+      # Copy static files into a shared volume so the frontend can serve them
+      - staticfiles:/app/staticfiles
+    env_file: ./../envs/.env.osmcha
+    ports:
+      - "5001:5000"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        python manage.py migrate --verbosity 3 && \
+        python manage.py collectstatic --noinput && \
+        gunicorn config.wsgi -t 120 -b 0.0.0.0:5000 --access-logfile - --log-level debug
+  frontend:
     build:
       context: ../images/osmcha-web
       dockerfile: Dockerfile
-    env_file:
-    - ../envs/.env.osmcha
+    depends_on:
+      - django
     volumes:
-    - ../data/osmcha/staticfiles:/staticfiles
-  db:
-    platform: linux/amd64
-    image: osmseed-osmcha-db:v1
-    build:
-      context: ../images/osmcha-db
-      dockerfile: Dockerfile
+      # frontend serves django app's static files via shared volume
+      - staticfiles:/srv/www/static/django
+    env_file: ./../envs/.env.osmcha
+
     ports:
-    - "5432:5432"
-    volumes:
-    - ../data/osmcha-db-data:/var/lib/postgresql/data
-    env_file:
-    - ../envs/.env.osmcha
-  init:
-    platform: linux/amd64
-    image: ghcr.io/willemarcel/osmcha-django:b1f4e6afc90e08707cadc4d74580632ca3b93dd2
-    command: >
-      /bin/bash -c "
-        set -x
-        python manage.py collectstatic
-        python manage.py migrate
-        mkdir -p /staticfiles/static
-        cp -r /app/staticfiles/* /staticfiles/static/
-      "
-    env_file:
-    - ../envs/.env.osmcha
-    volumes:
-    - ../data/osmcha/staticfiles:/staticfiles
-  api:
-    platform: linux/amd64
-    image: ghcr.io/willemarcel/osmcha-django:b1f4e6afc90e08707cadc4d74580632ca3b93dd2
-    build:
-      context: ../images/osmcha-api
-      dockerfile: Dockerfile
-    command: >
-      /bin/bash -c "
-        set -x
-        python manage.py collectstatic
-        python manage.py migrate
-        mkdir -p /staticfiles/static
-        cp -r /app/staticfiles/* /staticfiles/static/
-        gunicorn --workers 4 --bind 0.0.0.0:5000 --log-file - --access-logfile - config.wsgi
-      "
+      - "8000:80"
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
     ports:
-    - "5000:5000"
-    env_file:
-    - ../envs/.env.osmcha
-    volumes:
-    - ../data/osmcha/staticfiles:/staticfiles
+      - "6379:6379"
+volumes:
+  staticfiles:
