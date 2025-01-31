@@ -9,7 +9,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: {{ .Values.osmchaApi.fetch_changesets_cronjob }}
+  schedule: {{ .Values.osmchaApi.fetch_changesets_cronjob | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
@@ -47,7 +47,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: {{ .Values.osmchaApi.process_changesets_cronjob }}
+  schedule: {{ .Values.osmchaApi.process_changesets_cronjob | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
