@@ -885,6 +885,8 @@ osmchaApi:
     enabled: false
     label_key: nodegroup_type
     label_value: db
+  fetch_changesets_cronjob: "*/2 * * * *"
+  process_changesets_cronjob: "*/2 * * * *"
 # ====================================================================================================
 # Variables for osmcha DB
 # ====================================================================================================
