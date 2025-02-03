@@ -1,0 +1,66 @@
+{{- if .Values.adiffService.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-osmcha-adiff-service-worker
+  labels:
+    app: {{ .Release.Name }}-osmcha-adiff-service-worker
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.adiffService.replicas}}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-osmcha-adiff-service-worker
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-osmcha-adiff-service-worker
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-osmcha-adiff-service-worker
+          image: "{{ .Values.adiffService.image.name }}:{{ .Values.adiffService.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - yarn update-queue
+          env:
+            - name: ReplicationBucket
+              value: {{ .Values.adiffService.env.ReplicationBucket }}
+            - name: OsmchaAdminToken
+              value: {{ .Values.adiffService.env.OsmchaAdminToken }}
+            - name: OutputBucket
+              value: {{ .Values.adiffService.env.OutputBucket }}
+            - name: OverpassPrimaryUrl
+              value: {{ .Values.adiffService.env.OverpassPrimaryUrl }}
+            - name: OverpassSecondaryUrl
+              value: {{ .Values.adiffService.env.OverpassSecondaryUrl }}
+            ### Redis Server comes from osmcha-api
+            - name: RedisServer
+              value: redis://localhost:6379
+            - name: NumberOfWorkers
+              value: {{ .Values.adiffService.env.NumberOfWorkers | quote }}
+            - name: NODE_OPTIONS
+              value: {{ .Values.adiffService.env.NODE_OPTIONS }}
+            - name: OsmchaUrl
+              value: {{ .Values.adiffService.env.OsmchaUrl }}
+
+          {{- if .Values.adiffService.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.adiffService.nodeSelector.label_key }}: {{ .Values.adiffService.nodeSelector.label_value }}
+          {{- end }}
+          {{- if .Values.adiffService.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.adiffService.resources.requests.memory }}
+              cpu: {{ .Values.adiffService.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.adiffService.resources.limits.memory }}
+              cpu: {{ .Values.adiffService.resources.limits.cpu }}
+          {{- end }}
+        - name: osmcha-redis-adiff
+          image: "redis:latest"
+          ports:
+          - containerPort: 6379
+{{- end }}

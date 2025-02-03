@@ -9,7 +9,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: "*/2 * * * *"
+  schedule: {{ .Values.osmchaApi.fetch_changesets_cronjob | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
@@ -47,7 +47,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  schedule: "0 * * * *"
+  schedule: {{ .Values.osmchaApi.process_changesets_cronjob | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
@@ -60,17 +60,14 @@ spec:
           - name: {{ .Release.Name }}-osmcha-process-changesets
             image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
             imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
             command:
             - /bin/sh
             - -c
             - |
-              YESTERDAY=$(date -d "yesterday" +%Y-%m-%d)
-              TODAY=$(date +%Y-%m-%d)
-
-              python manage.py backfill_changesets "$YESTERDAY" "$TODAY"
-              EXIT_CODE=$?
-
-              exit $EXIT_CODE
+              set -x
+              # Note: This is a hack to make sure for ohm
+              python manage.py backfill_changesets_id --start_id=100000
             envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-osmcha-common-env
