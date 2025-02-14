@@ -66,26 +66,26 @@ spec:
               value: {{ .Values.nominatimApi.env.NOMINATIM_ADDRESS_LEVEL_CONFIG_URL }}
             - name: UPDATE_MODE
               value: {{ .Values.nominatimApi.env.UPDATE_MODE | default "none" | quote }}
-          # command: ["/bin/sh"]
-          # args: ["-c", "sh /app/start.sh"]
-          # livenessProbe:
-          #   exec:
-          #     command:
-          #     - sh
-          #     - -c
-          #     - exec pg_isready --host $POD_IP
-          #   initialDelaySeconds: 120
-          #   timeoutSeconds: 5
-          #   failureThreshold: 6
-          # readinessProbe:
-          #   exec:
-          #     command:
-          #     - sh
-          #     - -c
-          #     - exec pg_isready --host $POD_IP
-          #   initialDelaySeconds: 5
-          #   timeoutSeconds: 3
-          #   periodSeconds: 5
+            - name: IMPORT_STYLE
+              value: {{ .Values.nominatimApi.env.IMPORT_STYLE | default "full" | quote }}
+            - name: EXTRA_TAGS
+              value: {{ .Values.nominatimApi.env.EXTRA_TAGS | default "" | quote }}
+
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
           volumeMounts:
             - name: nominatim-db-storage
               mountPath: {{ .Values.nominatimApi.persistenceDisk.mountPath }}
