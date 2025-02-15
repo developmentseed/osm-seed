@@ -9,7 +9,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  replicas: 1 # we only ever want one replica of the nominatimApi
+  replicas: 1
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
@@ -71,21 +71,14 @@ spec:
             - name: EXTRA_TAGS
               value: {{ .Values.nominatimApi.env.EXTRA_TAGS | default "" | quote }}
 
-          livenessProbe:
-            httpGet:
-              path: /status
-              port: 8080
-            initialDelaySeconds: 120
-            timeoutSeconds: 5
-            failureThreshold: 6
+          # livenessProbe:
+          #   httpGet:
+          #     path: /status
+          #     port: 8080
+          #   initialDelaySeconds: 40000
+          #   timeoutSeconds: 5
+          #   failureThreshold: 6
 
-          readinessProbe:
-            httpGet:
-              path: /status
-              port: 8080
-            initialDelaySeconds: 5
-            timeoutSeconds: 3
-            periodSeconds: 5
           volumeMounts:
             - name: nominatim-db-storage
               mountPath: {{ .Values.nominatimApi.persistenceDisk.mountPath }}
