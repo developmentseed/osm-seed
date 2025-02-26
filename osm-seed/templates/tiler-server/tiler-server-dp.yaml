@@ -1,4 +1,4 @@
-{{- if .Values.tilerServer.enabled -}}
+{{- if and .Values.tilerServer.enabled (not .Values.tilerServer.externalService.enabled) }}
 {{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "file" }}
 {{- if .Values.tilerServer.persistenceDisk.enabled -}}
 apiVersion: v1
