@@ -9,7 +9,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  replicas: 1 # we only ever want one replica of the nominatimApi
+  replicas: 1
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
@@ -66,26 +66,19 @@ spec:
               value: {{ .Values.nominatimApi.env.NOMINATIM_ADDRESS_LEVEL_CONFIG_URL }}
             - name: UPDATE_MODE
               value: {{ .Values.nominatimApi.env.UPDATE_MODE | default "none" | quote }}
-          # command: ["/bin/sh"]
-          # args: ["-c", "sh /app/start.sh"]
+            - name: IMPORT_STYLE
+              value: {{ .Values.nominatimApi.env.IMPORT_STYLE | default "full" | quote }}
+            - name: EXTRA_TAGS
+              value: {{ .Values.nominatimApi.env.EXTRA_TAGS | default "" | quote }}
+
           # livenessProbe:
-          #   exec:
-          #     command:
-          #     - sh
-          #     - -c
-          #     - exec pg_isready --host $POD_IP
-          #   initialDelaySeconds: 120
+          #   httpGet:
+          #     path: /status
+          #     port: 8080
+          #   initialDelaySeconds: 40000
           #   timeoutSeconds: 5
           #   failureThreshold: 6
-          # readinessProbe:
-          #   exec:
-          #     command:
-          #     - sh
-          #     - -c
-          #     - exec pg_isready --host $POD_IP
-          #   initialDelaySeconds: 5
-          #   timeoutSeconds: 3
-          #   periodSeconds: 5
+
           volumeMounts:
             - name: nominatim-db-storage
               mountPath: {{ .Values.nominatimApi.persistenceDisk.mountPath }}
