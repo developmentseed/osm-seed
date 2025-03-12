@@ -50,12 +50,16 @@ spec:
             {{- end }}
           {{- if .Values.web.resources.enabled }}
           resources:
+            {{- if .Values.web.resources.requests.enabled }}
             requests:
               memory: {{ .Values.web.resources.requests.memory }}
               cpu: {{ .Values.web.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.web.resources.limits.enabled }}
             limits:
               memory: {{ .Values.web.resources.limits.memory }}
               cpu: {{ .Values.web.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
           env:
             - name: GET_HOSTS_FROM

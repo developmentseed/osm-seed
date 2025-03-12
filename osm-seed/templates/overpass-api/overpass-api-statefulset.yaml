@@ -66,6 +66,19 @@ spec:
           volumeMounts:
           - mountPath: /db
             name: overpass-api-storage
+          {{- if .Values.overpassApi.resources.enabled }}
+          resources:
+            {{- if .Values.overpassApi.resources.requests.enabled }}
+            requests:
+              memory: {{ .Values.overpassApi.resources.requests.memory }}
+              cpu: {{ .Values.overpassApi.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.overpassApi.resources.limits.enabled }}
+            limits:
+              memory: {{ .Values.overpassApi.resources.limits.memory }}
+              cpu: {{ .Values.overpassApi.resources.limits.cpu }}
+            {{- end }}
+          {{- end }}
       restartPolicy: Always
       volumes:
         - name: overpass-api-storage

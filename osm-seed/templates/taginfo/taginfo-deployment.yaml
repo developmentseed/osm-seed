@@ -43,12 +43,16 @@ spec:
             timeoutSeconds: 60
           {{- if .Values.taginfo.resources.enabled }}
           resources:
+            {{- if .Values.taginfo.resources.requests.enabled }}
             requests:
               memory: {{ .Values.taginfo.resources.requests.memory }}
               cpu: {{ .Values.taginfo.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.taginfo.resources.limits.enabled }}
             limits:
               memory: {{ .Values.taginfo.resources.limits.memory }}
               cpu: {{ .Values.taginfo.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
           envFrom:
           - configMapRef:

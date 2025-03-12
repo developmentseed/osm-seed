@@ -38,12 +38,16 @@ spec:
             timeoutSeconds: 30
           {{- if .Values.tmApi.resources.enabled }}
           resources:
+            {{- if .Values.tmApi.resources.requests.enabled }}
             requests:
               memory: {{ .Values.tmApi.resources.requests.memory }}
               cpu: {{ .Values.tmApi.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.tmApi.resources.limits.enabled }}
             limits:
               memory: {{ .Values.tmApi.resources.limits.memory }}
               cpu: {{ .Values.tmApi.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
           envFrom:
           - configMapRef:

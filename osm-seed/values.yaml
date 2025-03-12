@@ -97,11 +97,13 @@ db:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
-      cpu: "1"
+      cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
-      cpu: "1"
+      cpu: "2"
   nodeSelector:
     enabled: false
   sharedMemorySize: 64Mi
@@ -162,9 +164,11 @@ web:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -189,10 +193,12 @@ memcached:
   resources:
     enabled: false
     requests:
-      memory: "8Gi"
+      enabled: false
+      memory: "1Gi"
       cpu: "2"
     limits:
-      memory: "8Gi"
+      enabled: false
+      memory: "2Gi"
       cpu: "2"
 # ====================================================================================================
 # Variables for full-history container
@@ -213,14 +219,16 @@ fullHistory:
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "16Gi"
-      cpu: "4"
-      # ====================================================================================================
-      # Variables for osm-seed database backup and restore
-      # ====================================================================================================
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
+# ====================================================================================================
+# Variables for osm-seed database backup and restore
+# ====================================================================================================
 dbBackupRestore:
   image:
     name: "developmentseed/osmseed-backup-restore"
@@ -243,11 +251,13 @@ dbBackupRestore:
       resources:
         enabled: false
         requests:
-          memory: "300Mi"
-          cpu: "0.5"
+          enabled: false
+          memory: "1Gi"
+          cpu: "2"
         limits:
-          memory: "400Mi"
-          cpu: "0.6"
+          enabled: false
+          memory: "2Gi"
+          cpu: "2"
       nodeSelector:
         enabled: false
     - name: osmcha-db
@@ -267,11 +277,13 @@ dbBackupRestore:
       resources:
         enabled: false
         requests:
-          memory: "300Mi"
-          cpu: "0.5"
+          enabled: false
+          memory: "1Gi"
+          cpu: "2"
         limits:
-          memory: "400Mi"
-          cpu: "0.6"
+          enabled: false
+          memory: "2Gi"
+          cpu: "2"
       nodeSelector:
         enabled: false
 # ====================================================================================================
@@ -289,11 +301,13 @@ planetDump:
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "16Gi"
-      cpu: "4"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 # ====================================================================================================
@@ -311,11 +325,13 @@ replicationJob:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 # ====================================================================================================
@@ -332,11 +348,13 @@ populateApidb:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
-      cpu: "2.5"
+      cpu: "2"
 # ====================================================================================================
 # Variables to start a pod to process osm files
 # ====================================================================================================
@@ -352,11 +370,13 @@ osmProcessor:
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "16Gi"
-      cpu: "4"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
 # ====================================================================================================
 # Variables for tiler-db
 # ====================================================================================================
@@ -397,11 +417,13 @@ tilerDb:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
-      cpu: "2.5"
+      cpu: "2"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -460,11 +482,13 @@ tilerImposm:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -515,9 +539,11 @@ tilerServer:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -537,9 +563,11 @@ tilerServerCacheCleaner:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   env:
@@ -566,11 +594,13 @@ tilerCacheCleanerJob:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
-      cpu: "500m"
+      cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
-      cpu: "1"
+      cpu: "2"
 # ====================================================================================================
 # Variables for Tasking Manager DB
 # ====================================================================================================
@@ -595,9 +625,11 @@ tmDb:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
 # ====================================================================================================
@@ -645,9 +677,11 @@ tmApi:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
 # ====================================================================================================
@@ -681,9 +715,11 @@ nominatimApi:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   persistenceDisk:
@@ -738,9 +774,11 @@ overpassApi:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -775,9 +813,11 @@ taginfo:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -812,9 +852,11 @@ osmSimpleMetrics:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -835,9 +877,11 @@ monitoringReplication:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -854,11 +898,13 @@ changesetReplicationJob:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 # ====================================================================================================
@@ -903,11 +949,13 @@ osmchaApi:
   resources:
     enabled: false
     requests:
-      memory: "512Mi"
-      cpu: "1"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "512Mi"
-      cpu: "1"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -930,11 +978,13 @@ osmchaDb:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
@@ -968,11 +1018,13 @@ adiffService:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 

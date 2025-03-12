@@ -86,12 +86,16 @@ spec:
             {{- end }}
           {{- if .Values.db.resources.enabled }}
           resources:
+            {{- if .Values.db.resources.requests.enabled }}
             requests:
               memory: {{ .Values.db.resources.requests.memory }}
               cpu: {{ .Values.db.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.db.resources.limits.enabled }}
             limits:
               memory: {{ .Values.db.resources.limits.memory }}
               cpu: {{ .Values.db.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
       volumes:
         - name: postgres-storage
