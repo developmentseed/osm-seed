@@ -1,4 +1,4 @@
-{{- if .Values.tilerServer.enabled -}}
+{{- if and .Values.tilerServer.enabled (not .Values.tilerServer.externalService.enabled) }}
 {{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "s3" }}
 {{- if .Values.tilerServerCacheCleaner.enabled -}}
 {{- if .Values.tilerServerCacheCleaner.autoscaling.enabled -}}

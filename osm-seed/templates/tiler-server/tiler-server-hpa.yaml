@@ -1,4 +1,4 @@
-{{- if .Values.tilerServer.enabled -}}
+{{- if and .Values.tilerServer.enabled (not .Values.tilerServer.externalService.enabled) }}
 {{- if .Values.tilerServer.autoscaling.enabled -}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler

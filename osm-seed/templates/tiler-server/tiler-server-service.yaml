@@ -1,8 +1,8 @@
-{{- if .Values.tilerServer.enabled -}}
+{{- if .Values.tilerServer.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-tiler-server
+  name: {{ .Release.Name }}-tiler-server
   labels:
     app: {{ template "osm-seed.name" . }}
     component: tiler-server-service
@@ -13,7 +13,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "600" 
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "600"
     {{- end }}
     {{- if eq .Values.serviceType "ClusterIP" }}
     kubernetes.io/ingress.class: nginx
@@ -25,21 +25,37 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  type: {{ .Values.serviceType }}
+  # If tilerServer.externalService.enabled = true, we use ExternalName; otherwise use user-defined serviceType
+  type: {{- if .Values.tilerServer.externalService.enabled }} ExternalName {{- else }} {{ .Values.serviceType }} {{- end }}
+
+  {{- if .Values.tilerServer.externalService.enabled }}
+  # external name service
+  externalName: "{{ .Values.tilerServer.externalService.ip }}"
+  ports:
+    - port: 80
+      protocol: TCP
+      name: http
+      targetPort: {{ .Values.tilerServer.externalService.port }}
+    - port: 443
+      protocol: TCP
+      name: https
+      targetPort: {{ .Values.tilerServer.externalService.port }}
+  {{- else }}
+  # normal (internal) service
   ports:
     - port: 80
       targetPort: http
       protocol: TCP
       name: http
-  {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
+    {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     - port: 443
       targetPort: http
       protocol: TCP
       name: https
-  {{- end }}
-  
+    {{- end }}
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-tiler-server
+  {{- end }}
 {{- end }}
