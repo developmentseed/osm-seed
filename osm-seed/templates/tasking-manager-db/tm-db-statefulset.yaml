@@ -23,6 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-tasking-manager-db
     spec:
+      priorityClassName: {{ .Values.tmDb.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-tm-db
           image: "{{ .Values.tmDb.image.name }}:{{ .Values.tmDb.image.tag }}"

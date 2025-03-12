@@ -71,6 +71,7 @@ db:
   image:
     name: ""
     tag: ""
+  priorityClass: "high-priority"
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
@@ -133,6 +134,7 @@ web:
   image:
     name: ""
     tag: ""
+  priorityClass: "high-priority"
   replicaCount: 1
   ingressDomain: www.dev.osmseed.org
   serviceAnnotations: {}
@@ -179,6 +181,7 @@ web:
 # ====================================================================================================
 memcached:
   enabled: false
+  priorityClass: "high-priority"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -196,6 +199,7 @@ memcached:
 # ====================================================================================================
 fullHistory:
   enabled: false
+  priorityClass: "low-priority"
   image:
     name: ""
     tag: ""
@@ -278,6 +282,7 @@ planetDump:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   schedule: "* * * * *"
   env:
     OVERWRITE_PLANET_FILE: false
@@ -299,6 +304,7 @@ replicationJob:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     ENABLE_SEND_SLACK_MESSAGE: "false"
     SLACK_WEBHOOK_URL: "null"
@@ -317,6 +323,7 @@ replicationJob:
 # ====================================================================================================
 populateApidb:
   enabled: false
+  priorityClass: "medium-priority"
   image:
     name: ""
     tag: ""
@@ -338,6 +345,7 @@ osmProcessor:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     URL_FILE_TO_PROCESS: "http://download.geofabrik.de/europe/monaco-latest.osm.pbf"
     OSM_FILE_ACTION: simple_pbf
@@ -359,6 +367,7 @@ tilerDb:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
@@ -425,6 +434,7 @@ tilerImposm:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -471,6 +481,7 @@ tilerServer:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   replicaCount: 1
   serviceAnnotations: {}
   ingressDomain: tiler2.dev.openhistoricalmap.org
@@ -520,6 +531,7 @@ tilerServer:
 # ====================================================================================================
 tilerServerCacheCleaner:
   enabled: false
+  priorityClass: "medium-priority"
   replicaCount: 1
   command: "./tile_cache_downloader.sh & ./expire-watcher.sh"
   resources:
@@ -546,6 +558,7 @@ tilerServerCacheCleaner:
 
 tilerCacheCleanerJob:
   enabled: false
+  priorityClass: "medium-priority"
   tilesFile: imposm/imposm3_expire_dir/latest.tiles
   minZoom: 0
   maxZoom: 20
@@ -566,6 +579,7 @@ tmDb:
   image:
     name: "postgres"
     tag: "11"
+  priorityClass: "medium-priority"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -595,6 +609,7 @@ tmApi:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   nodeSelector:
     enabled: false
   replicaCount: 1
@@ -643,6 +658,7 @@ nominatimApi:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   serviceAnnotations: {}
   replicaCount: 1
   ingressDomain: nominatim-api.dev.osmseed.org
@@ -694,6 +710,7 @@ overpassApi:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   serviceAnnotations: {}
   ingressDomain: overpass-api.dev.osmseed.org
   env:
@@ -736,6 +753,7 @@ taginfo:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   serviceAnnotations: {}
   ingressDomain: taginfo-dev.staging.openhistoricalmap.org
   env:
@@ -789,6 +807,7 @@ osmSimpleMetrics:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   schedule: "* */1 * * *"
   resources:
     enabled: false
@@ -808,6 +827,7 @@ monitoringReplication:
   image:
     name: "developmentseed/osmseed-replication-job"
     tag: "0.1.0-n770.hd15c9f2"
+  priorityClass: "medium-priority"
   schedule: "* */1 * * *"
   env:
     CREATE_MISSING_FILES: empty
@@ -830,6 +850,7 @@ changesetReplicationJob:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   resources:
     enabled: false
     requests:
@@ -857,6 +878,7 @@ osmchaApi:
     name: "ghcr.io/osmcha/osmcha-django"
     tag: "61a80e897b45fb9b1a177bf433fb79bfa7fda59d"
   ingressDomain: osmcha.dev.osmseed.org
+  priorityClass: "medium-priority"
   env:
     DJANGO_SETTINGS_MODULE: "config.settings.production"
     OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
@@ -900,6 +922,7 @@ osmchaDb:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     POSTGRES_DB: osmcha-db
     POSTGRES_USER: postgres
@@ -936,6 +959,7 @@ adiffService:
   image:
     name: "ghcr.io/osmcha/osm-adiff-service"
     tag: "b0b2bcaf1d7428e48146c70ea80e129fcd864686"
+  priorityClass: "medium-priority"
   env:
     OSMCHAADMINTOKEN: abc
     REDIS_URL: postgres
@@ -960,3 +984,4 @@ planetFiles:
   image:
     name: ""
     tag: ""
+  priorityClass: "low-priority"

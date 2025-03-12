@@ -36,6 +36,7 @@ spec:
         volumeMounts:
         - name: staticfiles
           mountPath: /app/staticfiles
+      priorityClassName: {{ .Values.osmchaApi.priorityClass | default "medium-priority" }}
       containers:
       - name: osmcha-api
         image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"

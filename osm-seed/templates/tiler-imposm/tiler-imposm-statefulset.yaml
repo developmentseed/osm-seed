@@ -19,6 +19,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-tiler-imposm-sts
     spec:
+      priorityClassName: {{ .Values.tilerImposm.priorityClass | default "medium-priority" }}
       containers:
       - name: {{ .Release.Name }}-tiler-imposm-sts
         image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}

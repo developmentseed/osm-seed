@@ -23,6 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-db
     spec:
+      priorityClassName: {{ .Values.db.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Chart.Name }}-db
           image: "{{ .Values.db.image.name }}:{{ .Values.db.image.tag }}"
