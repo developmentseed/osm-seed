@@ -71,6 +71,7 @@ db:
   image:
     name: ""
     tag: ""
+  priorityClass: "high-priority"
   env:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
@@ -96,11 +97,13 @@ db:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
-      cpu: "1"
+      cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
-      cpu: "1"
+      cpu: "2"
   nodeSelector:
     enabled: false
   sharedMemorySize: 64Mi
@@ -133,6 +136,7 @@ web:
   image:
     name: ""
     tag: ""
+  priorityClass: "high-priority"
   replicaCount: 1
   ingressDomain: www.dev.osmseed.org
   serviceAnnotations: {}
@@ -160,9 +164,11 @@ web:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -179,6 +185,7 @@ web:
 # ====================================================================================================
 memcached:
   enabled: false
+  priorityClass: "high-priority"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -186,16 +193,19 @@ memcached:
   resources:
     enabled: false
     requests:
-      memory: "8Gi"
+      enabled: false
+      memory: "1Gi"
       cpu: "2"
     limits:
-      memory: "8Gi"
+      enabled: false
+      memory: "2Gi"
       cpu: "2"
 # ====================================================================================================
 # Variables for full-history container
 # ====================================================================================================
 fullHistory:
   enabled: false
+  priorityClass: "low-priority"
   image:
     name: ""
     tag: ""
@@ -209,14 +219,16 @@ fullHistory:
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "16Gi"
-      cpu: "4"
-      # ====================================================================================================
-      # Variables for osm-seed database backup and restore
-      # ====================================================================================================
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
+# ====================================================================================================
+# Variables for osm-seed database backup and restore
+# ====================================================================================================
 dbBackupRestore:
   image:
     name: "developmentseed/osmseed-backup-restore"
@@ -239,11 +251,13 @@ dbBackupRestore:
       resources:
         enabled: false
         requests:
-          memory: "300Mi"
-          cpu: "0.5"
+          enabled: false
+          memory: "1Gi"
+          cpu: "2"
         limits:
-          memory: "400Mi"
-          cpu: "0.6"
+          enabled: false
+          memory: "2Gi"
+          cpu: "2"
       nodeSelector:
         enabled: false
     - name: osmcha-db
@@ -263,11 +277,13 @@ dbBackupRestore:
       resources:
         enabled: false
         requests:
-          memory: "300Mi"
-          cpu: "0.5"
+          enabled: false
+          memory: "1Gi"
+          cpu: "2"
         limits:
-          memory: "400Mi"
-          cpu: "0.6"
+          enabled: false
+          memory: "2Gi"
+          cpu: "2"
       nodeSelector:
         enabled: false
 # ====================================================================================================
@@ -278,17 +294,20 @@ planetDump:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   schedule: "* * * * *"
   env:
     OVERWRITE_PLANET_FILE: false
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "16Gi"
-      cpu: "4"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 # ====================================================================================================
@@ -299,17 +318,20 @@ replicationJob:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     ENABLE_SEND_SLACK_MESSAGE: "false"
     SLACK_WEBHOOK_URL: "null"
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 # ====================================================================================================
@@ -317,6 +339,7 @@ replicationJob:
 # ====================================================================================================
 populateApidb:
   enabled: false
+  priorityClass: "medium-priority"
   image:
     name: ""
     tag: ""
@@ -325,11 +348,13 @@ populateApidb:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
-      cpu: "2.5"
+      cpu: "2"
 # ====================================================================================================
 # Variables to start a pod to process osm files
 # ====================================================================================================
@@ -338,17 +363,20 @@ osmProcessor:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     URL_FILE_TO_PROCESS: "http://download.geofabrik.de/europe/monaco-latest.osm.pbf"
     OSM_FILE_ACTION: simple_pbf
   resources:
     enabled: false
     requests:
-      memory: "14Gi"
-      cpu: "4"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "16Gi"
-      cpu: "4"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
 # ====================================================================================================
 # Variables for tiler-db
 # ====================================================================================================
@@ -359,6 +387,7 @@ tilerDb:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     POSTGRES_HOST: tiler-db
     POSTGRES_DB: tiler-osm
@@ -388,11 +417,13 @@ tilerDb:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
-      cpu: "2.5"
+      cpu: "2"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -425,6 +456,7 @@ tilerImposm:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -450,11 +482,13 @@ tilerImposm:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -471,6 +505,7 @@ tilerServer:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   replicaCount: 1
   serviceAnnotations: {}
   ingressDomain: tiler2.dev.openhistoricalmap.org
@@ -504,9 +539,11 @@ tilerServer:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -520,14 +557,17 @@ tilerServer:
 # ====================================================================================================
 tilerServerCacheCleaner:
   enabled: false
+  priorityClass: "medium-priority"
   replicaCount: 1
   command: "./tile_cache_downloader.sh & ./expire-watcher.sh"
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   env:
@@ -546,6 +586,7 @@ tilerServerCacheCleaner:
 
 tilerCacheCleanerJob:
   enabled: false
+  priorityClass: "medium-priority"
   tilesFile: imposm/imposm3_expire_dir/latest.tiles
   minZoom: 0
   maxZoom: 20
@@ -553,11 +594,13 @@ tilerCacheCleanerJob:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
-      cpu: "500m"
+      cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
-      cpu: "1"
+      cpu: "2"
 # ====================================================================================================
 # Variables for Tasking Manager DB
 # ====================================================================================================
@@ -566,6 +609,7 @@ tmDb:
   image:
     name: "postgres"
     tag: "11"
+  priorityClass: "medium-priority"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -581,9 +625,11 @@ tmDb:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
 # ====================================================================================================
@@ -595,6 +641,7 @@ tmApi:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   nodeSelector:
     enabled: false
   replicaCount: 1
@@ -630,9 +677,11 @@ tmApi:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
 # ====================================================================================================
@@ -643,6 +692,7 @@ nominatimApi:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   serviceAnnotations: {}
   replicaCount: 1
   ingressDomain: nominatim-api.dev.osmseed.org
@@ -665,9 +715,11 @@ nominatimApi:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   persistenceDisk:
@@ -694,6 +746,7 @@ overpassApi:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   serviceAnnotations: {}
   ingressDomain: overpass-api.dev.osmseed.org
   env:
@@ -721,9 +774,11 @@ overpassApi:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -736,6 +791,7 @@ taginfo:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   serviceAnnotations: {}
   ingressDomain: taginfo-dev.staging.openhistoricalmap.org
   env:
@@ -757,9 +813,11 @@ taginfo:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -789,13 +847,16 @@ osmSimpleMetrics:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   schedule: "* */1 * * *"
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -808,6 +869,7 @@ monitoringReplication:
   image:
     name: "developmentseed/osmseed-replication-job"
     tag: "0.1.0-n770.hd15c9f2"
+  priorityClass: "medium-priority"
   schedule: "* */1 * * *"
   env:
     CREATE_MISSING_FILES: empty
@@ -815,9 +877,11 @@ monitoringReplication:
   resources:
     enabled: false
     requests:
+      enabled: false
       memory: "1Gi"
       cpu: "2"
     limits:
+      enabled: false
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
@@ -830,14 +894,17 @@ changesetReplicationJob:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 # ====================================================================================================
@@ -857,6 +924,7 @@ osmchaApi:
     name: "ghcr.io/osmcha/osmcha-django"
     tag: "61a80e897b45fb9b1a177bf433fb79bfa7fda59d"
   ingressDomain: osmcha.dev.osmseed.org
+  priorityClass: "medium-priority"
   env:
     DJANGO_SETTINGS_MODULE: "config.settings.production"
     OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
@@ -881,11 +949,13 @@ osmchaApi:
   resources:
     enabled: false
     requests:
-      memory: "512Mi"
-      cpu: "1"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "512Mi"
-      cpu: "1"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -900,6 +970,7 @@ osmchaDb:
   image:
     name: ""
     tag: ""
+  priorityClass: "medium-priority"
   env:
     POSTGRES_DB: osmcha-db
     POSTGRES_USER: postgres
@@ -907,11 +978,13 @@ osmchaDb:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
@@ -936,6 +1009,7 @@ adiffService:
   image:
     name: "ghcr.io/osmcha/osm-adiff-service"
     tag: "b0b2bcaf1d7428e48146c70ea80e129fcd864686"
+  priorityClass: "medium-priority"
   env:
     OSMCHAADMINTOKEN: abc
     REDIS_URL: postgres
@@ -944,11 +1018,13 @@ adiffService:
   resources:
     enabled: false
     requests:
-      memory: "20Gi"
-      cpu: "8"
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: "24Gi"
-      cpu: "10"
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
 
@@ -960,3 +1036,4 @@ planetFiles:
   image:
     name: ""
     tag: ""
+  priorityClass: "low-priority"

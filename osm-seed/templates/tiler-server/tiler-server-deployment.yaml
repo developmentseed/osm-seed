@@ -23,6 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-tiler-server
     spec:
+      priorityClassName: {{ .Values.tilerServer.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-tiler-server
           image: "{{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}"
@@ -39,12 +40,16 @@ spec:
             timeoutSeconds: 30
           {{- if .Values.tilerServer.resources.enabled }}
           resources:
+            {{- if .Values.tilerServer.resources.requests.enabled }}
             requests:
               memory: {{ .Values.tilerServer.resources.requests.memory }}
               cpu: {{ .Values.tilerServer.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.tilerServer.resources.limits.enabled }}
             limits:
               memory: {{ .Values.tilerServer.resources.limits.memory }}
               cpu: {{ .Values.tilerServer.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
           envFrom:
           - configMapRef:

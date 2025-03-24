@@ -19,6 +19,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-tiler-imposm-sts
     spec:
+      priorityClassName: {{ .Values.tilerImposm.priorityClass | default "medium-priority" }}
       containers:
       - name: {{ .Release.Name }}-tiler-imposm-sts
         image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}
@@ -35,12 +36,16 @@ spec:
             failureThreshold: 3
         {{- if .Values.tilerImposm.resources.enabled }}
         resources:
+          {{- if .Values.tilerImposm.resources.requests.enabled }}
           requests:
             memory: {{ .Values.tilerImposm.resources.requests.memory }}
             cpu: {{ .Values.tilerImposm.resources.requests.cpu }}
+          {{- end }}
+          {{- if .Values.tilerImposm.resources.limits.enabled }}
           limits:
             memory: {{ .Values.tilerImposm.resources.limits.memory }}
             cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
+          {{- end }}
         {{- end }}
         env:
             # Tiler

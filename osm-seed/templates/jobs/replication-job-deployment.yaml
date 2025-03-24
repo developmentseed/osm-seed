@@ -18,6 +18,7 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
+      priorityClassName: {{ .Values.replicationJob.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Release.Name }}-replication-job-deployment
           image: {{ .Values.replicationJob.image.name }}:{{ .Values.replicationJob.image.tag }}

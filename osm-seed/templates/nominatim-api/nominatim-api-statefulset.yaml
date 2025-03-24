@@ -23,6 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-nominatim-api
     spec:
+      priorityClassName: {{ .Values.nominatimApi.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-nominatim-api
           image: "{{ .Values.nominatimApi.image.name }}:{{ .Values.nominatimApi.image.tag }}"
@@ -85,12 +86,16 @@ spec:
               subPath: {{ .Values.nominatimApi.persistenceDisk.subPath }}
           {{- if .Values.nominatimApi.resources.enabled }}
           resources:
+            {{- if .Values.nominatimApi.resources.requests.enabled }}
             requests:
               memory: {{ .Values.nominatimApi.resources.requests.memory }}
               cpu: {{ .Values.nominatimApi.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.nominatimApi.resources.limits.enabled }}
             limits:
               memory: {{ .Values.nominatimApi.resources.limits.memory }}
               cpu: {{ .Values.nominatimApi.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
       volumes:
         - name: nominatim-db-storage
