@@ -22,7 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-memcached
     spec:
-      priorityClassName: {{ .Values.memcached.priorityClass | default "high-priority" }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.memcached.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Chart.Name }}-memcached
           image: "memcached"

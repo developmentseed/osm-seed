@@ -23,7 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-tiler-server
     spec:
-      priorityClassName: {{ .Values.tilerServer.priorityClass | default "medium-priority" }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.tilerServer.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-tiler-server
           image: "{{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}"

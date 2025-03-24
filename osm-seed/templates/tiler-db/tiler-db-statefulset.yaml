@@ -24,7 +24,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-tiler-db
     spec:
-      priorityClassName: {{ .Values.tilerDb.priorityClass | default "medium-priority" }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.tilerDb.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-tiler-db
           image: "{{ .Values.tilerDb.image.name }}:{{ .Values.tilerDb.image.tag }}"

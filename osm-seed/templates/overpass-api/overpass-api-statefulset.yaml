@@ -23,7 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-overpass-api
     spec:
-      priorityClassName: {{ .Values.overpassApi.priorityClass | default "medium-priority" }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.overpassApi.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-overpass-api
           image: "{{ .Values.overpassApi.image.name }}:{{ .Values.overpassApi.image.tag }}"
