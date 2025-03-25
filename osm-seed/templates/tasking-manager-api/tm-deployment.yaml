@@ -24,7 +24,7 @@ spec:
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.tmApi.priorityClass | default "medium-priority" }}
       initContainers:
-        - name: {{ .Chart.Name }}-tasking-manager-api-db-upgrade
+        - name: db-upgrade
           image: "{{ .Values.tmApi.image.name }}:{{ .Values.tmApi.image.tag }}"
           command: ["flask", "db", "upgrade"]
           envFrom:
