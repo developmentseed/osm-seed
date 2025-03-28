@@ -22,7 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-web
     spec:
-      priorityClassName: {{ .Values.web.priorityClass | default "high-priority" }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.web.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Chart.Name }}-web
           image: "{{ .Values.web.image.name }}:{{ .Values.web.image.tag }}"

@@ -1,7 +1,7 @@
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
-  name: high-priority
+  name: {{ .Release.Name }}-high-priority
 value: 100000
 globalDefault: false
 description: "High priority for critical services like web and db."
@@ -9,7 +9,7 @@ description: "High priority for critical services like web and db."
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
-  name: medium-priority
+  name: {{ .Release.Name }}-medium-priority
 value: 50000
 globalDefault: false
 description: "Medium priority for important services like Overpass, Tasking Manager, etc."
@@ -17,7 +17,7 @@ description: "Medium priority for important services like Overpass, Tasking Mana
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
-  name: low-priority
+  name: {{ .Release.Name }}-low-priority
 value: 10000
 globalDefault: false
 description: "Low priority for background jobs and caches."

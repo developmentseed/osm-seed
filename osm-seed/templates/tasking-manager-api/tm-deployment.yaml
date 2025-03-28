@@ -22,7 +22,14 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-tasking-manager-api
     spec:
-      priorityClassName: {{ .Values.tmApi.priorityClass | default "medium-priority" }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.tmApi.priorityClass | default "medium-priority" }}
+      initContainers:
+        - name: db-upgrade
+          image: "{{ .Values.tmApi.image.name }}:{{ .Values.tmApi.image.tag }}"
+          command: ["flask", "db", "upgrade"]
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-tm-common-env
       containers:
         - name: {{ .Chart.Name }}-tasking-manager-api
           image: "{{ .Values.tmApi.image.name }}:{{ .Values.tmApi.image.tag }}"
