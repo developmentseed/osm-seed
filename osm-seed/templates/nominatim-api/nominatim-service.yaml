@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-nominatim-api
+  name: {{ .Release.Name }}-nominatim-api
   labels:
     app: {{ template "osm-seed.name" . }}
     component: nominatim-api-service
@@ -29,7 +29,7 @@ spec:
     - port: 80
       protocol: TCP
       name: http
-      targetPort: apache
+      targetPort: api
     - port: 5432
       protocol: TCP
       name: postgres
@@ -43,5 +43,28 @@ spec:
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-nominatim-api
+    run: {{ .Release.Name }}-nominatim
+{{- end }}
+---
+{{- if and .Values.nominatimApi.enabled .Values.nominatimUI.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-nominatim-ui
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim-ui-service
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      name: http
+      protocol: TCP
+      targetPort: ui
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-nominatim
 {{- end }}
