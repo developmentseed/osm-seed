@@ -24,21 +24,21 @@ spec:
       paths:
       # Routes to the API
       - path: /search.php
-        pathType: Prefix
+        pathType: Exact
         backend:
           service:
             name: {{ template "osm-seed.fullname" . }}-nominatim-api
             port:
               number: 80
       - path: /reverse.php
-        pathType: Prefix
+        pathType: Exact
         backend:
           service:
             name: {{ template "osm-seed.fullname" . }}-nominatim-api
             port:
               number: 80
       - path: /status.php
-        pathType: Prefix
+        pathType: Exact
         backend:
           service:
             name: {{ template "osm-seed.fullname" . }}-nominatim-api
