@@ -738,6 +738,9 @@ nominatimApi:
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
+  ui:
+    enabled: false
+    domain: nominatim.xyz.com
 # ====================================================================================================
 # Variables for overpass-api
 # ====================================================================================================

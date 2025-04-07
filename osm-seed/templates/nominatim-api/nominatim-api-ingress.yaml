@@ -20,6 +20,39 @@ spec:
   rules:
   - host: {{ if .Values.nominatimApi.ingressDomain }}{{ .Values.nominatimApi.ingressDomain }}{{ else }}nominatim-api.{{ .Values.domain }}{{ end }}
     http:
+      {{- if .Values.nominatimApi.ui.enabled }}
+      paths:
+      # Routes to the API
+      - path: /search.php
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "osm-seed.fullname" . }}-nominatim-api
+            port:
+              number: 80
+      - path: /reverse.php
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "osm-seed.fullname" . }}-nominatim-api
+            port:
+              number: 80
+      - path: /status.php
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "osm-seed.fullname" . }}-nominatim-api
+            port:
+              number: 80
+      # Fallback route for static UI
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "osm-seed.fullname" . }}-nominatim-static-site
+            port:
+              number: 80
+      {{- else }}
       paths:
       - path: /
         pathType: Prefix
@@ -28,4 +61,5 @@ spec:
             name: {{ template "osm-seed.fullname" . }}-nominatim-api
             port:
               number: 80
+      {{- end }}
 {{- end }}

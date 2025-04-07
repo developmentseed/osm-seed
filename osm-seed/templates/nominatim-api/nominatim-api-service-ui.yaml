@@ -1,0 +1,20 @@
+{{- if and .Values.nominatimApi.enabled .Values.nominatimApi.ui.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-nominatim-static-site
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim-ui-service
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  type: ExternalName
+  externalName: {{ .Values.nominatimApi.ui.domain | quote }}
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+{{- end }}
