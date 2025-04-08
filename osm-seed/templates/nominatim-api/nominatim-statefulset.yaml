@@ -109,7 +109,7 @@ spec:
           args:
             - >
               echo "Nominatim_Config.Nominatim_API_Endpoint = 'https://{{ .Values.nominatimApi.ingressDomain }}/';"
-              >> /usr/share/nginx/html/theme/config.theme.js &&
+              >> /usr/share/nginx/html/ui/theme/config.theme.js &&
               nginx -g "daemon off;"
         {{- end }}
       volumes:
