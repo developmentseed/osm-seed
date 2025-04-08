@@ -1,5 +1,6 @@
 name: Chartpress Publish
 on: push
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -26,13 +27,14 @@ jobs:
         run: |
           pip install -v chartpress six yq
 
-      - name: Set env vars for publish charts
+      - name: Set environment variables
         run: |
           GIT_BRANCH_NAME=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
-          GIT_BRANCH_NAME=${GIT_BRANCH_NAME/\//_}
+          GIT_BRANCH_NAME_SANITIZED=${GIT_BRANCH_NAME/\//_}
           OSM_SEED_VERSION=$(yq -r .appVersion ./osm-seed/Chart.yaml)
           SHORT_GITHUB_SHA=${GITHUB_SHA::7}
           echo "GIT_BRANCH_NAME=$GIT_BRANCH_NAME" >> $GITHUB_ENV
+          echo "GIT_BRANCH_NAME_SANITIZED=$GIT_BRANCH_NAME_SANITIZED" >> $GITHUB_ENV
           echo "OSM_SEED_VERSION=$OSM_SEED_VERSION" >> $GITHUB_ENV
           echo "SHORT_GITHUB_SHA=$SHORT_GITHUB_SHA" >> $GITHUB_ENV
 
@@ -41,10 +43,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
-          if [[ $GIT_BRANCH_NAME = "main" ]]; then
+          if [[ $GIT_BRANCH_NAME == "main" ]]; then
             chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}
-          elif [[ $GIT_BRANCH_NAME = "develop" ]]; then
-            chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}-dev.h$SHORT_GITHUB_SHA
+          elif [[ $GIT_BRANCH_NAME == "develop" ]]; then
+            chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}-dev.h${SHORT_GITHUB_SHA}
           else
-            chartpress --push --publish-chart
+            chartpress --push --publish-chart --tag 0.1.0-${GIT_BRANCH_NAME_SANITIZED}.h${SHORT_GITHUB_SHA}
           fi
