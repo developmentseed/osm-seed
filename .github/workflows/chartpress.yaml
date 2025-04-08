@@ -48,5 +48,5 @@ jobs:
           elif [[ $GIT_BRANCH_NAME == "develop" ]]; then
             chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}-dev.h${SHORT_GITHUB_SHA}
           else
-            chartpress --push --publish-chart --tag 0.1.0-${GIT_BRANCH_NAME_SANITIZED}.h${SHORT_GITHUB_SHA}
+            chartpress --push --publish-chart --tag 0.1.0.h${SHORT_GITHUB_SHA}
           fi
