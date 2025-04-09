@@ -1,47 +1,30 @@
-FROM ubuntu:24.04 AS builder
+FROM debian:bullseye AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV CGIMAP_GITSHA=8ea707e10aeab5698e6859856111816d75354592
+
+RUN apt-get update && apt-get install -y \
+    build-essential cmake git \
+    libxml2-dev libpqxx-dev libfcgi-dev zlib1g-dev libbrotli-dev \
+    libboost-program-options-dev libfmt-dev libmemcached-dev libcrypto++-dev \
+    libargon2-dev libyajl-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN git clone -b master https://github.com/zerebubuth/openstreetmap-cgimap.git /cgimap \
+    && cd /cgimap && git checkout $CGIMAP_GITSHA \
+    && mkdir /cgimap/build && cd /cgimap/build \
+    && cmake .. && cmake --build .
+
+FROM debian:bullseye-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update -qq && \
-    apt-get install -y gcc g++ make cmake \
-    libfcgi-dev libxml2-dev libmemcached-dev libbrotli-dev \
-    libboost-program-options-dev libcrypto++-dev libyajl-dev \
-    libpqxx-dev zlib1g-dev libfmt-dev git \
-    ca-certificates \
-    postgresql-16 postgresql-server-dev-all \
-    wget \
-    --no-install-recommends && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    libxml2 libpqxx-6.4 libfcgi zlib1g libbrotli1 \
+    libboost-program-options1.74.0 libfmt7 libmemcached11 libcrypto++8 \
+    libargon2-1 libyajl2 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Argon2 from source
-RUN wget https://github.com/P-H-C/phc-winner-argon2/archive/refs/tags/20190702.tar.gz && \
-    tar -xzf 20190702.tar.gz && \
-    cd phc-winner-argon2-20190702 && \
-    make && \
-    make install && \
-    ldconfig
+COPY --from=builder /cgimap/build/openstreetmap-cgimap /usr/local/bin/openstreetmap-cgimap
 
-WORKDIR /app
-
-# Copy the main application.
-ENV CGIMAP_GITSHA=26cd7fa10affe5dbd13dbe16de34421059f53f18
-RUN git clone https://github.com/zerebubuth/openstreetmap-cgimap.git /app && \
-    cd /app && \
-    git checkout $CGIMAP_GITSHA
-
-# Compile, install and remove source
-RUN mkdir build && cd build && \
-    CXXFLAGS="-Wall -Wextra -Wpedantic -Wno-unused-parameter" cmake .. -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release && \
-    make -j$(nproc) && \
-    ctest --output-on-failure && \
-    strip openstreetmap-cgimap && \
-    cp openstreetmap-cgimap /usr/local/bin
-    
-RUN rm -rf /app/.git
-
-COPY start.sh /
-
-EXPOSE 8000
-
-CMD ["/start.sh"]
+ENTRYPOINT ["/usr/local/bin/openstreetmap-cgimap"]
