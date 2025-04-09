@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-nominatim-api
+  name: {{ .Release.Name }}-nominatim
   labels:
     app: {{ template "osm-seed.name" . }}
     component: nominatim-api-statefulset
@@ -14,24 +14,24 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-nominatim-api
-  serviceName: {{ .Release.Name }}-nominatim-api
+      run: {{ .Release.Name }}-nominatim
+  serviceName: {{ .Release.Name }}-nominatim
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-nominatim-api
+        run: {{ .Release.Name }}-nominatim
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.nominatimApi.priorityClass | default "medium-priority" }}
       containers:
-        - name: {{ .Chart.Name }}-nominatim-api
+        - name: nominatim-api
           image: "{{ .Values.nominatimApi.image.name }}:{{ .Values.nominatimApi.image.tag }}"
           ports:
             - name: postgres
               containerPort: 5432
               protocol: TCP
-            - name: apache
+            - name: api
               containerPort: 8080
               protocol: TCP
           env:
@@ -97,6 +97,21 @@ spec:
               cpu: {{ .Values.nominatimApi.resources.limits.cpu }}
             {{- end }}
           {{- end }}
+          
+        {{- if and .Values.nominatimApi.enabled .Values.nominatimUI.enabled }}
+        - name: nominatim-ui
+          image: "{{ .Values.nominatimUI.image.name }}:{{ .Values.nominatimUI.image.tag }}"
+          ports:
+            - containerPort: 80
+              name: ui
+              protocol: TCP
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+              echo "Nominatim_Config.Nominatim_API_Endpoint = 'https://{{ .Values.nominatimApi.ingressDomain }}/';"
+              >> /usr/share/nginx/html/ui/theme/config.theme.js &&
+              nginx -g "daemon off;"
+        {{- end }}
       volumes:
         - name: nominatim-db-storage
         {{- if .Values.nominatimApi.persistenceDisk.enabled }}

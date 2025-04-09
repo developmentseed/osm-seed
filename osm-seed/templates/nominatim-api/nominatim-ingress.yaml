@@ -1,0 +1,65 @@
+{{- if and .Values.nominatimApi.enabled (eq .Values.serviceType "ClusterIP") }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "osm-seed.fullname" . }}-ingress-nominatim-api
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+    nginx.ingress.kubernetes.io/proxy-body-size: 5m
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    {{- if .Values.nominatimApi.ingressDomain }}
+    - {{ .Values.nominatimApi.ingressDomain }}
+    {{- else }}
+    - nominatim-api.{{ .Values.domain }}
+    {{- end }}
+    secretName: {{ template "osm-seed.fullname" . }}-secret-nominatim
+  rules:
+  - host: {{ if .Values.nominatimApi.ingressDomain }}{{ .Values.nominatimApi.ingressDomain }}{{ else }}nominatim-api.{{ .Values.domain }}{{ end }}
+    http:
+      {{- if .Values.nominatimUI.enabled }}
+      paths:
+      # Routes to the API
+      - path: /search.php
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Release.Name }}-nominatim-api
+            port:
+              number: 80
+      - path: /reverse.php
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Release.Name }}-nominatim-api
+            port:
+              number: 80
+      - path: /status.php
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Release.Name }}-nominatim-api
+            port:
+              number: 80
+      # Fallback route for static UI
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-nominatim-ui
+            port:
+              number: 80
+      {{- else }}
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-nominatim-api
+            port:
+              number: 80
+      {{- end }}
+{{- end }}
