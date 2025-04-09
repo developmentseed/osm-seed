@@ -1,0 +1,83 @@
+[[providers.layers]]
+name = "other_areas_6-8"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    class, 
+    type
+FROM 
+    osm_other_areas 
+WHERE 
+    area > 1000000
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "other_areas_9-11"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    class, 
+    type
+FROM 
+    osm_other_areas 
+WHERE 
+    area > 100000
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "other_areas_12-14"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry,  
+    id, 
+    osm_id, 
+    name, 
+    class, 
+    type
+FROM 
+    osm_other_areas 
+WHERE 
+    area > 10000
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+name = "other_areas_15-20"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    class, 
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_other_areas 
+WHERE 
+    geometry && !BBOX!
+"""

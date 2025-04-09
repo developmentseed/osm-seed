@@ -1,0 +1,47 @@
+{{- if .Values.tmApi.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-tm-common-env
+data:
+  POSTGRES_HOST: {{ .Release.Name }}-tasking-manager-db
+  POSTGRES_DB: {{ quote .Values.tmDb.env.POSTGRES_DB | default "" }}
+  POSTGRES_PASSWORD: {{ quote .Values.tmDb.env.POSTGRES_PASSWORD | default "" }}
+  POSTGRES_USER: {{ quote .Values.tmDb.env.POSTGRES_USER | default "" }}
+  POSTGRES_PORT: "5432"
+  TM_DB: {{ quote (printf "postgresql://%s:%s@%s-tasking-manager-db/%s" .Values.tmDb.env.POSTGRES_USER .Values.tmDb.env.POSTGRES_PASSWORD .Release.Name .Values.tmDb.env.POSTGRES_DB) }}
+  TM_ORG_NAME: {{ quote .Values.tmApi.env.TM_ORG_NAME | default "" }}
+  TM_ORG_CODE: {{ quote .Values.tmApi.env.TM_ORG_CODE | default "" }}
+  TM_ORG_URL: {{ quote .Values.tmApi.env.TM_ORG_URL | default "" }}
+  TM_ORG_PRIVACY_POLICY_URL: {{ quote .Values.tmApi.env.TM_ORG_PRIVACY_POLICY_URL | default "" }}
+  TM_ORG_TWITTER: {{ quote .Values.tmApi.env.TM_ORG_TWITTER | default "" }}
+  TM_ORG_FB: {{ quote .Values.tmApi.env.TM_ORG_FB | default "" }}
+  TM_ORG_INSTAGRAM: {{ quote .Values.tmApi.env.TM_ORG_INSTAGRAM | default "" }}
+  TM_ORG_YOUTUBE: {{ quote .Values.tmApi.env.TM_ORG_YOUTUBE | default "" }}
+  TM_ORG_GITHUB: {{ quote .Values.tmApi.env.TM_ORG_GITHUB | default "" }}
+  OSM_SERVER_URL: {{ quote .Values.tmApi.env.OSM_SERVER_URL | default "" }}
+  OSM_NOMINATIM_SERVER_URL: {{ quote .Values.tmApi.env.OSM_NOMINATIM_SERVER_URL | default "" }}
+  OSM_REGISTER_URL: {{ quote .Values.tmApi.env.OSM_REGISTER_URL | default "" }}
+  ID_EDITOR_URL: {{ quote .Values.tmApi.env.ID_EDITOR_URL | default "" }}
+  POTLATCH2_EDITOR_URL: {{ quote .Values.tmApi.env.POTLATCH2_EDITOR_URL | default "" }}
+  TM_SECRET: {{ quote .Values.tmApi.env.TM_SECRET | default "" }}
+  TM_CONSUMER_SECRET: {{ quote .Values.tmApi.env.TM_CONSUMER_SECRET | default "" }}
+  TM_CONSUMER_KEY: {{ quote .Values.tmApi.env.TM_CONSUMER_KEY | default "" }}
+  TM_EMAIL_FROM_ADDRESS: {{ quote .Values.tmApi.env.TM_EMAIL_FROM_ADDRESS | default "" }}
+  TM_EMAIL_CONTACT_ADDRESS: {{ quote .Values.tmApi.env.TM_EMAIL_CONTACT_ADDRESS | default "" }}
+  TM_SMTP_HOST: {{ quote .Values.tmApi.env.TM_SMTP_HOST | default "" }}
+  TM_SMTP_PORT: {{ quote .Values.tmApi.env.TM_SMTP_PORT | default "" }}
+  TM_SMTP_USER: {{ quote .Values.tmApi.env.TM_SMTP_USER | default "" }}
+  TM_SMTP_PASSWORD: {{ quote .Values.tmApi.env.TM_SMTP_PASSWORD | default "" }}
+  TM_DEFAULT_LOCALE: {{ quote .Values.tmApi.env.TM_DEFAULT_LOCALE | default "" }}
+  TM_APP_API_URL: {{ quote .Values.tmApi.env.TM_APP_API_URL | default "" }}
+  TM_APP_BASE_URL: {{ quote .Values.tmApi.env.TM_APP_BASE_URL | default "" }}
+  TM_IMPORT_MAX_FILESIZE: {{ quote (.Values.tmApi.env.TM_IMPORT_MAX_FILESIZE | default "1000000") }}
+  TM_MAX_AOI_AREA: {{ quote (.Values.tmApi.env.TM_MAX_AOI_AREA | default "5000") }}
+  TM_CLIENT_ID: {{ quote .Values.tmApi.env.TM_CLIENT_ID | default "" }}
+  TM_CLIENT_SECRET: {{ quote .Values.tmApi.env.TM_CLIENT_SECRET | default "" }}
+  TM_DEFAULT_CHANGESET_COMMENT: {{ quote .Values.tmApi.env.TM_DEFAULT_CHANGESET_COMMENT | default "" }}
+  TM_REDIRECT_URI: {{ quote .Values.tmApi.env.TM_REDIRECT_URI | default "" }}
+  TM_SCOPE: {{ quote .Values.tmApi.env.TM_SCOPE | default "" }}
+  TM_APP_API_VERSION: {{ quote .Values.tmApi.env.TM_APP_API_VERSION | default "v2" }}
+{{- end }}

@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-tiler-imposm-statefulset
+  name: {{ .Release.Name }}-tiler-imposm-sts
   labels:
     app: {{ template "osm-seed.name" . }}
     component: tiler-imposm
@@ -11,16 +11,17 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app:  {{ .Release.Name }}-tiler-imposm-statefulset
+      app:  {{ .Release.Name }}-tiler-imposm-sts
   serviceName: {{ .Release.Name }}-tiler-imposm
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-tiler-imposm-statefulset
+        app: {{ .Release.Name }}-tiler-imposm-sts
     spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.tilerImposm.priorityClass | default "medium-priority" }}
       containers:
-      - name: {{ .Release.Name }}-tiler-imposm-statefulset
+      - name: {{ .Release.Name }}-tiler-imposm-sts
         image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}
         command: ['./start.sh']
         livenessProbe:
@@ -35,24 +36,19 @@ spec:
             failureThreshold: 3
         {{- if .Values.tilerImposm.resources.enabled }}
         resources:
+          {{- if .Values.tilerImposm.resources.requests.enabled }}
           requests:
             memory: {{ .Values.tilerImposm.resources.requests.memory }}
             cpu: {{ .Values.tilerImposm.resources.requests.cpu }}
+          {{- end }}
+          {{- if .Values.tilerImposm.resources.limits.enabled }}
           limits:
             memory: {{ .Values.tilerImposm.resources.limits.memory }}
             cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
+          {{- end }}
         {{- end }}
         env:
-          - name: POSTGRES_HOST
-            value: {{ .Release.Name }}-tiler-db
-          - name: POSTGRES_DB
-            value: {{ .Values.tilerDb.env.POSTGRES_DB | quote }}
-          - name: POSTGRES_PASSWORD
-            value: {{ .Values.tilerDb.env.POSTGRES_PASSWORD | quote }}
-          - name: POSTGRES_USER
-            value: {{ .Values.tilerDb.env.POSTGRES_USER | quote }}
-          - name: POSTGRES_PORT
-            value: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
+            # Tiler
           - name: TILER_IMPORT_FROM
             value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM | quote }}
           - name: TILER_IMPORT_PBF_URL
@@ -64,11 +60,13 @@ spec:
           - name: OVERWRITE_STATE
             value: {{ .Values.tilerImposm.env.OVERWRITE_STATE | quote }}
           - name: UPLOAD_EXPIRED_FILES
-            value: {{ .Values.tilerImposm.env.UPLOAD_EXPIRED_FILES | default "true" | quote }}
+            value: {{ .Values.tilerImposm.env.UPLOAD_EXPIRED_FILES | quote }}
           - name: IMPORT_NATURAL_EARTH
-            value: {{ .Values.tilerImposm.env.IMPORT_NATURAL_EARTH | default "true" | quote }}
+            value: {{ .Values.tilerImposm.env.IMPORT_NATURAL_EARTH | quote }}
           - name: IMPORT_OSM_LAND
-            value: {{ .Values.tilerImposm.env.IMPORT_OSM_LAND | default "true" | quote }}
+            value: {{ .Values.tilerImposm.env.IMPORT_OSM_LAND | quote }}
+          - name: IMPOSM3_IMPORT_LAYERS
+            value: {{ .Values.tilerImposm.env.IMPOSM3_IMPORT_LAYERS | quote }}
           - name: CLOUDPROVIDER
             value: {{ .Values.cloudProvider }}
           # In case cloudProvider=aws
@@ -81,6 +79,9 @@ spec:
           - name: GCP_STORAGE_BUCKET
             value: {{ .Values.GCP_STORAGE_BUCKET }}
           {{- end }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-tiler-db-cm
         volumeMounts:
         - mountPath: {{ .Values.tilerImposm.persistenceDisk.mountPath }}
           name: tiler-imposm-storage

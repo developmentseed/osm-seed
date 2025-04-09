@@ -1,0 +1,35 @@
+[[maps.layers]]
+name = "water_lines"
+provider_layer = "osm.water_lines_gen0_6-6"
+min_zoom = 6
+max_zoom = 6
+
+[[maps.layers]]
+name = "water_lines"
+provider_layer = "osm.water_lines_gen0_7-7"
+min_zoom = 7
+max_zoom = 7
+
+[[maps.layers]]
+name = "water_lines"
+provider_layer = "osm.water_lines_gen0_8-8"
+min_zoom = 8
+max_zoom = 8
+
+[[maps.layers]]
+name = "water_lines"
+provider_layer = "osm.water_lines_gen0_9-9"
+min_zoom = 9
+max_zoom = 9
+
+[[maps.layers]]
+name = "water_lines"
+provider_layer = "osm.water_lines_gen1_10-11"
+min_zoom = 10
+max_zoom = 11
+
+[[maps.layers]]
+name = "water_lines"
+provider_layer = "osm.water_lines"
+min_zoom = 12
+max_zoom = 20

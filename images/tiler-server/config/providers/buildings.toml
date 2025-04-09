@@ -1,0 +1,24 @@
+# Layer configuration for buildings
+[[providers.layers]]
+name = "buildings"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    nullif(as_numeric(height), -1) AS height, 
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_buildings 
+WHERE 
+    geometry && !BBOX!
+"""

@@ -1,6 +1,9 @@
 [webserver]
 port = ":${TILER_SERVER_PORT}"
 
+	[webserver.headers]
+	Access-Control-Allow-Origin = "*"
+
 # Tegola offers three tile caching strategies: "file", "redis", and "s3"
 [cache]
 type = "${TILER_CACHE_TYPE}"
@@ -12,588 +15,1682 @@ region = "${TILER_CACHE_REGION}"
 aws_access_key_id = "${TILER_CACHE_AWS_ACCESS_KEY_ID}"
 aws_secret_access_key = "${TILER_CACHE_AWS_SECRET_ACCESS_KEY}"
 
-#   OpenStreetMap (OSM)
+# metrics
+[observer]
+type = "prometheus"
+
+# OpenStreetMap (OSM)
 [[providers]]
 name = "osm"
-type = "postgis"
-host = "${POSTGRES_HOST}"
-port = 5432
-database = "${POSTGRES_DB}"
-user = "${POSTGRES_USER}"
-password = "${POSTGRES_PASSWORD}"
-srid = 3857
-max_connections = 40
-
+type = "mvt_postgis"
+uri = "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+# srid = 3857
+max_connections = 200
+	###### Land providers
+	###### From config/providers/land.toml 
+	# Simplification for geometries
+	# Zoom levels 0-2,Tolerance=500 => ~1000 meters
+	# Zoom levels 3-5,Tolerance=200=> ~500 meters
+	# Zoom levels 6-7,Tolerance=100=> ~200 meters
+	# Zoom levels 8-9,Tolerance=50=> ~100 meters
+	# Zoom levels 10-12,Tolerance=20=> ~50 meters
+	# Zoom levels 13-15,Tolerance=5=> ~20 meters
+	# Zoom levels 16-20,Tolerance=1=> ~5 meters
+	
 	[[providers.layers]]
-	name = "land_8-20"
+	name = "land_0-2"
 	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid FROM land_polygons WHERE wkb_geometry && !BBOX!"
-
-	# Water
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 500),!BBOX!) AS geometry, ogc_fid FROM land_polygons WHERE wkb_geometry && !BBOX!"
+	
 	[[providers.layers]]
-	name = "water_areas"
+	name = "land_3-5"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type, area FROM osm_water_areas WHERE type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank', 'dock') AND geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "ogc_fid"
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 200),!BBOX!) AS geometry, ogc_fid FROM land_polygons WHERE wkb_geometry && !BBOX!"
+	
 	[[providers.layers]]
-	name = "water_areas_gen0"
+	name = "land_6-7"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type, area FROM osm_water_areas_gen0 WHERE type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') AND area > 1000000000 AND geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "ogc_fid"
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 70),!BBOX!) AS geometry, ogc_fid FROM land_polygons WHERE wkb_geometry && !BBOX!"
+	
 	[[providers.layers]]
-	name = "water_areas_gen0_6"
+	name = "land_8-9"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type, area FROM osm_water_areas_gen0 WHERE type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') AND area > 100000000 AND geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "ogc_fid"
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 30),!BBOX!) AS geometry, ogc_fid FROM land_polygons WHERE wkb_geometry && !BBOX!"
+	
 	[[providers.layers]]
-	name = "water_areas_gen1"
+	name = "land_10-12"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type, area FROM osm_water_areas_gen1 WHERE type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') AND area > 1000 AND geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "ogc_fid"
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 10),!BBOX!) AS geometry, ogc_fid FROM land_polygons WHERE wkb_geometry && !BBOX!"
+	
 	[[providers.layers]]
+	name = "land_13-15"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "ogc_fid"
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 5),!BBOX!) AS geometry, ogc_fid FROM land_polygons WHERE wkb_geometry && !BBOX!"
+	
+	[[providers.layers]]
+	name = "land_16-20"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "ogc_fid"
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 1),!BBOX!) AS geometry, ogc_fid FROM land_polygons WHERE wkb_geometry && !BBOX!"
+	
+
+	###### Water areas and lines
+	###### From config/providers/water_areas.toml 
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "osm_id"
+	name = "water_areas_gen0_0-2"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 10000), !BBOX!) AS geometry, 
+	    ABS(osm_id) as osm_id, 
+	    name, 
+	    type, 
+	    area,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_water_areas_gen0 
+	WHERE 
+	    type IN ('water', 'riverbank') 
+	    AND area > 100000000 
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "osm_id"
+	name = "water_areas_gen0_3-5"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 1000), !BBOX!) AS geometry, 
+	    ABS(osm_id) as osm_id, 
+	    name, 
+	    type, 
+	    area,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_water_areas_gen0 
+	WHERE 
+	    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') 
+	    AND area > 50000000 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Water bodies > 1,000,000 sqm
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "osm_id"
+	name = "water_areas_gen0_6-7"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 500), !BBOX!) AS geometry, 
+	    ABS(osm_id) as osm_id, 
+	    name, 
+	    type, 
+	    area,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_water_areas_gen0 
+	WHERE 
+	    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') 
+	    AND area > 1000000 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Water bodies > 10,000 sqm
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "osm_id"
+	name = "water_areas_gen0_8-9"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 100), !BBOX!) AS geometry, 
+	    ABS(osm_id) as osm_id, 
+	    name, 
+	    type, 
+	    area,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_water_areas_gen0 
+	WHERE 
+	    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') 
+	    AND area > 10000 
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "osm_id"
+	name = "water_areas_gen1_10-12"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 50), !BBOX!) AS geometry, 
+	    ABS(osm_id) as osm_id, 
+	    name, 
+	    type, 
+	    area,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_water_areas_gen1 
+	WHERE 
+	    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') 
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	name = "water_areas_13-15"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 5), !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    type, 
+	    area,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_water_areas 
+	WHERE 
+	    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank', 'dock') 
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	name = "water_areas_16-20"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    type, 
+	    area,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_water_areas 
+	WHERE 
+	    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank', 'dock') 
+	    AND geometry && !BBOX!
+	"""
+	
+
+	###### From config/providers/water_lines.toml 
+	# Simplification for geometries
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
+	id_fieldname = "osm_id"
+	name = "water_lines_gen0_6-6"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 1500), !BBOX!) AS geometry, 
+	    ABS(osm_id) AS osm_id, 
+	    name, 
+	    type, 
+	    tags->'bridge' AS bridge
+	FROM 
+	    osm_water_lines_gen0 
+	WHERE 
+	    type IN ('river', 'canal') 
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
+	id_fieldname = "osm_id"
+	name = "water_lines_gen0_7-7"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 1000), !BBOX!) AS geometry, 
+	    ABS(osm_id) AS osm_id, 
+	    name, 
+	    type, 
+	    tags->'bridge' AS bridge
+	FROM 
+	    osm_water_lines_gen0 
+	WHERE 
+	    type IN ('river', 'canal') 
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
+	id_fieldname = "osm_id"
+	name = "water_lines_gen0_8-8"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 500), !BBOX!) AS geometry, 
+	    ABS(osm_id) AS osm_id, 
+	    name, 
+	    type, 
+	    tags->'bridge' AS bridge
+	FROM 
+	    osm_water_lines_gen0 
+	WHERE 
+	    type IN ('river', 'canal') 
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
+	id_fieldname = "osm_id"
+	name = "water_lines_gen0_9-9"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 100), !BBOX!) AS geometry, 
+	    ABS(osm_id) AS osm_id, 
+	    name, 
+	    type, 
+	    tags->'bridge' AS bridge
+	FROM 
+	    osm_water_lines_gen0 
+	WHERE 
+	    type IN ('river', 'canal') 
+	    AND geometry && !BBOX!
+	"""
+	
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
+	id_fieldname = "osm_id"
+	name = "water_lines_gen1_10-11"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 20), !BBOX!) AS geometry, 
+	    ABS(osm_id) AS osm_id, 
+	    name, 
+	    type, 
+	    tags->'bridge' AS bridge, 
+	    tags->'surface' AS surface
+	FROM 
+	    osm_water_lines_gen1 
+	WHERE 
+	    type IN ('river', 'canal', 'stream', 'ditch', 'drain', 'dam', 'cliff') 
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
+	id_fieldname = "id"
 	name = "water_lines"
-	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type FROM osm_water_lines WHERE type IN ('river', 'canal', 'stream', 'ditch', 'drain', 'dam') AND geometry && !BBOX!"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    type, 
+	    tags->'bridge' AS bridge, 
+	    tags->'surface' AS surface, 
+	    tags->'start_date' AS start_date, 
+	    tags->'end_date' AS end_date,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_water_lines 
+	WHERE 
+	    type IN ('river', 'canal', 'stream', 'ditch', 'drain', 'dam', 'cliff') 
+	    AND geometry && !BBOX!
+	"""
 
+	###### Water areas NE
+	###### From config/providers/water_areas_ne.toml 
 	[[providers.layers]]
-	name = "water_lines_gen0"
+	name = "ne_water_lakes_0-2"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type FROM osm_water_lines_gen0 WHERE type IN ('river', 'canal') AND geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "ogc_fid"
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 1000),!BBOX!) AS geometry, name, ogc_fid FROM ne_50m_lakes WHERE wkb_geometry && !BBOX!"
+	
 	[[providers.layers]]
-	name = "water_lines_gen1"
+	name = "ne_water_lakes_3-5"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type FROM osm_water_lines_gen1 WHERE type IN ('river', 'canal', 'stream', 'ditch', 'drain', 'dam') AND geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "ogc_fid"
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 500),!BBOX!) AS geometry, name, ogc_fid FROM ne_50m_lakes WHERE wkb_geometry && !BBOX!"
+	
 	[[providers.layers]]
-	name = "admin_boundaries_8-12"
+	name = "ne_water_lakes_6-8"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, admin_level, name, type FROM osm_admin_areas WHERE admin_level IN (1,2,3,4,5,6,7,8) AND geometry && !BBOX!"
+	geometry_type = "multipolygon"
+	id_fieldname = "ogc_fid"
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 100),!BBOX!) AS geometry, name, ogc_fid FROM ne_10m_lakes WHERE wkb_geometry && !BBOX!"
+	
 
+	###### Admin boundaries providers
+	###### From config/providers/admin_boundaries_areas.toml 
+	# Layer configuration for admin boundaries 0-2
 	[[providers.layers]]
-	name = "admin_boundaries_13-20"
+	name = "admin_boundaries_0-2"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, admin_level, name, type FROM osm_admin_areas WHERE admin_level IN (1,2,3,4,5,6,7,8,9,10) AND geometry && !BBOX!"
-
-	# Land Use
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 500), !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    admin_level, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_admin_areas 
+	WHERE 
+	    admin_level IN (1,2) 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for admin boundaries 3-5
 	[[providers.layers]]
-	name = "landuse_areas"
+	name = "admin_boundaries_3-5"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type, area FROM osm_landuse_areas WHERE geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 200), !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    admin_level, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_admin_areas 
+	WHERE 
+	    admin_level IN (1,2,3,4) 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for admin boundaries 6-7
 	[[providers.layers]]
-	name = "landuse_areas_gen0"
+	name = "admin_boundaries_6-7"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type, area FROM osm_landuse_areas_gen0 WHERE type IN ('forest','wood','nature reserve', 'nature_reserve', 'military') AND area > 1000000000 AND geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 100), !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    admin_level, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_admin_areas 
+	WHERE 
+	    admin_level IN (1,2,3,4,5,6) 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for admin boundaries 8-9
 	[[providers.layers]]
-	name = "landuse_areas_gen0_6"
+	name = "admin_boundaries_8-9"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type, area FROM osm_landuse_areas_gen0 WHERE type IN ('forest','wood','nature reserve', 'nature_reserve', 'military') AND area > 100000000 AND geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 50), !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    admin_level, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_admin_areas 
+	WHERE 
+	    admin_level IN (1,2,3,4,5,6,7,8,9) 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for admin boundaries 10-12
 	[[providers.layers]]
-	name = "landuse_areas_gen1"
+	name = "admin_boundaries_10-12"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type, area FROM osm_landuse_areas_gen1 WHERE geometry && !BBOX!"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 20), !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    admin_level, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_admin_areas 
+	WHERE 
+	    admin_level IN (1,2,3,4,5,6,7,8,9,10) 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for admin boundaries 13-15
+	[[providers.layers]]
+	name = "admin_boundaries_13-15"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 5), !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    admin_level, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_admin_areas 
+	WHERE 
+	    admin_level IN (1,2,3,4,5,6,7,8,9,10) 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for admin boundaries 16-20
+	[[providers.layers]]
+	name = "admin_boundaries_16-20"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 1), !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    admin_level, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_admin_areas 
+	WHERE 
+	    admin_level IN (1,2,3,4,5,6,7,8,9,10) 
+	    AND geometry && !BBOX!
+	"""
+	
 
-	# Transport
+	###### Land use areas
+	###### From config/providers/landuse_areas.toml 
+	# Layer 50,000,000
+	[[providers.layers]]
+	name = "landuse_areas_gen0_3-5"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "osm_id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 500), !BBOX!) AS geometry, 
+	    ABS(osm_id) AS osm_id, 
+	    name, 
+	    class, 
+	    type, 
+	    area
+	FROM 
+	    osm_landuse_areas_gen0 
+	WHERE 
+	    type IN ('forest', 'wood', 'nature reserve', 'nature_reserve', 'military') 
+	    AND area > 50000000 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer 1,000,000
+	[[providers.layers]]
+	name = "landuse_areas_gen0_6-9"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "osm_id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(ST_Simplify(geometry, 100), !BBOX!) AS geometry, 
+	    ABS(osm_id) AS osm_id, 
+	    name, 
+	    class, 
+	    type, 
+	    area
+	FROM 
+	    osm_landuse_areas_gen0 
+	WHERE 
+	    type IN ('forest', 'wood', 'nature reserve', 'nature_reserve', 'military') 
+	    AND area > 1000000 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for landuse areas gen1
+	[[providers.layers]]
+	name = "landuse_areas_gen1_10-12"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "osm_id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    ABS(osm_id) AS osm_id, 
+	    name, 
+	    class, 
+	    type, 
+	    area
+	FROM 
+	    osm_landuse_areas_gen1 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	# Layer configuration for landuse areas
+	[[providers.layers]]
+	name = "landuse_areas_13-20"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type, 
+	    tags->'wetland' AS wetland, 
+	    area,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_landuse_areas 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+
+	###### Land use lines and points
+	###### From config/providers/landuse_lines.toml 
+	# Layer configuration for landuse lines
+	[[providers.layers]]
+	name = "landuse_lines"
+	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_landuse_lines 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+	###### From config/providers/landuse_points.toml 
+	# Layer configuration for landuse points
+	[[providers.layers]]
+	name = "landuse_points"
+	geometry_fieldname = "geometry"
+	geometry_type = "point"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_landuse_points 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+
+	###### Transport lines, points and areas from ways
+	###### From config/providers/transport_points.toml 
+	# Layer configuration for transport points
 	[[providers.layers]]
 	name = "transport_points"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type FROM osm_transport_points WHERE geometry && !BBOX!"
-
-	[[providers.layers]]
-	name = "transport_areas"
-	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type FROM osm_transport_areas WHERE geometry && !BBOX!"
-
+	geometry_type = "point"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_transport_points 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+	###### From config/providers/transport_lines.toml 
+	# Layer configuration for transport lines gen0
 	[[providers.layers]]
 	name = "transport_lines_gen0"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, type, tunnel, bridge, ref FROM osm_transport_lines_gen0 WHERE type IN ('motorway','trunk','motorway_link','trunk_link','primary') AND tunnel = 0 AND bridge = 0  AND geometry && !BBOX!"
-
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    ABS(osm_id) AS osm_id, 
+	    type, 
+	    tunnel, 
+	    bridge, 
+	    ref,
+	    service,
+	    tags->'electrified' AS electrified, 
+	    tags->'highspeed' AS highspeed, 
+	    tags->'usage' AS usage
+	FROM 
+	    osm_transport_lines_gen0 
+	WHERE 
+	    type IN ('motorway', 'trunk', 'motorway_link', 'trunk_link', 'primary') 
+	    AND tunnel = 0 
+	    AND bridge = 0  
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for transport lines gen1
 	[[providers.layers]]
 	name = "transport_lines_gen1"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, ref, class, type FROM osm_transport_lines_gen1 WHERE type IN ('motorway', 'trunk', 'primary', 'primary_link', 'secondary', 'motorway_link', 'trunk_link') AND geometry && !BBOX!"
-
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    osm_id, 
+	    ref, 
+	    class, 
+	    type, 
+	    service, 
+	    tags->'electrified' AS electrified, 
+	    tags->'highspeed' AS highspeed, 
+	    tags->'usage' AS usage
+	FROM 
+	    osm_transport_lines_gen1 
+	WHERE 
+	    type IN (
+	        'motorway', 'trunk', 'primary', 'primary_link', 'secondary', 
+	        'motorway_link', 'trunk_link', 'rail', 'subway', 'light_rail', 
+	        'tram', 'narrow_gauge', 'monorail', 'preserved', 'miniature', 
+	        'funicular', 'taxiway', 'runway', 'proposed', 'construction', 
+	        'disused', 'abandoned', 'razed', 'ferry'
+	    ) 
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for transport lines 11-12
 	[[providers.layers]]
 	name = "transport_lines_11-12"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, ref, class, type, tunnel, bridge, access, service FROM osm_transport_lines WHERE type IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link', 'rail', 'taxiway', 'runway', 'apron') AND geometry && !BBOX!"
-
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    osm_id, 
+	    name, 
+	    ref, 
+	    class, 
+	    type, 
+	    tunnel, 
+	    bridge, 
+	    access, 
+	    service, 
+	    ford, 
+	    tags->'construction' AS construction, 
+	    tags->'electrified' AS electrified, 
+	    tags->'highspeed' AS highspeed, 
+	    tags->'usage' AS usage
+	FROM 
+	    osm_transport_lines 
+	WHERE 
+	    type IN (
+	        'motorway', 'motorway_link', 'trunk', 'trunk_link', 
+	        'primary', 'primary_link', 'secondary', 'secondary_link', 
+	        'tertiary', 'tertiary_link', 'rail', 'subway', 'light_rail', 
+	        'tram', 'narrow_gauge', 'monorail', 'preserved', 'miniature', 
+	        'funicular', 'taxiway', 'runway', 'proposed', 'construction', 
+	        'disused', 'abandoned', 'razed', 'apron', 'ferry'
+	    )  
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for transport lines 13
 	[[providers.layers]]
 	name = "transport_lines_13"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, ref, class, type, tunnel, bridge, access, service FROM osm_transport_lines WHERE type IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link', 'rail', 'residential', 'taxiway', 'runway', 'apron') AND geometry && !BBOX!"
-
+	geometry_type = "linestring"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    ref, 
+	    class, 
+	    type, 
+	    tunnel, 
+	    bridge, 
+	    access, 
+	    service, 
+	    ford, 
+	    tags->'construction' AS construction, 
+	    tags->'electrified' AS electrified, 
+	    tags->'highspeed' AS highspeed, 
+	    tags->'usage' AS usage
+	FROM 
+	    osm_transport_lines 
+	WHERE 
+	    type IN (
+	        'motorway', 'motorway_link', 'trunk', 'trunk_link', 
+	        'primary', 'primary_link', 'secondary', 'secondary_link', 
+	        'tertiary', 'tertiary_link', 'rail', 'subway', 'light_rail', 
+	        'tram', 'narrow_gauge', 'monorail', 'preserved', 
+	        'miniature', 'funicular', 'taxiway', 'runway', 'residential', 
+	        'taxiway', 'runway', 'proposed', 'construction', 'disused', 
+	        'abandoned', 'razed', 'apron', 'ferry'
+	    )  
+	    AND geometry && !BBOX!
+	"""
+	
+	# Layer configuration for transport lines 14-20
 	[[providers.layers]]
 	name = "transport_lines_14-20"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, ref, class, type, tunnel, bridge, access, service FROM osm_transport_lines WHERE geometry && !BBOX!"
+	geometry_type = "linestring"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    ref, 
+	    class, 
+	    type, 
+	    tunnel, 
+	    bridge, 
+	    access, 
+	    service, 
+	    ford, 
+	    tags->'construction' AS construction, 
+	    tags->'usage' AS usage,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_transport_lines 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+	###### From config/providers/transport_areas.toml 
+	[[providers.layers]]
+	name = "transport_areas"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type, 
+	    area,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_transport_areas 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
 
-	# Amenities
+	###### Amenities areas and points
+	###### From config/providers/amenity_areas.toml 
+	# Layer configuration for amenity areas
 	[[providers.layers]]
 	name = "amenity_areas"
 	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
 	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type FROM osm_amenity_areas WHERE geometry && !BBOX!"
-
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    osm_id, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_amenity_areas 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+	###### From config/providers/amenity_points.toml 
+	# Layer configuration for amenity points
 	[[providers.layers]]
 	name = "amenity_points"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, type FROM osm_amenity_points WHERE geometry && !BBOX!"
+	geometry_type = "point"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_amenity_points 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
 
-	# Other (Man Made, Historic, Military, Power, Barrier etc)
+	###### Place points and areas
+	###### From config/providers/place_points.toml 
+	# Layer configuration for place points
+	[[providers.layers]]
+	name = "place_points"
+	geometry_fieldname = "geometry"
+	geometry_type = "point"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    type,
+	    tags->'capital' AS capital,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_place_points 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+	###### From config/providers/place_areas.toml 
+	# Layer configuration for place areas
+	[[providers.layers]]
+	name = "place_areas"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_place_areas 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+
+	###### Other (Man Made, Historic, Military, Power, Barrier etc)
+	###### From config/providers/other_points.toml 
+	# Layer configuration for other points
 	[[providers.layers]]
 	name = "other_points"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type FROM osm_other_points WHERE geometry && !BBOX!"
-
+	geometry_type = "point"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type, 
+	    tags->'artwork_type' AS artwork_type, 
+	    tags->'site_type' AS site_type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_other_points 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+	###### From config/providers/other_lines.toml 
+	# Layer configuration for other lines
 	[[providers.layers]]
 	name = "other_lines"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type FROM osm_other_lines WHERE geometry && !BBOX!"
-
+	geometry_type = "linestring"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_other_lines 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
+	###### From config/providers/other_areas.toml 
 	[[providers.layers]]
-	name = "other_areas"
+	name = "other_areas_6-8"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type FROM osm_other_areas WHERE geometry && !BBOX!"
-
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type
+	FROM 
+	    osm_other_areas 
+	WHERE 
+	    area > 1000000
+	    AND geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
-	name = "other_areas_filter"
+	name = "other_areas_9-11"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, class, type FROM osm_other_areas WHERE area > 1000000 AND geometry && !BBOX!"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type
+	FROM 
+	    osm_other_areas 
+	WHERE 
+	    area > 100000
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	name = "other_areas_12-14"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry,  
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type
+	FROM 
+	    osm_other_areas 
+	WHERE 
+	    area > 10000
+	    AND geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
+	name = "other_areas_15-20"
+	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    class, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_other_areas 
+	WHERE 
+	    geometry && !BBOX!
+	"""
 
-	# Buildings
+	###### Buildings
+	###### From config/providers/buildings.toml 
+	# Layer configuration for buildings
 	[[providers.layers]]
 	name = "buildings"
 	geometry_fieldname = "geometry"
-	id_fieldname = "osm_id"
-	sql = "SELECT ST_AsBinary(geometry) AS geometry, osm_id, name, nullif(as_numeric(height),-1) AS height, type FROM osm_buildings WHERE geometry && !BBOX!"
+	geometry_type = "multipolygon"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    id, 
+	    osm_id, 
+	    name, 
+	    nullif(as_numeric(height), -1) AS height, 
+	    type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_buildings 
+	WHERE 
+	    geometry && !BBOX!
+	"""
+	
 
-#	Natural Earth
+	###### transport_associated_streets
+	###### From config/providers/transport_associated_streets.toml 
+	# Layer configuration for transport associated streets
+	[[providers.layers]]
+	name = "transport_associated_streets"
+	geometry_fieldname = "geometry"
+	geometry_type = "LineString"
+	id_fieldname = "id"
+	sql = """
+	SELECT 
+	    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+	    r.id, 
+	    m.member, 
+	    r.osm_id, 
+	    m.name, 
+	    m.relname, 
+	    m.index, 
+	    r.type,
+	    tags->'name:ar' as name_ar, 
+	    tags->'name:en' as name_en, 
+	    tags->'name:he' as name_he, 
+	    tags->'name:fr' as name_fr, 
+	    tags->'name:hy' as name_hy 
+	FROM 
+	    osm_relations r, 
+	    osm_relation_members m 
+	WHERE 
+	    r.osm_id = m.osm_id 
+	    AND r.type = 'associatedStreet' 
+	    AND geometry && !BBOX!
+	"""
+	
+
+# Natural Earth (ne)
 [[providers]]
 name = "ne"
-type = "postgis"
-host = "${POSTGRES_HOST}"
-port = 5432
-database = "${POSTGRES_DB}"
-user = "${POSTGRES_USER}"
-password = "${POSTGRES_PASSWORD}"
-srid = 3857
-max_connections = 40
+type = "mvt_postgis"
+uri = "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 
-	[[providers.layers]]
-	name = "ne_110m_populated_places"
-	geometry_fieldname = "geometry"
-	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, scalerank, labelrank, name, min_zoom, featurecla, rank_max FROM ne_110m_populated_places WHERE wkb_geometry && !BBOX!"
-
-	[[providers.layers]]
-	name = "ne_50m_populated_places"
-	geometry_fieldname = "geometry"
-	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, scalerank, labelrank, name, min_zoom, featurecla, rank_max FROM ne_50m_populated_places WHERE wkb_geometry && !BBOX!"
-
-	[[providers.layers]]
-	name = "ne_10m_populated_places"
-	geometry_fieldname = "geometry"
-	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, scalerank, labelrank, name, min_zoom, featurecla, rank_max FROM ne_10m_populated_places WHERE wkb_geometry && !BBOX!"
-
-	[[providers.layers]]
-	name = "ne_10m_admin_0_label_points"
-	geometry_fieldname = "geometry"
-	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, sr_subunit, scalerank FROM ne_10m_admin_0_label_points WHERE wkb_geometry && !BBOX!"
-
-	[[providers.layers]]
-	name = "ne_10m_admin_1_label_points"
-	geometry_fieldname = "geometry"
-	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, name, scalerank FROM ne_10m_admin_1_label_points WHERE wkb_geometry && !BBOX!"
-
+# srid = 3857
+max_connections = 200
+	###### Admin lines  ne
+	###### From config/providers/admin_ne.toml 
 	[[providers.layers]]
 	name = "ne_110m_admin_0_boundary_lines_land"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, min_zoom FROM ne_110m_admin_0_boundary_lines_land WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+	FROM ne_110m_admin_0_boundary_lines_land 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
 	name = "ne_50m_admin_0_boundary_lines_land"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, min_zoom FROM ne_50m_admin_0_boundary_lines_land WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+	FROM ne_50m_admin_0_boundary_lines_land 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
 	name = "ne_10m_admin_0_boundary_lines_land"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, min_zoom FROM ne_10m_admin_0_boundary_lines_land WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+	FROM ne_10m_admin_0_boundary_lines_land 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
 	name = "ne_50m_admin_0_boundary_lines_disputed_areas"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, min_zoom FROM ne_50m_admin_0_boundary_lines_disputed_areas WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+	FROM ne_50m_admin_0_boundary_lines_disputed_areas 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
 	name = "ne_10m_admin_0_boundary_lines_disputed_areas"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, min_zoom FROM ne_10m_admin_0_boundary_lines_disputed_areas WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, min_zoom 
+	FROM ne_10m_admin_0_boundary_lines_disputed_areas 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
 	name = "ne_110m_admin_0_countries"
 	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, name_long, abbrev, adm0_a3, min_zoom, min_label, max_label FROM ne_110m_admin_0_countries WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, name_long, abbrev, adm0_a3, min_zoom, min_label, max_label 
+	FROM ne_110m_admin_0_countries 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
 	name = "ne_50m_admin_0_countries"
 	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, name_long, abbrev, adm0_a3, min_zoom, min_label, max_label FROM ne_50m_admin_0_countries WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, name_long, abbrev, adm0_a3, min_zoom, min_label, max_label 
+	FROM ne_50m_admin_0_countries 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
 	name = "ne_10m_admin_0_countries"
 	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, name_long, abbrev, adm0_a3, min_zoom, min_label, max_label FROM ne_10m_admin_0_countries WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, name_long, abbrev, adm0_a3, min_zoom, min_label, max_label 
+	FROM ne_10m_admin_0_countries 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
 	name = "ne_110m_admin_1_states_provinces_lines"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, adm0_name, min_zoom FROM ne_110m_admin_1_states_provinces_lines WHERE wkb_geometry && !BBOX!"
-
-    [[providers.layers]]
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, adm0_name, min_zoom 
+	FROM ne_110m_admin_1_states_provinces_lines 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
+	[[providers.layers]]
 	name = "ne_50m_admin_1_states_provinces_lines"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, adm0_name, min_zoom FROM ne_50m_admin_1_states_provinces_lines WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, adm0_name, min_zoom 
+	FROM ne_50m_admin_1_states_provinces_lines 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
 	name = "ne_10m_admin_1_states_provinces_lines"
 	geometry_fieldname = "geometry"
+	geometry_type = "linestring"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, adm0_name, min_zoom, min_label FROM ne_10m_admin_1_states_provinces_lines WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, featurecla, name, adm0_name, min_zoom, min_label 
+	FROM ne_10m_admin_1_states_provinces_lines 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	
 	[[providers.layers]]
-	name = "ne_110m_land"
+	name = "ne_10m_admin_0_label_points"
 	geometry_fieldname = "geometry"
+	geometry_type = "point"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, min_zoom FROM ne_110m_land WHERE wkb_geometry && !BBOX!"
-
+	sql = """
+	SELECT ST_AsMVTGeom(wkb_geometry, !BBOX!) AS geometry, ogc_fid, sr_subunit, scalerank 
+	FROM ne_10m_admin_0_label_points 
+	WHERE wkb_geometry && !BBOX!
+	"""
+	###### Water lands ne
+	###### From config/providers/water_areas_ne.toml 
 	[[providers.layers]]
-	name = "ne_50m_land"
+	name = "ne_water_lakes_0-2"
 	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, min_zoom FROM ne_50m_land WHERE wkb_geometry && !BBOX!"
-
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 1000),!BBOX!) AS geometry, name, ogc_fid FROM ne_50m_lakes WHERE wkb_geometry && !BBOX!"
+	
 	[[providers.layers]]
-	name = "ne_10m_land"
+	name = "ne_water_lakes_3-5"
 	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, min_zoom FROM ne_10m_land WHERE wkb_geometry && !BBOX!"
-
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 500),!BBOX!) AS geometry, name, ogc_fid FROM ne_50m_lakes WHERE wkb_geometry && !BBOX!"
+	
 	[[providers.layers]]
-	name = "ne_50m_admin_1_states_provinces_lakes"
+	name = "ne_water_lakes_6-8"
 	geometry_fieldname = "geometry"
+	geometry_type = "multipolygon"
 	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, featurecla, name, postal, min_zoom, min_label FROM ne_50m_admin_1_states_provinces_lakes WHERE wkb_geometry && !BBOX!"
-
-	[[providers.layers]]
-	name = "ne_10m_roads_3"
-	geometry_fieldname = "geometry"
-	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, name, min_zoom, min_label, type, label FROM ne_10m_roads WHERE min_zoom < 5 AND type <> 'Ferry Route' AND wkb_geometry && !BBOX!"
-
-	[[providers.layers]]
-	name = "ne_10m_roads_5"
-	geometry_fieldname = "geometry"
-	id_fieldname = "ogc_fid"
-	sql = "SELECT ST_AsBinary(wkb_geometry) AS geometry, ogc_fid, name, min_zoom, min_label, type, label FROM ne_10m_roads WHERE min_zoom <= 7  AND type <> 'Ferry Route' AND wkb_geometry && !BBOX!"
-
+	sql = "SELECT ST_AsMVTGeom(ST_Simplify(wkb_geometry, 100),!BBOX!) AS geometry, name, ogc_fid FROM ne_10m_lakes WHERE wkb_geometry && !BBOX!"
+	
 
 [[maps]]
 name = "osm"
-attribution = "OpenStreetMap" # map attribution
-center = [-74.275329586789, -12.153492567373, 8.0] # optional center value. part of the TileJSON spec
-
-	[[maps.layers]]
-	name = "populated_places"
-	provider_layer = "ne.ne_110m_populated_places"
-	min_zoom = 0
-	max_zoom = 2
-
-	[[maps.layers]]
-	name = "populated_places"
-	provider_layer = "ne.ne_50m_populated_places"
-	min_zoom = 3
-	max_zoom = 4
-
-	[[maps.layers]]
-	name = "populated_places"
-	provider_layer = "ne.ne_10m_populated_places"
-	min_zoom = 5
-	max_zoom = 20
-
-	[[maps.layers]]
-	name = "country_lines"
-	provider_layer = "ne.ne_110m_admin_0_boundary_lines_land"
-	min_zoom = 0
-	max_zoom = 2
-
-	[[maps.layers]]
-	name = "country_lines"
-	provider_layer = "ne.ne_50m_admin_0_boundary_lines_land"
-	dont_simplify = true
-	min_zoom = 3
-	max_zoom = 4
-
-	[[maps.layers]]
-	name = "country_lines"
-	provider_layer = "ne.ne_10m_admin_0_boundary_lines_land"
-	min_zoom = 5
-	max_zoom = 10
-
-	[[maps.layers]]
-	name = "country_lines_disputed"
-	provider_layer = "ne.ne_50m_admin_0_boundary_lines_disputed_areas"
-	min_zoom = 3
-	max_zoom = 4
-
-	[[maps.layers]]
-	name = "country_lines_disputed"
-	provider_layer = "ne.ne_10m_admin_0_boundary_lines_disputed_areas"
-	min_zoom = 5
-	max_zoom = 10
-
-	[[maps.layers]]
-	name = "country_label_points"
-	provider_layer = "ne.ne_10m_admin_0_label_points"
-	min_zoom = 3
-	max_zoom = 20
-
-	[[maps.layers]]
-	name = "country_polygons"
-	provider_layer = "ne.ne_110m_admin_0_countries"
-	min_zoom = 0
-	max_zoom = 2
-
-	[[maps.layers]]
-	name = "country_polygons"
-	provider_layer = "ne.ne_50m_admin_0_countries"
-	min_zoom = 3
-	max_zoom = 4
-
-	[[maps.layers]]
-	name = "country_polygons"
-	provider_layer = "ne.ne_10m_admin_0_countries"
-	min_zoom = 5
-	max_zoom = 10
-
-	[[maps.layers]]
-	name = "state_lines"
-	provider_layer = "ne.ne_110m_admin_1_states_provinces_lines"
-	min_zoom = 0
-	max_zoom = 2
-
-	[[maps.layers]]
-	name = "state_lines"
-	provider_layer = "ne.ne_50m_admin_1_states_provinces_lines"
-	min_zoom = 3
-	max_zoom = 4
-
-	[[maps.layers]]
-	name = "state_lines"
-	provider_layer = "ne.ne_10m_admin_1_states_provinces_lines"
-	min_zoom = 5
-	max_zoom = 10
-
-	# Land Polygons
+attribution = "OpenStreetMap"
+center = [-74.275329586789, -12.153492567373, 8.0]
+	###### Land
+	###### From config/providers/land.zoom.toml 
 	[[maps.layers]]
 	name = "land"
-	provider_layer = "ne.ne_110m_land"
+	provider_layer = "osm.land_0-2"
 	min_zoom = 0
 	max_zoom = 2
-
+	
 	[[maps.layers]]
 	name = "land"
-	provider_layer = "ne.ne_50m_land"
+	provider_layer = "osm.land_3-5"
 	min_zoom = 3
-	max_zoom = 4
-
+	max_zoom = 5
+	
 	[[maps.layers]]
 	name = "land"
-	provider_layer = "ne.ne_10m_land"
-	min_zoom = 5
+	provider_layer = "osm.land_6-7"
+	min_zoom = 6
 	max_zoom = 7
-
+	
 	[[maps.layers]]
 	name = "land"
-	provider_layer = "osm.land_8-20"
-	dont_simplify = true
+	provider_layer = "osm.land_8-9"
 	min_zoom = 8
-	max_zoom = 20
-
-	[[maps.layers]]
-	name = "admin_lines"
-	provider_layer = "osm.admin_boundaries_8-12"
-	min_zoom = 8
-	max_zoom = 12
-
-	[[maps.layers]]
-	name = "admin_lines"
-	provider_layer = "osm.admin_boundaries_13-20"
-	min_zoom = 13
-	max_zoom = 20
-
-	[[maps.layers]]
-	name = "state_label_points"
-	provider_layer = "ne.ne_10m_admin_1_label_points"
-	min_zoom = 3
-	max_zoom = 20
-
-	# Land Use
-	[[maps.layers]]
-	name = "landuse_areas"
-	provider_layer = "osm.landuse_areas_gen0"
-	min_zoom = 3
-	max_zoom = 5
-
-	[[maps.layers]]
-	name = "landuse_areas"
-	provider_layer = "osm.landuse_areas_gen0_6"
-	min_zoom = 6
 	max_zoom = 9
-
+	
 	[[maps.layers]]
-	name = "landuse_areas"
-	provider_layer = "osm.landuse_areas_gen1"
+	name = "land"
+	provider_layer = "osm.land_10-12"
 	min_zoom = 10
 	max_zoom = 12
-
+	
 	[[maps.layers]]
-	name = "landuse_areas"
-	provider_layer = "osm.landuse_areas"
+	name = "land"
+	provider_layer = "osm.land_13-15"
 	min_zoom = 13
-	max_zoom = 20
-
-	# Water Areas
+	max_zoom = 15
+	
 	[[maps.layers]]
-	name = "water_areas"
-	provider_layer = "osm.water_areas_gen0"
+	name = "land"
+	provider_layer = "osm.land_16-20"
+	min_zoom = 16
+	max_zoom = 20
+	
+	
+	
+
+	##### Admin boundaries display zooms
+	###### From config/providers/admin_boundaries_areas.zoom.toml 
+	# Admin Bounduaries Areas
+	[[maps.layers]]
+	name = "land_osm"
+	provider_layer = "osm.admin_boundaries_0-2"
+	min_zoom = 0
+	max_zoom = 2
+	
+	[[maps.layers]]
+	name = "land_osm"
+	provider_layer = "osm.admin_boundaries_3-5"
 	min_zoom = 3
 	max_zoom = 5
-
+	
 	[[maps.layers]]
-	name = "water_areas"
-	provider_layer = "osm.water_areas_gen0_6"
+	name = "land_osm"
+	provider_layer = "osm.admin_boundaries_6-7"
 	min_zoom = 6
-	max_zoom = 9
-
+	max_zoom = 7
+	
 	[[maps.layers]]
-	name = "water_areas"
-	provider_layer = "osm.water_areas_gen1"
+	name = "land_osm"
+	provider_layer = "osm.admin_boundaries_8-9"
+	min_zoom = 8
+	max_zoom = 9
+	
+	[[maps.layers]]
+	name = "land_osm"
+	provider_layer = "osm.admin_boundaries_10-12"
 	min_zoom = 10
 	max_zoom = 12
-
+	
 	[[maps.layers]]
-	name = "water_areas"
-	provider_layer = "osm.water_areas"
+	name = "land_osm"
+	provider_layer = "osm.admin_boundaries_13-15"
 	min_zoom = 13
+	max_zoom = 15
+	
+	[[maps.layers]]
+	name = "land_osm"
+	provider_layer = "osm.admin_boundaries_16-20"
+	min_zoom = 16
 	max_zoom = 20
 
-	# Water Lines
+	###### Land Use
+	###### From config/providers/landuse_areas.zoom.toml 
 	[[maps.layers]]
-	name = "water_lines"
-	provider_layer = "osm.water_lines_gen0"
-	min_zoom = 8
+	name = "landuse_areas"
+	provider_layer = "osm.landuse_areas_gen0_3-5"
+	min_zoom = 3
+	max_zoom = 5
+	
+	[[maps.layers]]
+	name = "landuse_areas"
+	provider_layer = "osm.landuse_areas_gen0_6-9"
+	min_zoom = 6
+	max_zoom = 9
+	
+	[[maps.layers]]
+	name = "landuse_areas"
+	provider_layer = "osm.landuse_areas_gen1_10-12"
+	min_zoom = 10
 	max_zoom = 12
+	
+	[[maps.layers]]
+	name = "landuse_areas"
+	provider_layer = "osm.landuse_areas_13-20"
+	min_zoom = 13
+	max_zoom = 20
+	
+	###### From config/providers/landuse_lines.zoom.toml 
+	[[maps.layers]]
+	name = "landuse_lines"
+	provider_layer = "osm.landuse_lines"
+	min_zoom = 14
+	max_zoom = 20
+	###### From config/providers/landuse_points.zoom.toml 
+	[[maps.layers]]
+	name = "landuse_points"
+	provider_layer = "osm.landuse_points"
+	min_zoom = 6
+	max_zoom = 20
 
+	###### Water areas/lines
+	###### From config/providers/water_areas.zoom.toml 
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "osm.water_areas_gen0_0-2"
+	min_zoom = 0
+	max_zoom = 2
+	
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "osm.water_areas_gen0_3-5"
+	min_zoom = 3
+	max_zoom = 5
+	
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "osm.water_areas_gen0_6-7"
+	min_zoom = 6
+	max_zoom = 7
+	
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "osm.water_areas_gen0_8-9"
+	min_zoom = 8
+	max_zoom = 9
+	
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "osm.water_areas_gen1_10-12"
+	min_zoom = 10
+	max_zoom = 12
+	
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "osm.water_areas_13-15"
+	min_zoom = 13
+	max_zoom = 15
+	
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "osm.water_areas_16-20"
+	min_zoom = 16
+	max_zoom = 20
+	###### From config/providers/water_lines.zoom.toml 
 	[[maps.layers]]
 	name = "water_lines"
-	provider_layer = "osm.water_lines_gen1"
-	min_zoom = 13
-	max_zoom = 14
-
+	provider_layer = "osm.water_lines_gen0_6-6"
+	min_zoom = 6
+	max_zoom = 6
+	
+	[[maps.layers]]
+	name = "water_lines"
+	provider_layer = "osm.water_lines_gen0_7-7"
+	min_zoom = 7
+	max_zoom = 7
+	
+	[[maps.layers]]
+	name = "water_lines"
+	provider_layer = "osm.water_lines_gen0_8-8"
+	min_zoom = 8
+	max_zoom = 8
+	
+	[[maps.layers]]
+	name = "water_lines"
+	provider_layer = "osm.water_lines_gen0_9-9"
+	min_zoom = 9
+	max_zoom = 9
+	
+	[[maps.layers]]
+	name = "water_lines"
+	provider_layer = "osm.water_lines_gen1_10-11"
+	min_zoom = 10
+	max_zoom = 11
+	
 	[[maps.layers]]
 	name = "water_lines"
 	provider_layer = "osm.water_lines"
-	min_zoom = 15
+	min_zoom = 12
 	max_zoom = 20
 
 	# Transport Lines (Roads, Rail, Aviation)
-	[[maps.layers]]
-	name = "transport_lines"
-	provider_layer = "ne.ne_10m_roads_3"
-	min_zoom = 3
-	max_zoom = 4
-
-	[[maps.layers]]
-	name = "transport_lines"
-	provider_layer = "ne.ne_10m_roads_5"
-	min_zoom = 5
-	max_zoom = 6
-
+	###### From config/providers/transport_lines.zoom.toml 
 	[[maps.layers]]
 	name = "transport_lines"
 	provider_layer = "osm.transport_lines_gen0"
-	min_zoom = 7
-	max_zoom = 8
-
+	min_zoom = 3
+	max_zoom = 5
+	
 	[[maps.layers]]
 	name = "transport_lines"
 	provider_layer = "osm.transport_lines_gen1"
-	min_zoom = 9
+	min_zoom = 6
 	max_zoom = 10
-
+	
 	[[maps.layers]]
 	name = "transport_lines"
 	provider_layer = "osm.transport_lines_11-12"
 	min_zoom = 11
 	max_zoom = 12
-
+	
 	[[maps.layers]]
 	name = "transport_lines"
 	provider_layer = "osm.transport_lines_13"
 	min_zoom = 13
 	max_zoom = 13
-
+	
 	[[maps.layers]]
 	name = "transport_lines"
 	provider_layer = "osm.transport_lines_14-20"
 	min_zoom = 14
 	max_zoom = 20
+	[['providers/route_lines.zoom.toml']]
+
+	###### admin_boundaries_maritime
+	[['providers/admin_boundaries_maritime.zoom.toml']]
 
 	# Transport Areas
 	[[maps.layers]]
@@ -616,10 +1713,26 @@ center = [-74.275329586789, -12.153492567373, 8.0] # optional center value. part
 	min_zoom = 14
 	max_zoom = 20
 
+
+
 	# Amenity Points
 	[[maps.layers]]
 	name = "amenity_points"
 	provider_layer = "osm.amenity_points"
+	min_zoom = 14
+	max_zoom = 20
+
+	# Place Points
+	[[maps.layers]]
+	name = "place_points"
+	provider_layer = "osm.place_points"
+	min_zoom = 1
+	max_zoom = 20
+
+	# Place areas
+	[[maps.layers]]
+	name = "place_areas"
+	provider_layer = "osm.place_areas"
 	min_zoom = 14
 	max_zoom = 20
 
@@ -638,17 +1751,32 @@ center = [-74.275329586789, -12.153492567373, 8.0] # optional center value. part
 	max_zoom = 20
 
 	# Other Areas
+	###### From config/providers/other_areas.zoom.toml 
+	# Other Areas
 	[[maps.layers]]
 	name = "other_areas"
-	provider_layer = "osm.other_areas_filter"
+	provider_layer = "osm.other_areas_6-8"
 	min_zoom = 6
 	max_zoom = 8
-
+	
 	[[maps.layers]]
 	name = "other_areas"
-	provider_layer = "osm.other_areas"
+	provider_layer = "osm.other_areas_9-11"
 	min_zoom = 9
+	max_zoom = 11
+	
+	[[maps.layers]]
+	name = "other_areas"
+	provider_layer = "osm.other_areas_12-14"
+	min_zoom = 12
+	max_zoom = 14
+	
+	[[maps.layers]]
+	name = "other_areas"
+	provider_layer = "osm.other_areas_15-20"
+	min_zoom = 15
 	max_zoom = 20
+	
 
 	# Buildings
 	[[maps.layers]]
@@ -656,3 +1784,108 @@ center = [-74.275329586789, -12.153492567373, 8.0] # optional center value. part
 	provider_layer = "osm.buildings"
 	min_zoom = 14
 	max_zoom = 20
+	
+
+	[[maps.layers]]
+	name = "transport_associated_streets"
+	provider_layer = "osm.transport_associated_streets"
+	min_zoom = 7
+	max_zoom = 20
+
+
+[[maps]]
+name = "ne"
+attribution = "Natural Earth"
+center = [-74.275329586789, -12.153492567373, 8.0]
+
+	###### From config/providers/admin_ne.zoom.toml 
+	[[maps.layers]]
+	name = "country_lines"
+	provider_layer = "ne.ne_110m_admin_0_boundary_lines_land"
+	min_zoom = 0
+	max_zoom = 2
+	
+	[[maps.layers]]
+	name = "country_lines"
+	provider_layer = "ne.ne_50m_admin_0_boundary_lines_land"
+	dont_simplify = true
+	min_zoom = 3
+	max_zoom = 4
+	
+	[[maps.layers]]
+	name = "country_lines"
+	provider_layer = "ne.ne_10m_admin_0_boundary_lines_land"
+	min_zoom = 5
+	max_zoom = 10
+	
+	[[maps.layers]]
+	name = "country_lines_disputed"
+	provider_layer = "ne.ne_50m_admin_0_boundary_lines_disputed_areas"
+	min_zoom = 3
+	max_zoom = 4
+	
+	[[maps.layers]]
+	name = "country_lines_disputed"
+	provider_layer = "ne.ne_10m_admin_0_boundary_lines_disputed_areas"
+	min_zoom = 5
+	max_zoom = 10
+	
+	[[maps.layers]]
+	name = "country_label_points"
+	provider_layer = "ne.ne_10m_admin_0_label_points"
+	min_zoom = 3
+	max_zoom = 20
+	
+	[[maps.layers]]
+	name = "country_polygons"
+	provider_layer = "ne.ne_110m_admin_0_countries"
+	min_zoom = 0
+	max_zoom = 2
+	
+	[[maps.layers]]
+	name = "country_polygons"
+	provider_layer = "ne.ne_50m_admin_0_countries"
+	min_zoom = 3
+	max_zoom = 4
+	
+	[[maps.layers]]
+	name = "country_polygons"
+	provider_layer = "ne.ne_10m_admin_0_countries"
+	min_zoom = 5
+	max_zoom = 10
+	
+	[[maps.layers]]
+	name = "state_lines"
+	provider_layer = "ne.ne_110m_admin_1_states_provinces_lines"
+	min_zoom = 0
+	max_zoom = 2
+	
+	[[maps.layers]]
+	name = "state_lines"
+	provider_layer = "ne.ne_50m_admin_1_states_provinces_lines"
+	min_zoom = 3
+	max_zoom = 4
+	
+	[[maps.layers]]
+	name = "state_lines"
+	provider_layer = "ne.ne_10m_admin_1_states_provinces_lines"
+	min_zoom = 5
+	max_zoom = 10
+	# Water lakes Natural Earth
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "ne.ne_water_lakes_0-2"
+	min_zoom = 0
+	max_zoom = 2
+
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "ne.ne_water_lakes_3-5"
+	min_zoom = 3
+	max_zoom = 5
+
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "ne.ne_water_lakes_6-8"
+	min_zoom = 6
+	max_zoom = 8

@@ -25,23 +25,23 @@ RUN apt-get update && apt-get install -y nodejs yarn && \
     rm -rf /var/lib/apt/lists/*
 
 # Install openstreetmap-cgimap requirements
-RUN apt-get update &&  apt-get -y install libpqxx-dev libfcgi-dev zlib1g-dev \
-  libboost-dev libboost-program-options-dev libfmt-dev \
-  libmemcached-dev libcrypto++-dev libargon2-dev libyajl-dev \
-  automake autoconf libtool && \
+RUN apt-get update &&  apt-get -y install libxml2-dev libpqxx-dev libfcgi-dev zlib1g-dev libbrotli-dev \
+  libboost-program-options-dev libfmt-dev libmemcached-dev libcrypto++-dev \
+  libargon2-dev libyajl-dev cmake libapache2-mod-fcgid && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-# Install cgimap
-ENV cgimap /tmp/openstreetmap-cgimap
-ENV CGIMAP_GITSHA=5cd3d21bebe9d205828608be4c65bbda8b464308
-RUN git clone -b master https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap
-RUN cd $cgimap && git checkout $CGIMAP_GITSHA
-RUN cd $cgimap && \
-    ./autogen.sh && \
-    ./configure && \
-    make && \
-    make install
+# Install cgimap, before remove basic auth
+ENV cgimap /openstreetmap-cgimap
+ENV CGIMAP_GITSHA=26cd7fa10affe5dbd13dbe16de34421059f53f18
+RUN git clone -b master https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap \
+    && cd $cgimap \
+    && git checkout $CGIMAP_GITSHA \
+    && rm -rf .git \
+    && mkdir build \
+    && cd build \
+    && cmake .. \
+    && cmake --build .
 
 # Install svgo required
 RUN npm install -g svgo

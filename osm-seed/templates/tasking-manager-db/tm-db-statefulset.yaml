@@ -23,6 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-tasking-manager-db
     spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.tmDb.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-tm-db
           image: "{{ .Values.tmDb.image.name }}:{{ .Values.tmDb.image.tag }}"
@@ -79,12 +80,16 @@ spec:
               subPath: {{ .Values.tmDb.persistenceDisk.subPath }}
           {{- if .Values.tmDb.resources.enabled }}
           resources:
+            {{- if .Values.tmDb.resources.requests.enabled }}
             requests:
               memory: {{ .Values.tmDb.resources.requests.memory }}
               cpu: {{ .Values.tmDb.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.tmDb.resources.limits.enabled }}
             limits:
               memory: {{ .Values.tmDb.resources.limits.memory }}
               cpu: {{ .Values.tmDb.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
       volumes:
         - name: postgres-storage

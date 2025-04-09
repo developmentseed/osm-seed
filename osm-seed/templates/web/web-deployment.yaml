@@ -22,6 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-web
     spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.web.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Chart.Name }}-web
           image: "{{ .Values.web.image.name }}:{{ .Values.web.image.tag }}"
@@ -49,12 +50,16 @@ spec:
             {{- end }}
           {{- if .Values.web.resources.enabled }}
           resources:
+            {{- if .Values.web.resources.requests.enabled }}
             requests:
               memory: {{ .Values.web.resources.requests.memory }}
               cpu: {{ .Values.web.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.web.resources.limits.enabled }}
             limits:
               memory: {{ .Values.web.resources.limits.memory }}
               cpu: {{ .Values.web.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
           env:
             - name: GET_HOSTS_FROM
@@ -135,6 +140,20 @@ spec:
             # you done need to set this values.yaml in case you don't use
             - name: BACKUP_FILE_URL
               value: {{ .Values.web.env.BACKUP_FILE_URL | default "none" | quote }}
+            - name: RAILS_CREDENTIALS_YML_ENC
+              value: {{ .Values.web.env.RAILS_CREDENTIALS_YML_ENC | quote }}
+            - name: RAILS_MASTER_KEY
+              value: {{ .Values.web.env.RAILS_MASTER_KEY | quote }}
+            - name: RAILS_ENV
+              value: {{ .Values.web.env.RAILS_ENV | quote }}
+            - name: RAILS_LOG_LEVEL
+              value: {{ .Values.web.env.RAILS_LOG_LEVEL | default "info" | quote }}
+            - name: RAILS_STORAGE_SERVICE
+              value: {{ .Values.web.env.RAILS_STORAGE_SERVICE | default "local" | quote }}
+            - name: RAILS_STORAGE_REGION
+              value: {{ .Values.web.env.RAILS_STORAGE_REGION | quote }}
+            - name: RAILS_STORAGE_BUCKET
+              value: {{ .Values.web.env.RAILS_STORAGE_BUCKET | quote }}
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory

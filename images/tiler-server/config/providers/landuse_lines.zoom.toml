@@ -1,0 +1,5 @@
+[[maps.layers]]
+name = "landuse_lines"
+provider_layer = "osm.landuse_lines"
+min_zoom = 14
+max_zoom = 20

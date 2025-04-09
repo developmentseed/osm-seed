@@ -1,0 +1,165 @@
+# Layer configuration for transport lines gen0
+[[providers.layers]]
+name = "transport_lines_gen0"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "osm_id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    ABS(osm_id) AS osm_id, 
+    type, 
+    tunnel, 
+    bridge, 
+    ref,
+    service,
+    tags->'electrified' AS electrified, 
+    tags->'highspeed' AS highspeed, 
+    tags->'usage' AS usage
+FROM 
+    osm_transport_lines_gen0 
+WHERE 
+    type IN ('motorway', 'trunk', 'motorway_link', 'trunk_link', 'primary') 
+    AND tunnel = 0 
+    AND bridge = 0  
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for transport lines gen1
+[[providers.layers]]
+name = "transport_lines_gen1"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "osm_id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    osm_id, 
+    ref, 
+    class, 
+    type, 
+    service, 
+    tags->'electrified' AS electrified, 
+    tags->'highspeed' AS highspeed, 
+    tags->'usage' AS usage
+FROM 
+    osm_transport_lines_gen1 
+WHERE 
+    type IN (
+        'motorway', 'trunk', 'primary', 'primary_link', 'secondary', 
+        'motorway_link', 'trunk_link', 'rail', 'subway', 'light_rail', 
+        'tram', 'narrow_gauge', 'monorail', 'preserved', 'miniature', 
+        'funicular', 'taxiway', 'runway', 'proposed', 'construction', 
+        'disused', 'abandoned', 'razed', 'ferry'
+    ) 
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for transport lines 11-12
+[[providers.layers]]
+name = "transport_lines_11-12"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "osm_id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    osm_id, 
+    name, 
+    ref, 
+    class, 
+    type, 
+    tunnel, 
+    bridge, 
+    access, 
+    service, 
+    ford, 
+    tags->'construction' AS construction, 
+    tags->'electrified' AS electrified, 
+    tags->'highspeed' AS highspeed, 
+    tags->'usage' AS usage
+FROM 
+    osm_transport_lines 
+WHERE 
+    type IN (
+        'motorway', 'motorway_link', 'trunk', 'trunk_link', 
+        'primary', 'primary_link', 'secondary', 'secondary_link', 
+        'tertiary', 'tertiary_link', 'rail', 'subway', 'light_rail', 
+        'tram', 'narrow_gauge', 'monorail', 'preserved', 'miniature', 
+        'funicular', 'taxiway', 'runway', 'proposed', 'construction', 
+        'disused', 'abandoned', 'razed', 'apron', 'ferry'
+    )  
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for transport lines 13
+[[providers.layers]]
+name = "transport_lines_13"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    ref, 
+    class, 
+    type, 
+    tunnel, 
+    bridge, 
+    access, 
+    service, 
+    ford, 
+    tags->'construction' AS construction, 
+    tags->'electrified' AS electrified, 
+    tags->'highspeed' AS highspeed, 
+    tags->'usage' AS usage
+FROM 
+    osm_transport_lines 
+WHERE 
+    type IN (
+        'motorway', 'motorway_link', 'trunk', 'trunk_link', 
+        'primary', 'primary_link', 'secondary', 'secondary_link', 
+        'tertiary', 'tertiary_link', 'rail', 'subway', 'light_rail', 
+        'tram', 'narrow_gauge', 'monorail', 'preserved', 
+        'miniature', 'funicular', 'taxiway', 'runway', 'residential', 
+        'taxiway', 'runway', 'proposed', 'construction', 'disused', 
+        'abandoned', 'razed', 'apron', 'ferry'
+    )  
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for transport lines 14-20
+[[providers.layers]]
+name = "transport_lines_14-20"
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    ref, 
+    class, 
+    type, 
+    tunnel, 
+    bridge, 
+    access, 
+    service, 
+    ford, 
+    tags->'construction' AS construction, 
+    tags->'usage' AS usage,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_transport_lines 
+WHERE 
+    geometry && !BBOX!
+"""

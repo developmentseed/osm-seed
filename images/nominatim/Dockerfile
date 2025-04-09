@@ -1,60 +1,24 @@
-FROM mediagis/nominatim:4.1
+FROM mediagis/nominatim:4.5
+
 RUN apt-get update && \
-        apt-get -y install \
-        build-essential \
-        g++ \
-        cmake \
-        libpq-dev \
-        zlib1g-dev \
-        libbz2-dev \
-        libproj-dev \
-        libexpat1-dev \
-        libboost-dev \
-        libboost-system-dev \
-        libboost-filesystem-dev \
-        git \
-        wget \
-        cron
-# Nominatim install.
-RUN true \
-    && git clone https://github.com/osm-search/Nominatim.git \
-    && cd Nominatim \
-    && git checkout v4.1.0 \
-    && git submodule update --init
-COPY settings/placex_triggers.sql /app/Nominatim/lib-sql/functions/
-RUN wget -O Nominatim/data/country_osm_grid.sql.gz https://www.nominatim.org/data/country_grid.sql.gz
-RUN mkdir build \
-    && cd build \
-    && cmake ../Nominatim \
-    && make -j`nproc` \
-    && make install
+    apt-get -y install --no-install-recommends \
+        cron \
+        wget lua5.3 liblua5.3-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN true \
-    # Remove development and unused packages.
-    && apt-get -y remove --purge \
-        cpp-9 \
-        gcc-9* \
-        g++ \
-        git \
-        make \
-        cmake* \
-        llvm-10* \
-        libc6-dev \
-        linux-libc-dev \
-        libclang-*-dev \
-        build-essential \
-        postgresql-server-dev-14 \
-    && apt-get clean \
-    # Clear temporary files and directories.
-    && rm -rf \
-        /tmp/* \
-        /var/tmp/* \
-        /root/.cache \
-        /app/src/.git \
-        /var/lib/apt/lists/* \
+WORKDIR /app
 
-ENV PGDATA=/var/lib/postgresql/14/main
+# Download required Nominatim country grid
+RUN mkdir -p /app/Nominatim/data && \
+    wget https://www.nominatim.org/data/country_grid.sql.gz -O /app/Nominatim/data/country_osm_grid.sql.gz
+
 COPY docker-entrypoint.sh /app/
 COPY update.sh /app/
-RUN crontab -l | { cat; echo "* * * * * cd /nominatim/ ; bash /app/update.sh >> /var/log/cron.log 2>&1"; } | crontab -
+
+# Ensure scripts are executable
+RUN chmod +x /app/docker-entrypoint.sh /app/update.sh
+
+# Setup cron job
+RUN echo "* * * * * cd /app/Nominatim && bash /app/update.sh >> /var/log/cron.log 2>&1" | crontab -
+
 CMD ["/app/docker-entrypoint.sh"]

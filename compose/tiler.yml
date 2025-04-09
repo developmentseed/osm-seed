@@ -1,4 +1,4 @@
-version: '3.8'
+# version: '3.8'
 services:
   # ######################################################
   # ### Tiler DB
@@ -8,61 +8,53 @@ services:
     build:
       context: ../images/tiler-db
       dockerfile: Dockerfile
-    # ports:
-    # - "5433:5432"
+    ports:
+    - "5432:5432"
     volumes:
     - ../data/tiler-db-data:/var/lib/postgresql/data
     env_file:
     - ../envs/.env.tiler-db
     restart: always
-  # ######################################################
-  # ### Tiler imposm for importing data
-  # ######################################################
-  tiler-imposm:
-    image: osmseed-tiler-imposm:v1
-    build:
-      context: ../images/tiler-imposm
-      dockerfile: Dockerfile
-    volumes:
-    - ../data/tiler-imposm-data:/mnt/data
-    # - ../images/tiler-imposm:/osm
-    depends_on:
-    - tiler-db
-    command:
-    - sh
-    - -c
-    - "sleep 60 && ./start.sh"
-    env_file:
-    - ../envs/.env.tiler-db
-    - ../envs/.env.tiler-imposm
-    healthcheck:
-      test: ["CMD", "./liveness.sh"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: always
-  # ######################################################
-  # ### Tiler server
-  # ######################################################
+  # # ######################################################
+  # # ### Tiler imposm for importing data
+  # # ######################################################
+  # tiler-imposm:
+  #   image: osmseed-tiler-imposm:v1
+  #   build:
+  #     context: ../images/tiler-imposm
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #   - ../data/tiler-imposm-data:/mnt/data
+  #   # - ../images/tiler-imposm:/osm
+  #   command:
+  #   - sh
+  #   - -c
+  #   - "./start.sh"
+  #   env_file:
+  #   - ../envs/.env.tiler-db
+  #   - ../envs/.env.tiler-imposm
+  #   healthcheck:
+  #     test: ["CMD", "./liveness.sh"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #   restart: always
+  # # ######################################################
+  # # ### Tiler server
+  # # ######################################################
   tiler-server:
     image: osmseed-tiler-server:v1
+    # platform: linux/amd64
     build:
       context: ../images/tiler-server
       dockerfile: Dockerfile
     volumes:
-    - ../data/tiler-server-data:/mnt/data
-    - ../data/tiler-imposm-data:/mnt/data/imposm
-    depends_on:
-    - tiler-db
-    - tiler-imposm
+      - ../images/tiler-server:/app
+      - ../data/tiler-imposm-data:/mnt/data/imposm
     ports:
-    - "9090:9090"
-    command:
-    - sh
-    - -c
-    - "./start.sh & ./expire-watcher.sh"
+      - "9090:9090"
+    command: "./start.sh"
     env_file:
-    - ../envs/.env.tiler-db
-    - ../envs/.env.tiler-server
+      - ../envs/.env.tiler-db
+      - ../envs/.env.tiler-server
     restart: always
-  

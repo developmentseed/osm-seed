@@ -1,0 +1,181 @@
+# Layer configuration for admin boundaries 0-2
+[[providers.layers]]
+name = "admin_boundaries_0-2"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 500), !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    admin_level, 
+    name, 
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_admin_areas 
+WHERE 
+    admin_level IN (1,2) 
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for admin boundaries 3-5
+[[providers.layers]]
+name = "admin_boundaries_3-5"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 200), !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    admin_level, 
+    name, 
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_admin_areas 
+WHERE 
+    admin_level IN (1,2,3,4) 
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for admin boundaries 6-7
+[[providers.layers]]
+name = "admin_boundaries_6-7"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 100), !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    admin_level, 
+    name, 
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_admin_areas 
+WHERE 
+    admin_level IN (1,2,3,4,5,6) 
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for admin boundaries 8-9
+[[providers.layers]]
+name = "admin_boundaries_8-9"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 50), !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    admin_level, 
+    name, 
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_admin_areas 
+WHERE 
+    admin_level IN (1,2,3,4,5,6,7,8,9) 
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for admin boundaries 10-12
+[[providers.layers]]
+name = "admin_boundaries_10-12"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 20), !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    admin_level, 
+    name, 
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_admin_areas 
+WHERE 
+    admin_level IN (1,2,3,4,5,6,7,8,9,10) 
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for admin boundaries 13-15
+[[providers.layers]]
+name = "admin_boundaries_13-15"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 5), !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    admin_level, 
+    name, 
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_admin_areas 
+WHERE 
+    admin_level IN (1,2,3,4,5,6,7,8,9,10) 
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for admin boundaries 16-20
+[[providers.layers]]
+name = "admin_boundaries_16-20"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 1), !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    admin_level, 
+    name, 
+    type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_admin_areas 
+WHERE 
+    admin_level IN (1,2,3,4,5,6,7,8,9,10) 
+    AND geometry && !BBOX!
+"""

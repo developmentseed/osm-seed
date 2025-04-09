@@ -1,0 +1,212 @@
+[webserver]
+port = ":${TILER_SERVER_PORT}"
+
+	[webserver.headers]
+	Access-Control-Allow-Origin = "*"
+
+# Tegola offers three tile caching strategies: "file", "redis", and "s3"
+[cache]
+type = "${TILER_CACHE_TYPE}"
+basepath ="${TILER_CACHE_BASEPATH}"
+max_zoom = "${TILER_CACHE_MAX_ZOOM}"
+
+bucket = "${TILER_CACHE_BUCKET}"
+region = "${TILER_CACHE_REGION}"
+aws_access_key_id = "${TILER_CACHE_AWS_ACCESS_KEY_ID}"
+aws_secret_access_key = "${TILER_CACHE_AWS_SECRET_ACCESS_KEY}"
+
+# metrics
+[observer]
+type = "prometheus"
+
+# OpenStreetMap (OSM)
+[[providers]]
+name = "osm"
+type = "mvt_postgis"
+uri = "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+# srid = 3857
+max_connections = 200
+	###### Land providers
+	[['providers/land.toml']]
+
+	###### Water areas and lines
+	[['providers/water_areas.toml']]
+
+	[['providers/water_lines.toml']]
+
+	###### Water areas NE
+	[['providers/water_areas_ne.toml']]
+
+	###### Admin boundaries providers
+	[['providers/admin_boundaries_areas.toml']]
+
+	###### Land use areas
+	[['providers/landuse_areas.toml']]
+
+	###### Land use lines and points
+	[['providers/landuse_lines.toml']]
+	[['providers/landuse_points.toml']]
+
+	###### Transport lines, points and areas from ways
+	[['providers/transport_points.toml']]
+	[['providers/transport_lines.toml']]
+	[['providers/transport_areas.toml']]
+
+	###### Amenities areas and points
+	[['providers/amenity_areas.toml']]
+	[['providers/amenity_points.toml']]
+
+	###### Place points and areas
+	[['providers/place_points.toml']]
+	[['providers/place_areas.toml']]
+
+	###### Other (Man Made, Historic, Military, Power, Barrier etc)
+	[['providers/other_points.toml']]
+	[['providers/other_lines.toml']]
+	[['providers/other_areas.toml']]
+
+	###### Buildings
+	[['providers/buildings.toml']]
+
+	###### transport_associated_streets
+	[['providers/transport_associated_streets.toml']]
+
+# Natural Earth (ne)
+[[providers]]
+name = "ne"
+type = "mvt_postgis"
+uri = "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+
+# srid = 3857
+max_connections = 200
+	###### Admin lines  ne
+	[['providers/admin_ne.toml']]
+	###### Water lands ne
+	[['providers/water_areas_ne.toml']]
+
+[[maps]]
+name = "osm"
+attribution = "OpenStreetMap"
+center = [-74.275329586789, -12.153492567373, 8.0]
+	###### Land
+	[['providers/land.zoom.toml']]
+
+	##### Admin boundaries display zooms
+	[['providers/admin_boundaries_areas.zoom.toml']]
+
+	###### Land Use
+	[['providers/landuse_areas.zoom.toml']]
+	[['providers/landuse_lines.zoom.toml']]
+	[['providers/landuse_points.zoom.toml']]
+
+	###### Water areas/lines
+	[['providers/water_areas.zoom.toml']]
+	[['providers/water_lines.zoom.toml']]
+
+	# Transport Lines (Roads, Rail, Aviation)
+	[['providers/transport_lines.zoom.toml']]
+	[['providers/route_lines.zoom.toml']]
+
+	###### admin_boundaries_maritime
+	[['providers/admin_boundaries_maritime.zoom.toml']]
+
+	# Transport Areas
+	[[maps.layers]]
+	name = "transport_areas"
+	provider_layer = "osm.transport_areas"
+	min_zoom = 12
+	max_zoom = 20
+
+	# Transport Points
+	[[maps.layers]]
+	name = "transport_points"
+	provider_layer = "osm.transport_points"
+	min_zoom = 14
+	max_zoom = 20
+
+	# Amenity Areas
+	[[maps.layers]]
+	name = "amenity_areas"
+	provider_layer = "osm.amenity_areas"
+	min_zoom = 14
+	max_zoom = 20
+
+
+
+	# Amenity Points
+	[[maps.layers]]
+	name = "amenity_points"
+	provider_layer = "osm.amenity_points"
+	min_zoom = 14
+	max_zoom = 20
+
+	# Place Points
+	[[maps.layers]]
+	name = "place_points"
+	provider_layer = "osm.place_points"
+	min_zoom = 1
+	max_zoom = 20
+
+	# Place areas
+	[[maps.layers]]
+	name = "place_areas"
+	provider_layer = "osm.place_areas"
+	min_zoom = 14
+	max_zoom = 20
+
+	# Other Points
+	[[maps.layers]]
+	name = "other_points"
+	provider_layer = "osm.other_points"
+	min_zoom = 14
+	max_zoom = 20
+
+	# Other Lines
+	[[maps.layers]]
+	name = "other_lines"
+	provider_layer = "osm.other_lines"
+	min_zoom = 14
+	max_zoom = 20
+
+	# Other Areas
+	[['providers/other_areas.zoom.toml']]
+
+	# Buildings
+	[[maps.layers]]
+	name = "buildings"
+	provider_layer = "osm.buildings"
+	min_zoom = 14
+	max_zoom = 20
+	
+
+	[[maps.layers]]
+	name = "transport_associated_streets"
+	provider_layer = "osm.transport_associated_streets"
+	min_zoom = 7
+	max_zoom = 20
+
+
+[[maps]]
+name = "ne"
+attribution = "Natural Earth"
+center = [-74.275329586789, -12.153492567373, 8.0]
+
+	[['providers/admin_ne.zoom.toml']]
+	# Water lakes Natural Earth
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "ne.ne_water_lakes_0-2"
+	min_zoom = 0
+	max_zoom = 2
+
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "ne.ne_water_lakes_3-5"
+	min_zoom = 3
+	max_zoom = 5
+
+	[[maps.layers]]
+	name = "water_areas"
+	provider_layer = "ne.ne_water_lakes_6-8"
+	min_zoom = 6
+	max_zoom = 8

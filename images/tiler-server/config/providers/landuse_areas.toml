@@ -1,0 +1,89 @@
+# Layer 50,000,000
+[[providers.layers]]
+name = "landuse_areas_gen0_3-5"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "osm_id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 500), !BBOX!) AS geometry, 
+    ABS(osm_id) AS osm_id, 
+    name, 
+    class, 
+    type, 
+    area
+FROM 
+    osm_landuse_areas_gen0 
+WHERE 
+    type IN ('forest', 'wood', 'nature reserve', 'nature_reserve', 'military') 
+    AND area > 50000000 
+    AND geometry && !BBOX!
+"""
+
+# Layer 1,000,000
+[[providers.layers]]
+name = "landuse_areas_gen0_6-9"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "osm_id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 100), !BBOX!) AS geometry, 
+    ABS(osm_id) AS osm_id, 
+    name, 
+    class, 
+    type, 
+    area
+FROM 
+    osm_landuse_areas_gen0 
+WHERE 
+    type IN ('forest', 'wood', 'nature reserve', 'nature_reserve', 'military') 
+    AND area > 1000000 
+    AND geometry && !BBOX!
+"""
+
+# Layer configuration for landuse areas gen1
+[[providers.layers]]
+name = "landuse_areas_gen1_10-12"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "osm_id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    ABS(osm_id) AS osm_id, 
+    name, 
+    class, 
+    type, 
+    area
+FROM 
+    osm_landuse_areas_gen1 
+WHERE 
+    geometry && !BBOX!
+"""
+# Layer configuration for landuse areas
+[[providers.layers]]
+name = "landuse_areas_13-20"
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    class, 
+    type, 
+    tags->'wetland' AS wetland, 
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_landuse_areas 
+WHERE 
+    geometry && !BBOX!
+"""

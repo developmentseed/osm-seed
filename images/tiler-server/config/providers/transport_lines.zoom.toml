@@ -1,0 +1,29 @@
+[[maps.layers]]
+name = "transport_lines"
+provider_layer = "osm.transport_lines_gen0"
+min_zoom = 3
+max_zoom = 5
+
+[[maps.layers]]
+name = "transport_lines"
+provider_layer = "osm.transport_lines_gen1"
+min_zoom = 6
+max_zoom = 10
+
+[[maps.layers]]
+name = "transport_lines"
+provider_layer = "osm.transport_lines_11-12"
+min_zoom = 11
+max_zoom = 12
+
+[[maps.layers]]
+name = "transport_lines"
+provider_layer = "osm.transport_lines_13"
+min_zoom = 13
+max_zoom = 13
+
+[[maps.layers]]
+name = "transport_lines"
+provider_layer = "osm.transport_lines_14-20"
+min_zoom = 14
+max_zoom = 20

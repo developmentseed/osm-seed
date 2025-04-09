@@ -1,4 +1,4 @@
-{{- if .Values.tilerServer.enabled -}}
+{{- if and .Values.tilerServer.enabled (not .Values.tilerServer.externalService.enabled) }}
 {{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "s3" }}
 apiVersion: apps/v1
 kind: Deployment
@@ -23,6 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-tiler-server
     spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.tilerServer.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-tiler-server
           image: "{{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}"
@@ -35,58 +36,26 @@ spec:
             httpGet:
               path: /
               port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
-            initialDelaySeconds: 600 # 10 min, because the compile process takes time.
+            initialDelaySeconds: 1000
             timeoutSeconds: 30
           {{- if .Values.tilerServer.resources.enabled }}
           resources:
+            {{- if .Values.tilerServer.resources.requests.enabled }}
             requests:
               memory: {{ .Values.tilerServer.resources.requests.memory }}
               cpu: {{ .Values.tilerServer.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.tilerServer.resources.limits.enabled }}
             limits:
               memory: {{ .Values.tilerServer.resources.limits.memory }}
               cpu: {{ .Values.tilerServer.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
-          env:
-              # tiler-db env variables
-            - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-tiler-db
-            - name: POSTGRES_DB
-              value: {{ .Values.tilerDb.env.POSTGRES_DB }}
-            - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.tilerDb.env.POSTGRES_PASSWORD }}
-            - name: POSTGRES_USER
-              value: {{ .Values.tilerDb.env.POSTGRES_USER }}
-            - name: POSTGRES_PORT
-              value: {{ .Values.tilerDb.env.POSTGRES_PORT | quote }}
-              # tiler-server env variables
-            - name: TILER_SERVER_PORT
-              value: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
-            - name: TILER_CACHE_TYPE
-              value: {{ .Values.tilerServer.env.TILER_CACHE_TYPE }}
-            - name: TILER_CACHE_REGION
-              value: {{ .Values.tilerServer.env.TILER_CACHE_REGION }}
-            - name: TILER_CACHE_BUCKET
-              value: {{ .Values.tilerServer.env.TILER_CACHE_BUCKET }}
-            - name: TILER_CACHE_BASEPATH
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_BASEPATH }}
-            - name: TILER_CACHE_AWS_ACCESS_KEY_ID
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_ACCESS_KEY_ID }}
-            - name: TILER_CACHE_AWS_SECRET_ACCESS_KEY
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY }}
-            - name: TILER_CACHE_MAX_ZOOM
-              value: {{ quote .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM }}
-            - name: CLOUDPROVIDER
-              value: {{ .Values.cloudProvider }}
-            # In case cloudProvider=aws
-            {{- if eq .Values.cloudProvider "aws" }}
-            - name: AWS_S3_BUCKET
-              value: {{ .Values.AWS_S3_BUCKET }}
-            {{- end }}
-            # In case cloudProvider=gcp
-            {{- if eq .Values.cloudProvider "gcp" }}
-            - name: GCP_STORAGE_BUCKET
-              value: {{ .Values.GCP_STORAGE_BUCKET }}
-            {{- end }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-tiler-server-cm
+          - configMapRef:
+              name: {{ .Release.Name }}-tiler-db-cm
       {{- if .Values.tilerServer.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerServer.nodeSelector.label_key }} : {{ .Values.tilerServer.nodeSelector.label_value }}

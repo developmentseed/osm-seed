@@ -1,0 +1,126 @@
+# Simplification for geometries
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "osm_id"
+name = "water_lines_gen0_6-6"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 1500), !BBOX!) AS geometry, 
+    ABS(osm_id) AS osm_id, 
+    name, 
+    type, 
+    tags->'bridge' AS bridge
+FROM 
+    osm_water_lines_gen0 
+WHERE 
+    type IN ('river', 'canal') 
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "osm_id"
+name = "water_lines_gen0_7-7"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 1000), !BBOX!) AS geometry, 
+    ABS(osm_id) AS osm_id, 
+    name, 
+    type, 
+    tags->'bridge' AS bridge
+FROM 
+    osm_water_lines_gen0 
+WHERE 
+    type IN ('river', 'canal') 
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "osm_id"
+name = "water_lines_gen0_8-8"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 500), !BBOX!) AS geometry, 
+    ABS(osm_id) AS osm_id, 
+    name, 
+    type, 
+    tags->'bridge' AS bridge
+FROM 
+    osm_water_lines_gen0 
+WHERE 
+    type IN ('river', 'canal') 
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "osm_id"
+name = "water_lines_gen0_9-9"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 100), !BBOX!) AS geometry, 
+    ABS(osm_id) AS osm_id, 
+    name, 
+    type, 
+    tags->'bridge' AS bridge
+FROM 
+    osm_water_lines_gen0 
+WHERE 
+    type IN ('river', 'canal') 
+    AND geometry && !BBOX!
+"""
+
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "osm_id"
+name = "water_lines_gen1_10-11"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 20), !BBOX!) AS geometry, 
+    ABS(osm_id) AS osm_id, 
+    name, 
+    type, 
+    tags->'bridge' AS bridge, 
+    tags->'surface' AS surface
+FROM 
+    osm_water_lines_gen1 
+WHERE 
+    type IN ('river', 'canal', 'stream', 'ditch', 'drain', 'dam', 'cliff') 
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "linestring"
+id_fieldname = "id"
+name = "water_lines"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    type, 
+    tags->'bridge' AS bridge, 
+    tags->'surface' AS surface, 
+    tags->'start_date' AS start_date, 
+    tags->'end_date' AS end_date,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_water_lines 
+WHERE 
+    type IN ('river', 'canal', 'stream', 'ditch', 'drain', 'dam', 'cliff') 
+    AND geometry && !BBOX!
+"""

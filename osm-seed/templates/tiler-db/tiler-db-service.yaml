@@ -1,4 +1,5 @@
 {{- if .Values.tilerDb.enabled -}}
+{{- if not .Values.tilerDb.useExternalHost.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -13,7 +14,8 @@ spec:
     - port: 5432
       targetPort: 5432
   selector:
-    app: {{ template "osm-seed.name" . }}
+    app: {{ .Release.Name }}-tiler-db
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-tiler-db
+{{- end }}
 {{- end }}

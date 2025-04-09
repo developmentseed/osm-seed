@@ -31,6 +31,7 @@ spec:
           volumeMounts:
           - name: postgres-storage
             mountPath: /var/lib/postgresql/data
+      priorityClassName: {{ .Release.Name }}-{{ .Values.osmchaDb.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-osmcha-db
           image: "{{ .Values.osmchaDb.image.name }}:{{ .Values.osmchaDb.image.tag }}"

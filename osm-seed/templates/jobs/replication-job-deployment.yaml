@@ -18,6 +18,7 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.replicationJob.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Release.Name }}-replication-job-deployment
           image: {{ .Values.replicationJob.image.name }}:{{ .Values.replicationJob.image.tag }}
@@ -28,9 +29,9 @@ spec:
               - /bin/bash
               - -c
               - /liveness.sh
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             timeoutSeconds: 5
-            periodSeconds: 10
+            periodSeconds: 30
             failureThreshold: 3
           {{- if .Values.replicationJob.resources.enabled }}
           resources:
@@ -78,6 +79,12 @@ spec:
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.replicationJob.resources.requests.memory | default "2Gi" | quote}}
             {{- end }}
+            - name: ENABLE_SEND_SLACK_MESSAGE
+              value: {{ .Values.replicationJob.env.ENABLE_SEND_SLACK_MESSAGE | quote}}
+            - name: SLACK_WEBHOOK_URL
+              value: {{ .Values.replicationJob.env.SLACK_WEBHOOK_URL | quote}}
+            - name: ENVIROMENT
+              value: {{ .Values.environment | quote}}
       {{- if .Values.replicationJob.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.replicationJob.nodeSelector.label_key }} : {{ .Values.replicationJob.nodeSelector.label_value }}

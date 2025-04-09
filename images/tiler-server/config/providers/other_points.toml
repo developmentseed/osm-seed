@@ -1,0 +1,26 @@
+# Layer configuration for other points
+[[providers.layers]]
+name = "other_points"
+geometry_fieldname = "geometry"
+geometry_type = "point"
+id_fieldname = "id"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    class, 
+    type, 
+    tags->'artwork_type' AS artwork_type, 
+    tags->'site_type' AS site_type,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_other_points 
+WHERE 
+    geometry && !BBOX!
+"""

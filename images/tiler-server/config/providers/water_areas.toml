@@ -1,0 +1,175 @@
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "osm_id"
+name = "water_areas_gen0_0-2"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 10000), !BBOX!) AS geometry, 
+    ABS(osm_id) as osm_id, 
+    name, 
+    type, 
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_water_areas_gen0 
+WHERE 
+    type IN ('water', 'riverbank') 
+    AND area > 100000000 
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "osm_id"
+name = "water_areas_gen0_3-5"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 1000), !BBOX!) AS geometry, 
+    ABS(osm_id) as osm_id, 
+    name, 
+    type, 
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_water_areas_gen0 
+WHERE 
+    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') 
+    AND area > 50000000 
+    AND geometry && !BBOX!
+"""
+
+# Water bodies > 1,000,000 sqm
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "osm_id"
+name = "water_areas_gen0_6-7"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 500), !BBOX!) AS geometry, 
+    ABS(osm_id) as osm_id, 
+    name, 
+    type, 
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_water_areas_gen0 
+WHERE 
+    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') 
+    AND area > 1000000 
+    AND geometry && !BBOX!
+"""
+
+# Water bodies > 10,000 sqm
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "osm_id"
+name = "water_areas_gen0_8-9"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 100), !BBOX!) AS geometry, 
+    ABS(osm_id) as osm_id, 
+    name, 
+    type, 
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_water_areas_gen0 
+WHERE 
+    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') 
+    AND area > 10000 
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "osm_id"
+name = "water_areas_gen1_10-12"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 50), !BBOX!) AS geometry, 
+    ABS(osm_id) as osm_id, 
+    name, 
+    type, 
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_water_areas_gen1 
+WHERE 
+    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank') 
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+name = "water_areas_13-15"
+sql = """
+SELECT 
+    ST_AsMVTGeom(ST_Simplify(geometry, 5), !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    type, 
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_water_areas 
+WHERE 
+    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank', 'dock') 
+    AND geometry && !BBOX!
+"""
+
+[[providers.layers]]
+geometry_fieldname = "geometry"
+geometry_type = "multipolygon"
+id_fieldname = "id"
+name = "water_areas_16-20"
+sql = """
+SELECT 
+    ST_AsMVTGeom(geometry, !BBOX!) AS geometry, 
+    id, 
+    osm_id, 
+    name, 
+    type, 
+    area,
+    tags->'name:ar' as name_ar, 
+    tags->'name:en' as name_en, 
+    tags->'name:he' as name_he, 
+    tags->'name:fr' as name_fr, 
+    tags->'name:hy' as name_hy 
+FROM 
+    osm_water_areas 
+WHERE 
+    type IN ('water', 'pond', 'basin', 'canal', 'mill_pond', 'riverbank', 'dock') 
+    AND geometry && !BBOX!
+"""

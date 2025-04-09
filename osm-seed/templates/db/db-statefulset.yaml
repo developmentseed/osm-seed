@@ -23,6 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-db
     spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.db.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Chart.Name }}-db
           image: "{{ .Values.db.image.name }}:{{ .Values.db.image.tag }}"
@@ -49,8 +50,12 @@ spec:
               value: {{ .Values.db.persistenceDisk.mountPath }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
-            - name: LOG_STATEMENT
-              value: {{ default "none" .Values.db.env.LOG_STATEMENT | quote }}
+          {{- if .Values.db.postgresqlConfig.enabled }}
+          command:
+            - "sh"
+            - "-c"
+            - "su postgres -c 'postgres -c config_file=/etc/postgresql/postgresql.conf'"
+           {{- end }}
           livenessProbe:
             exec:
               command:
@@ -71,18 +76,26 @@ spec:
             periodSeconds: 5
           volumeMounts:
             - name: postgres-storage
-              mountPath: {{ .Values.db.persistenceDisk.mountPath }}
+              mountPath: /var/lib/postgresql/data
               subPath: {{ .Values.db.persistenceDisk.subPath }}
             - name: shared-memory
               mountPath: /dev/shm
+            {{- if .Values.db.postgresqlConfig.enabled }}
+            - name: db-postgresql-config
+              mountPath: /etc/postgresql/
+            {{- end }}
           {{- if .Values.db.resources.enabled }}
           resources:
+            {{- if .Values.db.resources.requests.enabled }}
             requests:
               memory: {{ .Values.db.resources.requests.memory }}
               cpu: {{ .Values.db.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.db.resources.limits.enabled }}
             limits:
               memory: {{ .Values.db.resources.limits.memory }}
               cpu: {{ .Values.db.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
       volumes:
         - name: postgres-storage
@@ -96,6 +109,11 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: {{ .Values.db.sharedMemorySize }}
+        {{- if .Values.db.postgresqlConfig.enabled }}
+        - name: db-postgresql-config
+          configMap:
+            name: {{ .Release.Name }}-db-postgresql-config
+        {{- end }}
       {{- if .Values.db.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
