@@ -154,6 +154,18 @@ spec:
               value: {{ .Values.web.env.RAILS_STORAGE_REGION | quote }}
             - name: RAILS_STORAGE_BUCKET
               value: {{ .Values.web.env.RAILS_STORAGE_BUCKET | quote }}
+            # Cgimap run in external container
+            {{- if and .Values.web.env.EXTERNAL .Values.cgimap.enabled }}
+            - name: CGIMAP_URL
+              value: {{ .Release.Name }}-cgimap-service
+            - name: CGIMAP_PORT
+              value: {{ quote 80 }}
+            {{- else }}
+            - name: CGIMAP_URL
+              value: "127.0.0.1"
+            - name: CGIMAP_PORT
+              value: {{ quote 8000 }}
+            {{- end }}
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory

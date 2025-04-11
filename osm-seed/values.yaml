@@ -127,7 +127,7 @@ db:
       max_worker_processes = 4
       max_parallel_workers_per_gather = 2
       max_parallel_workers = 4
-  
+
 # ====================================================================================================
 # Variables for osm-seed website
 # ====================================================================================================
@@ -161,6 +161,7 @@ web:
     RAILS_STORAGE_SERVICE: local
     RAILS_STORAGE_REGION: us-east-1
     RAILS_STORAGE_BUCKET: osmseed-website-bucket
+    EXTERNAL_CGIMAP: false
   resources:
     enabled: false
     requests:
@@ -200,6 +201,23 @@ memcached:
       enabled: false
       memory: "2Gi"
       cpu: "2"
+
+# ====================================================================================================
+# Cgimap
+# ====================================================================================================
+cgimap:
+  enabled: false
+  priorityClass: "low-priority"
+  resources:
+    enabled: false
+    requests:
+      memory: '20Gi'
+      cpu: '8'
+    limits:
+      memory: '24Gi'
+      cpu: '10'
+  nodeSelector:
+    enabled: false
 # ====================================================================================================
 # Variables for full-history container
 # ====================================================================================================
@@ -460,7 +478,8 @@ tilerImposm:
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
-    TILER_IMPORT_LIMIT: https://gist.githubusercontent.com/Rub21/96bdcac5eb11f0b36ba8d0352ac537f4/raw/2606f2e207d4a0d895897a83efa1efacefd36eb4/monaco.geojson
+    TILER_IMPORT_LIMIT: 
+      https://gist.githubusercontent.com/Rub21/96bdcac5eb11f0b36ba8d0352ac537f4/raw/2606f2e207d4a0d895897a83efa1efacefd36eb4/monaco.geojson
     TILER_CACHE_AWS_ENDPOINT: ""
     UPLOAD_EXPIRED_FILES: true
     IMPORT_NATURAL_EARTH: true
@@ -718,7 +737,8 @@ nominatimApi:
     THREADS: 4
     NOMINATIM_PASSWORD: psw1234
     PGDATA: /var/lib/postgresql/14/main
-    NOMINATIM_ADDRESS_LEVEL_CONFIG_URL: https://gist.githubusercontent.com/lonvia/8502c61b3dd159e67eb8be8368d864c1/raw/d05a1d681230632bb2e35cbf363f2baec8acd657/address-levels.json
+    NOMINATIM_ADDRESS_LEVEL_CONFIG_URL: 
+      https://gist.githubusercontent.com/lonvia/8502c61b3dd159e67eb8be8368d864c1/raw/d05a1d681230632bb2e35cbf363f2baec8acd657/address-levels.json
     UPDATE_MODE: continuous #Options: `continuous`/`once`/`catch-up`/`none` (default: `none`)
     OSMSEED_WEB_API_DOMAIN: www.openstreetmap.org
   resources:
@@ -764,7 +784,8 @@ overpassApi:
     OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/monaco-latest.osm.bz2
     OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/monaco/minute/
     OVERPASS_RULES_LOAD: 10
-    OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf'
+    OVERPASS_PLANET_PREPROCESS: 'mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium
+      cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf'
     OVERPASS_REPLICATION_SEQUENCE_NUMBER: 5201000
     OVERPASS_ALLOW_DUPLICATE_QUERIES: "yes"
   persistenceDisk:
@@ -834,20 +855,20 @@ taginfo:
     label_key: nodegroup_type
     label_value: web
   cronjob:
+    enabled: true
+    schedule: "0 2 */3 * *"
+    nodeSelector:
       enabled: true
-      schedule: "0 2 */3 * *"
-      nodeSelector:
-        enabled: true
-        label_key: nodegroup_type
-        label_value: job_xlarge
-      resources:
-        enabled: false
-        requests:
-          memory: "13Gi"
-          cpu: "3600m"
-        limits:
-          memory: "14Gi"
-          cpu: "3800m"
+      label_key: nodegroup_type
+      label_value: job_xlarge
+    resources:
+      enabled: false
+      requests:
+        memory: "13Gi"
+        cpu: "3600m"
+      limits:
+        memory: "14Gi"
+        cpu: "3800m"
 # ====================================================================================================
 # Variables for osm-simple-metrics
 # ====================================================================================================
@@ -1044,25 +1065,5 @@ adiffService:
 planetFiles:
   enabled: false
   image:
-    name: ""
-    tag: ""
-# ====================================================================================================
-# Cgimap
-# ====================================================================================================
-cgimap:
-  enabled: false
-  priorityClass: "low-priority"
-  image:
-    name: ''
-    tag: ''
-  resources:
-    enabled: false
-    requests:
-      memory: '20Gi'
-      cpu: '8'
-    limits:
-      memory: '24Gi'
-      cpu: '10'
-  nodeSelector:
-    enabled: false
-
+    name: "developmentseed/osmseed-planet-files"
+    tag: "0.1.0-0.dev.git.966.hc380960"
