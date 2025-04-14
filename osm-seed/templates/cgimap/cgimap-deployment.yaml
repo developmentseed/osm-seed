@@ -59,6 +59,10 @@ spec:
               value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
               value: {{ .Values.db.env.POSTGRES_USER }}
+            - name: WEBSITE_STATUS
+              value: {{ .Values.web.env.WEBSITE_STATUS }}
+            - name: OPENSTREETMAP_MEMCACHE_SERVERS
+              value: {{ .Release.Name }}-memcached:11211
       {{- if .Values.cgimap.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}

@@ -155,7 +155,9 @@ spec:
             - name: RAILS_STORAGE_BUCKET
               value: {{ .Values.web.env.RAILS_STORAGE_BUCKET | quote }}
             # Cgimap run in external container
-            {{- if and .Values.web.env.EXTERNAL .Values.cgimap.enabled }}
+            {{- if and .Values.web.env.EXTERNAL_CGIMAP .Values.cgimap.enabled }}
+            - name: EXTERNAL_CGIMAP
+              value: {{ .Values.web.env.EXTERNAL_CGIMAP | quote }}
             - name: CGIMAP_URL
               value: {{ .Release.Name }}-cgimap-service
             - name: CGIMAP_PORT
