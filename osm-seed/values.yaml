@@ -1065,5 +1065,5 @@ adiffService:
 planetFiles:
   enabled: false
   image:
-    name: "developmentseed/osmseed-planet-files"
-    tag: "0.1.0-0.dev.git.966.hc380960"
+    name: ""
+    tag: ""
