@@ -13,12 +13,12 @@ jobs:
     - name: Setup python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.8'
+        python-version: '3.7'
     - name: Setup git
       run: git config --global user.email "noreply@developmentseed.org" && git config --global user.name "Github Action"
     - name: Install Chartpress and some python modules
       run: |
-        pip install -v chartpress && pip install six && pip install yq
+        pip install -v chartpress==2.3.0 && pip install six && pip install yq
     - name: Set env vars for publish charts
       run: |
         GIT_BRANCH_NAME=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
