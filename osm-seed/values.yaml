@@ -206,6 +206,9 @@ memcached:
 # Cgimap
 # ====================================================================================================
 cgimap:
+  image:
+    name: ""
+    tag: ""
   enabled: false
   priorityClass: "low-priority"
   resources:
@@ -218,6 +221,12 @@ cgimap:
       cpu: '10'
   nodeSelector:
     enabled: false
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 4
+    cpuUtilization: 60
+    memoryUtilization: 60
 # ====================================================================================================
 # Variables for full-history container
 # ====================================================================================================
