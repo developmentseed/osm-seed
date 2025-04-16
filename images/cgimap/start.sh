@@ -9,7 +9,7 @@ export CGIMAP_OAUTH_HOST=$POSTGRES_HOST
 export CGIMAP_UPDATE_HOST=$POSTGRES_HOST
 # Export CGIMAP configuration
 export CGIMAP_LOGFILE="/var/www/log/cgimap.log"
-export CGIMAP_MEMCACHE=$OPENSTREETMAP_MEMCACHE_SERVERS
+export CGIMAP_MEMCACHE=$MEMCACHE_SERVER
 # Average number of bytes/s to allow each client
 export CGIMAP_RATELIMIT="204800"
 # Maximum debt in MB to allow each client before rate limiting

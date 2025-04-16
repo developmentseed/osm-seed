@@ -22,6 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-cgimap-deployment
     spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.cgimap.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Chart.Name }}-cgimap
           image: "{{ .Values.cgimap.image.name }}:{{ .Values.cgimap.image.tag }}"
@@ -61,7 +62,7 @@ spec:
               value: {{ .Values.db.env.POSTGRES_USER }}
             - name: WEBSITE_STATUS
               value: {{ .Values.web.env.WEBSITE_STATUS }}
-            - name: OPENSTREETMAP_MEMCACHE_SERVERS
+            - name: MEMCACHE_SERVER
               value: {{ .Release.Name }}-memcached:11211
       {{- if .Values.cgimap.nodeSelector.enabled }}
       nodeSelector:
