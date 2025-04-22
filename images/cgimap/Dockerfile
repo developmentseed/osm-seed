@@ -1,41 +1,45 @@
-FROM ruby:3.3.0 AS builder
+FROM debian:bookworm-slim AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV workdir=/var/www
+
+RUN apt-get update -qq && \
+    apt-get install -y gcc g++ make cmake \
+    libfcgi-dev libxml2-dev libmemcached-dev libbrotli-dev \
+    libboost-program-options-dev libcrypto++-dev libyajl-dev \
+    libpqxx-dev zlib1g-dev libfmt-dev \
+    postgresql-15 postgresql-server-dev-all dpkg-dev file ca-certificates git \
+    --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+    
+# Clone application
 ENV CGIMAP_GITSHA=8ea707e10aeab5698e6859856111816d75354592
-ENV cgimap=/tmp/openstreetmap-cgimap
+RUN git clone https://github.com/zerebubuth/openstreetmap-cgimap.git /app \
+&& git checkout $CGIMAP_GITSHA 
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential cmake git curl file \
-    libxml2-dev libpqxx-dev libfcgi-dev zlib1g-dev libbrotli-dev \
-    libboost-program-options-dev libfmt-dev libmemcached-dev libcrypto++-dev \
-    libargon2-dev libyajl-dev \
- && rm -rf /var/lib/apt/lists/*
+# Compile, install and remove source
+RUN mkdir build && cd build && \
+    CXXFLAGS="-flto=auto -ffat-lto-objects -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2" cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release && \
+    make -j${nproc} && \
+    ctest --output-on-failure && \
+    cmake --build . -t package
 
-RUN git clone https://github.com/zerebubuth/openstreetmap-cgimap.git $cgimap \
- && cd $cgimap \
- && git checkout $CGIMAP_GITSHA \
- && mkdir build && cd build && cmake .. && cmake --build .
+FROM debian:bookworm-slim
 
+COPY --from=builder /app/build/*.deb /app_deb/
 
-FROM ruby:3.3.0-slim
+RUN apt-get update -qq && \
+    apt install --no-install-recommends -y /app_deb/*.deb postgresql-client procps && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-ENV DEBIAN_FRONTEND=noninteractive
+RUN groupadd -g 61000 cgimap && \
+    useradd -g 61000 -l -M -s /bin/false -u 61000 cgimap
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl gnupg && \
-    echo "deb http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-    curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-    libxml2 libpqxx-6.4 libfcgi zlib1g libbrotli1 \
-    libboost-program-options1.74.0 libfmt-dev libmemcached11 libcrypto++8 \
-    libargon2-1 libyajl2 libapache2-mod-fcgid postgresql-client \
- && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+EXPOSE 8000
 
-COPY --from=builder /tmp/openstreetmap-cgimap/build/openstreetmap-cgimap /usr/local/bin/openstreetmap-cgimap
-
-COPY *.sh /
-RUN chmod +x /*.sh && echo "/usr/local/lib" > /etc/ld.so.conf.d/local_libs.conf && ldconfig
+COPY ./*.sh .
 
 CMD ["/start.sh"]
