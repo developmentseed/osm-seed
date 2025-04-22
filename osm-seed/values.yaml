@@ -178,7 +178,8 @@ web:
     enabled: false
     minReplicas: 1
     maxReplicas: 3
-    cpuUtilization: 80
+    cpuUtilization: 60
+    memoryUtilization: 60
   sharedMemorySize: 256Mi
   livenessProbeExec: true
 # ====================================================================================================
