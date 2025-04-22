@@ -214,11 +214,13 @@ cgimap:
   resources:
     enabled: false
     requests:
-      memory: '20Gi'
-      cpu: '8'
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
     limits:
-      memory: '24Gi'
-      cpu: '10'
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
   autoscaling:

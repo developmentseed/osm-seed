@@ -42,12 +42,16 @@ spec:
             failureThreshold: 3
           {{- if .Values.cgimap.resources.enabled }}
           resources:
+            {{- if .Values.cgimap.resources.requests.enabled }}
             requests:
               memory: {{ .Values.cgimap.resources.requests.memory }}
               cpu: {{ .Values.cgimap.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.cgimap.resources.limits.enabled }}
             limits:
               memory: {{ .Values.cgimap.resources.limits.memory }}
               cpu: {{ .Values.cgimap.resources.limits.cpu }}
+            {{- end }}
           {{- end }}
           env:
             - name: POSTGRES_HOST
