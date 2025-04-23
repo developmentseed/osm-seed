@@ -11,6 +11,7 @@ metadata:
 spec:
   schedule: {{ quote .Values.fullHistory.schedule }}
   startingDeadlineSeconds: 100
+  ttlSecondsAfterFinished: 300
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2
   concurrencyPolicy: Forbid
