@@ -12,11 +12,11 @@ spec:
   schedule: {{ quote .Values.osmSimpleMetrics.schedule }}
   startingDeadlineSeconds: 100
   successfulJobsHistoryLimit: 2
-  ttlSecondsAfterFinished: 300
   failedJobsHistoryLimit: 2
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 300
       template:
         spec:
           containers:

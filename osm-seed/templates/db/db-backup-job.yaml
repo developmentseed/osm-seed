@@ -13,10 +13,10 @@ spec:
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2
   startingDeadlineSeconds: 100
-  ttlSecondsAfterFinished: 300
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 300
       template:
         spec:
           containers:
