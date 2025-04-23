@@ -1,0 +1,75 @@
+{{- if .Values.cgimap.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-cgimap-deployment
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: cgimap-deployment
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.cgimap.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-cgimap-deployment
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-cgimap-deployment
+    spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.cgimap.priorityClass | default "high-priority" }}
+      containers:
+        - name: {{ .Chart.Name }}-cgimap
+          image: "{{ .Values.cgimap.image.name }}:{{ .Values.cgimap.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /liveness.sh
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          {{- if .Values.cgimap.resources.enabled }}
+          resources:
+            {{- if .Values.cgimap.resources.requests.enabled }}
+            requests:
+              memory: {{ .Values.cgimap.resources.requests.memory }}
+              cpu: {{ .Values.cgimap.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.cgimap.resources.limits.enabled }}
+            limits:
+              memory: {{ .Values.cgimap.resources.limits.memory }}
+              cpu: {{ .Values.cgimap.resources.limits.cpu }}
+            {{- end }}
+          {{- end }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: PGPASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.env.POSTGRES_USER }}
+            - name: WEBSITE_STATUS
+              value: {{ .Values.web.env.WEBSITE_STATUS }}
+            - name: MEMCACHE_SERVER
+              value: {{ .Release.Name }}-memcached:11211
+      {{- if .Values.cgimap.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

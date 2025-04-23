@@ -1,5 +1,4 @@
-{{- if .Values.web.enabled -}}
-{{- if .Values.web.autoscaling.enabled -}}
+{{- if and .Values.web.enabled .Values.web.autoscaling.enabled -}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -18,5 +17,10 @@ spec:
       target:
         type: Utilization
         averageUtilization: {{ .Values.web.autoscaling.cpuUtilization }}
-{{- end }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.web.autoscaling.memoryUtilization }}
 {{- end }}

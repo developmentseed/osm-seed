@@ -30,8 +30,6 @@ charts:
       valuesPath: tilerServer.image
     tasking-manager-api:
       valuesPath: tmApi.image
-    # tiler-visor:
-    #   valuesPath: tilerVisor.image
     nominatim:
       valuesPath: nominatimApi.image
     overpass-api:
@@ -48,4 +46,5 @@ charts:
       valuesPath: osmchaDb.image
     planet-files:
       valuesPath: planetFiles.image
-
+    # cgimap:
+    #   valuesPath: cgimap.image
