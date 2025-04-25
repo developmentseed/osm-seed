@@ -16,6 +16,7 @@ spec:
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 60
       template:
         spec:
           {{- if .Values.monitoringReplication.nodeSelector.enabled }}

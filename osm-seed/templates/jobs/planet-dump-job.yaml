@@ -16,6 +16,7 @@ spec:
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 300
       template:
         spec:
           {{- if .Values.planetDump.nodeSelector.enabled }}
