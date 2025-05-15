@@ -28,7 +28,7 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: 9091
+      targetPort: {{ .Values.tilerServer.externalService.port | default "9090" }} 
       protocol: TCP
   {{- else }}
   # This is the default service, atached to the deployment
@@ -37,14 +37,14 @@ spec:
     - name: http
       port: 80
       protocol: TCP
-      targetPort: {{ .Values.tilerServer.externalService.port | default "http" }}
+      targetPort: http
     - name: https
       port: 443
       protocol: TCP
-      targetPort: {{ .Values.tilerServer.externalService.port | default "http" }}
+      targetPort: http
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-tiler-server
+    run: {{ .Release.Name }}-tiler-server # This is working for deployment and not for statefulset , make sure you use "s3" to storage the vtiles
   {{- end }}
 {{- end }}
