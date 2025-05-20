@@ -178,8 +178,12 @@ web:
     enabled: true
     minReplicas: 1
     maxReplicas: 6
-    cpuUtilization: 85
-    memoryUtilization: 85
+    cpuUtilization:
+      enable: false
+      value: 85
+    memoryUtilization:
+      enable: false
+      value: 85
     behavior:
       scaleUp:
         stabilizationWindowSeconds: 60
