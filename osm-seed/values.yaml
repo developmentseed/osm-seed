@@ -175,11 +175,20 @@ web:
   nodeSelector:
     enabled: false
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 1
-    maxReplicas: 3
-    cpuUtilization: 60
-    memoryUtilization: 60
+    maxReplicas: 6
+    cpuUtilization: 85
+    memoryUtilization: 85
+    behavior:
+      scaleUp:
+        stabilizationWindowSeconds: 60
+        policyValue: 100
+        periodSeconds: 60
+      scaleDown:
+        stabilizationWindowSeconds: 60
+        policyValue: 50
+        periodSeconds: 60
   sharedMemorySize: 256Mi
   livenessProbeExec: true
 # ====================================================================================================
