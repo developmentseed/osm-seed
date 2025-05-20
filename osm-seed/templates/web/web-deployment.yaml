@@ -167,6 +167,8 @@ spec:
               value: "127.0.0.1"
             - name: CGIMAP_PORT
               value: {{ quote 8000 }}
+            - name: PASSENGER_MAX_POOL_SIZE
+              value: {{ .Values.web.env.PASSENGER_MAX_POOL_SIZE | default "6" | quote }}
             {{- end }}
           volumeMounts:
             - mountPath: /dev/shm
