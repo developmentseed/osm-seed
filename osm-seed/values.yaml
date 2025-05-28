@@ -162,6 +162,7 @@ web:
     RAILS_STORAGE_REGION: us-east-1
     RAILS_STORAGE_BUCKET: osmseed-website-bucket
     EXTERNAL_CGIMAP: false
+    PASSENGER_MAX_POOL_SIZE: 6
   resources:
     enabled: false
     requests:
@@ -175,11 +176,24 @@ web:
   nodeSelector:
     enabled: false
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 1
-    maxReplicas: 3
-    cpuUtilization: 60
-    memoryUtilization: 60
+    maxReplicas: 6
+    cpuUtilization:
+      enable: false
+      value: 85
+    memoryUtilization:
+      enable: false
+      value: 85
+    behavior:
+      scaleUp:
+        stabilizationWindowSeconds: 60
+        policyValue: 100
+        periodSeconds: 60
+      scaleDown:
+        stabilizationWindowSeconds: 60
+        policyValue: 50
+        periodSeconds: 60
   sharedMemorySize: 256Mi
   livenessProbeExec: true
 # ====================================================================================================

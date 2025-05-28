@@ -11,16 +11,33 @@ spec:
   minReplicas: {{ .Values.web.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.web.autoscaling.maxReplicas }}
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.web.autoscaling.cpuUtilization }}
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.web.autoscaling.memoryUtilization }}
+    {{- if .Values.web.autoscaling.cpuUtilization.enable }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.web.autoscaling.cpuUtilization.value }}
+    {{- end }}
+    {{- if .Values.web.autoscaling.memoryUtilization.enable }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.web.autoscaling.memoryUtilization.value }}
+    {{- end }}
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: {{ .Values.web.autoscaling.behavior.scaleUp.stabilizationWindowSeconds | default 60 }}
+      policies:
+        - type: Percent
+          value: {{ .Values.web.autoscaling.behavior.scaleUp.policyValue | default 100 }}
+          periodSeconds: {{ .Values.web.autoscaling.behavior.scaleUp.periodSeconds | default 60 }}
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.web.autoscaling.behavior.scaleDown.stabilizationWindowSeconds | default 60 }}
+      policies:
+        - type: Percent
+          value: {{ .Values.web.autoscaling.behavior.scaleDown.policyValue | default 50 }}
+          periodSeconds: {{ .Values.web.autoscaling.behavior.scaleDown.periodSeconds | default 60 }}
 {{- end }}
