@@ -41,8 +41,10 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
     ./aws/install && \
     rm awscliv2.zip
 
+ENV TAGINFO_GITSHA=4a7dadc864ab4400afaf8a34876d05c58aa4e64a
 RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo && \
     cd $workdir/taginfo && \
+    git checkout $TAGINFO_GITSHA && \
     bundle install
 
 # Download and prepare uWSGI
