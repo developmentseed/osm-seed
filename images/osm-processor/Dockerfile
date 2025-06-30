@@ -42,10 +42,11 @@ RUN set -ex \
         libprotobuf-dev \
         pkg-config \
         git \
-    && git clone https://github.com/zerebubuth/planet-dump-ng.git /opt/planet-dump-ng \
+    && git clone -b timestamp_epoch https://github.com/OpenHistoricalMap/planet-dump-ng.git /opt/planet-dump-ng \
     && cd /opt/planet-dump-ng \
     && ./autogen.sh \
     && ./configure \
     && make \
     && ln -s /opt/planet-dump-ng/planet-dump-ng /usr/local/bin/planet-dump-ng \
     && rm -rf /var/lib/apt/lists/*
+    

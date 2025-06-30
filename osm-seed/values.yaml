@@ -342,6 +342,7 @@ planetDump:
   schedule: "* * * * *"
   env:
     OVERWRITE_PLANET_FILE: false
+    DUMP_CLOUD_URL : s3://osm-seed/db.dump
   resources:
     enabled: false
     requests:

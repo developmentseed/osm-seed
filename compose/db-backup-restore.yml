@@ -1,10 +1,9 @@
-version: '3'
 services:
   #####################################################
   ## OSM Database backup and restore section
   #####################################################
   db-backup-restore:
-    image: osmseed-backup-restore:v1
+    image: rub21/osmseed-backup-restore:v1
     build:
       context: ../images/backup-restore
       dockerfile: Dockerfile
