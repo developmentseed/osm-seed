@@ -45,6 +45,12 @@ spec:
                 value: {{ .Values.fullHistory.env.OVERWRITE_FHISTORY_FILE | quote}}
               - name: CLOUDPROVIDER
                 value: {{ .Values.cloudProvider }}
+              - name: PLANET_EXPORT_METHOD
+                value: {{ .Values.fullHistory.env.PLANET_EXPORT_METHOD | quote}}
+              - name: DUMP_CLOUD_URL
+                value: {{ .Values.fullHistory.env.DUMP_CLOUD_URL | quote}}
+              - name: PLANET_EPOCH_DATE
+                value: {{ .Values.fullHistory.env.PLANET_EPOCH_DATE | quote}}
               # In case cloudProvider=aws
               {{- if eq .Values.cloudProvider "aws" }}
               - name: AWS_S3_BUCKET

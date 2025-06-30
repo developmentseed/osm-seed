@@ -15,6 +15,7 @@ date=$(date '+%y%m%d_%H%M')
 local_planetPBFFile=$VOLUME_DIR/planet-${date}.osm.pbf
 cloud_planetPBFFile=planet/planet-${date}.osm.pbf
 stateFile="$VOLUME_DIR/state.txt"
+dumpFile="$VOLUME_DIR/input-latest.dump"
 
 # If overwrite flag is enabled, use fixed filenames
 if [ "$OVERWRITE_PLANET_FILE" == "true" ]; then
@@ -26,15 +27,21 @@ fi
 # Download db .dump file 
 # ===============================
 download_dump_file() {
-	local_dumpFile="$VOLUME_DIR/input-latest.dump"
 	echo "Downloading db .dump file from cloud..."
-
 	if [ "$CLOUDPROVIDER" == "aws" ]; then
-		aws s3 cp "$DUMP_CLOUD_URL" "$local_dumpFile"
+		if [[ "$DUMP_CLOUD_URL" == *.txt ]]; then
+			temp_txt="$VOLUME_DIR/tmp_dump_url.txt"
+			aws s3 cp "$DUMP_CLOUD_URL" "$temp_txt"
+			first_line=$(head -n 1 "$temp_txt")
+			aws s3 cp "$first_line" "$dumpFile"
+		else
+			aws s3 cp "$DUMP_CLOUD_URL" "$dumpFile"
+		fi
 	elif [ "$CLOUDPROVIDER" == "gcp" ]; then
-		gsutil cp "$DUMP_CLOUD_URL" "$local_dumpFile"
+		gsutil cp "$DUMP_CLOUD_URL" "$dumpFile"
 	fi
 }
+
 
 # ===============================
 # Upload planet + state
@@ -63,7 +70,7 @@ if [ "$PLANET_EXPORT_METHOD" == "planet-dump-ng" ]; then
 	download_dump_file
 	echo "Generating planet file with planet-dump-ng..."
 	planet-dump-ng \
-		--dump-file "$VOLUME_DIR/input-latest.dump" \
+		--dump-file "$dumpFile" \
 		--pbf "$local_planetPBFFile"
 elif [ "$PLANET_EXPORT_METHOD" == "osmosis" ]; then
 	echo "Generating planet file with osmosis..."

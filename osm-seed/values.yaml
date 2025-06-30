@@ -260,6 +260,8 @@ fullHistory:
   schedule: "* * * * *"
   env:
     OVERWRITE_FHISTORY_FILE: false
+    PLANET_EXPORT_METHOD: osmosis
+    DUMP_CLOUD_URL: s3://osm-seed/db.dump
   resources:
     enabled: false
     requests:
@@ -343,6 +345,7 @@ planetDump:
   env:
     OVERWRITE_PLANET_FILE: false
     DUMP_CLOUD_URL : s3://osm-seed/db.dump
+    PLANET_EXPORT_METHOD: osmosis
   resources:
     enabled: false
     requests:
