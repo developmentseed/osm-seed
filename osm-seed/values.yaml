@@ -262,6 +262,7 @@ fullHistory:
     OVERWRITE_FHISTORY_FILE: false
     PLANET_EXPORT_METHOD: osmosis
     DUMP_CLOUD_URL: s3://osm-seed/db.dump
+    PLANET_EPOCH_DATE: '1970-01-01'
   resources:
     enabled: false
     requests:
