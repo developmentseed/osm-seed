@@ -13,16 +13,16 @@ export VOLUME_DIR=/mnt/data
 export PLANET_EPOCH_DATE="${PLANET_EPOCH_DATE:-2004-01-01}"
 date=$(date '+%y%m%d_%H%M')
 
-local_planetPBFFile=$VOLUME_DIR/planet-history-${date}.osm.pbf
-cloud_planetPBFFile=planet/planet-history-${date}.osm.pbf
+local_planetHistoryPBFFile=$VOLUME_DIR/planet-history-${date}.osm.pbf
+cloud_planetHistoryPBFFile=planet/full-history/planet-history-${date}.osm.pbf
 stateFile="$VOLUME_DIR/state.txt"
 dumpFile="$VOLUME_DIR/input-latest.dump"
 
 
 # If overwrite flag is enabled, use fixed filenames
 if [ "$OVERWRITE_PLANET_FILE" == "true" ]; then
-	local_planetPBFFile=$VOLUME_DIR/planet-history-latest.osm.pbf
-	cloud_planetPBFFile=planet/planet-history-latest.osm.pbf
+	local_planetHistoryPBFFile=$VOLUME_DIR/planet-history-latest.osm.pbf
+	cloud_planetHistoryPBFFile=planet/planet-history-latest.osm.pbf
 fi
 
 # ===============================
@@ -52,13 +52,13 @@ upload_planet_file() {
 
 	if [ "$CLOUDPROVIDER" == "aws" ]; then
 		AWS_URL=${AWS_S3_BUCKET/s3:\/\//http:\/\/}
-		echo "$AWS_URL.s3.amazonaws.com/$cloud_planetPBFFile" > "$stateFile"
-		aws s3 cp "$local_planetPBFFile" "$AWS_S3_BUCKET/$cloud_planetPBFFile" --acl public-read
+		echo "$AWS_URL.s3.amazonaws.com/$cloud_planetHistoryPBFFile" > "$stateFile"
+		aws s3 cp "$local_planetHistoryPBFFile" "$AWS_S3_BUCKET/$cloud_planetHistoryPBFFile" --acl public-read
 		aws s3 cp "$stateFile" "$AWS_S3_BUCKET/planet/state.txt" --acl public-read
 
 	elif [ "$CLOUDPROVIDER" == "gcp" ]; then
-		echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/$cloud_planetPBFFile" > "$stateFile"
-		gsutil cp -a public-read "$local_planetPBFFile" "$GCP_STORAGE_BUCKET/$cloud_planetPBFFile"
+		echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/$cloud_planetHistoryPBFFile" > "$stateFile"
+		gsutil cp -a public-read "$local_planetHistoryPBFFile" "$GCP_STORAGE_BUCKET/$cloud_planetHistoryPBFFile"
 		gsutil cp -a public-read "$stateFile" "$GCP_STORAGE_BUCKET/planet/state.txt"
 	fi
 }
@@ -73,7 +73,7 @@ if [ "$PLANET_EXPORT_METHOD" == "planet-dump-ng" ]; then
 	export PLANET_EPOCH_DATE="$PLANET_EPOCH_DATE"
 	planet-dump-ng \
 		--dump-file "$dumpFile" \
-		--history-pbf "$local_planetPBFFile"
+		--history-pbf "$local_planetHistoryPBFFile"
 
 elif [ "$PLANET_EXPORT_METHOD" == "osmosis" ]; then
 	echo "Generating history planet file with osmosis..."
@@ -87,7 +87,7 @@ elif [ "$PLANET_EXPORT_METHOD" == "osmosis" ]; then
 		readFullHistory=yes \
 		--write-xml-change \
 		compressionMethod=auto \
-		$local_planetPBFFile
+		$local_planetHistoryPBFFile
 else
 	echo "Error: Unknown PLANET_EXPORT_METHOD value. Use 'planet-dump-ng' or 'osmosis'."
 	exit 1
