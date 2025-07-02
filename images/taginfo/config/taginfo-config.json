@@ -71,5 +71,11 @@
     },
     "tagstats": {
         "geodistribution": "FlexMem"
+    },
+    "footer": {
+         "project_name": "osmseed",
+         "project_url": "https://www.osmseed.org/",
+         "copyright_attribution": "Data is public domain (CC0)",
+         "copyright_url": "https://wiki.openstreetmap.org/wiki/osmseed/License"
     }
 }
