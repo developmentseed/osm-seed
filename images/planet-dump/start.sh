@@ -26,20 +26,47 @@ fi
 # ===============================
 # Download db .dump file 
 # ===============================
+# ===============================
+# Download db .dump file 
+# ===============================
 download_dump_file() {
-	echo "Downloading db .dump file from cloud..."
-	if [ "$CLOUDPROVIDER" == "aws" ]; then
-		if [[ "$DUMP_CLOUD_URL" == *.txt ]]; then
-			temp_txt="$VOLUME_DIR/tmp_dump_url.txt"
-			aws s3 cp "$DUMP_CLOUD_URL" "$temp_txt"
-			first_line=$(head -n 1 "$temp_txt")
-			aws s3 cp "$first_line" "$dumpFile"
-		else
-			aws s3 cp "$DUMP_CLOUD_URL" "$dumpFile"
-		fi
-	elif [ "$CLOUDPROVIDER" == "gcp" ]; then
-		gsutil cp "$DUMP_CLOUD_URL" "$dumpFile"
-	fi
+    echo "Downloading db .dump file from cloud..."
+    if [ "$CLOUDPROVIDER" == "aws" ]; then
+        if [[ "$DUMP_CLOUD_URL" == *.txt ]]; then
+            # Download the .txt file containing the URL
+            temp_txt="$VOLUME_DIR/tmp_dump_url.txt"
+            aws s3 cp "$DUMP_CLOUD_URL" "$temp_txt"
+
+            # Get the first line (S3 URL to the .dump or .dump.gz file)
+            first_line=$(head -n 1 "$temp_txt")
+            echo "Found dump URL in txt: $first_line"
+
+            aws s3 cp "$first_line" "$dumpFile"
+
+            # Check if it's compressed (.gz) and decompress
+            if [[ "$first_line" == *.gz ]]; then
+                echo "Decompressing gzip file..."
+                gunzip -f "$dumpFile"
+                dumpFile="${dumpFile%.gz}"
+            fi
+        else
+            aws s3 cp "$DUMP_CLOUD_URL" "$dumpFile"
+            # If it's compressed, decompress
+            if [[ "$DUMP_CLOUD_URL" == *.gz ]]; then
+                echo "Decompressing gzip file..."
+                gunzip -f "$dumpFile"
+                dumpFile="${dumpFile%.gz}"
+            fi
+        fi
+
+    elif [ "$CLOUDPROVIDER" == "gcp" ]; then
+        gsutil cp "$DUMP_CLOUD_URL" "$dumpFile"
+    else
+        echo "Unsupported CLOUDPROVIDER: $CLOUDPROVIDER"
+        exit 1
+    fi
+
+    echo "Dump file ready at: $dumpFile"
 }
 
 
