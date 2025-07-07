@@ -23,17 +23,15 @@ if [ "$OVERWRITE_PLANET_FILE" == "true" ]; then
 	cloud_planetPBFFile=planet/planet-latest.osm.pbf
 fi
 
-# ===============================
-# Download db .dump file 
-# ===============================
+
 # ===============================
 # Download db .dump file 
 # ===============================
 download_dump_file() {
     echo "Downloading db .dump file from cloud..."
+
     if [ "$CLOUDPROVIDER" == "aws" ]; then
         if [[ "$DUMP_CLOUD_URL" == *.txt ]]; then
-            # Download the .txt file containing the URL
             temp_txt="$VOLUME_DIR/tmp_dump_url.txt"
             aws s3 cp "$DUMP_CLOUD_URL" "$temp_txt"
 
@@ -41,18 +39,26 @@ download_dump_file() {
             first_line=$(head -n 1 "$temp_txt")
             echo "Found dump URL in txt: $first_line"
 
-            aws s3 cp "$first_line" "$dumpFile"
-
-            # Check if it's compressed (.gz) and decompress
+            # Set dump file name based on extension
             if [[ "$first_line" == *.gz ]]; then
+                dumpFile="${dumpFile}.gz"
+            fi
+
+            aws s3 cp "$first_line" "$dumpFile"
+            if [[ "$dumpFile" == *.gz ]]; then
                 echo "Decompressing gzip file..."
                 gunzip -f "$dumpFile"
                 dumpFile="${dumpFile%.gz}"
             fi
+            rm -f "$temp_txt"
+
         else
-            aws s3 cp "$DUMP_CLOUD_URL" "$dumpFile"
-            # If it's compressed, decompress
+            # Set dump file name based on extension
             if [[ "$DUMP_CLOUD_URL" == *.gz ]]; then
+                dumpFile="${dumpFile}.gz"
+            fi
+            aws s3 cp "$DUMP_CLOUD_URL" "$dumpFile"
+            if [[ "$dumpFile" == *.gz ]]; then
                 echo "Decompressing gzip file..."
                 gunzip -f "$dumpFile"
                 dumpFile="${dumpFile%.gz}"
