@@ -35,25 +35,27 @@ cloudStorageOps() {
 }
 
 backupDB() {
-	local LOCAL_BACKUP_FILE=${BACKUP_CLOUD_FILE}.sql.gz
-	local CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}.sql.gz"
-	if [ "$SET_DATE_AT_NAME" == "true" ]; then
-		local CURRENT_DATE=$(date '+%Y%m%d-%H%M')
-		LOCAL_BACKUP_FILE="${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.sql.gz"
-		CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.sql.gz"
-	fi
+    local LOCAL_BACKUP_FILE="${BACKUP_CLOUD_FILE}.dump"
+    local LOCAL_BACKUP_FILE_GZIP="${BACKUP_CLOUD_FILE}.dump.gz"
+    local CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}.dump.gz"
 
-	# Backup database with max compression
-	echo "Backing up DB ${POSTGRES_DB} into ${LOCAL_BACKUP_FILE}"
-	pg_dump -h ${POSTGRES_HOST} -U ${POSTGRES_USER} ${POSTGRES_DB} | gzip -9 >${LOCAL_BACKUP_FILE}
+    if [ "$SET_DATE_AT_NAME" == "true" ]; then
+        local CURRENT_DATE
+        CURRENT_DATE=$(date '+%Y%m%d-%H%M')
+        LOCAL_BACKUP_FILE="${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump"
+        LOCAL_BACKUP_FILE_GZIP="${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump.gz"
+        CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump.gz"
+    fi
 
-	# Handle cloud storage based on the provider
-	cloudStorageOps "${LOCAL_BACKUP_FILE}" "${CLOUD_BACKUP_FILE}"
+    # Backup database with pg_dump custom format (-Fc) + gzip
+    echo "Backing up DB ${POSTGRES_DB} into ${LOCAL_BACKUP_FILE_GZIP}"
+    pg_dump -h "${POSTGRES_HOST}" -U "${POSTGRES_USER}" -Fc "${POSTGRES_DB}" | gzip -9 > "${LOCAL_BACKUP_FILE}.gz"
+    cloudStorageOps "${LOCAL_BACKUP_FILE_GZIP}" "${CLOUD_BACKUP_FILE}"
 }
 
 restoreDB() {
 	local CURRENT_DATE=$(date '+%Y%m%d-%H%M')
-	local RESTORE_FILE="backup.sql.gz"
+	local RESTORE_FILE="backup.dump"
 	local LOG_RESULT_FILE="restore_results-${CURRENT_DATE}.log"
 	local flag=true
 
@@ -62,7 +64,7 @@ restoreDB() {
 		flag=false
 		wget -O ${RESTORE_FILE} ${RESTORE_URL_FILE}
 		echo "Restoring ${RESTORE_URL_FILE} in ${POSTGRES_DB}"
-		gunzip -c <${RESTORE_FILE} | psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} | tee ${LOG_RESULT_FILE}
+		pg_restore -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} --create --no-owner ${RESTORE_FILE} | tee ${LOG_RESULT_FILE}
 		# aws s3 cp ${LOG_RESULT_FILE} s3://${AWS_S3_BUCKET}/${LOG_RESULT_FILE}
 		echo "Import data to ${POSTGRES_DB} has finished ..."
 	done
