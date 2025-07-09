@@ -26,7 +26,9 @@ spec:
       initContainers:
         - name: db-upgrade
           image: "{{ .Values.tmApi.image.name }}:{{ .Values.tmApi.image.tag }}"
-          command: ["flask", "db", "upgrade"]
+          # command: ["flask", "db", "upgrade"]
+          command: ["alembic", "upgrade", "head"]
+          workingDir: /usr/src/app
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-tm-common-env
