@@ -46,4 +46,5 @@ data:
   TM_APP_API_VERSION: {{ quote .Values.tmApi.env.TM_APP_API_VERSION | default "v2" }}
   OHSOME_STATS_TOKEN: {{ quote .Values.tmApi.env.OHSOME_STATS_TOKEN }}
   POSTGRES_TEST_DB: {{ quote .Values.tmApi.env.POSTGRES_TEST_DB }}
+  EXTRA_CORS_ORIGINS: {{ printf "%s,%s" .Values.tmApi.env.TM_APP_BASE_URL .Values.tmApi.env.EXTRA_CORS_ORIGINS | quote }}
 {{- end }}
