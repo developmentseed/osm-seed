@@ -726,6 +726,8 @@ tmApi:
     TM_DEFAULT_LOCALE: "en"
     TM_APP_API_URL: ""
     TM_APP_BASE_URL: ""
+    OHSOME_STATS_TOKEN: "dummy-token-for-migrations"
+    POSTGRES_TEST_DB: "postgresql://user:pass@db:5432/test_db"
   resources:
     enabled: false
     requests:
