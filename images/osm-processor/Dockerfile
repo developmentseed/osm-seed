@@ -45,6 +45,7 @@ RUN set -ex \
         tmux \
         zsh \
         git \
+        curl \
         libxml2 \
         libboost-filesystem1.74.0 \
         libboost-program-options1.74.0 \
