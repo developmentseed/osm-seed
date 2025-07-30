@@ -1,4 +1,4 @@
-{{- if .Values.nominatimApi.enabled -}}
+{{- if and .Values.nominatimApi.enabled (not .Values.nominatimApi.externalService.enabled) }}
 {{- if .Values.nominatimApi.persistenceDisk.enabled -}}
 apiVersion: v1
 kind: PersistentVolume
