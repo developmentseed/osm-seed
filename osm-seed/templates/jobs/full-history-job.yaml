@@ -51,6 +51,8 @@ spec:
                 value: {{ .Values.fullHistory.env.DUMP_CLOUD_URL | quote}}
               - name: PLANET_EPOCH_DATE
                 value: {{ .Values.fullHistory.env.PLANET_EPOCH_DATE | quote}}
+              - name: PLANET_DUMP_NG_METADATA_URL
+                value: {{ .Values.fullHistory.env.PLANET_DUMP_NG_METADATA_URL | quote}}
               # In case cloudProvider=aws
               {{- if eq .Values.cloudProvider "aws" }}
               - name: AWS_S3_BUCKET

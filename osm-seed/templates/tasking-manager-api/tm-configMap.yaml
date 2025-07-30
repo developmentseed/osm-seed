@@ -9,7 +9,7 @@ data:
   POSTGRES_PASSWORD: {{ quote .Values.tmDb.env.POSTGRES_PASSWORD | default "" }}
   POSTGRES_USER: {{ quote .Values.tmDb.env.POSTGRES_USER | default "" }}
   POSTGRES_PORT: "5432"
-  TM_DB: {{ quote (printf "postgresql://%s:%s@%s-tasking-manager-db/%s" .Values.tmDb.env.POSTGRES_USER .Values.tmDb.env.POSTGRES_PASSWORD .Release.Name .Values.tmDb.env.POSTGRES_DB) }}
+  TM_DB: {{ quote (printf "postgresql+asyncpg://%s:%s@%s-tasking-manager-db/%s" .Values.tmDb.env.POSTGRES_USER .Values.tmDb.env.POSTGRES_PASSWORD .Release.Name .Values.tmDb.env.POSTGRES_DB) }}
   TM_ORG_NAME: {{ quote .Values.tmApi.env.TM_ORG_NAME | default "" }}
   TM_ORG_CODE: {{ quote .Values.tmApi.env.TM_ORG_CODE | default "" }}
   TM_ORG_URL: {{ quote .Values.tmApi.env.TM_ORG_URL | default "" }}
@@ -44,4 +44,6 @@ data:
   TM_REDIRECT_URI: {{ quote .Values.tmApi.env.TM_REDIRECT_URI | default "" }}
   TM_SCOPE: {{ quote .Values.tmApi.env.TM_SCOPE | default "" }}
   TM_APP_API_VERSION: {{ quote .Values.tmApi.env.TM_APP_API_VERSION | default "v2" }}
+  OHSOME_STATS_TOKEN: {{ quote .Values.tmApi.env.OHSOME_STATS_TOKEN }}
+  POSTGRES_TEST_DB: {{ quote .Values.tmApi.env.POSTGRES_TEST_DB }}
 {{- end }}

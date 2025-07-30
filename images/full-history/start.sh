@@ -101,13 +101,22 @@ upload_planet_file() {
 # ===============================
 
 if [ "$PLANET_EXPORT_METHOD" == "planet-dump-ng" ]; then
-	download_dump_file
-	echo "Generating history planet file with planet-dump-ng..."
-	export PLANET_EPOCH_DATE="$PLANET_EPOCH_DATE"
-	planet-dump-ng \
-		--dump-file "$dumpFile" \
-		--history-pbf "$local_planetHistoryPBFFile"
+    download_dump_file
+    echo "Generating history planet file with planet-dump-ng..."
+    export PLANET_EPOCH_DATE="$PLANET_EPOCH_DATE"
 
+    if [ -n "$PLANET_DUMP_NG_METADATA_URL" ]; then
+        echo "Downloading metadata file..."
+        curl "$PLANET_DUMP_NG_METADATA_URL" -o metadata.yml
+        planet-dump-ng \
+            --dump-file "$dumpFile" \
+            --history-pbf "$local_planetHistoryPBFFile" \
+            -M metadata.yml
+    else
+        planet-dump-ng \
+            --dump-file "$dumpFile" \
+            --history-pbf "$local_planetHistoryPBFFile"
+    fi
 elif [ "$PLANET_EXPORT_METHOD" == "osmosis" ]; then
 	echo "Generating history planet file with osmosis..."
 	# Creating full history

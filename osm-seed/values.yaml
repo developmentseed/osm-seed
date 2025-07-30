@@ -262,9 +262,10 @@ fullHistory:
   schedule: "* * * * *"
   env:
     OVERWRITE_FHISTORY_FILE: false
-    PLANET_EXPORT_METHOD: osmosis
+    PLANET_EXPORT_METHOD: planet-dump-ng
     DUMP_CLOUD_URL: s3://osm-seed/db.dump
     PLANET_EPOCH_DATE: '1970-01-01'
+    PLANET_DUMP_NG_METADATA_URL: https://osmseed.org/metadata/planet-meta.yaml 
   resources:
     enabled: false
     requests:
@@ -348,7 +349,9 @@ planetDump:
   env:
     OVERWRITE_PLANET_FILE: false
     DUMP_CLOUD_URL : s3://osm-seed/db.dump
-    PLANET_EXPORT_METHOD: osmosis
+    PLANET_EXPORT_METHOD: planet-dump-ng
+    PLANET_EPOCH_DATE: '1970-01-01'
+    PLANET_DUMP_NG_METADATA_URL: https://osmseed.org/metadata/planet-meta.yaml 
   resources:
     enabled: false
     requests:
@@ -726,6 +729,8 @@ tmApi:
     TM_DEFAULT_LOCALE: "en"
     TM_APP_API_URL: ""
     TM_APP_BASE_URL: ""
+    OHSOME_STATS_TOKEN: "dummy-token-for-migrations"
+    POSTGRES_TEST_DB: "postgresql://user:pass@db:5432/test_db"
   resources:
     enabled: false
     requests:

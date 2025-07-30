@@ -100,11 +100,20 @@ upload_planet_file() {
 # ===============================
 
 if [ "$PLANET_EXPORT_METHOD" == "planet-dump-ng" ]; then
-	download_dump_file
-	echo "Generating planet file with planet-dump-ng..."
-	planet-dump-ng \
-		--dump-file "$dumpFile" \
-		--pbf "$local_planetPBFFile"
+    download_dump_file
+    echo "Generating planet file with planet-dump-ng..."
+
+    if [ -n "$PLANET_DUMP_NG_METADATA_URL" ]; then
+        curl "$PLANET_DUMP_NG_METADATA_URL" -o metadata.yml
+        planet-dump-ng \
+            --dump-file "$dumpFile" \
+            --pbf "$local_planetPBFFile" \
+            -M metadata.yml
+    else
+        planet-dump-ng \
+            --dump-file "$dumpFile" \
+            --pbf "$local_planetPBFFile"
+    fi
 elif [ "$PLANET_EXPORT_METHOD" == "osmosis" ]; then
 	echo "Generating planet file with osmosis..."
 	if [ -z "$MEMORY_JAVACMD_OPTIONS" ]; then
