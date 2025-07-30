@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-overpass-api
+  name: {{ .Release.Name }}-overpass-api
   labels:
     app: {{ template "osm-seed.name" . }}
     component: overpass-api-service
@@ -24,6 +24,15 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
+  {{- if and .Values.overpassApi.enabled .Values.overpassApi.externalService.enabled }}
+  # External service (no selector)
+  ports:
+    - name: http
+      port: 80
+      targetPort: {{ .Values.overpassApi.externalService.port | default "80" }} 
+      protocol: TCP
+  {{- else }}
+  # Internal service
   type: {{ .Values.serviceType }}
   ports:
     - port: 80
@@ -36,9 +45,9 @@ spec:
       protocol: TCP
       name: https
   {{- end }}
-  
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-overpass-api
+  {{- end }}
 {{- end }}

@@ -810,6 +810,10 @@ nominatimApi:
 # ====================================================================================================
 overpassApi:
   enabled: false
+  externalService:
+    enabled: true
+    ip: "37.1.1.5"
+    port: 9090
   image:
     name: ""
     tag: ""
