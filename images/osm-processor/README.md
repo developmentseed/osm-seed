@@ -1,4 +1,4 @@
-# Base container for processing and extrating  OSM format files
+# Base container for processing and extracting OSM format files
 
 Base container for other containers in osmseed ecosystem, it contains:
 
