@@ -1,4 +1,4 @@
-{{- if .Values.nominatimApi.enabled -}}
+{{- if and .Values.nominatimApi.enabled (not .Values.nominatimApi.externalService.enabled) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

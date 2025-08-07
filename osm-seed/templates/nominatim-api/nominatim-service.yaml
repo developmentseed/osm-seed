@@ -24,16 +24,25 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
+  {{- if and .Values.nominatimApi.enabled .Values.nominatimApi.externalService.enabled }}
+  # External service (no selector)
+  ports:
+    - name: http
+      port: 80
+      targetPort: {{ .Values.nominatimApi.externalService.port | default "80" }} 
+      protocol: TCP
+  {{- else }}
+  # Internal service
   type: {{ .Values.serviceType }}
   ports:
     - port: 80
       protocol: TCP
       name: http
       targetPort: api
-    - port: 5432
-      protocol: TCP
-      name: postgres
-      targetPort: postgres
+    # - port: 5432
+    #   protocol: TCP
+    #   name: postgres
+    #   targetPort: postgres
   {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
     - port: 443
       protocol: TCP
@@ -44,6 +53,7 @@ spec:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-nominatim
+  {{- end }}
 {{- end }}
 ---
 {{- if and .Values.nominatimApi.enabled .Values.nominatimUI.enabled }}
@@ -57,6 +67,15 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
+  {{- if and .Values.nominatimUI.enabled .Values.nominatimUI.externalService.enabled }}
+  # External service (no selector)
+  ports:
+    - name: http
+      port: 80
+      targetPort: {{ .Values.nominatimUI.externalService.port | default "80" }} 
+      protocol: TCP
+  {{- else }}
+  # Internal service
   type: ClusterIP
   ports:
     - port: 80
@@ -67,4 +86,5 @@ spec:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-nominatim
+  {{- end }}
 {{- end }}

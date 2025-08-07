@@ -1,0 +1,39 @@
+{{- if and .Values.nominatimApi.enabled .Values.nominatimApi.externalService.enabled }}
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: {{ .Release.Name }}-nominatim-api
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim-api-endpoints
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.nominatimApi.externalService.ip }}
+    ports:
+      - name: http
+        port: {{ .Values.nominatimApi.externalService.port }}
+        protocol: TCP
+{{- end }}
+---
+{{- if and .Values.nominatimUI.enabled .Values.nominatimUI.externalService.enabled }}
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: {{ .Release.Name }}-nominatim-ui
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: nominatim-ui-endpoints
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.nominatimUI.externalService.ip }}
+    ports:
+      - name: http
+        port: {{ .Values.nominatimUI.externalService.port }}
+        protocol: TCP
+{{- end }}

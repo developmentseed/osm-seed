@@ -1,4 +1,4 @@
-{{- if .Values.overpassApi.enabled -}}
+{{- if and .Values.overpassApi.enabled (not .Values.overpassApi.externalService.enabled) }}
 {{- if .Values.overpassApi.persistenceDisk.enabled -}}
 apiVersion: v1
 kind: PersistentVolume

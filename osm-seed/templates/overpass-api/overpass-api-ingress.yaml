@@ -28,7 +28,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ template "osm-seed.fullname" . }}-overpass-api
+            name: {{ .Release.Name }}-overpass-api
             port:
               number: 80
 {{- end }}
