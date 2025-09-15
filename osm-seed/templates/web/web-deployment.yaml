@@ -174,6 +174,10 @@ spec:
               value: {{ .Values.web.env.OPENSTREETMAP_AUTH_ID | default "" | quote }}
             - name: OPENSTREETMAP_AUTH_SECRET
               value: {{ .Values.web.env.OPENSTREETMAP_AUTH_SECRET | default "" | quote }}
+            - name: WIKIPEDIA_AUTH_ID
+              value: {{ .Values.web.env.WIKIPEDIA_AUTH_ID | default "" | quote }}
+            - name: WIKIPEDIA_AUTH_SECRET
+              value: {{ .Values.web.env.WIKIPEDIA_AUTH_SECRET | default "" | quote }}
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory
