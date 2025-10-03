@@ -4,12 +4,11 @@ kind: Ingress
 metadata:
   name: {{ template "osm-seed.fullname" . }}-ingress-nominatim-api
   annotations:
-    kubernetes.io/ingress.class: {{ .Values.nominatimApi.ingressClassName }}
-    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     nginx.ingress.kubernetes.io/proxy-body-size: 5m
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
-  ingressClassName: {{ .Values.nominatimApi.ingressClassName }}
+  ingressClassName: {{ .Values.ingressClassName }}
   tls:
   - hosts:
     {{- if .Values.nominatimApi.ingressDomain }}

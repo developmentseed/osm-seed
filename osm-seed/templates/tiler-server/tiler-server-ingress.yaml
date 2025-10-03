@@ -4,14 +4,13 @@ kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress-tiler-server
   annotations:
-    kubernetes.io/ingress.class: {{ .Values.tilerServer.ingressClassName }}
-    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     nginx.ingress.kubernetes.io/proxy-body-size: 200m
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
 spec:
-  ingressClassName: {{ .Values.tilerServer.ingressClassName }}
+  ingressClassName: {{ .Values.ingressClassName }}
   tls:
     - hosts:
         {{- if .Values.tilerServer.ingressDomain }}

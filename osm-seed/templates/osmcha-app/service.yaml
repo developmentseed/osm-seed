@@ -15,8 +15,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
     {{- end }}
     {{- if eq .Values.serviceType "ClusterIP" }}
-    kubernetes.io/ingress.class: {{ .Values.osmchaApi.ingressClassName }}
-    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     {{- else }}
     fake.annotation: fake
     {{- end }}

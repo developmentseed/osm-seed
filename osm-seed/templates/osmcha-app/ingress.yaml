@@ -4,11 +4,10 @@ kind: Ingress
 metadata:
   name: {{ template "osm-seed.fullname" . }}-ingress-osmcha-app
   annotations:
-    kubernetes.io/ingress.class: {{ .Values.osmchaApi.ingressClassName }}
-    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     nginx.ingress.kubernetes.io/proxy-body-size: 5m
 spec:
-  ingressClassName: {{ .Values.osmchaApi.ingressClassName }}
+  ingressClassName: {{ .Values.ingressClassName }}
   tls:
     - hosts:
       {{- if .Values.osmchaApi.ingressDomain }}

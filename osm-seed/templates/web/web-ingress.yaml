@@ -4,14 +4,13 @@ kind: Ingress
 metadata:
   name: {{ template "osm-seed.fullname" . }}-ingress
   annotations:
-    kubernetes.io/ingress.class: {{ .Values.web.ingressClassName }}
-    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
+    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     nginx.ingress.kubernetes.io/proxy-body-size: 200m
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "1200"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "1200"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "1200"
 spec:
-  ingressClassName: {{ .Values.web.ingressClassName }}
+  ingressClassName: {{ .Values.ingressClassName }}
   tls:
   - hosts:
     {{- if .Values.web.ingressDomain }}
