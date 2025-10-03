@@ -42,6 +42,7 @@ AWS_SSL_ARN: false
 # serviceType: NodePort
 serviceType: ClusterIP
 createClusterIssuer: false
+ingressClassName: nginx-nlb
 # Domain that is pointed to the clusterIP
 # You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
 # Then, the cluster configuration will setup services at their respective subdomains:
@@ -138,7 +139,6 @@ web:
     tag: ""
   priorityClass: "high-priority"
   replicaCount: 1
-  ingressClassName: nginx-nlb
   ingressDomain: www.dev.osmseed.org
   serviceAnnotations: {}
   env:
@@ -564,7 +564,6 @@ tilerServer:
   priorityClass: "medium-priority"
   replicaCount: 1
   serviceAnnotations: {}
-  ingressClassName: nginx-nlb
   ingressDomain: tiler2.dev.openhistoricalmap.org
   env:
     TILER_SERVER_PORT: 9090
@@ -702,7 +701,6 @@ tmApi:
   nodeSelector:
     enabled: false
   replicaCount: 1
-  ingressClassName: nginx-nlb
   ingressDomain: tm-api.dev.osmseed.org
   serviceAnnotations: {}
   env:
@@ -764,7 +762,6 @@ nominatimApi:
   priorityClass: "medium-priority"
   serviceAnnotations: {}
   replicaCount: 1
-  ingressClassName: nginx-nlb
   ingressDomain: nominatim-api.dev.osmseed.org
   env:
     PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
@@ -823,7 +820,6 @@ overpassApi:
     tag: ""
   priorityClass: "medium-priority"
   serviceAnnotations: {}
-  ingressClassName: nginx-nlb
   ingressDomain: overpass-api.dev.osmseed.org
   env:
     OVERPASS_META: "yes"
@@ -870,7 +866,6 @@ taginfo:
     tag: ""
   priorityClass: "medium-priority"
   serviceAnnotations: {}
-  ingressClassName: nginx-nlb
   ingressDomain: taginfo-dev.staging.openhistoricalmap.org
   env:
     URL_PLANET_FILE_STATE: https://planet.osm.org/pbf/state.txt
@@ -1002,7 +997,6 @@ osmchaApi:
   image:
     name: "ghcr.io/osmcha/osmcha-django"
     tag: "61a80e897b45fb9b1a177bf433fb79bfa7fda59d"
-  ingressClassName: nginx-nlb
   ingressDomain: osmcha.dev.osmseed.org
   priorityClass: "medium-priority"
   env:
