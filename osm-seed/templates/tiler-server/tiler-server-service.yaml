@@ -10,7 +10,7 @@ metadata:
     release: {{ .Release.Name }}
   annotations:
     {{- if eq .Values.serviceType "ClusterIP" }}
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: {{ .Values.tilerServer.ingressClassName }}
     cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
     {{- end }}
     {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
