@@ -10,15 +10,13 @@ metadata:
     release: {{ .Release.Name }}
   annotations:
     # NLB
-    {{- if eq .Values.ingressClassNameType "nlb" }}
+    {{- if and  (eq .Values.ingressClassNameType "nlb" ) (eq .Values.serviceType "ClusterIP") }}
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
     service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
-    {{- end }}
-    # ClusterIP
-    {{- if eq .Values.serviceType "ClusterIP" }}
     cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     {{- end }}
+
 spec:
   type: {{ .Values.serviceType }}
   selector:
