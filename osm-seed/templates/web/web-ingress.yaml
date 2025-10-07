@@ -17,8 +17,8 @@ metadata:
     {{- if eq .Values.ingressClassNameType "alb" }}
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/group.name: {{ .Release.Name }}
-    alb.ingress.kubernetes.io/scheme: {{ .Values.alb.scheme | default "internet-facing" }}
-    alb.ingress.kubernetes.io/target-type: {{ .Values.alb.targetType | default "ip" }}
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
     alb.ingress.kubernetes.io/listen-ports: '{{ .Values.alb.listenPorts | default "[{\"HTTP\":80},{\"HTTPS\":443}]" }}'
     alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.alb.certificateArn }}"
     alb.ingress.kubernetes.io/ssl-redirect: '443'
