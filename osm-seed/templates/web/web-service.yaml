@@ -9,20 +9,18 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   annotations:
-    {{- if and (eq .Values.serviceType "LoadBalancer") (eq .Values.ingressClassNameType "nlb") }}
     # NLB
+    {{- if eq .Values.ingressClassNameType "nlb" }}
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
     service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
-    {{- if .Values.AWS_SSL_ARN }}
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
     {{- end }}
+    # ClusterIP
+    {{- if eq .Values.serviceType "ClusterIP" }}
+    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     {{- end }}
 spec:
-  # ALB -> should be ClusterIP; NLB -> LoadBalancer
-  type: {{ if eq .Values.ingressClassNameType "nlb" }}{{ default "LoadBalancer" .Values.serviceType }}{{ else }}ClusterIP{{ end }}
+  type: {{ .Values.serviceType }}
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}

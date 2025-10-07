@@ -9,29 +9,18 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   annotations:
+    # NLB
+    {{- if eq .Values.ingressClassNameType "nlb" }}
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+    {{- end }}
+    # ClusterIP
     {{- if eq .Values.serviceType "ClusterIP" }}
     cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     {{- end }}
-    {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "600"
-    {{- end }}
-    {{- with .Values.tilerServer.serviceAnnotations }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
 spec:
-  # This is a workaround for the issue with the external service
-  {{- if and .Values.tilerServer.enabled .Values.tilerServer.externalService.enabled }}
-  ports:
-    - name: http
-      port: 80
-      targetPort: {{ .Values.tilerServer.externalService.port | default "9090" }} 
-      protocol: TCP
-  {{- else }}
-  # This is the default service, atached to the deployment
-  type: {{ default "ClusterIP" .Values.serviceType }}
+  type: {{ .Values.serviceType }}
   ports:
     - name: http
       port: 80
@@ -45,5 +34,4 @@ spec:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-tiler-server # This is working for deployment and not for statefulset , make sure you use "s3" to storage the vtiles
-  {{- end }}
 {{- end }}
