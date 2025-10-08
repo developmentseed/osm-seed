@@ -17,6 +17,10 @@ metadata:
     cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     {{- end }}
 
+    {{- if and  (eq .Values.ingressClassNameType "alb" ) (eq .Values.serviceType "ClusterIP") }}
+    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.web.healthCheckPath | default "/" }}
+    {{- end }}
+
 spec:
   type: {{ .Values.serviceType }}
   selector:

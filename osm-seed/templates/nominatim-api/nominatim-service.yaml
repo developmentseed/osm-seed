@@ -16,6 +16,10 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
     cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     {{- end }}
+
+    {{- if and  (eq .Values.ingressClassNameType "alb" ) (eq .Values.serviceType "ClusterIP") }}
+    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.nominatimApi.healthCheckPath | default "/" }}
+    {{- end }}
 spec:
   type: {{ .Values.serviceType }}
   ports:
