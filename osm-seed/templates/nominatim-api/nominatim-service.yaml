@@ -9,51 +9,28 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   annotations:
-    {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https    
+    # NLB
+    {{- if and  (eq .Values.ingressClassNameType "nlb" ) (eq .Values.serviceType "ClusterIP") }}
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     {{- end }}
-    {{- if eq .Values.serviceType "ClusterIP" }}
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
-    {{- else }}
-    fake.annotation: fake
-    {{- end }}
-    {{- with .Values.nominatimApi.serviceAnnotations }}
-    {{- toYaml . | nindent 4 }}
+
+    {{- if and  (eq .Values.ingressClassNameType "alb" ) (eq .Values.serviceType "ClusterIP") }}
+    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.nominatimApi.healthCheckPath | default "/" }}
     {{- end }}
 spec:
-  {{- if and .Values.nominatimApi.enabled .Values.nominatimApi.externalService.enabled }}
-  # External service (no selector)
-  ports:
-    - name: http
-      port: 80
-      targetPort: {{ .Values.nominatimApi.externalService.port | default "80" }} 
-      protocol: TCP
-  {{- else }}
-  # Internal service
   type: {{ .Values.serviceType }}
   ports:
     - port: 80
       protocol: TCP
       name: http
       targetPort: api
-    # - port: 5432
-    #   protocol: TCP
-    #   name: postgres
-    #   targetPort: postgres
-  {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
-    - port: 443
-      protocol: TCP
-      name: https
-      targetPort: apache
-  {{- end }}
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-nominatim
-  {{- end }}
 {{- end }}
 ---
 {{- if and .Values.nominatimApi.enabled .Values.nominatimUI.enabled }}
@@ -67,15 +44,6 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  {{- if and .Values.nominatimUI.enabled .Values.nominatimUI.externalService.enabled }}
-  # External service (no selector)
-  ports:
-    - name: http
-      port: 80
-      targetPort: {{ .Values.nominatimUI.externalService.port | default "80" }} 
-      protocol: TCP
-  {{- else }}
-  # Internal service
   type: ClusterIP
   ports:
     - port: 80
@@ -86,5 +54,4 @@ spec:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-nominatim
-  {{- end }}
 {{- end }}

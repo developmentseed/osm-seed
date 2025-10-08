@@ -9,19 +9,12 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   annotations:
-    {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.AWS_SSL_ARN }}
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
-    {{- end }}
-    {{- if eq .Values.serviceType "ClusterIP" }}
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod-issuer
-    {{- else }}
-    fake.annotation: fake
-    {{- end }}
-    {{- with .Values.osmchaApi.serviceAnnotations }}
-    {{- toYaml . | nindent 4 }}
+    # NLB
+    {{- if and  (eq .Values.ingressClassNameType "nlb" ) (eq .Values.serviceType "ClusterIP") }}
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
     {{- end }}
 spec:
   type: {{ .Values.serviceType }}
