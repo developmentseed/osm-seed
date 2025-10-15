@@ -46,8 +46,10 @@ createClusterIssuer: false
 ingressClassNameType: "alb" #Type can be alb or nlb
 ingressClassName: alb #nginx,  nginx-nlb, alb
 alb:
-  certificateArn: "arn:aws:acm:us-east-1:618380242247:certificate/498e3dc0-843b-4c98-8d41-861775806e86"
-
+  certificateArn: "arn:aws:acm:us-east-1:1234567890:certificate/abcdeffff-843b-4c98-8d41-abcdeffff"
+  enableWaf:
+    enabled: false
+    wafAclArn: arn:aws:wafv2:us-east-1:123456789:regional/webacl/webacl-alb/abcdeffff-ddddd-ddddd-bbbb-abcdeffff
 # Domain that is pointed to the clusterIP
 # You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
 # Then, the cluster configuration will setup services at their respective subdomains:
