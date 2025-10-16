@@ -22,6 +22,10 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '{{ .Values.alb.listenPorts | default "[{\"HTTP\":80},{\"HTTPS\":443}]" }}'
     alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.alb.certificateArn }}"
     alb.ingress.kubernetes.io/ssl-redirect: '443'
+    ## Enable WAF
+    {{- if .Values.alb.enableWaf.enabled }}
+    alb.ingress.kubernetes.io/waf-acl-arn: "{{ .Values.alb.enableWaf.wafAclArn }}"
+    {{- end }}
     {{- end }}
 spec:
   ingressClassName: {{ .Values.ingressClassName }}
