@@ -68,8 +68,27 @@ spec:
               value: {{ .Values.web.env.WEBSITE_STATUS }}
             - name: MEMCACHE_SERVER
               value: {{ .Release.Name }}-memcached:11211
-      {{- if .Values.cgimap.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}
+      # {{- if .Values.cgimap.nodeSelector.enabled }}
+      # nodeSelector:
+      #   {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}
+      # {{- end }}
+
+      # Affinity settings
+      {{- if .Values.cgimap.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.cgimap.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.cgimap.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
+      {{- if .Values.cgimap.tolerations }}
+      tolerations:
+{{ toYaml .Values.cgimap.tolerations | indent 8 }}
       {{- end }}
 {{- end }}

@@ -39,8 +39,26 @@ spec:
               memory: {{ .Values.memcached.resources.limits.memory }}
               cpu: {{ .Values.memcached.resources.limits.cpu }}
           {{- end }}
-      {{- if .Values.memcached.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.memcached.nodeSelector.label_key }} : {{ .Values.memcached.nodeSelector.label_value }}
+      # {{- if .Values.memcached.nodeSelector.enabled }}
+      # nodeSelector:
+      #   {{ .Values.memcached.nodeSelector.label_key }} : {{ .Values.memcached.nodeSelector.label_value }}
+      # {{- end }}
+      # Affinity settings
+      {{- if .Values.cgimap.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.cgimap.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.cgimap.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
+      {{- if .Values.cgimap.tolerations }}
+      tolerations:
+{{ toYaml .Values.cgimap.tolerations | indent 8 }}
       {{- end }}
 {{- end }}
