@@ -114,8 +114,25 @@ spec:
           configMap:
             name: {{ .Release.Name }}-db-postgresql-config
         {{- end }}
-      {{- if .Values.db.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
+      # {{- if .Values.db.nodeSelector.enabled }}
+      # nodeSelector:
+      #   {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
+      # {{- end }}
+      {{- if .Values.db.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.db.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.db.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
+      {{- if and .Values.db.tolerations .Values.db.tolerations.enabled }}
+      tolerations:
+{{ toYaml .Values.db.tolerations.config | indent 8 }}
       {{- end }}
 {{- end }}

@@ -135,7 +135,17 @@ db:
       max_worker_processes = 4
       max_parallel_workers_per_gather = 2
       max_parallel_workers = 4
-
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["karpenter"]
+  tolerations:
+    enabled: false
+    config:
+      - key: "nodegroup_type"
+        operator: "Equal"
+        value: "karpenter"
+        effect: "NoSchedule"
 # ====================================================================================================
 # Variables for osm-seed website
 # ====================================================================================================
@@ -144,6 +154,10 @@ web:
   image:
     name: ""
     tag: ""
+  serviceAccount:
+    enabled: false
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/osm-seed-web-s3-sqs-role
   priorityClass: "high-priority"
   replicaCount: 1
   ingressDomain: www.dev.osmseed.org
@@ -206,6 +220,20 @@ web:
         periodSeconds: 60
   sharedMemorySize: 256Mi
   livenessProbeExec: true
+
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["karpenter"]
+  podAntiAffinity: # To set that no two pods are scheduled on the same node
+    enabled: false
+  tolerations:
+    enabled: false
+    config:
+      - key: "nodegroup_type"
+        operator: "Equal"
+        value: "karpenter"
+        effect: "NoSchedule"
 # ====================================================================================================
 # Variables for memcached. Memcached is used to store session cookies
 # ====================================================================================================
@@ -226,7 +254,17 @@ memcached:
       enabled: false
       memory: "2Gi"
       cpu: "2"
-
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["karpenter"]
+  tolerations:
+    enabled: false
+    config:
+      - key: "nodegroup_type"
+        operator: "Equal"
+        value: "karpenter"
+        effect: "NoSchedule"
 # ====================================================================================================
 # Cgimap
 # ====================================================================================================
@@ -254,6 +292,17 @@ cgimap:
     maxReplicas: 4
     cpuUtilization: 60
     memoryUtilization: 60
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["karpenter"]
+  tolerations:
+    enabled: false
+    config:
+      - key: "nodegroup_type"
+        operator: "Equal"
+        value: "karpenter"
+        effect: "NoSchedule"
 # ====================================================================================================
 # Variables for full-history container
 # ====================================================================================================

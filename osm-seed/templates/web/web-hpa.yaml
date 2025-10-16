@@ -11,7 +11,7 @@ spec:
   minReplicas: {{ .Values.web.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.web.autoscaling.maxReplicas }}
   metrics:
-    {{- if .Values.web.autoscaling.cpuUtilization.enable }}
+    {{- if .Values.web.autoscaling.cpuUtilization.enabled }}
     - type: Resource
       resource:
         name: cpu
@@ -19,7 +19,7 @@ spec:
           type: Utilization
           averageUtilization: {{ .Values.web.autoscaling.cpuUtilization.value }}
     {{- end }}
-    {{- if .Values.web.autoscaling.memoryUtilization.enable }}
+    {{- if .Values.web.autoscaling.memoryUtilization.enabled }}
     - type: Resource
       resource:
         name: memory

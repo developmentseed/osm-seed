@@ -44,21 +44,21 @@ spec:
       #   {{ .Values.memcached.nodeSelector.label_key }} : {{ .Values.memcached.nodeSelector.label_value }}
       # {{- end }}
       # Affinity settings
-      {{- if .Values.cgimap.nodeAffinity.enabled }}
+      {{- if .Values.memcached.nodeAffinity.enabled }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: {{ .Values.cgimap.nodeAffinity.key }}
+                  - key: {{ .Values.memcached.nodeAffinity.key }}
                     operator: In
                     values:
-                    {{- range .Values.cgimap.nodeAffinity.values }}
+                    {{- range .Values.memcached.nodeAffinity.values }}
                       - {{ . | quote }}
                     {{- end }}
       {{- end }}
-      {{- if .Values.cgimap.tolerations }}
+      {{- if and .Values.memcached.tolerations .Values.memcached.tolerations.enabled }}
       tolerations:
-{{ toYaml .Values.cgimap.tolerations | indent 8 }}
+{{ toYaml .Values.memcached.tolerations.config | indent 8 }}
       {{- end }}
 {{- end }}
