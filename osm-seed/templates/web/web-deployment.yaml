@@ -22,7 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-web
     spec:
-      {{- if .Values.web.serviceAccount.enable }}
+      {{- if .Values.web.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.web.serviceAccount.name }}
       {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.web.priorityClass | default "high-priority" }}

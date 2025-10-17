@@ -19,7 +19,7 @@ spec:
       ttlSecondsAfterFinished: 60
       template:
         spec:
-          {{- if .Values.monitoringReplication.serviceAccount.enable }}
+          {{- if .Values.monitoringReplication.serviceAccount.enabled }}
           serviceAccountName: {{ .Values.monitoringReplication.serviceAccount.name }}
           {{- end }}
           containers:

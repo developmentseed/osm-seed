@@ -18,7 +18,7 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
-      {{- if .Values.changesetReplicationJob.serviceAccount.enable }}
+      {{- if .Values.changesetReplicationJob.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.changesetReplicationJob.serviceAccount.name }}
       {{- end }}
       containers:

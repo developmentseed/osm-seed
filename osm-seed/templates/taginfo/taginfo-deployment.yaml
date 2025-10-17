@@ -22,7 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-taginfo-web
     spec:
-      {{- if .Values.taginfo.serviceAccount.enable }}
+      {{- if .Values.taginfo.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.taginfo.serviceAccount.name }}
       {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.taginfo.priorityClass | default "medium-priority" }}

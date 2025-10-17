@@ -25,7 +25,7 @@ spec:
         run: {{ .Release.Name }}-tiler-server
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerServer.priorityClass | default "medium-priority" }}
-      {{- if .Values.tilerServer.serviceAccount.enable }}
+      {{- if .Values.tilerServer.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.tilerServer.serviceAccount.name }}
       {{- end }}
       containers:

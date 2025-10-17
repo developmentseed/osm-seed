@@ -19,7 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if .Values.fullHistory.serviceAccount.enable }}
+          {{- if .Values.fullHistory.serviceAccount.enabled }}
           serviceAccountName: {{ .Values.fullHistory.serviceAccount.name }}
           {{- end }}
           containers:

@@ -19,7 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if .Values.osmSimpleMetrics.serviceAccount.enable }}
+          {{- if .Values.osmSimpleMetrics.serviceAccount.enabled }}
           serviceAccountName: {{ .Values.osmSimpleMetrics.serviceAccount.name }}
           {{- end }}
           containers:

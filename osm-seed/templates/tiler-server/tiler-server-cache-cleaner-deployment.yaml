@@ -20,7 +20,7 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
-      {{- if .Values.tilerServerCacheCleaner.serviceAccount.enable }}
+      {{- if .Values.tilerServerCacheCleaner.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.tilerServerCacheCleaner.serviceAccount.name }}
       {{- end }}
       containers:

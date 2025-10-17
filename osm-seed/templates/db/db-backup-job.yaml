@@ -19,7 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if $job.serviceAccount.enable }}
+          {{- if $job.serviceAccount.enabled }}
           serviceAccountName: {{ $job.serviceAccount.name }}
           {{- end }}
           containers:

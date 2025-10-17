@@ -18,7 +18,7 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
-      {{- if .Values.replicationJob.serviceAccount.enable }}
+      {{- if .Values.replicationJob.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.replicationJob.serviceAccount.name }}
       {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.replicationJob.priorityClass | default "high-priority" }}

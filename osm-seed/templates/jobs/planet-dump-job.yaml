@@ -19,7 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if .Values.planetDump.serviceAccount.enable }}
+          {{- if .Values.planetDump.serviceAccount.enabled }}
           serviceAccountName: {{ .Values.planetDump.serviceAccount.name }}
           {{- end }}
           containers:
