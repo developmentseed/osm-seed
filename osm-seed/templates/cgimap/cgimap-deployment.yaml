@@ -68,10 +68,10 @@ spec:
               value: {{ .Values.web.env.WEBSITE_STATUS }}
             - name: MEMCACHE_SERVER
               value: {{ .Release.Name }}-memcached:11211
-      # {{- if .Values.cgimap.nodeSelector.enabled }}
-      # nodeSelector:
-      #   {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}
-      # {{- end }}
+      {{- if .Values.cgimap.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}
+      {{- end }}
       # Affinity settings
       {{- if .Values.cgimap.nodeAffinity.enabled }}
       affinity:

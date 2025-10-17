@@ -189,7 +189,10 @@ spec:
             medium: Memory
             sizeLimit: {{ .Values.web.sharedMemorySize }}
           name: shared-memory
-
+      {{- if .Values.web.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.web.nodeSelector.label_key }} : {{ .Values.web.nodeSelector.label_value }}
+      {{- end }}
       # Node affinity
       {{- if .Values.web.nodeAffinity.enabled }}
       affinity:

@@ -39,10 +39,10 @@ spec:
               memory: {{ .Values.memcached.resources.limits.memory }}
               cpu: {{ .Values.memcached.resources.limits.cpu }}
           {{- end }}
-      # {{- if .Values.memcached.nodeSelector.enabled }}
-      # nodeSelector:
-      #   {{ .Values.memcached.nodeSelector.label_key }} : {{ .Values.memcached.nodeSelector.label_value }}
-      # {{- end }}
+      {{- if .Values.memcached.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.memcached.nodeSelector.label_key }} : {{ .Values.memcached.nodeSelector.label_value }}
+      {{- end }}
       # Affinity settings
       {{- if .Values.memcached.nodeAffinity.enabled }}
       affinity:
