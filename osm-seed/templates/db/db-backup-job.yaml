@@ -19,6 +19,9 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
+          {{- if $job.serviceAccount.enable }}
+          serviceAccountName: {{ $job.serviceAccount.name }}
+          {{- end }}
           containers:
           - name: {{ $job.name }}-backup-job
             image: {{ $.Values.dbBackupRestore.image.name }}:{{ $.Values.dbBackupRestore.image.tag }}
@@ -154,6 +157,19 @@ spec:
           {{- if $job.nodeSelector.enabled }}
           nodeSelector:
             {{ $job.nodeSelector.label_key }} : {{ $job.nodeSelector.label_value }}
+          {{- end }}
+          {{- if $job.nodeAffinity.enabled }}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: {{ $job.nodeAffinity.key }}
+                        operator: In
+                        values:
+                        {{- range $job.nodeAffinity.values }}
+                          - {{ . | quote }}
+                        {{- end }}
           {{- end }}
 ---
 {{- end }}

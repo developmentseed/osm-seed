@@ -19,6 +19,9 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
+          {{- if .Values.osmSimpleMetrics.serviceAccount.enable }}
+          serviceAccountName: {{ .Values.osmSimpleMetrics.serviceAccount.name }}
+          {{- end }}
           containers:
           - name: {{ .Release.Name }}-osm-simple-metrics-job
             image: {{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}

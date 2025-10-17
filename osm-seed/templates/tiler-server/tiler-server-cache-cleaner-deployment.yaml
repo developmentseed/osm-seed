@@ -20,6 +20,9 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
+      {{- if .Values.tilerServerCacheCleaner.serviceAccount.enable }}
+      serviceAccountName: {{ .Values.tilerServerCacheCleaner.serviceAccount.name }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-tiler-server-cache-cleaner-deployment
           image: {{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}
@@ -39,6 +42,20 @@ spec:
       {{- if .Values.tilerServerCacheCleaner.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerServerCacheCleaner.nodeSelector.label_key }} : {{ .Values.tilerServerCacheCleaner.nodeSelector.label_value }}
+      {{- end }}
+      # Affinity settings
+      {{- if .Values.tilerServerCacheCleaner.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.tilerServerCacheCleaner.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.tilerServerCacheCleaner.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
       {{- end }}
 {{- end }}
 {{- end }}

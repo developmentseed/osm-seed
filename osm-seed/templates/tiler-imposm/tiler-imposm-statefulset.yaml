@@ -19,6 +19,9 @@ spec:
       labels:
         app: {{ .Release.Name }}-tiler-imposm-sts
     spec:
+      {{- if .Values.tilerImposm.serviceAccount.enable }}
+      serviceAccountName: {{ .Values.tilerImposm.serviceAccount.name }}
+      {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerImposm.priorityClass | default "medium-priority" }}
       containers:
       - name: {{ .Release.Name }}-tiler-imposm-sts

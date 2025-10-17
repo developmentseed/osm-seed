@@ -22,6 +22,9 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-taginfo-web
     spec:
+      {{- if .Values.taginfo.serviceAccount.enable }}
+      serviceAccountName: {{ .Values.taginfo.serviceAccount.name }}
+      {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.taginfo.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-taginfo

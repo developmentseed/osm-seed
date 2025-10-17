@@ -19,6 +19,9 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
+          {{- if .Values.planetDump.serviceAccount.enable }}
+          serviceAccountName: {{ .Values.planetDump.serviceAccount.name }}
+          {{- end }}
           containers:
           - name: {{ .Release.Name }}-planet-dump-job
             image: {{ .Values.planetDump.image.name }}:{{ .Values.planetDump.image.tag }}

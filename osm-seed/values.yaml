@@ -148,9 +148,8 @@ web:
     name: ""
     tag: ""
   serviceAccount:
-    enabled: false
-    annotations:
-      eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/osm-seed-web-s3-sqs-role
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   priorityClass: "high-priority"
   replicaCount: 1
   ingressDomain: www.dev.osmseed.org
@@ -283,6 +282,9 @@ cgimap:
 fullHistory:
   enabled: false
   priorityClass: "low-priority"
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   image:
     name: ""
     tag: ""
@@ -320,6 +322,9 @@ dbBackupRestore:
     tag: "0.1.0-0.dev.git.942.h994af82"
   cronjobs:
     - name: web-db
+      serviceAccount:
+        enabled: true
+        name: ohm-web-s3-bucket-access-staging
       enabled: false
       schedule: "* * * * *"
       env:
@@ -353,6 +358,9 @@ dbBackupRestore:
         values: ["web"]
     - name: osmcha-db
       enabled: false
+      serviceAccount:
+        enabled: true
+        name: ohm-web-s3-bucket-access-staging
       schedule: "* * * * *"
       env:
         # DB action: backup/restore
@@ -388,9 +396,9 @@ dbBackupRestore:
 # ====================================================================================================
 planetDump:
   enabled: false
-  image:
-    name: ""
-    tag: ""
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   priorityClass: "medium-priority"
   schedule: "* * * * *"
   env:
@@ -422,9 +430,9 @@ planetDump:
 # ====================================================================================================
 replicationJob:
   enabled: false
-  image:
-    name: ""
-    tag: ""
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   priorityClass: "medium-priority"
   env:
     ENABLE_SEND_SLACK_MESSAGE: "false"
@@ -453,9 +461,9 @@ replicationJob:
 populateApidb:
   enabled: false
   priorityClass: "medium-priority"
-  image:
-    name: ""
-    tag: ""
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   env:
     URL_FILE_TO_IMPORT: "http://download.geofabrik.de/europe/monaco-latest.osm.pbf"
   resources:
@@ -579,9 +587,9 @@ tilerDb:
 # ====================================================================================================
 tilerImposm:
   enabled: false
-  image:
-    name: ""
-    tag: ""
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   priorityClass: "medium-priority"
   env:
     TILER_IMPORT_FROM: osm
@@ -692,6 +700,9 @@ tilerServer:
 tilerServerCacheCleaner:
   enabled: false
   priorityClass: "medium-priority"
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   replicaCount: 1
   command: "./tile_cache_downloader.sh & ./expire-watcher.sh"
   resources:
@@ -973,9 +984,9 @@ overpassApi:
 # ====================================================================================================
 taginfo:
   enabled: false
-  image:
-    name: ""
-    tag: ""
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   priorityClass: "medium-priority"
   serviceAnnotations: {}
   ingressDomain: taginfo-dev.staging.openhistoricalmap.org
@@ -1037,9 +1048,9 @@ taginfo:
 # ====================================================================================================
 osmSimpleMetrics:
   enabled: false
-  image:
-    name: ""
-    tag: ""
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   priorityClass: "medium-priority"
   schedule: "* */1 * * *"
   resources:
@@ -1069,6 +1080,9 @@ monitoringReplication:
     name: "developmentseed/osmseed-replication-job"
     tag: "0.1.0-n770.hd15c9f2"
   priorityClass: "medium-priority"
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   schedule: "* */1 * * *"
   env:
     CREATE_MISSING_FILES: empty
@@ -1096,9 +1110,9 @@ monitoringReplication:
 # ====================================================================================================
 changesetReplicationJob:
   enabled: false
-  image:
-    name: ""
-    tag: ""
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
   priorityClass: "medium-priority"
   resources:
     enabled: false

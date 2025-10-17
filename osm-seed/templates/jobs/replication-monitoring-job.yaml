@@ -19,6 +19,9 @@ spec:
       ttlSecondsAfterFinished: 60
       template:
         spec:
+          {{- if .Values.monitoringReplication.serviceAccount.enable }}
+          serviceAccountName: {{ .Values.monitoringReplication.serviceAccount.name }}
+          {{- end }}
           containers:
           - name: {{ .Release.Name }}-replication-monitoring-job
             image: {{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}

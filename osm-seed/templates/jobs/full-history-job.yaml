@@ -19,6 +19,9 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
+          {{- if .Values.fullHistory.serviceAccount.enable }}
+          serviceAccountName: {{ .Values.fullHistory.serviceAccount.name }}
+          {{- end }}
           containers:
           - name: {{ .Release.Name }}-full-history-job
             image: {{ .Values.fullHistory.image.name }}:{{ .Values.fullHistory.image.tag }}

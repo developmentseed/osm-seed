@@ -11,6 +11,9 @@ metadata:
 spec:
     template:
       spec:
+        {{- if .Values.populateApidb.serviceAccount.enable }}
+        serviceAccountName: {{ .Values.populateApidb.serviceAccount.name }}
+        {{- end }}
         containers:
         - name: {{ .Release.Name }}-populate-apidb-job
           image: {{ .Values.populateApidb.image.name }}:{{ .Values.populateApidb.image.tag }}
