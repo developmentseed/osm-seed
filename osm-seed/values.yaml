@@ -138,14 +138,7 @@ db:
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
-    values: ["karpenter"]
-  tolerations:
-    enabled: false
-    config:
-      - key: "nodegroup_type"
-        operator: "Equal"
-        value: "karpenter"
-        effect: "NoSchedule"
+    values: ["database"]
 # ====================================================================================================
 # Variables for osm-seed website
 # ====================================================================================================
@@ -222,18 +215,11 @@ web:
   livenessProbeExec: true
 
   nodeAffinity:
-    enabled: false
+    enabled: true
     key: "nodegroup_type"
-    values: ["karpenter"]
+    values: ["web"]
   podAntiAffinity: # To set that no two pods are scheduled on the same node
     enabled: false
-  tolerations:
-    enabled: false
-    config:
-      - key: "nodegroup_type"
-        operator: "Equal"
-        value: "karpenter"
-        effect: "NoSchedule"
 # ====================================================================================================
 # Variables for memcached. Memcached is used to store session cookies
 # ====================================================================================================
@@ -257,14 +243,7 @@ memcached:
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
-    values: ["karpenter"]
-  tolerations:
-    enabled: false
-    config:
-      - key: "nodegroup_type"
-        operator: "Equal"
-        value: "karpenter"
-        effect: "NoSchedule"
+    values: ["web"]
 # ====================================================================================================
 # Cgimap
 # ====================================================================================================
@@ -295,14 +274,7 @@ cgimap:
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
-    values: ["karpenter"]
-  tolerations:
-    enabled: false
-    config:
-      - key: "nodegroup_type"
-        operator: "Equal"
-        value: "karpenter"
-        effect: "NoSchedule"
+    values: ["web"]
 # ====================================================================================================
 # Variables for full-history container
 # ====================================================================================================

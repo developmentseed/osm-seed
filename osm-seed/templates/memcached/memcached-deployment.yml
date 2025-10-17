@@ -57,8 +57,4 @@ spec:
                       - {{ . | quote }}
                     {{- end }}
       {{- end }}
-      {{- if and .Values.memcached.tolerations .Values.memcached.tolerations.enabled }}
-      tolerations:
-{{ toYaml .Values.memcached.tolerations.config | indent 8 }}
-      {{- end }}
 {{- end }}

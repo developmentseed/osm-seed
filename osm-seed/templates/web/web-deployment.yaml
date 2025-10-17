@@ -214,8 +214,4 @@ spec:
               topologyKey: "kubernetes.io/hostname"
         {{- end }}
       {{- end }}
-      {{- if and .Values.web.tolerations .Values.web.tolerations.enabled }}
-      tolerations:
-{{ toYaml .Values.web.tolerations.config | indent 8 }}
-      {{- end }}
 {{- end }}
