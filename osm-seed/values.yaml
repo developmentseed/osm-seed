@@ -281,13 +281,13 @@ cgimap:
 # ====================================================================================================
 fullHistory:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   priorityClass: "low-priority"
   serviceAccount:
     enabled: true
     name: ohm-web-s3-bucket-access-staging
-  image:
-    name: ""
-    tag: ""
   schedule: "* * * * *"
   env:
     OVERWRITE_FHISTORY_FILE: false
@@ -396,6 +396,9 @@ dbBackupRestore:
 # ====================================================================================================
 planetDump:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   serviceAccount:
     enabled: true
     name: ohm-web-s3-bucket-access-staging
@@ -430,6 +433,9 @@ planetDump:
 # ====================================================================================================
 replicationJob:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   serviceAccount:
     enabled: true
     name: ohm-web-s3-bucket-access-staging
@@ -460,6 +466,9 @@ replicationJob:
 # ====================================================================================================
 populateApidb:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   priorityClass: "medium-priority"
   serviceAccount:
     enabled: true
@@ -587,6 +596,9 @@ tilerDb:
 # ====================================================================================================
 tilerImposm:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   serviceAccount:
     enabled: true
     name: ohm-web-s3-bucket-access-staging
@@ -637,13 +649,13 @@ tilerImposm:
 # ====================================================================================================
 tilerServer:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   externalService:
     enabled: true
     ip: "37.1.1.5"
     port: 9090
-  image:
-    name: ""
-    tag: ""
   priorityClass: "medium-priority"
   replicaCount: 1
   serviceAnnotations: {}
@@ -699,6 +711,9 @@ tilerServer:
 # ====================================================================================================
 tilerServerCacheCleaner:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   priorityClass: "medium-priority"
   serviceAccount:
     enabled: true
@@ -735,6 +750,9 @@ tilerServerCacheCleaner:
 
 tilerCacheCleanerJob:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   priorityClass: "medium-priority"
   tilesFile: imposm/imposm3_expire_dir/latest.tiles
   minZoom: 0
@@ -928,13 +946,13 @@ nominatimApi:
 # ====================================================================================================
 overpassApi:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   externalService:
     enabled: true
     ip: "37.1.1.5"
     port: 9090
-  image:
-    name: ""
-    tag: ""
   priorityClass: "medium-priority"
   serviceAnnotations: {}
   ingressDomain: overpass-api.dev.osmseed.org
@@ -984,6 +1002,9 @@ overpassApi:
 # ====================================================================================================
 taginfo:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   serviceAccount:
     enabled: true
     name: ohm-web-s3-bucket-access-staging
@@ -1048,6 +1069,9 @@ taginfo:
 # ====================================================================================================
 osmSimpleMetrics:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   serviceAccount:
     enabled: true
     name: ohm-web-s3-bucket-access-staging
@@ -1110,6 +1134,9 @@ monitoringReplication:
 # ====================================================================================================
 changesetReplicationJob:
   enabled: false
+  image:
+    name: ""
+    tag: ""
   serviceAccount:
     enabled: true
     name: ohm-web-s3-bucket-access-staging
