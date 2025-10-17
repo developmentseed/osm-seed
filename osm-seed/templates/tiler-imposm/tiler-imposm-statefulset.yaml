@@ -98,4 +98,18 @@ spec:
       nodeSelector:
         {{ .Values.tilerImposm.nodeSelector.label_key }} : {{ .Values.tilerImposm.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.tilerImposm.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.tilerImposm.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.tilerImposm.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}

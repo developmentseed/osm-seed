@@ -82,5 +82,19 @@ spec:
           nodeSelector:
             {{ .Values.fullHistory.nodeSelector.label_key }} : {{ .Values.fullHistory.nodeSelector.label_value }}
           {{- end }}
+          # Affinity settings
+          {{- if .Values.fullHistory.nodeAffinity.enabled }}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: {{ .Values.fullHistory.nodeAffinity.key }}
+                        operator: In
+                        values:
+                        {{- range .Values.fullHistory.nodeAffinity.values }}
+                          - {{ . | quote }}
+                        {{- end }}
+          {{- end }}
       backoffLimit: 3
 {{- end }}

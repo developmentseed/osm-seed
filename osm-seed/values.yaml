@@ -226,10 +226,6 @@ web:
 memcached:
   enabled: false
   priorityClass: "high-priority"
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
   resources:
     enabled: false
     requests:
@@ -240,6 +236,10 @@ memcached:
       enabled: false
       memory: "2Gi"
       cpu: "2"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -263,14 +263,16 @@ cgimap:
       enabled: false
       memory: "2Gi"
       cpu: "2"
-  nodeSelector:
-    enabled: false
   autoscaling:
     enabled: false
     minReplicas: 2
     maxReplicas: 4
     cpuUtilization: 60
     memoryUtilization: 60
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -284,10 +286,6 @@ fullHistory:
   image:
     name: ""
     tag: ""
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup-type
-    label_value: ohm-non-tiler
   schedule: "* * * * *"
   env:
     OVERWRITE_FHISTORY_FILE: false
@@ -305,6 +303,14 @@ fullHistory:
       enabled: false
       memory: "2Gi"
       cpu: "2"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables for osm-seed database backup and restore
 # ====================================================================================================
@@ -339,6 +345,12 @@ dbBackupRestore:
           cpu: "2"
       nodeSelector:
         enabled: false
+        label_key: nodegroup_type
+        label_value: web
+      nodeAffinity:
+        enabled: false
+        key: "nodegroup_type"
+        values: ["web"]
     - name: osmcha-db
       enabled: false
       schedule: "* * * * *"
@@ -365,6 +377,12 @@ dbBackupRestore:
           cpu: "2"
       nodeSelector:
         enabled: false
+        label_key: nodegroup_type
+        label_value: web
+      nodeAffinity:
+        enabled: false
+        key: "nodegroup_type"
+        values: ["web"]
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
@@ -393,6 +411,12 @@ planetDump:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables for replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
@@ -417,6 +441,12 @@ replicationJob:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables for osm-seed to pupulate the apidb
 # ====================================================================================================
@@ -438,6 +468,14 @@ populateApidb:
       enabled: false
       memory: "2Gi"
       cpu: "2"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables to start a pod to process osm files
 # ====================================================================================================
@@ -507,10 +545,6 @@ tilerDb:
       enabled: false
       memory: "2Gi"
       cpu: "2"
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: tiler
   # To use postgresqlConfig, you need to have already $PGDATA set up in a persistent disk
   postgresqlConfig:
     enabled: false
@@ -531,6 +565,15 @@ tilerDb:
       max_worker_processes = 4
       max_parallel_workers_per_gather = 2
       max_parallel_workers = 4
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
+
 # ====================================================================================================
 # Variables for tiler-imposm
 # ====================================================================================================
@@ -576,7 +619,11 @@ tilerImposm:
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
-    label_value: tiler
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables for tiler-server
 # ====================================================================================================
@@ -633,9 +680,12 @@ tilerServer:
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
-    label_value: tiler
-  autoscaling:
+    label_value: web
+  nodeAffinity:
     enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
+
 # ====================================================================================================
 # Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3
 # ====================================================================================================
@@ -658,15 +708,19 @@ tilerServerCacheCleaner:
     KILL_PROCESS: manually
     MAX_NUM_PS: 3
     PROCESS_NAME: tegola
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: tiler
   autoscaling:
     enabled: false
     minReplicas: 1
     maxReplicas: 2
     cpuUtilization: 60
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 
 tilerCacheCleanerJob:
   enabled: false
@@ -685,6 +739,14 @@ tilerCacheCleanerJob:
       enabled: false
       memory: "2Gi"
       cpu: "2"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables for Tasking Manager DB
 # ====================================================================================================
@@ -694,10 +756,6 @@ tmDb:
     name: "postgres"
     tag: "11"
   priorityClass: "medium-priority"
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
   env:
     POSTGRES_DB: tm
     POSTGRES_PASSWORD: tm
@@ -716,6 +774,14 @@ tmDb:
       enabled: false
       memory: "2Gi"
       cpu: "2"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables for Tasking Manager API
 # ====================================================================================================
@@ -726,8 +792,6 @@ tmApi:
     name: ""
     tag: ""
   priorityClass: "medium-priority"
-  nodeSelector:
-    enabled: false
   replicaCount: 1
   ingressDomain: tm-api.dev.osmseed.org
   serviceAnnotations: {}
@@ -770,7 +834,14 @@ tmApi:
       enabled: false
       memory: "2Gi"
       cpu: "2"
-
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Nominatim UI, The image need to be update with your own docker image
 # ====================================================================================================
@@ -834,6 +905,13 @@ nominatimApi:
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
+
 # ====================================================================================================
 # Variables for overpass-api
 # ====================================================================================================
@@ -884,6 +962,12 @@ overpassApi:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables for taginfo
 # ====================================================================================================
@@ -922,16 +1006,16 @@ taginfo:
       memory: "2Gi"
       cpu: "2"
   nodeSelector:
-    enabled: true
+    enabled: false
     label_key: nodegroup_type
     label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
   cronjob:
     enabled: true
     schedule: "0 2 */3 * *"
-    nodeSelector:
-      enabled: true
-      label_key: nodegroup_type
-      label_value: job_xlarge
     resources:
       enabled: false
       requests:
@@ -940,6 +1024,14 @@ taginfo:
       limits:
         memory: "14Gi"
         cpu: "3800m"
+    nodeSelector:
+      enabled: false
+      label_key: nodegroup_type
+      label_value: web
+    nodeAffinity:
+      enabled: false
+      key: "nodegroup_type"
+      values: ["web"]
 # ====================================================================================================
 # Variables for osm-simple-metrics
 # ====================================================================================================
@@ -962,6 +1054,12 @@ osmSimpleMetrics:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables for osm-simple-metrics
 # ====================================================================================================
@@ -987,6 +1085,12 @@ monitoringReplication:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 # ====================================================================================================
 # Variables for changeset-replication-job, Configuration to create the replication files by, minute, hour, or day
 # ====================================================================================================
@@ -1008,6 +1112,12 @@ changesetReplicationJob:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 
 # ====================================================================================================
 # Variables for osmcha web builder
@@ -1061,7 +1171,11 @@ osmchaApi:
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
-    label_value: db
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
   fetch_changesets_cronjob: "*/2 * * * *"
   process_changesets_cronjob: "*/2 * * * *"
 # ====================================================================================================
@@ -1102,6 +1216,12 @@ osmchaDb:
     GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
 
 # ====================================================================================================
 # Planet server files

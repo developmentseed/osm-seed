@@ -69,4 +69,18 @@ spec:
       nodeSelector:
         {{ .Values.tmApi.nodeSelector.label_key }} : {{ .Values.tmApi.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.tmApi.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.tmApi.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.tmApi.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}

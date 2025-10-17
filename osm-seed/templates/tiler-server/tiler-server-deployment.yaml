@@ -60,5 +60,19 @@ spec:
       nodeSelector:
         {{ .Values.tilerServer.nodeSelector.label_key }} : {{ .Values.tilerServer.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.tilerServer.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.tilerServer.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.tilerServer.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}
 {{- end }}

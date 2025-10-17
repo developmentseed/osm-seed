@@ -72,4 +72,18 @@ spec:
       nodeSelector:
         {{ .Values.changesetReplicationJob.nodeSelector.label_key }} : {{ .Values.changesetReplicationJob.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.changesetReplicationJob.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.changesetReplicationJob.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.changesetReplicationJob.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}

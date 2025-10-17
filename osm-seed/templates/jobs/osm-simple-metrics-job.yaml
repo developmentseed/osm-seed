@@ -66,4 +66,18 @@ spec:
           nodeSelector:
             {{ .Values.osmSimpleMetrics.nodeSelector.label_key }}: {{ .Values.osmSimpleMetrics.nodeSelector.label_value }}
           {{- end }}
+          # Affinity settings
+          {{- if .Values.osmSimpleMetrics.nodeAffinity.enabled }}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: {{ .Values.osmSimpleMetrics.nodeAffinity.key }}
+                        operator: In
+                        values:
+                        {{- range .Values.osmSimpleMetrics.nodeAffinity.values }}
+                          - {{ . | quote }}
+                        {{- end }}
+          {{- end }}
 {{- end }}

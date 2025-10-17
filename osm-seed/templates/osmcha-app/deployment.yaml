@@ -88,5 +88,19 @@ spec:
       nodeSelector:
         {{ .Values.osmchaApi.nodeSelector.label_key }} : {{ .Values.osmchaApi.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.osmchaApi.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.osmchaApi.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.osmchaApi.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}
 

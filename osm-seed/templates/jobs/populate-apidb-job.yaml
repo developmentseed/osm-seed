@@ -44,4 +44,18 @@ spec:
         nodeSelector:
           {{ .Values.populateApidb.nodeSelector.label_key }} : {{ .Values.populateApidb.nodeSelector.label_value }}
         {{- end }}
+        # Affinity settings
+        {{- if .Values.populateApidb.nodeAffinity.enabled }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: {{ .Values.populateApidb.nodeAffinity.key }}
+                      operator: In
+                      values:
+                      {{- range .Values.populateApidb.nodeAffinity.values }}
+                        - {{ . | quote }}
+                      {{- end }}
+        {{- end }}
 {{- end }}
