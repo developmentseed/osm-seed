@@ -20,6 +20,7 @@ spec:
     spec:
       {{- if .Values.replicationJob.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.replicationJob.serviceAccount.name }}
+      automountServiceAccountToken: true
       {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.replicationJob.priorityClass | default "high-priority" }}
       containers:

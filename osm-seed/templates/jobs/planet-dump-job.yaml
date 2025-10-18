@@ -21,6 +21,7 @@ spec:
         spec:
           {{- if .Values.planetDump.serviceAccount.enabled }}
           serviceAccountName: {{ .Values.planetDump.serviceAccount.name }}
+          automountServiceAccountToken: true
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-planet-dump-job

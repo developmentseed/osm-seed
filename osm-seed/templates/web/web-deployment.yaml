@@ -24,6 +24,7 @@ spec:
     spec:
       {{- if .Values.web.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.web.serviceAccount.name }}
+      automountServiceAccountToken: true
       {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.web.priorityClass | default "high-priority" }}
       containers:

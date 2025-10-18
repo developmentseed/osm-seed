@@ -27,6 +27,7 @@ spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerServer.priorityClass | default "medium-priority" }}
       {{- if .Values.tilerServer.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.tilerServer.serviceAccount.name }}
+      automountServiceAccountToken: true
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-tiler-server

@@ -21,6 +21,7 @@ spec:
         spec:
           {{- if .Values.monitoringReplication.serviceAccount.enabled }}
           serviceAccountName: {{ .Values.monitoringReplication.serviceAccount.name }}
+          automountServiceAccountToken: true
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-replication-monitoring-job

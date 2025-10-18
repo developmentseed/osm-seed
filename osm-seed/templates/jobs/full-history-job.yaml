@@ -21,6 +21,7 @@ spec:
         spec:
           {{- if .Values.fullHistory.serviceAccount.enabled }}
           serviceAccountName: {{ .Values.fullHistory.serviceAccount.name }}
+          automountServiceAccountToken: true
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-full-history-job

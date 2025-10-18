@@ -22,6 +22,7 @@ spec:
     spec:
       {{- if .Values.tilerServerCacheCleaner.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.tilerServerCacheCleaner.serviceAccount.name }}
+      automountServiceAccountToken: true
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-tiler-server-cache-cleaner-deployment

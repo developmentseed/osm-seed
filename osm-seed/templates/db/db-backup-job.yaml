@@ -21,6 +21,7 @@ spec:
         spec:
           {{- if $job.serviceAccount.enabled }}
           serviceAccountName: {{ $job.serviceAccount.name }}
+          automountServiceAccountToken: true
           {{- end }}
           containers:
           - name: {{ $job.name }}-backup-job

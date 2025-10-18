@@ -13,6 +13,7 @@ spec:
       spec:
         {{- if .Values.populateApidb.serviceAccount.enabled }}
         serviceAccountName: {{ .Values.populateApidb.serviceAccount.name }}
+        automountServiceAccountToken: true
         {{- end }}
         containers:
         - name: {{ .Release.Name }}-populate-apidb-job

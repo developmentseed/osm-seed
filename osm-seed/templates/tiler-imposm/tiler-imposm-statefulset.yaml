@@ -21,6 +21,7 @@ spec:
     spec:
       {{- if .Values.tilerImposm.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.tilerImposm.serviceAccount.name }}
+      automountServiceAccountToken: true
       {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerImposm.priorityClass | default "medium-priority" }}
       containers:

@@ -20,6 +20,7 @@ spec:
     spec:
       {{- if .Values.changesetReplicationJob.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.changesetReplicationJob.serviceAccount.name }}
+      automountServiceAccountToken: true
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-changeset-replication-job-deployment

@@ -21,6 +21,7 @@ spec:
         spec:
           {{- if .Values.osmSimpleMetrics.serviceAccount.enabled }}
           serviceAccountName: {{ .Values.osmSimpleMetrics.serviceAccount.name }}
+          automountServiceAccountToken: true
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-osm-simple-metrics-job
