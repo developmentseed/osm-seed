@@ -19,6 +19,10 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
+          {{- if .Values.osmSimpleMetrics.serviceAccount.enabled }}
+          serviceAccountName: {{ .Values.osmSimpleMetrics.serviceAccount.name }}
+          automountServiceAccountToken: true
+          {{- end }}
           containers:
           - name: {{ .Release.Name }}-osm-simple-metrics-job
             image: {{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}
@@ -65,5 +69,19 @@ spec:
           {{- if .Values.osmSimpleMetrics.nodeSelector.enabled }}
           nodeSelector:
             {{ .Values.osmSimpleMetrics.nodeSelector.label_key }}: {{ .Values.osmSimpleMetrics.nodeSelector.label_value }}
+          {{- end }}
+          # Affinity settings
+          {{- if .Values.osmSimpleMetrics.nodeAffinity.enabled }}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: {{ .Values.osmSimpleMetrics.nodeAffinity.key }}
+                        operator: In
+                        values:
+                        {{- range .Values.osmSimpleMetrics.nodeAffinity.values }}
+                          - {{ . | quote }}
+                        {{- end }}
           {{- end }}
 {{- end }}

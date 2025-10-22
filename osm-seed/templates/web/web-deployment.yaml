@@ -22,6 +22,10 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-web
     spec:
+      {{- if .Values.web.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.web.serviceAccount.name }}
+      automountServiceAccountToken: true
+      {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.web.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Chart.Name }}-web
@@ -189,5 +193,29 @@ spec:
       {{- if .Values.web.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.web.nodeSelector.label_key }} : {{ .Values.web.nodeSelector.label_value }}
+      {{- end }}
+      # Node affinity
+      {{- if .Values.web.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.web.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.web.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+        # Pod anti-affinity, to set that no two pods are scheduled on the same node
+        {{- if .Values.web.podAntiAffinity.enabled }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: {{ template "osm-seed.name" . }}
+                  component: web-deployment
+              topologyKey: "kubernetes.io/hostname"
+        {{- end }}
       {{- end }}
 {{- end }}

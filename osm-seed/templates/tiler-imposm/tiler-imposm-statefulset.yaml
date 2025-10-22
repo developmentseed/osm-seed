@@ -19,6 +19,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-tiler-imposm-sts
     spec:
+      {{- if .Values.tilerImposm.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.tilerImposm.serviceAccount.name }}
+      automountServiceAccountToken: true
+      {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerImposm.priorityClass | default "medium-priority" }}
       containers:
       - name: {{ .Release.Name }}-tiler-imposm-sts
@@ -97,5 +101,19 @@ spec:
       {{- if .Values.tilerImposm.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerImposm.nodeSelector.label_key }} : {{ .Values.tilerImposm.nodeSelector.label_value }}
+      {{- end }}
+      # Affinity settings
+      {{- if .Values.tilerImposm.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.tilerImposm.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.tilerImposm.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
       {{- end }}
 {{- end }}

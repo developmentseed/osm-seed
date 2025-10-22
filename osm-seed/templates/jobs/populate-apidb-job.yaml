@@ -11,6 +11,10 @@ metadata:
 spec:
     template:
       spec:
+        {{- if .Values.populateApidb.serviceAccount.enabled }}
+        serviceAccountName: {{ .Values.populateApidb.serviceAccount.name }}
+        automountServiceAccountToken: true
+        {{- end }}
         containers:
         - name: {{ .Release.Name }}-populate-apidb-job
           image: {{ .Values.populateApidb.image.name }}:{{ .Values.populateApidb.image.tag }}
@@ -43,5 +47,19 @@ spec:
         {{- if .Values.populateApidb.nodeSelector.enabled }}
         nodeSelector:
           {{ .Values.populateApidb.nodeSelector.label_key }} : {{ .Values.populateApidb.nodeSelector.label_value }}
+        {{- end }}
+        # Affinity settings
+        {{- if .Values.populateApidb.nodeAffinity.enabled }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: {{ .Values.populateApidb.nodeAffinity.key }}
+                      operator: In
+                      values:
+                      {{- range .Values.populateApidb.nodeAffinity.values }}
+                        - {{ . | quote }}
+                      {{- end }}
         {{- end }}
 {{- end }}

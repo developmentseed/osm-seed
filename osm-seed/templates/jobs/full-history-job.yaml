@@ -19,6 +19,10 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
+          {{- if .Values.fullHistory.serviceAccount.enabled }}
+          serviceAccountName: {{ .Values.fullHistory.serviceAccount.name }}
+          automountServiceAccountToken: true
+          {{- end }}
           containers:
           - name: {{ .Release.Name }}-full-history-job
             image: {{ .Values.fullHistory.image.name }}:{{ .Values.fullHistory.image.tag }}
@@ -81,6 +85,20 @@ spec:
           {{- if .Values.fullHistory.nodeSelector.enabled }}
           nodeSelector:
             {{ .Values.fullHistory.nodeSelector.label_key }} : {{ .Values.fullHistory.nodeSelector.label_value }}
+          {{- end }}
+          # Affinity settings
+          {{- if .Values.fullHistory.nodeAffinity.enabled }}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: {{ .Values.fullHistory.nodeAffinity.key }}
+                        operator: In
+                        values:
+                        {{- range .Values.fullHistory.nodeAffinity.values }}
+                          - {{ . | quote }}
+                        {{- end }}
           {{- end }}
       backoffLimit: 3
 {{- end }}

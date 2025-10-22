@@ -19,9 +19,9 @@ spec:
       ttlSecondsAfterFinished: 60
       template:
         spec:
-          {{- if .Values.monitoringReplication.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.monitoringReplication.nodeSelector.label_key }} : {{ .Values.monitoringReplication.nodeSelector.label_value }}
+          {{- if .Values.monitoringReplication.serviceAccount.enabled }}
+          serviceAccountName: {{ .Values.monitoringReplication.serviceAccount.name }}
+          automountServiceAccountToken: true
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-replication-monitoring-job
@@ -78,5 +78,23 @@ spec:
                 value: {{ .Values.monitoringReplication.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}
           restartPolicy: OnFailure
+          {{- if .Values.monitoringReplication.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.monitoringReplication.nodeSelector.label_key }} : {{ .Values.monitoringReplication.nodeSelector.label_value }}
+          {{- end }}
+          # Affinity settings
+          {{- if .Values.monitoringReplication.nodeAffinity.enabled }}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: {{ .Values.monitoringReplication.nodeAffinity.key }}
+                        operator: In
+                        values:
+                        {{- range .Values.monitoringReplication.nodeAffinity.values }}
+                          - {{ . | quote }}
+                        {{- end }}
+          {{- end }}
       backoffLimit: 3
 {{- end }}

@@ -72,4 +72,18 @@ spec:
       nodeSelector:
         {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.cgimap.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.cgimap.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.cgimap.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}

@@ -124,4 +124,18 @@ spec:
       nodeSelector:
         {{ .Values.nominatimApi.nodeSelector.label_key }} : {{ .Values.nominatimApi.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.nominatimApi.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.nominatimApi.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.nominatimApi.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}

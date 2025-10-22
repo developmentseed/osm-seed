@@ -103,4 +103,18 @@ spec:
       nodeSelector:
         {{ .Values.tmDb.nodeSelector.label_key }} : {{ .Values.tmDb.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.tmDb.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.tmDb.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.tmDb.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}

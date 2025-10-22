@@ -106,5 +106,19 @@ spec:
       nodeSelector:
         {{ .Values.tilerDb.nodeSelector.label_key }} : {{ .Values.tilerDb.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.tilerDb.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.tilerDb.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.tilerDb.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}
 {{- end }}

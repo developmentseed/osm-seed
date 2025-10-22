@@ -92,4 +92,18 @@ spec:
       nodeSelector:
         {{ .Values.overpassApi.nodeSelector.label_key }} : {{ .Values.overpassApi.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.overpassApi.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.overpassApi.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.overpassApi.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}

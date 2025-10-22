@@ -43,4 +43,18 @@ spec:
       nodeSelector:
         {{ .Values.memcached.nodeSelector.label_key }} : {{ .Values.memcached.nodeSelector.label_value }}
       {{- end }}
+      # Affinity settings
+      {{- if .Values.memcached.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.memcached.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.memcached.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}

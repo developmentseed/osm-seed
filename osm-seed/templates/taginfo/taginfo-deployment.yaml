@@ -22,6 +22,10 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-taginfo-web
     spec:
+      {{- if .Values.taginfo.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.taginfo.serviceAccount.name }}
+      automountServiceAccountToken: true
+      {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.taginfo.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-taginfo
@@ -60,5 +64,19 @@ spec:
       {{- if .Values.taginfo.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.taginfo.nodeSelector.label_key }} : {{ .Values.taginfo.nodeSelector.label_value }}
+      {{- end }}
+      # Affinity settings
+      {{- if .Values.taginfo.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.taginfo.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.taginfo.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
       {{- end }}
 {{- end }}

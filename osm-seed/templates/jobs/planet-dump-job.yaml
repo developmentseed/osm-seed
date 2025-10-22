@@ -19,9 +19,9 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if .Values.planetDump.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.planetDump.nodeSelector.label_key }} : {{ .Values.planetDump.nodeSelector.label_value }}
+          {{- if .Values.planetDump.serviceAccount.enabled }}
+          serviceAccountName: {{ .Values.planetDump.serviceAccount.name }}
+          automountServiceAccountToken: true
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-planet-dump-job
@@ -82,5 +82,23 @@ spec:
                 value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}
           restartPolicy: OnFailure
+          {{- if .Values.planetDump.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.planetDump.nodeSelector.label_key }} : {{ .Values.planetDump.nodeSelector.label_value }}
+          {{- end }}
+          # Affinity settings
+          {{- if .Values.planetDump.nodeAffinity.enabled }}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: {{ .Values.planetDump.nodeAffinity.key }}
+                        operator: In
+                        values:
+                        {{- range .Values.planetDump.nodeAffinity.values }}
+                          - {{ . | quote }}
+                        {{- end }}
+          {{- end }}
       backoffLimit: 3
 {{- end }}

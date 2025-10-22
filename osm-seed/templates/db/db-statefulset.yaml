@@ -118,4 +118,17 @@ spec:
       nodeSelector:
         {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
       {{- end }}
+      {{- if .Values.db.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.db.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.db.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
 {{- end }}

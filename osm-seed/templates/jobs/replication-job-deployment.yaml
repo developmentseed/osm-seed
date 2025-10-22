@@ -18,6 +18,10 @@ spec:
       labels:
         app: {{ template "osm-seed.name" . }}
     spec:
+      {{- if .Values.replicationJob.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.replicationJob.serviceAccount.name }}
+      automountServiceAccountToken: true
+      {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.replicationJob.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Release.Name }}-replication-job-deployment
@@ -88,5 +92,19 @@ spec:
       {{- if .Values.replicationJob.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.replicationJob.nodeSelector.label_key }} : {{ .Values.replicationJob.nodeSelector.label_value }}
+      {{- end }}
+      # Affinity settings
+      {{- if .Values.replicationJob.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.replicationJob.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.replicationJob.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
       {{- end }}
 {{- end }}
