@@ -36,7 +36,7 @@ NOTE:
  
  - The map-tiles on the instance are being served from the main osm.org website currently. 
  - Make sure the port 5432 and 80 are not busy.
- - Data outputs from osm-seed is going to be store i the `data/` folder.
+ - Data outputs from osm-seed is going to be stored in the `data/` folder.
 
 
 ### Building and Running individual containers
