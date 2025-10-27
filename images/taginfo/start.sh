@@ -48,8 +48,8 @@ process_data() {
     ./update_all.sh $DATADIR
     mv $DATADIR/*.db $DATADIR/
     mv $DATADIR/*/*.db $DATADIR/
-    # if BUCKET_NAME is set upload data
-    if ! aws s3 ls "s3://$BUCKET_NAME/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
+    # if AWS_S3_BUCKET is set upload data
+    if ! aws s3 ls "s3://$AWS_S3_BUCKET/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
         aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/$ENVIRONMENT/  --exclude "*" --include "*.db"
     fi
 }
