@@ -19,6 +19,7 @@ spec:
     spec:
       template:
         spec:
+          serviceAccountName: {{ .Values.taginfo.serviceAccount.name }}
           containers:
           - name: {{ .Release.Name }}-taginfo-job
             image: "{{ .Values.taginfo.image.name }}:{{ .Values.taginfo.image.tag }}"
