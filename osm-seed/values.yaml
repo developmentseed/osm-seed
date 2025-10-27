@@ -1059,6 +1059,10 @@ taginfo:
       limits:
         memory: "14Gi"
         cpu: "3800m"
+      nodeAffinity:
+        enabled: false
+        key: "nodegroup_type"
+        values: ["job"]
     nodeSelector:
       enabled: false
       label_key: nodegroup_type

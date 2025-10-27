@@ -41,9 +41,19 @@ spec:
                 cpu: {{ .Values.taginfo.cronjob.resources.limits.cpu }}
             {{- end }}
           restartPolicy: Never
-          {{- if .Values.taginfo.cronjob.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.taginfo.cronjob.nodeSelector.label_key }}: {{ .Values.taginfo.cronjob.nodeSelector.label_value }}
+          # Affinity settings
+          {{- if .Values.taginfo.cronjob.nodeAffinity.enabled }}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: {{ .Values.taginfo.cronjob.nodeAffinity.key }}
+                        operator: In
+                        values:
+                        {{- range .Values.taginfo.cronjob.nodeAffinity.values }}
+                          - {{ . | quote }}
+                        {{- end }}
           {{- end }}
 {{- end }}
 {{- end }}
