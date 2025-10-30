@@ -1,21 +1,18 @@
-FROM developmentseed/osmseed-osm-processor:0.1.0-n802.h0d9f574
+FROM andygol/osmosis:0.49.2
+USER root
 
-RUN apt-get update && \
-    apt-get install -y \
-        nginx \
-        python3-pip \
-        python3-venv \
-        procps \
-        curl && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update && apk add --no-cache python3 py3-pip procps curl bash postgresql-client py3-crcmod
 
-RUN python3 -m venv /opt/venv
+RUN python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --no-cache-dir \
+        boto3 \
+        awscli 
 ENV PATH="/opt/venv/bin:$PATH"
-RUN pip install --no-cache-dir boto3
 
 COPY ./*.sh /
 COPY monitoring.py /
 
 WORKDIR /mnt/data
 
+ENTRYPOINT ["/bin/bash","-lc"]
 CMD /start.sh

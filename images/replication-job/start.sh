@@ -32,26 +32,26 @@ function get_current_state_file() {
             fi
         fi
 
-        ### GCP
-        if [ $CLOUDPROVIDER == "gcp" ]; then
-            gsutil ls $GCP_STORAGE_BUCKET/$REPLICATION_FOLDER/state.txt
-            if [[ $? -eq 0 ]]; then
-                echo "File exist, let's get it from $CLOUDPROVIDER - $GCP_STORAGE_BUCKET"
-                gsutil cp $GCP_STORAGE_BUCKET/$REPLICATION_FOLDER/state.txt $workingDirectory/state.txt
-            fi
-        fi
+        # ### GCP
+        # if [ $CLOUDPROVIDER == "gcp" ]; then
+        #     gsutil ls $GCP_STORAGE_BUCKET/$REPLICATION_FOLDER/state.txt
+        #     if [[ $? -eq 0 ]]; then
+        #         echo "File exist, let's get it from $CLOUDPROVIDER - $GCP_STORAGE_BUCKET"
+        #         gsutil cp $GCP_STORAGE_BUCKET/$REPLICATION_FOLDER/state.txt $workingDirectory/state.txt
+        #     fi
+        # fi
 
-        ### Azure
-        if [ $CLOUDPROVIDER == "azure" ]; then
-            state_file_exists=$(az storage blob exists --container-name $AZURE_CONTAINER_NAME --name $REPLICATION_FOLDER/state.txt --query="exists")
-            if [[ $state_file_exists=="true" ]]; then
-                echo "File exist, let's get it from $CLOUDPROVIDER - $AZURE_CONTAINER_NAME"
-                az storage blob download \
-                    --container-name $AZURE_CONTAINER_NAME \
-                    --name $REPLICATION_FOLDER/state.txt \
-                    --file $workingDirectory/state.txt --query="name"
-            fi
-        fi
+        # ### Azure
+        # if [ $CLOUDPROVIDER == "azure" ]; then
+        #     state_file_exists=$(az storage blob exists --container-name $AZURE_CONTAINER_NAME --name $REPLICATION_FOLDER/state.txt --query="exists")
+        #     if [[ $state_file_exists=="true" ]]; then
+        #         echo "File exist, let's get it from $CLOUDPROVIDER - $AZURE_CONTAINER_NAME"
+        #         az storage blob download \
+        #             --container-name $AZURE_CONTAINER_NAME \
+        #             --name $REPLICATION_FOLDER/state.txt \
+        #             --file $workingDirectory/state.txt --query="name"
+        #     fi
+        # fi
     else
         echo "File $workingDirectory/state.txt exist in local storage"
         echo "File $workingDirectory/state.txt content:"
