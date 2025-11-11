@@ -24,7 +24,7 @@ RUN apt-get update \
    libpqxx-dev \
    pandoc \
    postgresql-common \
-   postgresql-server-dev-all \
+   postgresql-server-dev-17 \
    zlib1g-dev \
    && update-ca-certificates \
    && rm -rf /var/lib/apt/lists/*
