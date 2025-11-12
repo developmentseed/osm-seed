@@ -1,56 +1,54 @@
-FROM debian:bookworm
+FROM debian:bookworm AS builder
 
+# Setup PostgreSQL repository and install build dependencies
 RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
+ && . /etc/os-release \
+ && echo "deb http://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+ && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
+ && apt-get update \
  && apt-get install -y --no-install-recommends \
-   ca-certificates \
-   git \
-   curl \
-   gzip \
-   bash \
-   procps \
-   openjdk-17-jre-headless \
-   osmosis \
-   postgresql-client \
-   # Build deps for osmdbt (keep if you really need osmdbt built in this image)
-   build-essential \
-   cmake \
-   gettext-base \
-   libboost-program-options-dev \
-   libbz2-dev \
-   libexpat1-dev \
-   libosmium2-dev \
-   libprotozero-dev \
-   libyaml-cpp-dev \
-   libpqxx-dev \
-   pandoc \
-   postgresql-common \
-   postgresql-server-dev-17 \
-   zlib1g-dev \
-   && update-ca-certificates \
-   && rm -rf /var/lib/apt/lists/*
-
-RUN git clone https://github.com/openstreetmap/osmdbt.git /osmdbt && cd /osmdbt && git checkout v0.9
-WORKDIR /osmdbt
-RUN mkdir -p build && cd build && cmake .. && make
-RUN cd /osmdbt/build && find . -type f -executable -name "osmdbt*" -exec cp {} /usr/local/bin/ \; || true
-ENV PATH="/osmdbt/build:/usr/local/bin:$PATH"
-
-# --- Build and store the osm_logical.so plugin for PostgreSQL ---
-RUN cd /osmdbt/postgresql-plugin && \
-   mkdir -p build && \
-   cd build && \
-   cmake .. && \
-   make && \
-   # Copia cualquier archivo .so producido a una ruta neutral fácil de extraer luego
-   mkdir -p /usr/local/lib/osmdbt-plugin && \
-   find . -name "*.so" -exec cp {} /usr/local/lib/osmdbt-plugin/ \;
-
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-    awscli \
+    git build-essential cmake pandoc \
+    libosmium2-dev libprotozero-dev libyaml-cpp-dev \
+    libpqxx-6.4 libpqxx-dev \
+    libboost-program-options-dev libboost-system-dev libboost-filesystem-dev \
+    postgresql-server-dev-17 libbz2-dev libexpat1-dev zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
 
-COPY start.sh /start.sh
+# Build osmdbt
+RUN git clone https://github.com/openstreetmap/osmdbt.git /osmdbt \
+ && cd /osmdbt && git checkout v0.9 \
+ && mkdir -p build && cd build \
+ && cmake -DBUILD_PLUGIN=OFF .. && make
 
+RUN mkdir -p /tmp/runtime-libs \
+ && find /usr/lib/x86_64-linux-gnu /usr/local/lib -name "libosmium*.so*" -exec cp {} /tmp/runtime-libs/ \; 2>/dev/null || true \
+ && find /usr/lib/x86_64-linux-gnu /usr/local/lib -name "libprotozero*.so*" -exec cp {} /tmp/runtime-libs/ \; 2>/dev/null || true
+
+# ============================================================================
+# Runtime stage
+# ============================================================================
+FROM debian:bookworm
+
+# Install runtime dependencies
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    ca-certificates curl gzip bash procps postgresql-client \
+    openjdk-17-jre-headless osmosis awscli \
+    libpqxx-6.4 libyaml-cpp0.7 \
+    libboost-program-options1.74.0 libboost-system1.74.0 libboost-filesystem1.74.0 \
+    libbz2-1.0 libexpat1 zlib1g \
+ && rm -rf /var/lib/apt/lists/*
+
+# Copy binaries and third-party libraries (libosmium, libprotozero from builder)
+COPY --from=builder /osmdbt/build /osmdbt/build
+COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /tmp/runtime-libs/ /usr/local/lib/
+
+RUN ldconfig
+
+ENV PATH="/osmdbt/build:/usr/local/bin:$PATH"
+
+COPY start.sh /start.sh
 ENTRYPOINT ["/bin/bash","-c"]
 CMD ["/start.sh"]
