@@ -21,6 +21,7 @@ workingDirectory="${WORKING_DIRECTORY:-/mnt/data}"
 tmpDirectory="${workingDirectory}/tmp"
 runDirectory="${workingDirectory}/run"
 changesDir="${workingDirectory}"
+logDirectory="${workingDirectory}/logs"  # Separate directory for application logs
 osmdbtConfig="/osmdbt-config.yaml"
 
 # Replication variables
@@ -45,11 +46,11 @@ INTEGRITY_CHECK_RETRIES=3
 CLEANUP_INTERVAL=300  # seconds (5 minutes)
 
 # Process tracking
-processed_files_log="${workingDirectory}/processed_files.log"
+processed_files_log="${logDirectory}/processed_files.log"
 osmdbt_pid_file="${runDirectory}/osmdbt.pid"
 
 # ---- Directory Setup ----
-mkdir -p "$workingDirectory" "$tmpDirectory" "$runDirectory"
+mkdir -p "$workingDirectory" "$tmpDirectory" "$runDirectory" "$logDirectory"
 
 # ---- osmdbt-config.yaml creation ----
 cat <<EOF > "$osmdbtConfig"
@@ -92,7 +93,6 @@ function ensure_replication_slot_exists() {
     
     local error_msg="ERROR: Failed to create replication slot '$REPLICATION_SLOT'. The '$REPLICATION_PLUGIN' plugin may not be installed."
     echo "$error_msg"
-    send_slack_message "🚨 ${ENVIROMENT:-production}: $error_msg"
     return 1
 }
 
@@ -119,7 +119,6 @@ function recover_state_file() {
             if aws s3 cp "$s3_state_path" "$state_file"; then
                 echo "$(date +%F_%H:%M:%S): Successfully recovered state.txt from S3:"
                 cat "$state_file"
-                send_slack_message "✅ ${ENVIROMENT:-production}: Recovered state.txt from S3. Continuing replication from last known sequence."
                 return 0
             else
                 echo "$(date +%F_%H:%M:%S): WARNING: Failed to download state.txt from S3"
@@ -207,23 +206,24 @@ function upload_file_to_s3() {
     if ! verify_file_integrity "$local_file" "$file_type"; then
         local error_msg="🚨 ${ENVIROMENT:-production}: Integrity check failed for $local_file. File will not be uploaded."
         echo "$(date +%F_%H:%M:%S): $error_msg"
-        send_slack_message "$error_msg"
         return 1
     fi
     
-    # Determine S3 path
-    local filename=$(basename "$local_file")
-    local s3_path="${AWS_S3_BUCKET}/${REPLICATION_FOLDER}/${filename}"
+    # Determine S3 path preserving directory structure
+    # Get relative path from changesDir (e.g., /mnt/data/000/871/309.osc.gz -> 000/871/309.osc.gz)
+    local relative_path="${local_file#${changesDir}/}"
+    # Remove leading slash if changesDir doesn't end with one
+    relative_path="${relative_path#/}"
+    local s3_path="${AWS_S3_BUCKET}/${REPLICATION_FOLDER}/${relative_path}"
     
     echo "$(date +%F_%H:%M:%S): Uploading $local_file to S3: $s3_path"
     
     if aws s3 cp "$local_file" "$s3_path" --acl public-read; then
-        echo "$(date +%F_%H:%M:%S): Successfully uploaded $filename to S3"
+        echo "$(date +%F_%H:%M:%S): Successfully uploaded $relative_path to S3"
         return 0
     else
-        local error_msg="🚨 ${ENVIROMENT:-production}: Failed to upload $filename to S3"
+        local error_msg="🚨 ${ENVIROMENT:-production}: Failed to upload $relative_path to S3"
         echo "$(date +%F_%H:%M:%S): $error_msg"
-        send_slack_message "$error_msg"
         return 1
     fi
 }
@@ -235,9 +235,11 @@ function upload_replication_files() {
     local osc_file="$1"
     local general_state_file="${changesDir}/state.txt"
     
-    # Extract base name from osc file (e.g., "870.osc.gz" -> "870")
+    # Extract base name and directory from osc file
+    # Handle paths like /mnt/data/000/871/305.osc.gz -> /mnt/data/000/871/305.state.txt
+    local osc_dir=$(dirname "$osc_file")
     local osc_basename=$(basename "$osc_file" .osc.gz)
-    local specific_state_file="${changesDir}/${osc_basename}.state.txt"
+    local specific_state_file="${osc_dir}/${osc_basename}.state.txt"
     
     local upload_success=true
     
@@ -312,16 +314,16 @@ function send_slack_message() {
     local timestamp=$(date +%F_%H:%M:%S)
     local full_message="[OSM Replication] $timestamp - $message"
     
-    # if curl -X POST -H 'Content-type: application/json' \
-    #     --data "{\"text\": \"$full_message\"}" \
-    #     "$SLACK_WEBHOOK_URL" >/dev/null 2>&1; then
-    #     echo "$(date +%F_%H:%M:%S): Slack notification sent: $message"
-    #     slack_message_count=$((slack_message_count + 1))
-    #     return 0
-    # else
-    #     echo "$(date +%F_%H:%M:%S): WARNING: Failed to send Slack notification"
-    #     return 1
-    # fi
+    if curl -X POST -H 'Content-type: application/json' \
+        --data "{\"text\": \"$full_message\"}" \
+        "$SLACK_WEBHOOK_URL" >/dev/null 2>&1; then
+        echo "$(date +%F_%H:%M:%S): Slack notification sent: $message"
+        slack_message_count=$((slack_message_count + 1))
+        return 0
+    else
+        echo "$(date +%F_%H:%M:%S): WARNING: Failed to send Slack notification"
+        return 1
+    fi
 }
 
 # ============================================================================
@@ -336,8 +338,8 @@ function cleanup_orphaned_files() {
     find "$workingDirectory" -name "*.lock" -type f -mmin +10 -delete && cleaned=$((cleaned + 1))
     find "$runDirectory" -name "*.lock" -type f -mmin +10 -delete && cleaned=$((cleaned + 1))
     
-    # Remove old log files (keep only recent ones)
-    find "$workingDirectory" -name "*.log" -type f -mtime +7 -delete && cleaned=$((cleaned + 1))
+    # Remove old application log files (keep only recent ones)
+    find "$logDirectory" -name "*.log" -type f -mtime +7 -delete && cleaned=$((cleaned + 1))
     
     # Remove incomplete .osc.gz files (0 bytes or corrupted)
     while IFS= read -r -d '' file; do
@@ -410,7 +412,7 @@ function execute_replication_cycle() {
     
     # Execute osmdbt-get-log
     echo "$(date +%F_%H:%M:%S): Running osmdbt-get-log..."
-    if ! /osmdbt/build/src/osmdbt-get-log -c "$osmdbtConfig" 2>&1 | tee -a "${workingDirectory}/osmdbt-get-log.log"; then
+    if ! /osmdbt/build/src/osmdbt-get-log -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-get-log.log"; then
         local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-get-log failed"
         echo "$(date +%F_%H:%M:%S): $error_msg"
         send_slack_message "$error_msg"
@@ -419,7 +421,7 @@ function execute_replication_cycle() {
     
     # Execute osmdbt-create-diff
     echo "$(date +%F_%H:%M:%S): Running osmdbt-create-diff..."
-    if ! /osmdbt/build/src/osmdbt-create-diff -c "$osmdbtConfig" 2>&1 | tee -a "${workingDirectory}/osmdbt-create-diff.log"; then
+    if ! /osmdbt/build/src/osmdbt-create-diff -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-create-diff.log"; then
         local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-create-diff failed"
         echo "$(date +%F_%H:%M:%S): $error_msg"
         send_slack_message "$error_msg"
@@ -446,7 +448,6 @@ function execute_replication_cycle() {
         else
             local error_msg="🚨 ${ENVIROMENT:-production}: Failed to upload replication files for $latest_osc"
             echo "$(date +%F_%H:%M:%S): $error_msg"
-            send_slack_message "$error_msg"
             return 1
         fi
     else
@@ -475,7 +476,6 @@ function wait_for_postgresql() {
     
     local error_msg="🚨 ${ENVIROMENT:-production}: PostgreSQL is not ready after $max_attempts attempts"
     echo "$(date +%F_%H:%M:%S): $error_msg"
-    send_slack_message "$error_msg"
     return 1
 }
 

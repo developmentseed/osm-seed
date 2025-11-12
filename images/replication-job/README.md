@@ -58,9 +58,22 @@ The container requires environment variables from these files:
 - `POSTGRES_HOST` - PostgreSQL hostname
 - `POSTGRES_PORT` - PostgreSQL port (default: 5432)
 - `POSTGRES_DB` - Database name
-- `POSTGRES_USER` - Database user
+- `POSTGRES_USER` - Database user (must have replication and SELECT permissions)
 - `POSTGRES_PASSWORD` - Database password
 - `REPLICATION_SLOT` - Logical replication slot name (default: `osm_repl`)
+
+**Important**: The database user must have the following permissions:
+- `REPLICATION` privilege (to read from logical replication slot)
+- `SELECT` permission on the `changesets` table (required by `osmdbt-create-diff`)
+
+To grant these permissions, run as a database administrator:
+```sql
+-- Create user with replication privilege
+CREATE ROLE osmdbt_user WITH REPLICATION LOGIN PASSWORD 'your_password';
+
+-- Grant SELECT on changesets table
+GRANT SELECT ON TABLE changesets TO osmdbt_user;
+```
 
 #### S3 Configuration
 - `CLOUDPROVIDER` - Cloud provider (default: `aws`)
