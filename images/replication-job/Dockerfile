@@ -50,5 +50,6 @@ RUN ldconfig
 ENV PATH="/osmdbt/build:/usr/local/bin:$PATH"
 
 COPY start.sh /start.sh
+COPY liveness.sh /liveness.sh
 ENTRYPOINT ["/bin/bash","-c"]
 CMD ["/start.sh"]

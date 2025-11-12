@@ -55,6 +55,8 @@ spec:
               value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
               value: {{ .Values.db.env.POSTGRES_USER }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.db.env.POSTGRES_PORT | quote}}
             - name: REPLICATION_FOLDER
               value: replication/minute
             - name: CLOUDPROVIDER
