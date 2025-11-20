@@ -36,21 +36,19 @@ cloudStorageOps() {
 
 backupDB() {
     local LOCAL_BACKUP_FILE="${BACKUP_CLOUD_FILE}.dump"
-    local LOCAL_BACKUP_FILE_GZIP="${BACKUP_CLOUD_FILE}.dump.gz"
-    local CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}.dump.gz"
+    local CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}.dump"
 
     if [ "$SET_DATE_AT_NAME" == "true" ]; then
         local CURRENT_DATE
         CURRENT_DATE=$(date '+%Y%m%d-%H%M')
         LOCAL_BACKUP_FILE="${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump"
-        LOCAL_BACKUP_FILE_GZIP="${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump.gz"
-        CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump.gz"
+        CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump"
     fi
 
-    # Backup database with pg_dump custom format (-Fc) + gzip
-    echo "Backing up DB ${POSTGRES_DB} into ${LOCAL_BACKUP_FILE_GZIP}"
-    pg_dump -h "${POSTGRES_HOST}" -U "${POSTGRES_USER}" -Fc "${POSTGRES_DB}" | gzip -9 > "${LOCAL_BACKUP_FILE}.gz"
-    cloudStorageOps "${LOCAL_BACKUP_FILE_GZIP}" "${CLOUD_BACKUP_FILE}"
+    # Backup database with pg_dump custom format (-Fc) + ZSTD compression
+    echo "Backing up DB ${POSTGRES_DB} into ${LOCAL_BACKUP_FILE} with ZSTD compression"
+    pg_dump -h "${POSTGRES_HOST}" -U "${POSTGRES_USER}" -Fc --compress=zstd "${POSTGRES_DB}" -f "${LOCAL_BACKUP_FILE}"
+    cloudStorageOps "${LOCAL_BACKUP_FILE}" "${CLOUD_BACKUP_FILE}"
 }
 
 restoreDB() {
