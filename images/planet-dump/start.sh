@@ -25,7 +25,7 @@ fi
 
 
 # ===============================
-# Download db .dump file 
+# Download db .dump file
 # ===============================
 download_dump_file() {
     echo "Downloading db .dump file from cloud..."
@@ -35,34 +35,15 @@ download_dump_file() {
             temp_txt="$VOLUME_DIR/tmp_dump_url.txt"
             aws s3 cp "$DUMP_CLOUD_URL" "$temp_txt"
 
-            # Get the first line (S3 URL to the .dump or .dump.gz file)
+            # Get the first line (S3 URL to the .dump file)
             first_line=$(head -n 1 "$temp_txt")
             echo "Found dump URL in txt: $first_line"
 
-            # Set dump file name based on extension
-            if [[ "$first_line" == *.gz ]]; then
-                dumpFile="${dumpFile}.gz"
-            fi
-
             aws s3 cp "$first_line" "$dumpFile"
-            if [[ "$dumpFile" == *.gz ]]; then
-                echo "Decompressing gzip file..."
-                gunzip -f "$dumpFile"
-                dumpFile="${dumpFile%.gz}"
-            fi
             rm -f "$temp_txt"
 
         else
-            # Set dump file name based on extension
-            if [[ "$DUMP_CLOUD_URL" == *.gz ]]; then
-                dumpFile="${dumpFile}.gz"
-            fi
             aws s3 cp "$DUMP_CLOUD_URL" "$dumpFile"
-            if [[ "$dumpFile" == *.gz ]]; then
-                echo "Decompressing gzip file..."
-                gunzip -f "$dumpFile"
-                dumpFile="${dumpFile%.gz}"
-            fi
         fi
 
     elif [ "$CLOUDPROVIDER" == "gcp" ]; then
