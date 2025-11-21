@@ -4,8 +4,21 @@ set -euo pipefail
 # ============================================================================
 # OSM Replication Script with osmdbt and S3
 # ============================================================================
-# This script manages OSM replication using osmdbt tools:
-# - Executes osmdbt-get-log and osmdbt-create-diff every minute
+# This script manages OSM replication using osmdbt tools following the
+# official osmdbt workflow (https://github.com/openstreetmap/osmdbt):
+#
+# Initialization:
+# - Runs osmdbt-enable-replication to set up replication slot
+# - Requires PostgreSQL with wal_level=logical, max_replication_slots >= 1,
+#   and a user with REPLICATION attribute
+#
+# Replication Cycle (every minute):
+# 1. osmdbt-catchup - Process old log files if any (from crashes)
+# 2. osmdbt-get-log - Fetch new changes from PostgreSQL logical replication
+# 3. osmdbt-catchup - Update database to new log file
+# 4. osmdbt-create-diff - Generate .osc.gz and state.txt files
+#
+# Additional Features:
 # - Uploads .osc.gz and state.txt files to S3 after integrity verification
 #   * General state.txt (in root directory) - controls replication sequence
 #   * Specific state.txt files (e.g., 870.state.txt for 870.osc.gz)
@@ -69,31 +82,33 @@ run_dir: ${runDirectory}
 EOF
 
 # ============================================================================
-# Function: Initialize replication slot and environment
+# Function: Enable osmdbt replication (creates slot if needed)
 # ============================================================================
-function ensure_replication_slot_exists() {
-    export PGPASSWORD="${POSTGRES_PASSWORD}"
+function enable_osmdbt_replication() {
+    echo "$(date +%F_%H:%M:%S): Enabling osmdbt replication..."
     
+    # Check if replication is already enabled by checking for the slot
+    export PGPASSWORD="${POSTGRES_PASSWORD}"
     local exists=$(psql -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" \
         -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -t -A -c \
         "SELECT count(*) FROM pg_replication_slots WHERE slot_name='$REPLICATION_SLOT';" 2>/dev/null | tr -d '[:space:]')
     
     if [ "$exists" = "1" ]; then
-        echo "$(date +%F_%H:%M:%S): Replication slot '$REPLICATION_SLOT' already exists."
+        echo "$(date +%F_%H:%M:%S): Replication slot '$REPLICATION_SLOT' already exists. Replication should be enabled."
         return 0
     fi
     
-    echo "$(date +%F_%H:%M:%S): Creating replication slot '$REPLICATION_SLOT' with plugin '$REPLICATION_PLUGIN'..."
-    if psql -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" \
-        -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -c \
-        "SELECT * FROM pg_create_logical_replication_slot('$REPLICATION_SLOT', '$REPLICATION_PLUGIN');" >/dev/null 2>&1; then
-        echo "$(date +%F_%H:%M:%S): Successfully created replication slot '$REPLICATION_SLOT'."
+    # Use osmdbt-enable-replication to set up replication properly
+    echo "$(date +%F_%H:%M:%S): Running osmdbt-enable-replication..."
+    if /osmdbt/build/src/osmdbt-enable-replication -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-enable-replication.log"; then
+        echo "$(date +%F_%H:%M:%S): Successfully enabled osmdbt replication."
         return 0
+    else
+        local error_msg="ERROR: Failed to enable osmdbt replication. Check PostgreSQL configuration (wal_level=logical, max_replication_slots >= 1, user with REPLICATION attribute)."
+        echo "$(date +%F_%H:%M:%S): $error_msg"
+        send_slack_message "🚨 ${ENVIROMENT:-production}: $error_msg"
+        return 1
     fi
-    
-    local error_msg="ERROR: Failed to create replication slot '$REPLICATION_SLOT'. The '$REPLICATION_PLUGIN' plugin may not be installed."
-    echo "$error_msg"
-    return 1
 }
 
 # ============================================================================
@@ -401,17 +416,32 @@ function verify_sequence_continuity() {
 }
 
 # ============================================================================
-# Function: Execute osmdbt replication cycle
+# Function: Execute osmdbt replication cycle (following official osmdbt workflow)
+# ============================================================================
+# Official workflow per osmdbt documentation:
+# 1. osmdbt-catchup (process old log files if any)
+# 2. osmdbt-get-log (get new changes)
+# 3. osmdbt-catchup (update database to new log file)
+# 4. osmdbt-create-diff (create OSM change files)
 # ============================================================================
 function execute_replication_cycle() {
-    echo "$(date +%F_%H:%M:%S): Starting replication cycle..."
+    echo "$(date +%F_%H:%M:%S): Starting replication cycle (following osmdbt official workflow)..."
     
     # Clean up any existing lock files
     find "$workingDirectory" -name "replicate.lock" -delete
     find "$runDirectory" -name "*.lock" -delete
     
-    # Execute osmdbt-get-log
-    echo "$(date +%F_%H:%M:%S): Running osmdbt-get-log..."
+    # Step 1: Catch up old log files (if there are complete log files left over from a crash)
+    echo "$(date +%F_%H:%M:%S): Step 1: Running osmdbt-catchup (processing old log files if any)..."
+    if ! /osmdbt/build/src/osmdbt-catchup -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-catchup.log"; then
+        local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-catchup (step 1) failed"
+        echo "$(date +%F_%H:%M:%S): $error_msg"
+        send_slack_message "$error_msg"
+        return 1
+    fi
+    
+    # Step 2: Get new log file with changes
+    echo "$(date +%F_%H:%M:%S): Step 2: Running osmdbt-get-log (fetching new changes)..."
     if ! /osmdbt/build/src/osmdbt-get-log -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-get-log.log"; then
         local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-get-log failed"
         echo "$(date +%F_%H:%M:%S): $error_msg"
@@ -419,8 +449,17 @@ function execute_replication_cycle() {
         return 1
     fi
     
-    # Execute osmdbt-create-diff
-    echo "$(date +%F_%H:%M:%S): Running osmdbt-create-diff..."
+    # Step 3: Catch up database to new log file
+    echo "$(date +%F_%H:%M:%S): Step 3: Running osmdbt-catchup (updating database to new log file)..."
+    if ! /osmdbt/build/src/osmdbt-catchup -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-catchup.log"; then
+        local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-catchup (step 3) failed"
+        echo "$(date +%F_%H:%M:%S): $error_msg"
+        send_slack_message "$error_msg"
+        return 1
+    fi
+    
+    # Step 4: Create OSM diff files from log files
+    echo "$(date +%F_%H:%M:%S): Step 4: Running osmdbt-create-diff (creating OSM change files)..."
     if ! /osmdbt/build/src/osmdbt-create-diff -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-create-diff.log"; then
         local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-create-diff failed"
         echo "$(date +%F_%H:%M:%S): $error_msg"
@@ -501,8 +540,8 @@ function main() {
         exit 1
     fi
     
-    # Ensure replication slot exists
-    if ! ensure_replication_slot_exists; then
+    # Enable osmdbt replication (creates slot and sets up replication)
+    if ! enable_osmdbt_replication; then
         exit 1
     fi
     
@@ -543,5 +582,4 @@ function main() {
     done
 }
 
-# Run main function
 main
