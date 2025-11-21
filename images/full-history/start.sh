@@ -32,30 +32,55 @@ fi
 download_dump_file() {
     echo "Downloading db .dump file from cloud..."
 
+    local temp_dump_file="$dumpFile.tmp"
+    local actual_dump_url=""
+
     if [ "$CLOUDPROVIDER" == "aws" ]; then
         if [[ "$DUMP_CLOUD_URL" == *.txt ]]; then
             temp_txt="$VOLUME_DIR/tmp_dump_url.txt"
             aws s3 cp "$DUMP_CLOUD_URL" "$temp_txt"
 
             # Get the first line (S3 URL to the .dump file)
-            first_line=$(head -n 1 "$temp_txt")
-            echo "Found dump URL in txt: $first_line"
+            actual_dump_url=$(head -n 1 "$temp_txt")
+            echo "Found dump URL in txt: $actual_dump_url"
 
-            aws s3 cp "$first_line" "$dumpFile"
+            aws s3 cp "$actual_dump_url" "$temp_dump_file"
             rm -f "$temp_txt"
 
         else
-            aws s3 cp "$DUMP_CLOUD_URL" "$dumpFile"
+            actual_dump_url="$DUMP_CLOUD_URL"
+            aws s3 cp "$DUMP_CLOUD_URL" "$temp_dump_file"
         fi
 
     elif [ "$CLOUDPROVIDER" == "gcp" ]; then
-        gsutil cp "$DUMP_CLOUD_URL" "$dumpFile"
+        actual_dump_url="$DUMP_CLOUD_URL"
+        gsutil cp "$DUMP_CLOUD_URL" "$temp_dump_file"
     else
         echo "Unsupported CLOUDPROVIDER: $CLOUDPROVIDER"
         exit 1
     fi
 
-    echo "Dump file ready at: $dumpFile"
+    # Check if downloaded file is gzip compressed and decompress if needed
+    # Check by file extension, file type, or magic bytes
+    local is_gzip=false
+    if [[ "$actual_dump_url" == *.gz ]] || [[ "$temp_dump_file" == *.gz ]]; then
+        is_gzip=true
+    elif command -v file >/dev/null 2>&1 && file "$temp_dump_file" 2>/dev/null | grep -q "gzip compressed"; then
+        is_gzip=true
+    elif head -c 2 "$temp_dump_file" 2>/dev/null | od -An -tx1 | grep -q "1f 8b"; then
+        # Check for gzip magic bytes (1f 8b)
+        is_gzip=true
+    fi
+
+    if [ "$is_gzip" = true ]; then
+        echo "Detected gzip compressed dump file, decompressing..."
+        gunzip -c "$temp_dump_file" > "$dumpFile"
+        rm -f "$temp_dump_file"
+    else
+        mv "$temp_dump_file" "$dumpFile"
+    fi
+
+    echo "Dump file ready at: $dumpFile (PostgreSQL 17 compatible)"
 }
 
 # ===============================
