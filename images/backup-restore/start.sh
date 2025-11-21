@@ -47,7 +47,7 @@ backupDB() {
         CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump.gz"
     fi
 
-    # Backup database with pg_dump custom format (-Fc) + gzip (compatible with PostgreSQL 17)
+    # Backup database with pg_dump custom format (-Fc) + gzip
     echo "Backing up DB ${POSTGRES_DB} into ${LOCAL_BACKUP_FILE_GZIP}"
     pg_dump -h "${POSTGRES_HOST}" -U "${POSTGRES_USER}" -Fc "${POSTGRES_DB}" | gzip -9 > "${LOCAL_BACKUP_FILE}.gz"
     cloudStorageOps "${LOCAL_BACKUP_FILE_GZIP}" "${CLOUD_BACKUP_FILE}"
@@ -63,13 +63,8 @@ restoreDB() {
 		pg_isready -h ${POSTGRES_HOST} -p 5432 >/dev/null 2>&2 || continue
 		flag=false
 		wget -O ${RESTORE_FILE} ${RESTORE_URL_FILE}
-		# Check if downloaded file is gzip compressed and decompress if needed
-		if file ${RESTORE_FILE} | grep -q "gzip compressed"; then
-			echo "Decompressing gzip backup file..."
-			gunzip -c ${RESTORE_FILE} > ${RESTORE_FILE}.tmp && mv ${RESTORE_FILE}.tmp ${RESTORE_FILE}
-		fi
-		echo "Restoring ${RESTORE_URL_FILE} in ${POSTGRES_DB} (PostgreSQL 17 compatible)"
-		pg_restore -h ${POSTGRES_HOST} -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" --create --no-owner ${RESTORE_FILE} | tee ${LOG_RESULT_FILE}
+		echo "Restoring ${RESTORE_URL_FILE} in ${POSTGRES_DB}"
+		pg_restore -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} --create --no-owner ${RESTORE_FILE} | tee ${LOG_RESULT_FILE}
 		# aws s3 cp ${LOG_RESULT_FILE} s3://${AWS_S3_BUCKET}/${LOG_RESULT_FILE}
 		echo "Import data to ${POSTGRES_DB} has finished ..."
 	done
