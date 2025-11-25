@@ -34,18 +34,25 @@ WORKDIR $workdir
 RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        gnupg \
+        lsb-release \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         osmosis \
         osmium-tool \
         awscli \
         gsutil \
         azure-cli \
-        postgresql-client \
+        postgresql-client-17 \
         rsync \
         pyosmium \
         tmux \
         zsh \
         git \
-        curl \
         libxml2 \
         libboost-filesystem1.74.0 \
         libboost-program-options1.74.0 \

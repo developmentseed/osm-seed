@@ -1,6 +1,8 @@
 # Docker setup for postgres database instance
 
-The OSM `API server` database - builds off a postgres 10 docker image, and installs custom functions needed by `openstreetmap`.
+The OSM `API server` database - builds off a **PostgreSQL 17** docker image, and installs custom functions needed by `openstreetmap`.
+
+The database includes the **osmdbt plugin v0.9** for logical replication support.
 
 The functions currently are copied over from the `openstreetmap-website` code-base. There should ideally be a better way to do this.
 
@@ -35,3 +37,8 @@ In order to run this container we need environment variables, these can be found
 ```sh
   pg_isready -h 127.0.0.1 -p 5432
 ```
+
+### Installed Components
+
+- **PostgreSQL**: 17
+- **osmdbt plugin**: v0.9 (osm_logical replication plugin)

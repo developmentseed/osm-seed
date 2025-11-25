@@ -32,8 +32,8 @@ spec:
               containerPort: 5432
               protocol: TCP
           env:
-            - name: GET_HOSTS_FROM
-              value: dns
+            # - name: GET_HOSTS_FROM
+            #   value: dns
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-db
             - name: POSTGRES_DB
@@ -47,7 +47,7 @@ spec:
             - name: ENVIRONMENT
               value: {{ .Values.environment }}
             - name: PGDATA
-              value: {{ .Values.db.persistenceDisk.mountPath }}
+              value: {{ .Values.db.env.PGDATA }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
           {{- if .Values.db.postgresqlConfig.enabled }}
@@ -76,8 +76,8 @@ spec:
             periodSeconds: 5
           volumeMounts:
             - name: postgres-storage
-              mountPath: /var/lib/postgresql/data
-              subPath: {{ .Values.db.persistenceDisk.subPath }}
+              mountPath: {{ .Values.db.persistenceDisk.mountPath }}
+              # subPath: {{ .Values.db.persistenceDisk.subPath }}
             - name: shared-memory
               mountPath: /dev/shm
             {{- if .Values.db.postgresqlConfig.enabled }}
