@@ -46,8 +46,12 @@ process_data() {
     # wikidata/update.sh $DATADIR
     chronology/update.sh $DATADIR
     ./update_all.sh $DATADIR
-    # Move database files from subdirectories to main data directory
-    aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/taginfo/$ENVIRONMENT/  --exclude "*" --include "*.db"
+    mv $DATADIR/*.db $DATADIR/
+    mv $DATADIR/*/*.db $DATADIR/
+    # if AWS_S3_BUCKET is set upload data
+    if ! aws s3 ls "s3://$AWS_S3_BUCKET/taginfo" 2>&1 | grep -q 'An error occurred'; then
+        aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/taginfo/  --exclude "*" --include "*.db"
+    fi
 }
 
 # Compress files to download
@@ -105,15 +109,14 @@ download_db_files() {
 
 sync_latest_db_version() {
     while true; do
-        sleep "$INTERVAL_DOWNLOAD_DATA"
         download_db_files "$TAGINFO_DB_BASE_URL"
+        sleep "$INTERVAL_DOWNLOAD_DATA"
     done
 }
 
 start_web() {
     echo "Start...Taginfo web service"
-    download_db_files "$TAGINFO_DB_BASE_URL"
-    cd $WORKDIR/taginfo/web && ./taginfo.rb & sync_latest_db_version
+    cd $WORKDIR/taginfo/web && ./taginfo.rb
 }
 
 ACTION=$1
@@ -121,6 +124,11 @@ ACTION=$1
 [[ ! -z ${OVERWRITE_CONFIG_URL} ]] && wget $OVERWRITE_CONFIG_URL -O /usr/src/app/taginfo-config.json
 updates_source_code
 if [ "$ACTION" = "web" ]; then
+    # Start sync in background if enabled
+    if [ "${FETCH_DB_FILES:-true}" = "true" ] && [ ! -z "$TAGINFO_DB_BASE_URL" ]; then
+        sync_latest_db_version &
+    fi
+    # Start web server in foreground (so the loop can detect if it fails)
     start_web
     elif [ "$ACTION" = "data" ]; then
     process_data

@@ -1,41 +1,43 @@
 # OSM-Seed taginfo
 
-We build a docker container for taginfo software, the container will start the web service and also process required files to create databases.
+Docker container for taginfo that runs the web service and processes PBF files to create databases.
 
 ## Environment Variables
 
-All environment variables are located at [`.env.taginfo.example`](./../../envs/.env.taginfo.example), make a copy and name it as `.env.tagninfo` to use in osm-seed.
+Copy [`.env.taginfo.example`](./../../envs/.env.taginfo.example) to `.env.taginfo` and configure:
 
-- `URL_PLANET_FILE_STATE`: Url to the state file, that contains the URL for the latest planet PBF file. e.g [`state.txt`](https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/state.txt), This is no required in case you set the `URL_PLANET_FILE` env var
+### Planet Files
+- `URL_PLANET_FILE_STATE`: URL to state file with latest planet PBF URL (optional if `URL_PLANET_FILE` is set)
+- `URL_HISTORY_PLANET_FILE_STATE`: URL to state file with latest history PBF URL (optional if `URL_HISTORY_PLANET_FILE` is set)
+- `URL_PLANET_FILE`: Direct URL to planet PBF file
+- `URL_HISTORY_PLANET_FILE`: Direct URL to history PBF file
 
-- `URL_HISTORY_PLANET_FILE_STATE`: Url to the full history state file, that contains the URL for the latest full history planet PBF file. e.g [`state.txt`](https://planet.openhistoricalmap.org.s3.amazonaws.com/planet/full-history/state.txt), This is no required in case you set the `URL_HISTORY_PLANET_FILE` env var
+### Database Configuration
+- `TAGINFO_DB_BASE_URL`: Base URL to download SQLite database files. Downloads: projects-cache.db, selection.db, taginfo-chronology.db, taginfo-db.db, taginfo-history.db, taginfo-languages.db, taginfo-master.db, taginfo-projects.db, taginfo-wiki.db, taginfo-wikidata.db
+  - Example: `https://planet.openhistoricalmap.org.s3.amazonaws.com/taginfo`
 
-- `URL_PLANET_FILE`: URL for the latest planet PBF file.
-- `URL_HISTORY_PLANET_FILE`: URL for the latest full history planet PBF file.
-- `TIME_UPDATE_INTERVAL` Interval time to update the databases, e.g: `50m` = every 50 minutes, `20h` = every 20 hours , `5d` = every 5 days
+- `DOWNLOAD_DB`: Which databases to download (e.g., `languages wiki` or `languages wiki projects chronology`)
 
-The following env vars are required in the instance to update the values at: https://github.com/taginfo/taginfo/blob/master/taginfo-config-example.json
+- `CREATE_DB`: Which databases to create from PBF files (e.g., `db projects` or `db projects chronology`)
+  - `db` requires `URL_PLANET_FILE` or `URL_PLANET_FILE_STATE`
+  - `projects` requires `TAGINFO_PROJECT_REPO`
+  - `chronology` requires `URL_PLANET_FILE` or `URL_HISTORY_PLANET_FILE`
 
-- `OVERWRITE_CONFIG_URL`: config file with the values to update
+### Other
+- `TAGINFO_PROJECT_REPO`: Repository URL for taginfo projects (default: https://github.com/taginfo/taginfo-projects.git)
+- `OVERWRITE_CONFIG_URL`: URL to custom taginfo config JSON file
+- `INTERVAL_DOWNLOAD_DATA`: Interval to sync databases (e.g., `3600` for 1 hour, `7d` for 7 days)
 
-- `DOWNLOAD_DB`: Taginfo instances need 7 Sqlite databases to start up the web service, all of them can be downloaded from https://taginfo.openstreetmap.org/download. Or if you can download only some of them you can pass herec. e.g DOWNLOAD_DB=`languages wiki`, or DOWNLOAD_DB=`languages wiki projects chronology`.
-
-- `CREATE_DB`: If you want process you of data using the PBF files, you can pass the values. eg. CREATE_DB=`db projects` or CREATE_DB=`db projects chronology`.
-  Note: 
-  - Value `db` require to pass `URL_PLANET_FILE` or `URL_PLANET_FILE_STATE` 
-  - Value `projects` require to pass `TAGINFO_PROJECT_REPO` 
-  - Value `chronology` require to pass `URL_PLANET_FILE` or `URL_HISTORY_PLANET_FILE`
-
-#### Running taginfo container
+## Running
 
 ```sh
-    # Docker compose
-    docker-compose run taginfo
+# Docker compose
+docker-compose run taginfo
 
-    # Docker
-    docker run \
-    --env-file ./envs/.env.taginfo \
-    -v ${PWD}/data/taginfo-data:/apps/data/ \
-    --network osm-seed_default \
-    -it osmseed-taginfo:v1
+# Docker
+docker run \
+  --env-file ./envs/.env.taginfo \
+  -v ${PWD}/data/taginfo-data:/usr/src/app/data \
+  --network osm-seed_default \
+  -it osmseed-taginfo:v1
 ```

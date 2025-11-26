@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y \
     jq \
     python3-pip \
     wget \
+    cron \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
