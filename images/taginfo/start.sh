@@ -49,8 +49,8 @@ process_data() {
     mv $DATADIR/*.db $DATADIR/
     mv $DATADIR/*/*.db $DATADIR/
     # if AWS_S3_BUCKET is set upload data
-    if ! aws s3 ls "s3://$AWS_S3_BUCKET/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
-        aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/$ENVIRONMENT/  --exclude "*" --include "*.db"
+    if ! aws s3 ls "s3://$AWS_S3_BUCKET/taginfo/$ENVIRONMENT" 2>&1 | grep -q 'An error occurred'; then
+        aws s3 sync $DATADIR/ s3://$AWS_S3_BUCKET/taginfo/$ENVIRONMENT/  --exclude "*" --include "*.db"
     fi
 }
 
