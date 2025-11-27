@@ -14,7 +14,7 @@ Copy [`.env.taginfo.example`](./../../envs/.env.taginfo.example) to `.env.taginf
 
 ### Database Configuration
 - `TAGINFO_DB_BASE_URL`: Base URL to download SQLite database files. Downloads: projects-cache.db, selection.db, taginfo-chronology.db, taginfo-db.db, taginfo-history.db, taginfo-languages.db, taginfo-master.db, taginfo-projects.db, taginfo-wiki.db, taginfo-wikidata.db
-  - Example: `https://planet.openhistoricalmap.org.s3.amazonaws.com/taginfo`
+  - Example: `https://osm-seed.org.s3.amazonaws.com/taginfo`
 
 - `DOWNLOAD_DB`: Which databases to download (e.g., `languages wiki` or `languages wiki projects chronology`)
 
