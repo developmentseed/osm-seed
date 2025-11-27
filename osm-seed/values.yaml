@@ -1030,6 +1030,7 @@ taginfo:
     ENVIRONMENT: development
     AWS_S3_BUCKET: taginfo
     INTERVAL_DOWNLOAD_DATA: 3600
+    TAGINFO_DB_BASE_URL: https://planet.openhistoricalmap.org.s3.amazonaws.com/taginfo
   resources:
     enabled: false
     requests:

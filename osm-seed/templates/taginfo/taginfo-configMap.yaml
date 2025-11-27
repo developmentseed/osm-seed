@@ -15,5 +15,6 @@ data:
     TIME_UPDATE_INTERVAL: {{ .Values.taginfo.env.TIME_UPDATE_INTERVAL | quote }}
     AWS_S3_BUCKET: {{ .Values.taginfo.env.AWS_S3_BUCKET | quote }}
     ENVIRONMENT: {{ .Values.taginfo.env.ENVIRONMENT | quote }}
-    INTERVAL_DOWNLOAD_DATA: {{ .Values.taginfo.env.INTERVAL_DOWNLOAD_DATA | quote}}
+    INTERVAL_DOWNLOAD_DATA: {{ .Values.taginfo.env.INTERVAL_DOWNLOAD_DATA | quote }}
+    TAGINFO_DB_BASE_URL: {{ .Values.taginfo.env.TAGINFO_DB_BASE_URL | quote }}
 {{- end }}
