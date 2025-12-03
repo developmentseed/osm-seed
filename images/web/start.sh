@@ -99,6 +99,17 @@ start_background_jobs() {
   done
 }
 
+log_and_tail() {
+  local file=$1
+  if [ -f "$file" ]; then
+    echo "Logs from: $file"
+    tail -F "$file" &
+  else
+    echo "⚠️ Log file not found: $file"
+  fi
+}
+
+
 setup_production() {
   setup_env_vars
 
@@ -107,11 +118,8 @@ setup_production() {
     sleep 2
   done
 
-  # echo "Running asset precompilation..."
-  # time bundle exec rake i18n:js:export assets:precompile
-
-  echo "Copying static assets..."
-  cp "$workdir/public/leaflet-ohm-timeslider-v2/assets/"* "$workdir/public/assets/"
+  # Create the /passenger-instreg directory if it doesn’t exist. This is required in newer versions of Passenger.
+  mkdir -p /var/run/passenger-instreg
 
   echo "Running database migrations..."
   time bundle exec rails db:migrate
@@ -121,11 +129,16 @@ setup_production() {
     ./cgimap.sh
   fi
 
-  echo "Starting Apache server..."
-  apachectl -k start -DFOREGROUND &
-  start_background_jobs
-}
+  echo "Logging and tailing logs..."
+  # log_and_tail /var/www/log/production.log
+  # log_and_tail /var/www/log/jobs_work.log
+  log_and_tail /var/log/apache2/error.log
+  log_and_tail /var/log/apache2/access.log
 
+  echo "Starting Apache server..."
+  start_background_jobs &
+  apachectl -k start -DFOREGROUND
+}
 
 setup_development() {
   restore_db
