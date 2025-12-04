@@ -14,7 +14,8 @@ export PLANET_EPOCH_DATE="${PLANET_EPOCH_DATE:-2004-01-01}"
 date=$(date '+%y%m%d_%H%M')
 
 local_planetHistoryPBFFile=$VOLUME_DIR/planet-history-${date}.osm.pbf
-cloud_planetHistoryPBFFile=planet/full-history/planet-history-${date}.osm.pbf
+folder_planetHistoryPBFFile=planet/full-history
+cloud_planetHistoryPBFFile=${folder_planetHistoryPBFFile}/planet-history-${date}.osm.pbf
 stateFile="$VOLUME_DIR/state.txt"
 dumpFile="$VOLUME_DIR/input-latest.dump"
 
@@ -93,12 +94,12 @@ upload_planet_file() {
 		AWS_URL=${AWS_S3_BUCKET/s3:\/\//http:\/\/}
 		echo "$AWS_URL.s3.amazonaws.com/$cloud_planetHistoryPBFFile" > "$stateFile"
 		aws s3 cp "$local_planetHistoryPBFFile" "$AWS_S3_BUCKET/$cloud_planetHistoryPBFFile" --acl public-read
-		aws s3 cp "$stateFile" "$AWS_S3_BUCKET/planet/state.txt" --acl public-read
+		aws s3 cp "$stateFile" "$AWS_S3_BUCKET/${folder_planetHistoryPBFFile}/state.txt" --acl public-read
 
 	elif [ "$CLOUDPROVIDER" == "gcp" ]; then
 		echo "https://storage.cloud.google.com/$GCP_STORAGE_BUCKET/$cloud_planetHistoryPBFFile" > "$stateFile"
 		gsutil cp -a public-read "$local_planetHistoryPBFFile" "$GCP_STORAGE_BUCKET/$cloud_planetHistoryPBFFile"
-		gsutil cp -a public-read "$stateFile" "$GCP_STORAGE_BUCKET/planet/state.txt"
+		gsutil cp -a public-read "$stateFile" "$GCP_STORAGE_BUCKET/${folder_planetHistoryPBFFile}/state.txt"
 	fi
 }
 
