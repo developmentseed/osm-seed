@@ -30,6 +30,11 @@ EOF
     echo "S3 storage configuration set successfully."
   fi
 
+  #### Fix translation files: replace {مجتمع} with {community} to prevent KeyError
+  # This fixes the KeyError when template has Arabic placeholder but hash only has :community
+  find "$workdir/node_modules/osm-community-index/i18n" -name "*.yaml" -type f -exec sed -i 's/{مجتمع}/{community}/g' {} \;
+
+
   #### Initializing an empty $workdir/config/settings.local.yml file, typically used for development settings
   echo "" > $workdir/config/settings.local.yml
 
@@ -76,6 +81,7 @@ EOF
   chmod 400 /var/www/private.pem
   export DOORKEEPER_SIGNING_KEY=$(cat /var/www/private.pem | sed -e '1d;$d' | tr -d '\n')
   sed -i "s#PRIVATE_KEY#${DOORKEEPER_SIGNING_KEY}#" $workdir/config/settings.yml
+
 }
 
 restore_db() {
