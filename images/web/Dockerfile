@@ -26,7 +26,7 @@ RUN apt-get update && \
 
 
 # Clone OSM Website
-ENV OPENSTREETMAP_WEBSITE_GITSHA=82d70369990fb93627cef5e8b014de63e5222b74
+ENV OPENSTREETMAP_WEBSITE_GITSHA=a244e419719ded592fb87e7ffd360f6e462a0d67
 ENV OSM_WEBSITE_URL=https://github.com/openstreetmap/openstreetmap-website/archive/${OPENSTREETMAP_WEBSITE_GITSHA}.zip
 RUN rm -rf $workdir/* && curl -fsSL $OSM_WEBSITE_URL -o /tmp/openstreetmap-website.zip && \
     unzip /tmp/openstreetmap-website.zip -d /tmp && \
