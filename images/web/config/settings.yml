@@ -148,15 +148,15 @@ wikimedia_commons_url: "https://commons.wikimedia.org/wiki/"
 #github_auth_secret: ""
 #microsoft_auth_id: ""
 #microsoft_auth_secret: ""
-wikipedia_auth_id: ""
-wikipedia_auth_secret: ""
+# wikipedia_auth_id: ""
+# wikipedia_auth_secret: ""
 #apple_auth_id: ""
 #apple_team_id: ""
 #apple_key_id: ""
 #apple_private_key: ""
-openstreetmap_auth_id: ""
-openstreetmap_auth_secret: ""
-openstreetmap_auth_scopes: ["read_prefs"]
+# openstreetmap_auth_id: ""
+# openstreetmap_auth_secret: ""
+# openstreetmap_auth_scopes: ["read_prefs"]
 # Thunderforest authentication details
 #thunderforest_key: ""
 # Tracestrack authentication details
@@ -168,10 +168,10 @@ csp_enforce: false
 # URL for reporting Content-Security-Policy violations
 #csp_report_url: ""
 # Storage services to use in production mode
-avatar_storage: "local" # TODO: Change to S3
-trace_file_storage: "local" # TODO: Change to S3
-trace_image_storage: "local" # TODO: Change to S3
-trace_icon_storage: "local" # TODO: Change to S3
+avatar_storage: "s3" # TODO: Change to S3
+trace_file_storage: "s3" # TODO: Change to S3
+trace_image_storage: "s3" # TODO: Change to S3
+trace_icon_storage: "s3" # TODO: Change to S3
 # Root URL for storage services
 # avatar_storage_url:
 # trace_image_storage_url:

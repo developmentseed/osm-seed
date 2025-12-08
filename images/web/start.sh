@@ -42,6 +42,10 @@ EOF
   sed -i -e 's/^server_protocol: ".*"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/settings.yml
   sed -i -e 's/^server_url: ".*"/server_url: "'$SERVER_URL'"/g' $workdir/config/settings.yml
 
+  #### Extract domain from SERVER_URL and replace in production.conf
+  SERVER_DOMAIN=$(echo "$SERVER_URL" | sed -e 's|^[^/]*//||' -e 's|^www\.||' -e 's|/.*$||')
+  sed -i -e "s/SERVER_DOMAIN_PLACEHOLDER/$SERVER_DOMAIN/g" /etc/apache2/sites-available/production.conf
+
   ### Setting up website status
   sed -i -e 's/^status: ".*"/status: "'$WEBSITE_STATUS'"/g' $workdir/config/settings.yml
 
@@ -82,7 +86,7 @@ EOF
   export DOORKEEPER_SIGNING_KEY=$(cat /var/www/private.pem | sed -e '1d;$d' | tr -d '\n')
   sed -i "s#PRIVATE_KEY#${DOORKEEPER_SIGNING_KEY}#" $workdir/config/settings.yml
 
-  sed -i '252s/\(\[\)/&.compact/' "$workdir/app/controllers/application_controller.rb"
+  # sed -i '252s/\(\[\)/&.compact/' "$workdir/app/controllers/application_controller.rb"
 
 }
 
