@@ -82,6 +82,8 @@ EOF
   export DOORKEEPER_SIGNING_KEY=$(cat /var/www/private.pem | sed -e '1d;$d' | tr -d '\n')
   sed -i "s#PRIVATE_KEY#${DOORKEEPER_SIGNING_KEY}#" $workdir/config/settings.yml
 
+  sed -i '252s/\(\[\)/&.compact/' "$workdir/app/controllers/application_controller.rb"
+
 }
 
 restore_db() {
