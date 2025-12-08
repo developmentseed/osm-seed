@@ -39,11 +39,13 @@ EOF
   echo "" > $workdir/config/settings.local.yml
 
   #### Setting up server_url and server_protocol
+  # Remove trailing slash from SERVER_URL to prevent double slashes in generated URLs
+  SERVER_URL_CLEAN=$(echo "$SERVER_URL" | sed 's|/$||')
   sed -i -e 's/^server_protocol: ".*"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/settings.yml
-  sed -i -e 's/^server_url: ".*"/server_url: "'$SERVER_URL'"/g' $workdir/config/settings.yml
+  sed -i -e 's/^server_url: ".*"/server_url: "'$SERVER_URL_CLEAN'"/g' $workdir/config/settings.yml
 
   #### Extract domain from SERVER_URL and replace in production.conf
-  SERVER_DOMAIN=$(echo "$SERVER_URL" | sed -e 's|^[^/]*//||' -e 's|^www\.||' -e 's|/.*$||')
+  SERVER_DOMAIN=$(echo "$SERVER_URL_CLEAN" | sed -e 's|^[^/]*//||' -e 's|^www\.||' -e 's|/.*$||')
   sed -i -e "s/SERVER_DOMAIN_PLACEHOLDER/$SERVER_DOMAIN/g" /etc/apache2/sites-available/production.conf
 
   ### Setting up website status
@@ -142,8 +144,8 @@ setup_production() {
   fi
 
   echo "Logging and tailing logs..."
-  # log_and_tail /var/www/log/production.log
-  # log_and_tail /var/www/log/jobs_work.log
+  log_and_tail /var/www/log/production.log
+  log_and_tail /var/www/log/jobs_work.log
   log_and_tail /var/log/apache2/error.log
   log_and_tail /var/log/apache2/access.log
 
