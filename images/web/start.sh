@@ -39,7 +39,6 @@ EOF
   echo "" > $workdir/config/settings.local.yml
 
   #### Setting up server_url and server_protocol
-  # Remove trailing slash from SERVER_URL to prevent double slashes in generated URLs
   SERVER_URL_CLEAN=$(echo "$SERVER_URL" | sed 's|/$||')
   sed -i -e 's/^server_protocol: ".*"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/settings.yml
   sed -i -e 's/^server_url: ".*"/server_url: "'$SERVER_URL_CLEAN'"/g' $workdir/config/settings.yml
@@ -87,8 +86,6 @@ EOF
   chmod 400 /var/www/private.pem
   export DOORKEEPER_SIGNING_KEY=$(cat /var/www/private.pem | sed -e '1d;$d' | tr -d '\n')
   sed -i "s#PRIVATE_KEY#${DOORKEEPER_SIGNING_KEY}#" $workdir/config/settings.yml
-
-  # sed -i '252s/\(\[\)/&.compact/' "$workdir/app/controllers/application_controller.rb"
 
 }
 
