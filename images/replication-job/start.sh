@@ -100,10 +100,16 @@ function enable_osmdbt_replication() {
     
     # Use osmdbt-enable-replication to set up replication properly
     echo "$(date +%F_%H:%M:%S): Running osmdbt-enable-replication..."
-    if /osmdbt/build/src/osmdbt-enable-replication -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-enable-replication.log"; then
+    local log_file="${logDirectory}/osmdbt-enable-replication.log"
+    if /osmdbt/build/src/osmdbt-enable-replication -c "$osmdbtConfig" 2>&1 | tee -a "$log_file"; then
         echo "$(date +%F_%H:%M:%S): Successfully enabled osmdbt replication."
         return 0
     else
+        # Check if error is "already exists" - this is acceptable
+        if grep -qi "already exists" "$log_file" 2>/dev/null; then
+            echo "$(date +%F_%H:%M:%S): Replication slot '$REPLICATION_SLOT' already exists. Replication should be enabled."
+            return 0
+        fi
         local error_msg="ERROR: Failed to enable osmdbt replication. Check PostgreSQL configuration (wal_level=logical, max_replication_slots >= 1, user with REPLICATION attribute)."
         echo "$(date +%F_%H:%M:%S): $error_msg"
         send_slack_message "🚨 ${ENVIROMENT:-production}: $error_msg"
