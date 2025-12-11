@@ -1,6 +1,6 @@
 # The server protocol and host
 server_protocol: "http"
-server_url: "openstreetmap.example.com" 
+server_url: "openstreetmap.example.com"
 # Publisher
 #publisher_url: ""
 # The generator
@@ -8,6 +8,8 @@ generator: "OpenStreetMap server"
 copyright_owner: "OpenStreetMap and contributors"
 attribution_url: "http://www.openstreetmap.org/copyright"
 license_url: "http://opendatacommons.org/licenses/odbl/1-0/"
+# Legal email address
+legal_email: "legal@openstreetmap.org"
 # Support email address
 support_email: "openstreetmap@example.com"
 # Sender addresses for emails
@@ -102,13 +104,13 @@ default_legale: GB
 # Location of data for attachments
 attachments_dir: ":rails_root/public/attachments"
 # Log file to use
-#log_path: ""
+log_path: "/var/www/log/production.log"
 # Log file to use for logstash
 #logstash_path: ""
 # List of memcache servers to use for caching
 memcache_servers: []
 # URL of Nominatim instance to use for geocoding
-nominatim_url: "https://nominatim-api.openstreetmap.org/"
+nominatim_url: "https://nominatim.openstreetmap.org/"
 # Default editor
 default_editor: "id"
 # OAuth application for the web site
@@ -131,6 +133,11 @@ overpass_credentials: false
 graphhopper_url: "https://graphhopper.com/api/1/route"
 fossgis_osrm_url: "https://routing.openstreetmap.de/"
 fossgis_valhalla_url: "https://valhalla1.openstreetmap.de/route"
+
+# Endpoints for Wikimedia integration
+wikidata_api_url: "https://www.wikidata.org/w/api.php"
+wikimedia_commons_url: "https://commons.wikimedia.org/wiki/"
+
 # External authentication credentials
 #google_auth_id: ""
 #google_auth_secret: ""
@@ -141,8 +148,15 @@ fossgis_valhalla_url: "https://valhalla1.openstreetmap.de/route"
 #github_auth_secret: ""
 #microsoft_auth_id: ""
 #microsoft_auth_secret: ""
-#wikipedia_auth_id: ""
-#wikipedia_auth_secret: ""
+# wikipedia_auth_id: ""
+# wikipedia_auth_secret: ""
+#apple_auth_id: ""
+#apple_team_id: ""
+#apple_key_id: ""
+#apple_private_key: ""
+# openstreetmap_auth_id: ""
+# openstreetmap_auth_secret: ""
+# openstreetmap_auth_scopes: ["read_prefs"]
 # Thunderforest authentication details
 #thunderforest_key: ""
 # Tracestrack authentication details
@@ -154,10 +168,10 @@ csp_enforce: false
 # URL for reporting Content-Security-Policy violations
 #csp_report_url: ""
 # Storage services to use in production mode
-avatar_storage: "local"
-trace_file_storage: "local"
-trace_image_storage: "local"
-trace_icon_storage: "local"
+avatar_storage: "s3" # TODO: Change to S3
+trace_file_storage: "s3" # TODO: Change to S3
+trace_image_storage: "s3" # TODO: Change to S3
+trace_icon_storage: "s3" # TODO: Change to S3
 # Root URL for storage services
 # avatar_storage_url:
 # trace_image_storage_url:
@@ -185,3 +199,5 @@ doorkeeper_signing_key: |
   -----BEGIN PRIVATE KEY-----
   PRIVATE_KEY
   -----END PRIVATE KEY-----
+
+mastodon_url: "https://mapstodon.space/@osm"

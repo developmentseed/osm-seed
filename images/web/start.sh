@@ -30,12 +30,22 @@ EOF
     echo "S3 storage configuration set successfully."
   fi
 
+  #### Fix translation files: replace {مجتمع} with {community} to prevent KeyError
+  # This fixes the KeyError when template has Arabic placeholder but hash only has :community
+  find "$workdir/node_modules/osm-community-index/i18n" -name "*.yaml" -type f -exec sed -i 's/{مجتمع}/{community}/g' {} \;
+
+
   #### Initializing an empty $workdir/config/settings.local.yml file, typically used for development settings
   echo "" > $workdir/config/settings.local.yml
 
   #### Setting up server_url and server_protocol
+  SERVER_URL_CLEAN=$(echo "$SERVER_URL" | sed 's|/$||')
   sed -i -e 's/^server_protocol: ".*"/server_protocol: "'$SERVER_PROTOCOL'"/g' $workdir/config/settings.yml
-  sed -i -e 's/^server_url: ".*"/server_url: "'$SERVER_URL'"/g' $workdir/config/settings.yml
+  sed -i -e 's/^server_url: ".*"/server_url: "'$SERVER_URL_CLEAN'"/g' $workdir/config/settings.yml
+
+  #### Extract domain from SERVER_URL and replace in production.conf
+  SERVER_DOMAIN=$(echo "$SERVER_URL_CLEAN" | sed -e 's|^[^/]*//||' -e 's|^www\.||' -e 's|/.*$||')
+  sed -i -e "s/SERVER_DOMAIN_PLACEHOLDER/$SERVER_DOMAIN/g" /etc/apache2/sites-available/production.conf
 
   ### Setting up website status
   sed -i -e 's/^status: ".*"/status: "'$WEBSITE_STATUS'"/g' $workdir/config/settings.yml
@@ -76,6 +86,7 @@ EOF
   chmod 400 /var/www/private.pem
   export DOORKEEPER_SIGNING_KEY=$(cat /var/www/private.pem | sed -e '1d;$d' | tr -d '\n')
   sed -i "s#PRIVATE_KEY#${DOORKEEPER_SIGNING_KEY}#" $workdir/config/settings.yml
+
 }
 
 restore_db() {
@@ -99,6 +110,17 @@ start_background_jobs() {
   done
 }
 
+log_and_tail() {
+  local file=$1
+  if [ -f "$file" ]; then
+    echo "Logs from: $file"
+    tail -F "$file" &
+  else
+    echo "⚠️ Log file not found: $file"
+  fi
+}
+
+
 setup_production() {
   setup_env_vars
 
@@ -107,11 +129,8 @@ setup_production() {
     sleep 2
   done
 
-  # echo "Running asset precompilation..."
-  # time bundle exec rake i18n:js:export assets:precompile
-
-  echo "Copying static assets..."
-  cp "$workdir/public/leaflet-ohm-timeslider-v2/assets/"* "$workdir/public/assets/"
+  # Create the /passenger-instreg directory if it doesn’t exist. This is required in newer versions of Passenger.
+  mkdir -p /var/run/passenger-instreg
 
   echo "Running database migrations..."
   time bundle exec rails db:migrate
@@ -121,11 +140,16 @@ setup_production() {
     ./cgimap.sh
   fi
 
-  echo "Starting Apache server..."
-  apachectl -k start -DFOREGROUND &
-  start_background_jobs
-}
+  echo "Logging and tailing logs..."
+  log_and_tail /var/www/log/production.log
+  log_and_tail /var/www/log/jobs_work.log
+  log_and_tail /var/log/apache2/error.log
+  log_and_tail /var/log/apache2/access.log
 
+  echo "Starting Apache server..."
+  start_background_jobs &
+  apachectl -k start -DFOREGROUND
+}
 
 setup_development() {
   restore_db
