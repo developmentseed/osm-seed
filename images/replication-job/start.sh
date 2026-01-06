@@ -466,7 +466,7 @@ function execute_replication_cycle() {
     
     # Step 4: Create OSM diff files from log files
     echo "$(date +%F_%H:%M:%S): Step 4: Running osmdbt-create-diff (creating OSM change files)..."
-    if ! /osmdbt/build/src/osmdbt-create-diff -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-create-diff.log"; then
+    if ! /osmdbt/build/src/osmdbt-create-diff --quiet --with-comment --max-changes=50000 -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-create-diff.log"; then
         local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-create-diff failed"
         echo "$(date +%F_%H:%M:%S): $error_msg"
         send_slack_message "$error_msg"
