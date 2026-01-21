@@ -12,13 +12,15 @@ jobs:
       contents: write
       packages: write
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GHCR_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.GHCR_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
     - name: Setup python
       uses: actions/setup-python@v2
       with:
@@ -39,7 +41,7 @@ jobs:
         echo "SHORT_GITHUB_SHA=$SHORT_GITHUB_SHA" >> $GITHUB_ENV
     - name: Run Chartpress
       env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GHCR_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
       run: |
           if [[ $GIT_BRANCH_NAME = "main" ]]

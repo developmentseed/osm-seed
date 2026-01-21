@@ -46,5 +46,5 @@ charts:
       valuesPath: osmchaDb.image
     planet-files:
       valuesPath: planetFiles.image
-    # cgimap:
-    #   valuesPath: cgimap.image
+    cgimap:
+      valuesPath: cgimap.image
