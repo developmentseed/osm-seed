@@ -1,9 +1,9 @@
 charts:
 - name: osm-seed
-  imagePrefix: developmentseed/osmseed-
+  imagePrefix: ghcr.io/osm-seed/
   repo:
-    git: developmentseed/osm-seed-chart
-    published: https://devseed.com/osm-seed-chart
+    git: osm-seed/osm-seed-chart
+    published: https://github.com/osm-seed/osm-seed-chart
     
   images:
     web:

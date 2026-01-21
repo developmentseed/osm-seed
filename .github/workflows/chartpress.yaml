@@ -1,21 +1,27 @@
 name: Chartpress Publish
-on: push
+on:
+  push:
+    branches:
+      - 'main'
+      - 'develop'
+      - 'packages'
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v1
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Setup python
       uses: actions/setup-python@v2
       with:
         python-version: '3.7'
     - name: Setup git
-      run: git config --global user.email "noreply@developmentseed.org" && git config --global user.name "Github Action"
+      run: git config --global user.email "noreply@osm-seed.org" && git config --global user.name "Github Action"
     - name: Install Chartpress and some python modules
       run: |
         pip install -v chartpress==2.3.0 && pip install six && pip install yq
