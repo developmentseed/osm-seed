@@ -49,7 +49,7 @@ jobs:
 
     - name: Get changed images
       id: changed-files
-      uses: tj-actions/changed-files@v41
+      uses: tj-actions/changed-files@v46
       with:
         files: images/**
         dir_names: true
