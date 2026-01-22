@@ -22,10 +22,11 @@ RUN git clone https://github.com/zerebubuth/openstreetmap-cgimap.git /app \
 && sed -i 's#http://www.openstreetmap.org/copyright#https://github.com/osm-seed#g' include/cgimap/output_formatter.hpp
 # Compile, install and remove source
 RUN mkdir build && cd build && \
-    CXXFLAGS="-flto=auto -ffat-lto-objects -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2" cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release && \
-    make -j${nproc} && \
+    CXXFLAGS="-flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2" \
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build . -j2 && \
     ctest --output-on-failure && \
-    cmake --build . -t package
+    cmake --build . --target package
 
 FROM debian:bookworm-slim
 
