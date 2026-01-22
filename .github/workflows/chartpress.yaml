@@ -4,7 +4,6 @@ on:
     branches:
       - 'main'
       - 'develop'
-      - 'packages'
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -54,12 +53,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GHCR_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
       run: |
-        if [[ $GIT_BRANCH_NAME = "main" ]]
-        then
-            chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}
-        elif [[ $GIT_BRANCH_NAME = "develop" ]]
-        then
-            chartpress --push --publish-chart --tag ${OSM_SEED_VERSION}-dev.h$SHORT_GITHUB_SHA
-        else
-            chartpress --push --publish-chart
-        fi
+        chartpress --push --publish-chart
