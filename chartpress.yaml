@@ -4,47 +4,68 @@ charts:
   repo:
     git: osm-seed/osm-seed-chart
     published: https://github.com/osm-seed/osm-seed-chart
-    
+
   images:
     web:
       valuesPath: web.image
+      contextPath: images/web
     db:
       valuesPath: db.image
+      contextPath: images/db
     backup-restore:
       valuesPath: dbBackupRestore.image
+      contextPath: images/backup-restore
     planet-dump:
       valuesPath: planetDump.image
+      contextPath: images/planet-dump
     full-history:
       valuesPath: fullHistory.image
+      contextPath: images/full-history
     replication-job:
       valuesPath: replicationJob.image
+      contextPath: images/replication-job
     populate-apidb:
       valuesPath: populateApidb.image
+      contextPath: images/populate-apidb
     osm-processor:
       valuesPath: osmProcessor.image
+      contextPath: images/osm-processor
     tiler-db:
       valuesPath: tilerDb.image
+      contextPath: images/tiler-db
     tiler-imposm:
       valuesPath: tilerImposm.image
+      contextPath: images/tiler-imposm
     tiler-server:
       valuesPath: tilerServer.image
+      contextPath: images/tiler-server
     tasking-manager-api:
       valuesPath: tmApi.image
+      contextPath: images/tasking-manager-api
     nominatim:
       valuesPath: nominatimApi.image
+      contextPath: images/nominatim
     overpass-api:
       valuesPath: overpassApi.image
+      contextPath: images/overpass-api
     taginfo:
       valuesPath: taginfo.image
+      contextPath: images/taginfo
     osm-simple-metrics:
       valuesPath: osmSimpleMetrics.image
+      contextPath: images/osm-simple-metrics
     changeset-replication-job:
       valuesPath: changesetReplicationJob.image
+      contextPath: images/changeset-replication-job
     osmcha-web:
       valuesPath: osmchaWeb.image
+      contextPath: images/osmcha-web
     osmcha-db:
       valuesPath: osmchaDb.image
+      contextPath: images/osmcha-db
     planet-files:
       valuesPath: planetFiles.image
+      contextPath: images/planet-files
     cgimap:
       valuesPath: cgimap.image
+      contextPath: images/cgimap
