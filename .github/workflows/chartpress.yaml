@@ -4,6 +4,7 @@ on:
     branches:
       - 'main'
       - 'develop'
+      - 'optimize_build_images'
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -47,46 +48,11 @@ jobs:
         echo "GIT_BRANCH_NAME=$GIT_BRANCH_NAME" >> $GITHUB_ENV
         echo "OSM_SEED_VERSION=$OSM_SEED_VERSION" >> $GITHUB_ENV
 
-    - name: Get changed images
-      id: changed-files
-      uses: tj-actions/changed-files@v41
-      with:
-        files: images/**
-        dir_names: true
-        dir_names_max_depth: 2
-        json: true
-        escape_json: false
-
-    - name: Build skip-build arguments
-      id: skip-build
-      run: |
-        # Get all images defined in chartpress.yaml
-        ALL_IMAGES=$(yq -r '.charts[0].images | keys | .[]' chartpress.yaml)
-        
-        # Get changed directories from tj-actions/changed-files (format: ["images/web", "images/db"])
-        CHANGED_DIRS='${{ steps.changed-files.outputs.all_changed_files }}'
-        
-        # Extract image names from directories (e.g., "images/web" -> "web")
-        CHANGED_IMAGES=$(echo "$CHANGED_DIRS" | jq -r '.[] | sub("images/"; "")')
-        
-        # Determine which images to skip
-        SKIP_ARGS=""
-        for image in $ALL_IMAGES; do
-          if ! echo "$CHANGED_IMAGES" | grep -qxw "$image"; then
-            SKIP_ARGS="$SKIP_ARGS --skip-build $image"
-            echo "Skipping build for: $image"
-          else
-            echo "Directly changed and will be built: $image"
-          fi
-        done
-        
-        echo "skip_build_args=$SKIP_ARGS" >> $GITHUB_OUTPUT
-
     - name: Run Chartpress
       env:
         GITHUB_TOKEN: ${{ secrets.GHCR_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
       run: |
-        SKIP_ARGS="${{ steps.skip-build.outputs.skip_build_args }}"
-        echo "Executing: chartpress --push --publish-chart $SKIP_ARGS"
-        chartpress --push --publish-chart $SKIP_ARGS --builder docker-buildx
+        # Chartpress automatically detects changes via git and only builds/pushes what's needed
+        # With fetch-depth: 0, it can see the full git history to determine which images changed
+        chartpress --push --publish-chart --builder docker-buildx
 
