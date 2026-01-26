@@ -1,10 +1,6 @@
 name: Chartpress Publish
 on:
   push:
-    branches:
-      - 'main'
-      - 'develop'
-      - 'optimize_build_images'
 jobs:
   build:
     runs-on: ubuntu-22.04
