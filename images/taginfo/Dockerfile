@@ -100,10 +100,16 @@ RUN git clone --depth 1 --branch ${TAGINFO_VERSION} https://github.com/taginfo/t
     cd $workdir/taginfo && \
     bundle config set --local deployment 'true' && \
     bundle config set --local without 'development test' && \
-    bundle install
+    bundle config set --local frozen false && \
+    bundle add webrick && \
+    bundle config set --local frozen true && \
+    bundle install --verbose && \
+    bundle check && \
+    bundle exec ruby -e "require 'sqlite3'; puts 'sqlite3 gem verified'" && \
+    bundle exec ruby -e "require 'webrick'; puts 'webrick gem verified'"
 
 # Install additional Ruby gems needed
-RUN gem install --no-document json rack-contrib
+RUN gem install --no-document json rack-contrib thin
 
 # Create data directories
 RUN mkdir -p $workdir/data $workdir/logs
@@ -112,13 +118,5 @@ RUN mkdir -p $workdir/data $workdir/logs
 COPY config/taginfo-config.json $workdir/
 COPY start.sh $workdir/
 
-RUN chmod +x $workdir/start.sh
-
-# Expose port
-EXPOSE 80
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:80/ || exit 1
 
 CMD ["./start.sh"]

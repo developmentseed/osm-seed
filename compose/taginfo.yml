@@ -1,4 +1,3 @@
-version: '3'
 services:
   # #####################################################
   # ## Taginfo section
@@ -9,9 +8,10 @@ services:
       context: ../images/taginfo
       dockerfile: Dockerfile
     ports:
-      - '8000:80'
+      - '8001:80'
     volumes:
       - ../data/taginfo-data:/usr/src/app/data
+      - ../images/taginfo/start.sh:/usr/src/app/start.sh
     command: >
       /bin/bash -c "/usr/src/app/start.sh web"
 
