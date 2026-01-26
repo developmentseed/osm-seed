@@ -35,7 +35,7 @@ spec:
               command:
               - /bin/bash
               - -c
-              - /liveness.sh
+              - ./liveness.sh
             initialDelaySeconds: 30
             timeoutSeconds: 5
             periodSeconds: 10
