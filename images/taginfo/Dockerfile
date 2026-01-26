@@ -98,10 +98,16 @@ COPY --from=builder ${workdir}/taginfo-tools ${workdir}/taginfo-tools
 # Clone taginfo and install dependencies
 RUN git clone --depth 1 --branch ${TAGINFO_VERSION} https://github.com/taginfo/taginfo.git $workdir/taginfo && \
     cd $workdir/taginfo && \
+    # Add webrick to Gemfile if not already present (needed for bundle exec)
+    grep -q "gem 'webrick'" Gemfile || echo "gem 'webrick'" >> Gemfile && \
+    # Update Gemfile.lock first (without frozen mode) to include webrick
+    bundle install --verbose && \
+    # Now enable frozen mode for production
     bundle config set --local deployment 'true' && \
     bundle install --verbose && \
     bundle check && \
-    bundle exec ruby -e "require 'sqlite3'; puts 'sqlite3 gem verified'"
+    bundle exec ruby -e "require 'sqlite3'; puts 'sqlite3 gem verified'" && \
+    bundle exec ruby -e "require 'webrick'; puts 'webrick gem verified'"
 
 # Install additional Ruby gems needed globally (for scripts that don't use bundle)
 RUN gem install --no-document json rack-contrib thin sqlite3 webrick
@@ -114,4 +120,4 @@ COPY config/taginfo-config.json $workdir/
 COPY start.sh $workdir/
 
 
-CMD ["./start.sh"]
+CMD ["./start.sh", "web"]
