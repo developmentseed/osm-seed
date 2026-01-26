@@ -99,17 +99,12 @@ COPY --from=builder ${workdir}/taginfo-tools ${workdir}/taginfo-tools
 RUN git clone --depth 1 --branch ${TAGINFO_VERSION} https://github.com/taginfo/taginfo.git $workdir/taginfo && \
     cd $workdir/taginfo && \
     bundle config set --local deployment 'true' && \
-    bundle config set --local without 'development test' && \
-    bundle config set --local frozen false && \
-    bundle add webrick && \
-    bundle config set --local frozen true && \
     bundle install --verbose && \
     bundle check && \
-    bundle exec ruby -e "require 'sqlite3'; puts 'sqlite3 gem verified'" && \
-    bundle exec ruby -e "require 'webrick'; puts 'webrick gem verified'"
+    bundle exec ruby -e "require 'sqlite3'; puts 'sqlite3 gem verified'"
 
-# Install additional Ruby gems needed
-RUN gem install --no-document json rack-contrib thin
+# Install additional Ruby gems needed globally (for scripts that don't use bundle)
+RUN gem install --no-document json rack-contrib thin sqlite3 webrick
 
 # Create data directories
 RUN mkdir -p $workdir/data $workdir/logs
