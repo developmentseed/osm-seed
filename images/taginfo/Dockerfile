@@ -1,10 +1,16 @@
-FROM ruby:3.0-slim
+# Build stage for taginfo-tools
+FROM ruby:3.2-slim AS builder
 
+ARG TAGINFO_TOOLS_VERSION=osmorg-taginfo-live
 ARG workdir=/usr/src/app
+
 WORKDIR $workdir
 
-RUN apt-get update && apt-get install -y \
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
     cmake \
+    git \
     libbz2-dev \
     libexpat1-dev \
     libgd-dev \
@@ -12,66 +18,107 @@ RUN apt-get update && apt-get install -y \
     libosmium2-dev \
     libprotozero-dev \
     libsqlite3-dev \
-    make \
     zlib1g-dev \
-    curl \
-    sqlite3 \
-    sqlite3-pcre \
-    passenger \
-    libapache2-mod-passenger \
-    libreadline-dev \
-    tcl \
-    git \
-    jq \
-    python3-pip \
-    wget \
-    cron \
-    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools && \
+# Clone and build taginfo-tools
+RUN git clone --depth 1 --branch ${TAGINFO_TOOLS_VERSION} https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools && \
     cd $workdir/taginfo-tools && \
-    git checkout 24412e65740752f8b962bd1cf3baf350d0672cc7 && \
     git submodule update --init && \
     mkdir build && cd build && \
-    cmake .. && make
-RUN gem install json rack-contrib puma sinatra:'<3' sinatra-r18n:'5.0.2'
+    cmake -DCMAKE_BUILD_TYPE=Release .. && \
+    make -j$(nproc)
 
-# Install AWS CLI
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
-    rm awscliv2.zip
+# Final stage
+FROM ruby:3.2-slim
 
-ENV TAGINFO_GITSHA=4a7dadc864ab4400afaf8a34876d05c58aa4e64a
-RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo && \
-    cd $workdir/taginfo && \
-    git checkout $TAGINFO_GITSHA && \
-    bundle install
-
-# Download and prepare uWSGI
-RUN wget http://projects.unbit.it/downloads/uwsgi-latest.tar.gz \
-    && tar zxvf uwsgi-latest.tar.gz \
-    && rm uwsgi-latest.tar.gz && \
-    mv $(ls | grep uwsgi-) uwsgi-dir && \
-    cd uwsgi-dir && \
-    make PROFILE=nolang && \
-    PYTHON=python3 UWSGI_PROFILE_OVERRIDE="ssl=true,rack=true,http=true" make
-
-# # Set non-root user
-# RUN groupadd -r taginfo && useradd -m -r -g taginfo taginfo
-# RUN chown -R taginfo:taginfo $workdir
-# RUN chmod -R 777 $workdir
-# USER taginfo
-
-# RUN chown -R www-data: $workdir
+ARG TAGINFO_VERSION=osmorg-taginfo-live
+ARG workdir=/usr/src/app
 
 WORKDIR $workdir
 
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Runtime libraries
+    libbz2-1.0 \
+    libexpat1 \
+    libgd3 \
+    libicu-dev \
+    libsqlite3-0 \
+    zlib1g \
+    # Tools needed at runtime
+    curl \
+    git \
+    jq \
+    sqlite3 \
+    wget \
+    cron \
+    # Build tools for gems with native extensions
+    build-essential \
+    libsqlite3-dev \
+    libreadline-dev \
+    pkg-config \
+    # Python
+    python3-pip \
+    # uWSGI with Ruby/Rack support
+    uwsgi \
+    uwsgi-plugin-ruby \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install AWS CLI with retry logic and increased timeout
+RUN pip3 install --no-cache-dir --default-timeout=300 --retries 5 awscli --break-system-packages || \
+    (sleep 10 && pip3 install --no-cache-dir --default-timeout=300 --retries 5 awscli --break-system-packages)
+
+# Build and install PCRE (required for sqlite3-pcre)
+# PCRE3 is no longer available in Debian 12+, so we compile it from source
+RUN wget https://sourceforge.net/projects/pcre/files/pcre/8.45/pcre-8.45.tar.gz/download -O /tmp/pcre-8.45.tar.gz && \
+    cd /tmp && tar -xzf pcre-8.45.tar.gz && \
+    cd pcre-8.45 && \
+    ./configure --prefix=/usr/local --enable-utf8 --enable-unicode-properties && \
+    make -j$(nproc) && \
+    make install && \
+    ldconfig && \
+    rm -rf /tmp/pcre*
+
+# Build and install sqlite3-pcre extension
+# Compile directly with PCRE libraries we built
+RUN git clone --depth 1 https://github.com/ralight/sqlite3-pcre.git /tmp/sqlite3-pcre && \
+    cd /tmp/sqlite3-pcre && \
+    cc -shared -o pcre.so -fPIC -W pcre.c \
+       -I/usr/local/include \
+       -L/usr/local/lib \
+       -lpcre && \
+    mkdir -p /usr/lib/sqlite3 && \
+    cp pcre.so /usr/lib/sqlite3/ && \
+    rm -rf /tmp/sqlite3-pcre
+
+# Copy built taginfo-tools from builder stage
+COPY --from=builder ${workdir}/taginfo-tools ${workdir}/taginfo-tools
+
+# Clone taginfo and install dependencies
+RUN git clone --depth 1 --branch ${TAGINFO_VERSION} https://github.com/taginfo/taginfo.git $workdir/taginfo && \
+    cd $workdir/taginfo && \
+    bundle config set --local deployment 'true' && \
+    bundle config set --local without 'development test' && \
+    bundle install
+
+# Install additional Ruby gems needed
+RUN gem install --no-document json rack-contrib
+
+# Create data directories
+RUN mkdir -p $workdir/data $workdir/logs
+
 # Copy configuration files and scripts
 COPY config/taginfo-config.json $workdir/
-COPY start.sh .
+COPY start.sh $workdir/
 
-# Expose port and set default command
+RUN chmod +x $workdir/start.sh
+
+# Expose port
 EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:80/ || exit 1
+
 CMD ["./start.sh"]
