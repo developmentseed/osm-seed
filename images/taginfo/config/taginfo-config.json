@@ -1,14 +1,17 @@
 {
     "instance": {
-        "url": "http://localhost:80",
-        "name": "OpenStreetMap Taginfo",
-        "description": "This is a <b>taginfo test instance</b>. Change this text in your <tt>taginfo-config.json</tt>.",
-        "about": "<p>This site is maintained by osm-seed",
-        "icon": "/img/logo/test.png",
-        "contact": "info@osm-seed.org",
+        "url": "https://taginfo.staging.openhistoricalmap.org",
+        "name": "OpenHistoricalMap Taginfo",
+        "description": "<b>taginfo instance</b>",
+        "about": "<p>This site is maintained by openhistoricalmap.</p>",
+        "icon": "https://wiki.openstreetmap.org/w/images/e/e6/Ohm_logo_small.png",
+        "contact": "admin@openhistoricalmap.org",
         "area": "World",
         "access_control_allow_origin": "*",
-        "sections": ["download", "taginfo"]
+        "sections": [
+            "download",
+            "taginfo"
+        ]
     },
     "geodistribution": {
         "left": -180,
@@ -18,15 +21,14 @@
         "width": 360,
         "height": 180,
         "scale_image": 2,
-        "scale_compare_image" : 1,
+        "scale_compare_image": 1,
         "background_image": "/img/mapbg/world.png",
         "image_attribution": "osm-seed"
     },
     "paths": {
         "data_dir": "/usr/src/app/data",
         "download_dir": "/usr/src/app/taginfo/web/public/download",
-        "bin_dir": "/usr/src/app/taginfo-tools/build/src",
-        "sqlite3_pcre_extension": "/usr/lib/sqlite3/pcre.so"
+        "bin_dir": "/usr/src/app/taginfo-tools/build/src"
     },
     "xapi": {
         "max_results": 1000,
@@ -34,26 +36,26 @@
     },
     "turbo": {
         "max_auto": 1000,
-        "url_prefix": "https://overpass-turbo.eu/?",
+        "url_prefix": "https://overpass-turbo.openhistoricalmap.org?",
         "wizard_area": "global"
     },
     "level0": {
         "max_results": 50,
-        "overpass_url_prefix": "https://overpass-api.de/api/interpreter?",
+        "overpass_url_prefix": "https://overpass-api.openhistoricalmap.org?",
         "level0_url_prefix": "http://level0.osmz.ru/?"
     },
     "opensearch": {
-        "shortname": "Taginfo Test Instance",
-        "contact": "somebody@example.com",
-        "description": "Find metadata about OpenStreetMap tags",
-        "tags": "osm openstreetmap tag tags taginfo"
+        "shortname": "Taginfo Instance",
+        "contact": "admin@openhistoricalmap.org",
+        "description": "Find metadata about OpenHistoricalMap tags",
+        "tags": "OHM OpenHistoricalMap tags taginfo"
     },
     "sources": {
-        "download": "languages wiki wikidata",
-        "create": "db projects chronology",
+        "download": "wiki",
+        "create": "db languages projects wikidata chronology sw",
         "db": {
             "planetfile": "/osm/planet/var/current-planet.osm.pbf",
-            "bindir": "/apps/data/update/build/src"
+            "bindir": "/usr/src/app/taginfo-tools/build/src"
         },
         "chronology": {
             "osm_history_file": "/osm/planet/var/current-history-planet.osh.pbf"
@@ -72,10 +74,10 @@
     "tagstats": {
         "geodistribution": "FlexMem"
     },
-    "footer": {
-         "project_name": "osmseed",
-         "project_url": "https://www.osmseed.org/",
-         "copyright_attribution": "Data is public domain (CC0)",
-         "copyright_url": "https://wiki.openstreetmap.org/wiki/osmseed/License"
+    "project": {
+        "url": "https://www.openhistoricalmap.org/",
+        "name": "OpenHistoricalMap",
+        "attribution_url": "https://wiki.openstreetmap.org/wiki/OpenHistoricalMap/License",
+        "attribution_text": "Data is public domain (CC0)"
     }
 }

@@ -2,8 +2,8 @@
 # set -euo pipefail
 WORKDIR=/usr/src/app
 DATADIR=/usr/src/app/data
-DATADOWNLOAD=/osm/planet/var
-mkdir -p "$DATADIR/update/log" "$DATADOWNLOAD"
+DATA_OHM_DOWNLOAD=/osm/planet/var
+mkdir -p "$DATADIR/update/log" "$DATA_OHM_DOWNLOAD"
 
 updates_source_code() {
     sed -i 's/"env -/"/g' $WORKDIR/taginfo/sources/util.sh
@@ -90,6 +90,20 @@ start_web() {
     exec bundle exec ruby -r webrick web/taginfo.rb
 }
 
+download_planet_files() {
+    wget -q -O state.planet.txt --no-check-certificate "$URL_PLANET_FILE_STATE" && URL_PLANET_FILE=$(cat state.planet.txt)
+    wget -q -O state.history.txt --no-check-certificate "$URL_HISTORY_PLANET_FILE_STATE" && URL_HISTORY_PLANET_FILE=$(cat state.history.txt)
+
+    # Download planet file
+    if [ ! -f "$DATA_OHM_DOWNLOAD/current-planet.osm.pbf" ]; then
+        wget -O "$DATA_OHM_DOWNLOAD/current-planet.osm.pbf" "$URL_PLANET_FILE"
+    fi
+    # Download history planet file
+    if [ ! -f "$DATA_OHM_DOWNLOAD/current-history-planet.osh.pbf" ]; then
+        wget -O "$DATA_OHM_DOWNLOAD/current-history-planet.osh.pbf" "$URL_HISTORY_PLANET_FILE"
+    fi
+}
+
 ACTION=$1
 # Download config file if OVERWRITE_CONFIG_URL is set
 if [ ! -z "${OVERWRITE_CONFIG_URL}" ]; then
@@ -107,36 +121,7 @@ if [ "$ACTION" = "web" ]; then
         (while true; do download_db_files; sleep "${INTERVAL_DOWNLOAD_DATA:-3600}"; done) &
     start_web
 elif [ "$ACTION" = "data" ]; then
-    download_planet_files() {
-        if [ ! -z "$URL_PLANET_FILE_STATE" ] && [ ! -f "state.planet.txt" ]; then
-            wget -q -O state.planet.txt --no-check-certificate "$URL_PLANET_FILE_STATE" && \
-            URL_PLANET_FILE=$(cat state.planet.txt)
-        elif [ -f "state.planet.txt" ]; then
-            URL_PLANET_FILE=$(cat state.planet.txt)
-        fi
-        if [ ! -z "$URL_HISTORY_PLANET_FILE_STATE" ] && [ ! -f "state.history.txt" ]; then
-            wget -q -O state.history.txt --no-check-certificate "$URL_HISTORY_PLANET_FILE_STATE" && \
-            URL_HISTORY_PLANET_FILE=$(cat state.history.txt)
-        elif [ -f "state.history.txt" ]; then
-            URL_HISTORY_PLANET_FILE=$(cat state.history.txt)
-        fi
-        if [ ! -z "$URL_PLANET_FILE" ]; then
-            if [ -f "$DATADOWNLOAD/current-planet.osm.pbf" ]; then
-                echo "Planet file already exists, skipping download"
-            else
-                echo "Downloading planet file from $URL_PLANET_FILE"
-                wget -O "$DATADOWNLOAD/current-planet.osm.pbf" "$URL_PLANET_FILE"
-            fi
-        fi
-        if [ ! -z "$URL_HISTORY_PLANET_FILE" ]; then
-            if [ -f "$DATADOWNLOAD/current-history-planet.osh.pbf" ]; then
-                echo "History planet file already exists, skipping download"
-            else
-                echo "Downloading history planet file from $URL_HISTORY_PLANET_FILE"
-                wget -O "$DATADOWNLOAD/current-history-planet.osh.pbf" "$URL_HISTORY_PLANET_FILE"
-            fi
-        fi
-    }
+
     set -x
     download_planet_files
     cd $WORKDIR/taginfo
@@ -146,7 +131,12 @@ elif [ "$ACTION" = "data" ]; then
     db/update.sh $DATADIR
     master/update.sh $DATADIR
     projects/update.sh $DATADIR
+    cp $DATADIR/selection.db $DATADIR/../selection.db
     chronology/update.sh $DATADIR
+    wikidata/update.sh $DATADIR
+    # wiki/update.sh $DATADIR
+    sw/update.sh $DATADIR
+    languages/update.sh $DATADIR
     ./update_all.sh $DATADIR
     find "$DATADIR" -name "*.db" -type f -exec mv {} "$DATADIR/" \; 2>/dev/null || true
     [ ! -z "$AWS_S3_BUCKET" ] && ! aws s3 ls "s3://$AWS_S3_BUCKET/taginfo" 2>&1 | grep -q 'An error occurred' && \
