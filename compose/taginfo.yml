@@ -1,22 +1,28 @@
-version: '3'
 services:
-  # #####################################################
-  # ## Taginfo section
-  # #####################################################
-  taginfo:
+  taginfo_data:
     image: osmseed-taginfo:v1
     build:
       context: ../images/taginfo
       dockerfile: Dockerfile
-    ports:
-      - '8015:80'
     volumes:
       - ../data/taginfo-data:/usr/src/app/data
       - ${HOME}/.aws:/root/.aws:ro
       - ../images/taginfo/start.sh:/usr/src/app/start.sh
       - ../data/taginfo-data-ohm:/osm/planet/var
+      - ../images/taginfo/config/taginfo-config.json:/usr/src/app/taginfo-config.json
     command: >
       /bin/bash -c "/usr/src/app/start.sh web"
 
     env_file:
       - ../envs/.env.taginfo
+  web:
+    build:
+      context: ../images/taginfo-web
+      dockerfile: Dockerfile
+    ports:
+      - "4567:4567"
+    environment:
+      TAGINFO_CONFIG: /config/taginfo-config.json
+    volumes:
+      - ../data/taginfo-data:/usr/src/app/data
+    restart: unless-stopped
