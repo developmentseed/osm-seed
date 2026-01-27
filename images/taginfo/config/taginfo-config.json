@@ -1,6 +1,6 @@
 {
     "instance": {
-        "url": "https://taginfo.staging.openhistoricalmap.org",
+        "url": "http://37.27.96.98:8015",
         "name": "OpenHistoricalMap Taginfo",
         "description": "<b>taginfo instance</b>",
         "about": "<p>This site is maintained by openhistoricalmap.</p>",

@@ -2,6 +2,7 @@ FROM ruby:3.2-bookworm
 
 RUN apt-get update && apt-get install -y \
     curl \
+    gosu \
     sqlite3 \
     wget \
   && rm -rf /var/lib/apt/lists/*
@@ -9,19 +10,16 @@ RUN apt-get update && apt-get install -y \
 RUN useradd -ms /bin/bash taginfo
 
 WORKDIR /usr/src/app
-
-# Clonar el repo
+ENV DATA_DIR=/usr/src/app/data
 RUN git clone https://github.com/taginfo/taginfo.git taginfo
 
 WORKDIR /usr/src/app/taginfo
 
-# Añadir puma al Gemfile e instalar dependencias
 RUN echo "gem 'puma'" >> Gemfile && bundle install
 
-# Directorios
-RUN mkdir -p /usr/src/app/data /usr/src/app/config
+RUN mkdir -p $DATA_DIR
+RUN chmod -R 777 $DATA_DIR
 
-# Config
 COPY config/taginfo-config.json /usr/src/app/taginfo-config.json
 COPY start.sh /usr/src/app/start.sh
 RUN chmod +x /usr/src/app/start.sh
@@ -32,6 +30,4 @@ ENV RACK_HANDLER=puma
 EXPOSE 4567
 
 WORKDIR /usr/src/app
-USER taginfo
-
 CMD ["/usr/src/app/start.sh"]

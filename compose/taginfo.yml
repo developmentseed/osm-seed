@@ -1,4 +1,7 @@
 services:
+  # #####################################################
+  # ## Taginfo section
+  # #####################################################
   taginfo_data:
     image: osmseed-taginfo:v1
     build:
@@ -23,6 +26,7 @@ services:
       - "4567:4567"
     environment:
       TAGINFO_CONFIG: /config/taginfo-config.json
+      TAGINFO_DB_BASE_URL: https://osmseed.org.s3.amazonaws.com/taginfo
     volumes:
-      - ../data/taginfo-data:/usr/src/app/data
+      - ../data/taginfo-data-web:/usr/src/app/data
     restart: unless-stopped
