@@ -1,0 +1,83 @@
+{
+    "instance": {
+        "url": "http://localhost:8015",
+        "name": "osmseed Taginfo",
+        "description": "<b>taginfo instance</b>",
+        "about": "<p>This site is maintained by osmseed.</p>",
+        "icon": "https://wiki.openstreetmap.org/w/images/e/e6/Ohm_logo_small.png",
+        "contact": "admin@osmseed.org",
+        "area": "World",
+        "access_control_allow_origin": "*",
+        "sections": [
+            "download",
+            "taginfo"
+        ]
+    },
+    "geodistribution": {
+        "left": -180,
+        "bottom": -90,
+        "right": 180,
+        "top": 90,
+        "width": 360,
+        "height": 180,
+        "scale_image": 2,
+        "scale_compare_image": 1,
+        "background_image": "/img/mapbg/world.png",
+        "image_attribution": "osm-seed"
+    },
+    "paths": {
+        "data_dir": "/usr/src/app/data",
+        "download_dir": "/usr/src/app/taginfo/web/public/download",
+        "bin_dir": "/usr/src/app/taginfo-tools/build/src"
+    },
+    "xapi": {
+        "max_results": 1000,
+        "url_prefix": "https://overpass-api.de/api/xapi_meta?"
+    },
+    "turbo": {
+        "max_auto": 1000,
+        "url_prefix": "https://overpass-turbo.osmseed.org?",
+        "wizard_area": "global"
+    },
+    "level0": {
+        "max_results": 50,
+        "overpass_url_prefix": "https://overpass-api.osmseed.org?",
+        "level0_url_prefix": "http://level0.osmz.ru/?"
+    },
+    "opensearch": {
+        "shortname": "Taginfo Instance",
+        "contact": "admin@osmseed.org",
+        "description": "Find metadata about osmseed tags",
+        "tags": "OHM osmseed tags taginfo"
+    },
+    "sources": {
+        "download": "wiki",
+        "create": "db languages projects wikidata chronology sw",
+        "db": {
+            "planetfile": "/osm/planet/var/current-planet.osm.pbf",
+            "bindir": "/usr/src/app/taginfo-tools/build/src"
+        },
+        "chronology": {
+            "osm_history_file": "/osm/planet/var/current-history-planet.osh.pbf"
+        },
+        "master": {
+            "min_count_tags": 10,
+            "min_tag_combination_count": 10,
+            "min_count_for_map": 10,
+            "min_count_relations_per_type": 10
+        }
+    },
+    "logging": {
+        "directory": "/usr/src/app/logs",
+        "min_duration": 0.1
+    },
+    "tagstats": {
+        "geodistribution": "FlexMem"
+    },
+    "project": {
+        "url": "https://www.osmseed.org/",
+        "name": "osmseed",
+        "attribution_url": "https://wiki.openstreetmap.org/wiki/osmseed/License",
+        "attribution_text": "Data is public domain (CC0)"
+    }
+}
