@@ -51,6 +51,9 @@ charts:
     taginfo:
       valuesPath: taginfo.image
       contextPath: images/taginfo
+    taginfo-web:
+      valuesPath: taginfoWeb.image
+      contextPath: images/taginfo-web
     osm-simple-metrics:
       valuesPath: osmSimpleMetrics.image
       contextPath: images/osm-simple-metrics

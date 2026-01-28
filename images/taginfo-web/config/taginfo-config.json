@@ -1,11 +1,11 @@
 {
     "instance": {
-        "url": "http://37.27.96.98:8015",
-        "name": "OpenHistoricalMap Taginfo",
+        "url": "http://localhost:8015",
+        "name": "osmseed Taginfo",
         "description": "<b>taginfo instance</b>",
-        "about": "<p>This site is maintained by openhistoricalmap.</p>",
+        "about": "<p>This site is maintained by osmseed.</p>",
         "icon": "https://wiki.openstreetmap.org/w/images/e/e6/Ohm_logo_small.png",
-        "contact": "admin@openhistoricalmap.org",
+        "contact": "admin@osmseed.org",
         "area": "World",
         "access_control_allow_origin": "*",
         "sections": [
@@ -36,19 +36,19 @@
     },
     "turbo": {
         "max_auto": 1000,
-        "url_prefix": "https://overpass-turbo.openhistoricalmap.org?",
+        "url_prefix": "https://overpass-turbo.osmseed.org?",
         "wizard_area": "global"
     },
     "level0": {
         "max_results": 50,
-        "overpass_url_prefix": "https://overpass-api.openhistoricalmap.org?",
+        "overpass_url_prefix": "https://overpass-api.osmseed.org?",
         "level0_url_prefix": "http://level0.osmz.ru/?"
     },
     "opensearch": {
         "shortname": "Taginfo Instance",
-        "contact": "admin@openhistoricalmap.org",
-        "description": "Find metadata about OpenHistoricalMap tags",
-        "tags": "OHM OpenHistoricalMap tags taginfo"
+        "contact": "admin@osmseed.org",
+        "description": "Find metadata about osmseed tags",
+        "tags": "OHM osmseed tags taginfo"
     },
     "sources": {
         "download": "wiki",
@@ -75,9 +75,9 @@
         "geodistribution": "FlexMem"
     },
     "project": {
-        "url": "https://www.openhistoricalmap.org/",
-        "name": "OpenHistoricalMap",
-        "attribution_url": "https://wiki.openstreetmap.org/wiki/OpenHistoricalMap/License",
+        "url": "https://www.osmseed.org/",
+        "name": "osmseed",
+        "attribution_url": "https://wiki.openstreetmap.org/wiki/osmseed/License",
         "attribution_text": "Data is public domain (CC0)"
     }
 }

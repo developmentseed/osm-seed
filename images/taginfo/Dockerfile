@@ -1,10 +1,14 @@
-FROM ruby:3.0-slim
+FROM ruby:3.2-slim AS builder
 
+ARG TAGINFO_TOOLS_VERSION=osmorg-taginfo-live
 ARG workdir=/usr/src/app
+
 WORKDIR $workdir
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
     cmake \
+    git \
     libbz2-dev \
     libexpat1-dev \
     libgd-dev \
@@ -12,66 +16,63 @@ RUN apt-get update && apt-get install -y \
     libosmium2-dev \
     libprotozero-dev \
     libsqlite3-dev \
-    make \
     zlib1g-dev \
-    curl \
-    sqlite3 \
-    sqlite3-pcre \
-    passenger \
-    libapache2-mod-passenger \
-    libreadline-dev \
-    tcl \
-    git \
-    jq \
-    python3-pip \
-    wget \
-    cron \
-    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools && \
+RUN git clone --depth 1 --branch ${TAGINFO_TOOLS_VERSION} https://github.com/taginfo/taginfo-tools.git $workdir/taginfo-tools && \
     cd $workdir/taginfo-tools && \
-    git checkout 24412e65740752f8b962bd1cf3baf350d0672cc7 && \
     git submodule update --init && \
     mkdir build && cd build && \
-    cmake .. && make
-RUN gem install json rack-contrib puma sinatra:'<3' sinatra-r18n:'5.0.2'
+    cmake -DCMAKE_BUILD_TYPE=Release .. && \
+    make -j$(nproc)
 
-# Install AWS CLI
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
-    rm awscliv2.zip
+FROM ruby:3.2-slim
 
-ENV TAGINFO_GITSHA=4a7dadc864ab4400afaf8a34876d05c58aa4e64a
-RUN git clone https://github.com/taginfo/taginfo.git $workdir/taginfo && \
-    cd $workdir/taginfo && \
-    git checkout $TAGINFO_GITSHA && \
-    bundle install
-
-# Download and prepare uWSGI
-RUN wget http://projects.unbit.it/downloads/uwsgi-latest.tar.gz \
-    && tar zxvf uwsgi-latest.tar.gz \
-    && rm uwsgi-latest.tar.gz && \
-    mv $(ls | grep uwsgi-) uwsgi-dir && \
-    cd uwsgi-dir && \
-    make PROFILE=nolang && \
-    PYTHON=python3 UWSGI_PROFILE_OVERRIDE="ssl=true,rack=true,http=true" make
-
-# # Set non-root user
-# RUN groupadd -r taginfo && useradd -m -r -g taginfo taginfo
-# RUN chown -R taginfo:taginfo $workdir
-# RUN chmod -R 777 $workdir
-# USER taginfo
-
-# RUN chown -R www-data: $workdir
+ARG TAGINFO_VERSION=osmorg-taginfo-live
+ARG workdir=/usr/src/app
 
 WORKDIR $workdir
 
-# Copy configuration files and scripts
-COPY config/taginfo-config.json $workdir/
-COPY start.sh .
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libbz2-1.0 \
+    libexpat1 \
+    libgd3 \
+    libicu-dev \
+    libsqlite3-0 \
+    zlib1g \
+    curl \
+    git \
+    jq \
+    sqlite3 \
+    wget \
+    cron \
+    unzip \
+    build-essential \
+    libsqlite3-dev \
+    libreadline-dev \
+    pkg-config \
+    python3-pip \
+    uwsgi \
+    uwsgi-plugin-ruby \
+    && rm -rf /var/lib/apt/lists/*
 
-# Expose port and set default command
-EXPOSE 80
-CMD ["./start.sh"]
+RUN pip3 install --no-cache-dir --default-timeout=300 --retries 5 awscli --break-system-packages || \
+    (sleep 10 && pip3 install --no-cache-dir --default-timeout=300 --retries 5 awscli --break-system-packages)
+
+COPY --from=builder ${workdir}/taginfo-tools ${workdir}/taginfo-tools
+
+RUN git clone --depth 1 --branch ${TAGINFO_VERSION} https://github.com/taginfo/taginfo.git $workdir/taginfo && \
+    cd $workdir/taginfo && \
+    bundle install --verbose && \
+    bundle config set --local deployment 'true' && \
+    bundle install --verbose && \
+    bundle check && \
+    bundle exec ruby -e "require 'sqlite3'; puts 'sqlite3 gem verified'" && \
+    sed -i 's|env - \${TAGINFO_RUBY:-ruby}|bundle exec ruby|' $workdir/taginfo/sources/util.sh
+
+RUN gem install --no-document json sqlite3 webrick rack rack-contrib sinatra mustermann rack-protection tilt
+
+RUN mkdir -p $workdir/data $workdir/logs
+COPY config/taginfo-config.json $workdir/
+COPY start.sh $workdir/
+CMD ["/usr/src/app/start.sh"]
