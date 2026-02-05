@@ -14,12 +14,12 @@ download_planet_files() {
     wget -q -O state.planet.txt --no-check-certificate "$URL_PLANET_FILE_STATE" && URL_PLANET_FILE=$(cat state.planet.txt)
     wget -q -O state.history.txt --no-check-certificate "$URL_HISTORY_PLANET_FILE_STATE" && URL_HISTORY_PLANET_FILE=$(cat state.history.txt)
 
-    # Download planet file
-    if [ ! -f "$DATA_OHM_DOWNLOAD/current-planet.osm.pbf" ]; then
+    # Download planet file (skip if exists, unless DOWNLOAD_IF_EXIST=true)
+    if [ ! -f "$DATA_OHM_DOWNLOAD/current-planet.osm.pbf" ] || [ "${DOWNLOAD_IF_EXIST,,}" = "true" ]; then
         wget -O "$DATA_OHM_DOWNLOAD/current-planet.osm.pbf" "$URL_PLANET_FILE"
     fi
-    # Download history planet file
-    if [ ! -f "$DATA_OHM_DOWNLOAD/current-history-planet.osh.pbf" ]; then
+    # Download history planet file (skip if exists, unless DOWNLOAD_IF_EXIST=true)
+    if [ ! -f "$DATA_OHM_DOWNLOAD/current-history-planet.osh.pbf" ] || [ "${DOWNLOAD_IF_EXIST,,}" = "true" ]; then
         wget -O "$DATA_OHM_DOWNLOAD/current-history-planet.osh.pbf" "$URL_HISTORY_PLANET_FILE"
     fi
 }
