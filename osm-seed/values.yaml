@@ -3,7 +3,7 @@
 # ==================================Global Configurations=============================================
 # ====================================================================================================
 # ====================================================================================================
-# The version of the image group in osm-seed, get it here: https://hub.docker.com/r/developmentseed/osmseed-web/tags/
+# The version of the image group in osm-seed, get it here: https://github.com/orgs/osm-seed/packages
 osmSeedVersion: develop-9302179
 environment: development
 # cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, azure, minikube
@@ -318,7 +318,7 @@ fullHistory:
 # ====================================================================================================
 dbBackupRestore:
   image:
-    name: "developmentseed/osmseed-backup-restore"
+    name: "ghcr.io/osm-seed/backup-restore"
     tag: "0.1.0-0.dev.git.942.h994af82"
   cronjobs:
     - name: web-db
@@ -1003,6 +1003,12 @@ overpassApi:
 # ====================================================================================================
 # Variables for taginfo
 # ====================================================================================================
+taginfoWeb:
+  enabled: false
+  image:
+    name: ""
+    tag: ""
+    
 taginfo:
   enabled: false
   image:
@@ -1109,7 +1115,7 @@ osmSimpleMetrics:
 monitoringReplication:
   enabled: false
   image:
-    name: "developmentseed/osmseed-replication-job"
+    name: "ghcr.io/osm-seed/replication-job"
     tag: "0.1.0-n770.hd15c9f2"
   priorityClass: "medium-priority"
   serviceAccount:

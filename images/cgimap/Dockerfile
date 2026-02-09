@@ -14,17 +14,19 @@ RUN apt-get update -qq && \
 
 WORKDIR /app
     
-# Clone application
-ENV CGIMAP_GITSHA=8ea707e10aeab5698e6859856111816d75354592
+# Clone application.
+ENV CGIMAP_GITSHA=564e89349272097572063dcd6b8c32c049b823dc
 RUN git clone https://github.com/zerebubuth/openstreetmap-cgimap.git /app \
-&& git checkout $CGIMAP_GITSHA 
-
+&& git checkout $CGIMAP_GITSHA \
+&& sed -i 's#OpenStreetMap and contributors#osmseed is dedicated to the public domain except where otherwise noted.#g' include/cgimap/output_formatter.hpp \
+&& sed -i 's#http://www.openstreetmap.org/copyright#https://github.com/osm-seed#g' include/cgimap/output_formatter.hpp
 # Compile, install and remove source
 RUN mkdir build && cd build && \
-    CXXFLAGS="-flto=auto -ffat-lto-objects -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2" cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release && \
-    make -j${nproc} && \
+    CXXFLAGS="-fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2" \
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build . -j$(nproc) && \
     ctest --output-on-failure && \
-    cmake --build . -t package
+    cmake --build . --target package
 
 FROM debian:bookworm-slim
 
