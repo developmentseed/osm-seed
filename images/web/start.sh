@@ -139,6 +139,8 @@ setup_admin() {
       sed -i -e 's/^oauth_key:/#oauth_key:/' $workdir/config/settings.yml
 
       bundle exec rails oauth:register_apps["admin"]
+
+      cat $workdir/config/settings.local.yml
     else
       echo "OAuth2 default applications already exist. No new applications registered."
     fi
