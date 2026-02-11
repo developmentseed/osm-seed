@@ -7,6 +7,11 @@ if [ "$(id -u)" = "0" ]; then
     chmod 777 "$DATADIR" 2>/dev/null || true
 fi
 
+if [ ! -z "${OVERWRITE_CONFIG_URL}" ]; then
+    echo "Downloading config from ${OVERWRITE_CONFIG_URL}"
+    wget -q "$OVERWRITE_CONFIG_URL" -O /usr/src/app/taginfo-config.json || echo "Warning: Failed to download config from ${OVERWRITE_CONFIG_URL}"
+fi
+
 download_db_files() {
     [ -z "$TAGINFO_DB_BASE_URL" ] && return 0
     base_url="${TAGINFO_DB_BASE_URL%/}"
