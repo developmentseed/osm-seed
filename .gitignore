@@ -38,3 +38,4 @@ data/*/
 images/changeset-replication-job/config.yaml
 values_copy.yaml
 images/tiler-server/tegola-cache/
+.vscode/
