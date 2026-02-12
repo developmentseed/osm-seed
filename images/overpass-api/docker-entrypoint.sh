@@ -2,6 +2,7 @@
 
 set -eox pipefail
 shopt -s nullglob
+
 OVERPASS_META=${OVERPASS_META:-no}
 OVERPASS_MODE=${OVERPASS_MODE:-clone}
 OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
@@ -116,6 +117,9 @@ if [[ ! -f /db/init_done ]]; then
 		fi
 	fi
 fi
+
+# Fix permissions after import/initialization
+/app/fix-permissions.sh
 
 # shellcheck disable=SC2016 # ignore SC2016 (variables within single quotes) as this is exactly what we want to do here
 envsubst '${OVERPASS_MAX_TIMEOUT}' </etc/nginx/nginx.conf.template >/etc/nginx/nginx.conf

@@ -21,12 +21,8 @@ download_db_files() {
 
     echo "Downloading DB files from $base_url to $DATADIR"
     for db in "${db_files[@]}"; do
-        if [ -f "$DATADIR/$db" ]; then
-            echo "  Skip $db (exists)"
-        else
-            echo "Downloading ${base_url}/${db}"
-            wget -q -O "$DATADIR/$db" --no-check-certificate "${base_url}/${db}" || echo "  Failed $db"
-        fi
+        echo "Downloading ${base_url}/${db}"
+        wget -q -O "$DATADIR/$db" --no-check-certificate "${base_url}/${db}" || echo "  Failed $db"
     done
     [ "$(id -u)" = "0" ] && chown -R taginfo:taginfo "$DATADIR" 2>/dev/null || true
 }
