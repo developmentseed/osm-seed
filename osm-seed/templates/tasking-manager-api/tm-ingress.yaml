@@ -1,4 +1,4 @@
-{{- if and .Values.tmApi.enabled (eq .Values.serviceType "ClusterIP") }}
+{{- if and .Values.tmApi.enabled (eq .Values.serviceType "ClusterIP") .Values.ingressClassName }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
