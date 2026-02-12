@@ -14,13 +14,28 @@ download_planet_files() {
     wget -q -O state.planet.txt --no-check-certificate "$URL_PLANET_FILE_STATE" && URL_PLANET_FILE=$(cat state.planet.txt)
     wget -q -O state.history.txt --no-check-certificate "$URL_HISTORY_PLANET_FILE_STATE" && URL_HISTORY_PLANET_FILE=$(cat state.history.txt)
 
-    # Download planet file (skip if exists, unless DOWNLOAD_IF_EXIST=true)
-    if [ ! -f "$DATA_OHM_DOWNLOAD/current-planet.osm.pbf" ] || [ "${DOWNLOAD_IF_EXIST,,}" = "true" ]; then
-        wget -O "$DATA_OHM_DOWNLOAD/current-planet.osm.pbf" "$URL_PLANET_FILE"
+    local remote_md5_planet remote_md5_history
+    remote_md5_planet=$(echo -n "$URL_PLANET_FILE" | md5sum | awk '{print $1}')
+    remote_md5_history=$(echo -n "$URL_HISTORY_PLANET_FILE" | md5sum | awk '{print $1}')
+
+    # Download planet file if it doesn't exist or the URL (md5) changed
+    local planet_file="$DATA_OHM_DOWNLOAD/current-planet.osm.pbf"
+    local planet_md5_file="$DATA_OHM_DOWNLOAD/current-planet.osm.pbf.md5"
+    if [ ! -f "$planet_file" ] || [ ! -f "$planet_md5_file" ] || [ "$(cat "$planet_md5_file")" != "$remote_md5_planet" ]; then
+        echo "Downloading planet file from $URL_PLANET_FILE ..."
+        wget -O "$planet_file" "$URL_PLANET_FILE" && echo "$remote_md5_planet" > "$planet_md5_file"
+    else
+        echo "Planet file is up to date, skipping download."
     fi
-    # Download history planet file (skip if exists, unless DOWNLOAD_IF_EXIST=true)
-    if [ ! -f "$DATA_OHM_DOWNLOAD/current-history-planet.osh.pbf" ] || [ "${DOWNLOAD_IF_EXIST,,}" = "true" ]; then
-        wget -O "$DATA_OHM_DOWNLOAD/current-history-planet.osh.pbf" "$URL_HISTORY_PLANET_FILE"
+
+    # Download history planet file if it doesn't exist or the URL (md5) changed
+    local history_file="$DATA_OHM_DOWNLOAD/current-history-planet.osh.pbf"
+    local history_md5_file="$DATA_OHM_DOWNLOAD/current-history-planet.osh.pbf.md5"
+    if [ ! -f "$history_file" ] || [ ! -f "$history_md5_file" ] || [ "$(cat "$history_md5_file")" != "$remote_md5_history" ]; then
+        echo "Downloading history planet file from $URL_HISTORY_PLANET_FILE ..."
+        wget -O "$history_file" "$URL_HISTORY_PLANET_FILE" && echo "$remote_md5_history" > "$history_md5_file"
+    else
+        echo "History planet file is up to date, skipping download."
     fi
 }
 
