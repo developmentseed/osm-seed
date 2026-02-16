@@ -68,6 +68,10 @@ RUN SECRET_KEY_BASE_DUMMY=1  \
     bundle exec i18n export && \
     bundle exec rails assets:precompile
 
+# Apply patches for OSM
+COPY patches/ /$workdir/
+RUN patch /$workdir/config/initializers/doorkeeper.rb /$workdir/config/initializers/doorkeeper.rb.patch
+
 
 FROM ruby:3.3-slim
 

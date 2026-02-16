@@ -1,4 +1,3 @@
-version: '3'
 services:
   ####################################################
   # OSM API and Database section
