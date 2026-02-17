@@ -70,12 +70,19 @@ if [[ ! -f /db/init_done ]]; then
 	fi
 
 	if [[ "$OVERPASS_MODE" = "init" ]]; then
-		CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
+		# Determine download filename based on URL extension
+		if [[ "${OVERPASS_PLANET_URL}" == *.pbf ]]; then
+			PLANET_FILE="/db/planet.osm.pbf"
+		else
+			PLANET_FILE="/db/planet.osm.bz2"
+		fi
+
+		CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o "${PLANET_FILE}" -w "%{http_code}" "${OVERPASS_PLANET_URL}")
 		# try again until it's allowed
 		while [ "$CURL_STATUS_CODE" = "429" ]; do
 			echo "Server responded with 429 Too many requests. Trying again in 5 minutes..."
 			sleep 300
-			CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
+			CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o "${PLANET_FILE}" -w "%{http_code}" "${OVERPASS_PLANET_URL}")
 		done
 		# for `file:///` scheme curl returns `000` HTTP status code
 		if [[ $CURL_STATUS_CODE = "200" || $CURL_STATUS_CODE = "000" ]]; then
@@ -84,17 +91,24 @@ if [[ ! -f /db/init_done ]]; then
 					echo "Running preprocessing command: ${OVERPASS_PLANET_PREPROCESS}"
 					eval "${OVERPASS_PLANET_PREPROCESS}"
 				fi &&
-					/app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "${META}" "--version=$(osmium fileinfo -e -g data.timestamp.last /db/planet.osm.bz2) --compression-method=${OVERPASS_COMPRESSION} --map-compression-method=${OVERPASS_COMPRESSION} --flush-size=${OVERPASS_FLUSH_SIZE}" &&
+					PLANET_VERSION="--version=$(osmium fileinfo -e -g data.timestamp.last "${PLANET_FILE}")" &&
+					mkdir -p /db/db &&
+					if [[ "${PLANET_FILE}" == *.pbf ]]; then
+						echo "Importing PBF file directly via osmium pipe..." &&
+						osmium cat -f osm "${PLANET_FILE}" | /app/bin/update_database --db-dir=/db/db/ ${META} "${PLANET_VERSION} --compression-method=${OVERPASS_COMPRESSION} --map-compression-method=${OVERPASS_COMPRESSION} --flush-size=${OVERPASS_FLUSH_SIZE}"
+					else
+						/app/bin/init_osm3s.sh "${PLANET_FILE}" /db/db /app "${META}" "${PLANET_VERSION} --compression-method=${OVERPASS_COMPRESSION} --map-compression-method=${OVERPASS_COMPRESSION} --flush-size=${OVERPASS_FLUSH_SIZE}"
+					fi &&
 					echo "Database created. Now updating it." &&
 					cp -r /app/etc/rules /db/db &&
 					chown -R overpass:overpass /db/* &&
 					echo "Updating" &&
-					/app/bin/update_overpass.sh -O /db/planet.osm.bz2 &&
+					/app/bin/update_overpass.sh -O "${PLANET_FILE}" &&
 					if [[ "${OVERPASS_USE_AREAS}" = "true" ]]; then
 						echo "Generating areas..." && /app/bin/osm3s_query --progress --rules --db-dir=/db/db </db/db/rules/areas.osm3s
 					fi &&
 					touch /db/init_done &&
-					rm /db/planet.osm.bz2 &&
+					rm "${PLANET_FILE}" &&
 					chown -R overpass:overpass /db/*
 			) || (
 				echo "Failed to process planet file"
