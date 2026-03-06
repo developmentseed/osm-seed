@@ -133,6 +133,7 @@ if [[ ! -f /db/init_done ]]; then
 fi
 
 # Clean up stale files and fix permissions
+# Fix permissions after import/initialization
 /app/fix-permissions.sh
 
 # shellcheck disable=SC2016 # ignore SC2016 (variables within single quotes) as this is exactly what we want to do here
