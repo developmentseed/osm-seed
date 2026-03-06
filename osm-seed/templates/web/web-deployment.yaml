@@ -41,10 +41,11 @@ spec:
               - /bin/bash
               - -c
               - ./liveness.sh
-            initialDelaySeconds: 600
+            initialDelaySeconds: 120
             timeoutSeconds: 5
-            periodSeconds: 10
-            failureThreshold: 3
+            periodSeconds: 20
+            failureThreshold: 5
+            successThreshold: 1
             {{- else }}
             httpGet:
               path: /api/0.6/capabilities
