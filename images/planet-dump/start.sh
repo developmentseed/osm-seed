@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# osmosis tuning: https://wiki.openstreetmap.org/wiki/Osmosis/Tuning,https://lists.openstreetmap.org/pipermail/talk/2012-October/064771.html
-if [ -z "$MEMORY_JAVACMD_OPTIONS" ]; then
-	echo JAVACMD_OPTIONS=\"-server\" >~/.osmosis
-else
-	memory="${MEMORY_JAVACMD_OPTIONS//i/}"
-	echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" >~/.osmosis
-fi
-
 export VOLUME_DIR=/mnt/data
 date=$(date '+%y%m%d_%H%M')
 
@@ -104,42 +96,19 @@ upload_planet_file() {
 # ===============================
 # Generate planet file
 # ===============================
+download_dump_file
+echo "Generating planet file with planet-dump-ng..."
 
-if [ "$PLANET_EXPORT_METHOD" == "planet-dump-ng" ]; then
-    download_dump_file
-    echo "Generating planet file with planet-dump-ng..."
-
-    if [ -n "$PLANET_DUMP_NG_METADATA_URL" ]; then
-        curl "$PLANET_DUMP_NG_METADATA_URL" -o metadata.yml
-        planet-dump-ng \
-            --dump-file "$dumpFile" \
-            --pbf "$local_planetPBFFile" \
-            -M metadata.yml
-    else
-        planet-dump-ng \
-            --dump-file "$dumpFile" \
-            --pbf "$local_planetPBFFile"
-    fi
-elif [ "$PLANET_EXPORT_METHOD" == "osmosis" ]; then
-	echo "Generating planet file with osmosis..."
-	if [ -z "$MEMORY_JAVACMD_OPTIONS" ]; then
-		echo JAVACMD_OPTIONS=\"-server\" > ~/.osmosis
-	else
-		memory="${MEMORY_JAVACMD_OPTIONS//i/}"
-		echo JAVACMD_OPTIONS=\"-server -Xmx$memory\" > ~/.osmosis
-	fi
-
-	osmosis --read-apidb \
-		host=$POSTGRES_HOST \
-		database=$POSTGRES_DB \
-		user=$POSTGRES_USER \
-		password=$POSTGRES_PASSWORD \
-		validateSchemaVersion=no \
-		--write-pbf \
-		file=$local_planetPBFFile
+if [ -n "$PLANET_DUMP_NG_METADATA_URL" ]; then
+    curl "$PLANET_DUMP_NG_METADATA_URL" -o metadata.yml
+    planet-dump-ng \
+        --dump-file "$dumpFile" \
+        --pbf "$local_planetPBFFile" \
+        -M metadata.yml
 else
-	echo "Error: Unknown PLANET_EXPORT_METHOD value. Use 'planet-dump-ng' or 'osmosis'."
-	exit 1
+    planet-dump-ng \
+        --dump-file "$dumpFile" \
+        --pbf "$local_planetPBFFile"
 fi
 
 # Upload results
