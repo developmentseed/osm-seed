@@ -27,8 +27,9 @@ RUN set -ex \
     && make \
     && strip planet-dump-ng
 
+# Stage 2: slim runtime — planet-dump-ng + cloud CLIs + bzip2
 FROM debian:bookworm-slim
-ENV workdir /mnt/data
+ENV workdir=/mnt/data
 WORKDIR $workdir
 
 RUN set -ex \
@@ -38,21 +39,10 @@ RUN set -ex \
         curl \
         gnupg \
         lsb-release \
-    && echo "deb http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-    && curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-    && apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        osmosis \
-        osmium-tool \
+        bzip2 \
         awscli \
         gsutil \
         azure-cli \
-        postgresql-client-17 \
-        rsync \
-        pyosmium \
-        tmux \
-        zsh \
-        git \
         libxml2 \
         libboost-filesystem1.74.0 \
         libboost-program-options1.74.0 \
