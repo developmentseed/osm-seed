@@ -565,9 +565,11 @@ function main() {
     while true; do
         local cycle_start=$(date +%s)
         
-        # Execute replication cycle
-        execute_replication_cycle
-        
+        # Execute replication cycle (don't let failures kill the loop)
+        if ! execute_replication_cycle; then
+            echo "$(date +%F_%H:%M:%S): WARNING: Replication cycle failed, will retry next interval"
+        fi
+
         # Periodic cleanup (every CLEANUP_INTERVAL seconds)
         local current_time=$(date +%s)
         if [ $((current_time - last_cleanup)) -ge $CLEANUP_INTERVAL ]; then

@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# osmosis tuning: https://wiki.openstreetmap.org/wiki/Osmosis/Tuning,https://lists.openstreetmap.org/pipermail/talk/2012-October/064771.html
-if [ -z "$MEMORY_JAVACMD_OPTIONS" ]; then
-	echo JAVACMD_OPTIONS="-server" >~/.osmosis
-else
-	memory="${MEMORY_JAVACMD_OPTIONS//i/}"
-	echo JAVACMD_OPTIONS="-server -Xmx$memory" >~/.osmosis
-fi
-
 export VOLUME_DIR=/mnt/data
 export PLANET_EPOCH_DATE="${PLANET_EPOCH_DATE:-2004-01-01}"
 date=$(date '+%y%m%d_%H%M')
@@ -106,40 +98,21 @@ upload_planet_file() {
 # ===============================
 # Generate planet file
 # ===============================
+download_dump_file
+echo "Generating history planet file with planet-dump-ng..."
+export PLANET_EPOCH_DATE="$PLANET_EPOCH_DATE"
 
-if [ "$PLANET_EXPORT_METHOD" == "planet-dump-ng" ]; then
-    download_dump_file
-    echo "Generating history planet file with planet-dump-ng..."
-    export PLANET_EPOCH_DATE="$PLANET_EPOCH_DATE"
-
-    if [ -n "$PLANET_DUMP_NG_METADATA_URL" ]; then
-        echo "Downloading metadata file..."
-        curl "$PLANET_DUMP_NG_METADATA_URL" -o metadata.yml
-        planet-dump-ng \
-            --dump-file "$dumpFile" \
-            --history-pbf "$local_planetHistoryPBFFile" \
-            -M metadata.yml
-    else
-        planet-dump-ng \
-            --dump-file "$dumpFile" \
-            --history-pbf "$local_planetHistoryPBFFile"
-    fi
-elif [ "$PLANET_EXPORT_METHOD" == "osmosis" ]; then
-	echo "Generating history planet file with osmosis..."
-	# Creating full history
-	osmosis --read-apidb-change \
-		host=$POSTGRES_HOST \
-		database=$POSTGRES_DB \
-		user=$POSTGRES_USER \
-		password=$POSTGRES_PASSWORD \
-		validateSchemaVersion=no \
-		readFullHistory=yes \
-		--write-xml-change \
-		compressionMethod=auto \
-		$local_planetHistoryPBFFile
+if [ -n "$PLANET_DUMP_NG_METADATA_URL" ]; then
+    echo "Downloading metadata file..."
+    curl "$PLANET_DUMP_NG_METADATA_URL" -o metadata.yml
+    planet-dump-ng \
+        --dump-file "$dumpFile" \
+        --history-pbf "$local_planetHistoryPBFFile" \
+        -M metadata.yml
 else
-	echo "Error: Unknown PLANET_EXPORT_METHOD value. Use 'planet-dump-ng' or 'osmosis'."
-	exit 1
+    planet-dump-ng \
+        --dump-file "$dumpFile" \
+        --history-pbf "$local_planetHistoryPBFFile"
 fi
 
 # Upload results
