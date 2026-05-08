@@ -39,10 +39,18 @@ RUN set -ex \
         curl \
         gnupg \
         lsb-release \
+    && install -d /usr/share/keyrings \
+    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+        | gpg --dearmor -o /usr/share/keyrings/pgdg.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+        > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         bzip2 \
         awscli \
         gsutil \
         azure-cli \
+        postgresql-client-17 \
         libxml2 \
         libboost-filesystem1.74.0 \
         libboost-program-options1.74.0 \
