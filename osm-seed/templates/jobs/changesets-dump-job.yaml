@@ -45,6 +45,8 @@ spec:
                 value: {{ .Values.changesetsDump.env.DUMP_CLOUD_URL | quote}}
               - name: AWS_S3_BUCKET
                 value: {{ .Values.AWS_S3_BUCKET }}
+              - name: PLANET_EPOCH_DATE
+                value: {{ .Values.changesetsDump.env.PLANET_EPOCH_DATE | quote }}
           restartPolicy: OnFailure
           {{- if .Values.changesetsDump.nodeSelector.enabled }}
           nodeSelector:

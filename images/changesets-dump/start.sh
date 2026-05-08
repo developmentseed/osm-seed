@@ -2,6 +2,7 @@
 set -e
 
 export VOLUME_DIR=/mnt/data
+export PLANET_EPOCH_DATE="${PLANET_EPOCH_DATE:-1970-01-01}"
 date=$(date '+%y%m%d_%H%M')
 
 local_changesetsFile=$VOLUME_DIR/changesets-${date}.osm.bz2
