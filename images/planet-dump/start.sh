@@ -2,6 +2,7 @@
 set -e
 
 export VOLUME_DIR=/mnt/data
+export PLANET_EPOCH_DATE="${PLANET_EPOCH_DATE:-1970-01-01}"
 date=$(date '+%y%m%d_%H%M')
 
 local_planetPBFFile=$VOLUME_DIR/planet-${date}.osm.pbf

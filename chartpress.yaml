@@ -21,6 +21,9 @@ charts:
     full-history:
       valuesPath: fullHistory.image
       contextPath: images/full-history
+    changesets-dump:
+      valuesPath: changesetsDump.image
+      contextPath: images/changesets-dump
     replication-job:
       valuesPath: replicationJob.image
       contextPath: images/replication-job

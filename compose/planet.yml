@@ -67,6 +67,23 @@ services:
     restart: always
 
   #####################################################
+  ## OSM full history changesets dump
+  #####################################################
+  changesets-dump:
+    image: osmseed-changesets-dump:v1
+    build:
+      context: ../images/changesets-dump
+      dockerfile: Dockerfile
+    volumes:
+    - ../data/changesets-dump-data:/mnt/data
+    command: /start.sh
+    env_file:
+    - ../envs/.env.db
+    - ../envs/.env.db-utils
+    - ../envs/.env.cloudprovider
+    restart: always
+
+  #####################################################
   ## Changeset replications
   #####################################################
   changeset-replication-job:

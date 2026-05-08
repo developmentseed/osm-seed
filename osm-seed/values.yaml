@@ -316,6 +316,41 @@ fullHistory:
     key: "nodegroup_type"
     values: ["web"]
 # ====================================================================================================
+# Variables for changesets-dump container
+# ====================================================================================================
+changesetsDump:
+  enabled: false
+  image:
+    name: ""
+    tag: ""
+  priorityClass: "low-priority"
+  serviceAccount:
+    enabled: true
+    name: ohm-web-s3-bucket-access-staging
+  schedule: "* * * * *"
+  env:
+    OVERWRITE_CHANGESETS_FILE: false
+    DUMP_CLOUD_URL: s3://osm-seed/db.dump
+    PLANET_EPOCH_DATE: '1970-01-01'
+  resources:
+    enabled: false
+    requests:
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
+    limits:
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
+# ====================================================================================================
 # Variables for osm-seed database backup and restore
 # ====================================================================================================
 dbBackupRestore:
