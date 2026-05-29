@@ -296,7 +296,7 @@ fullHistory:
     PLANET_EXPORT_METHOD: planet-dump-ng
     DUMP_CLOUD_URL: s3://osm-seed/db.dump
     PLANET_EPOCH_DATE: '1970-01-01'
-    PLANET_DUMP_NG_METADATA_URL: https://osmseed.org/metadata/planet-meta.yaml 
+    PLANET_DUMP_NG_METADATA_URL: https://osmseed.org/metadata/planet-meta.yaml
   resources:
     enabled: false
     requests:
@@ -355,8 +355,8 @@ changesetsDump:
 # ====================================================================================================
 dbBackupRestore:
   image:
-    name: "ghcr.io/osm-seed/backup-restore"
-    tag: "0.1.0-0.dev.git.942.h994af82"
+    name: ""
+    tag: ""
   cronjobs:
     - name: web-db
       serviceAccount:
@@ -443,10 +443,10 @@ planetDump:
   schedule: "* * * * *"
   env:
     OVERWRITE_PLANET_FILE: false
-    DUMP_CLOUD_URL : s3://osm-seed/db.dump
+    DUMP_CLOUD_URL: s3://osm-seed/db.dump
     PLANET_EXPORT_METHOD: planet-dump-ng
     PLANET_EPOCH_DATE: '1970-01-01'
-    PLANET_DUMP_NG_METADATA_URL: https://osmseed.org/metadata/planet-meta.yaml 
+    PLANET_DUMP_NG_METADATA_URL: https://osmseed.org/metadata/planet-meta.yaml
   resources:
     enabled: false
     requests:
@@ -696,7 +696,7 @@ tilerServer:
   priorityClass: "medium-priority"
   serviceAccount:
     enabled: true
-    name: ohm-s3-bucket-access-staging 
+    name: ohm-s3-bucket-access-staging
   replicaCount: 1
   serviceAnnotations: {}
   ingressDomain: tiler2.dev.openhistoricalmap.org
@@ -822,8 +822,8 @@ tilerCacheCleanerJob:
 tmDb:
   enabled: false
   image:
-    name: "postgres"
-    tag: "11"
+    name: ""
+    tag: ""
   priorityClass: "medium-priority"
   env:
     POSTGRES_DB: tm
@@ -917,8 +917,8 @@ tmApi:
 nominatimUI:
   enabled: false
   image:
-    name: "ghcr.io/openhistoricalmap/nominatim-ui"
-    tag: "a469b5e"
+    name: ""
+    tag: ""
 # ====================================================================================================
 # Variables for nominatim api
 # ====================================================================================================
@@ -1040,46 +1040,36 @@ overpassApi:
 # ====================================================================================================
 # Variables for taginfo
 # ====================================================================================================
+# ====================================================================================================
+# taginfo - web frontend (HTTP server)
+# ====================================================================================================
 taginfoWeb:
   enabled: false
   image:
     name: ""
     tag: ""
-    
-taginfo:
-  enabled: false
-  image:
-    name: ""
-    tag: ""
-  serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+  replicas: 1
   priorityClass: "medium-priority"
+  serviceAccount:
+    enabled: false
+    name: ""
   serviceAnnotations: {}
   ingressDomain: taginfo-dev.staging.openhistoricalmap.org
   env:
-    URL_PLANET_FILE_STATE: https://planet.osm.org/pbf/state.txt
-    URL_HISTORY_PLANET_FILE_STATE: https://planet.osm.org/pbf/full-history/state.txt
-    URL_PLANET_FILE: https://planet.osm.org/pbf/planet-latest.osm.pbf
-    URL_HISTORY_PLANET_FILE: https://planet.osm.org/pbf/full-history/history-latest.osm.pbf
-    TIME_UPDATE_INTERVAL: 24h
-    INSTANCE_NAME: OHM Taginfo
-    INSTANCE_DESCRIPTION: "This is a <b>taginfo test instance</b>"
+    OVERWRITE_CONFIG_URL: ""
+    TAGINFO_DB_BASE_URL: https://planet.openhistoricalmap.org.s3.amazonaws.com/taginfo
+    ENVIRONMENT: development
+    FETCH_DB_FILES: "false"
+    INSTANCE_NAME: "OHM Taginfo"
+    INSTANCE_DESCRIPTION: "This is a taginfo test instance"
     INSTANCE_ICON: /img/logo/world.png
     INSTANCE_CONTACT: Anonymous
-    TAGINFO_PROJECT_REPO: https://github.com/taginfo/taginfo-projects.git
-    DOWNLOAD_DB: "languages wiki"
-    CREATE_DB: "db projects chronology"
-    ENVIRONMENT: development
-    AWS_S3_BUCKET: taginfo
-    INTERVAL_DOWNLOAD_DATA: 3600
-    TAGINFO_DB_BASE_URL: https://planet.openhistoricalmap.org.s3.amazonaws.com/taginfo
   resources:
     enabled: false
     requests:
       enabled: false
       memory: "1Gi"
-      cpu: "2"
+      cpu: "500m"
     limits:
       enabled: false
       memory: "2Gi"
@@ -1092,29 +1082,54 @@ taginfo:
     enabled: false
     key: "nodegroup_type"
     values: ["web"]
-  cronjob:
-    enabled: true
-    schedule: "0 2 */3 * *"
-    resources:
+
+# ====================================================================================================
+# taginfo - data processor (CronJob: downloads planet, builds DBs, uploads S3)
+# ====================================================================================================
+taginfoDataProcessor:
+  enabled: false
+  image:
+    name: ""
+    tag: ""
+  schedule: "0 2 */3 * *"
+  activeDeadlineSeconds: 86400
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  priorityClass: "medium-priority"
+  serviceAccount:
+    enabled: false
+    name: ""
+  env:
+    URL_PLANET_FILE_STATE: https://planet.osm.org/pbf/state.txt
+    URL_HISTORY_PLANET_FILE_STATE: https://planet.osm.org/pbf/full-history/state.txt
+    URL_PLANET_FILE: https://planet.osm.org/pbf/planet-latest.osm.pbf
+    URL_HISTORY_PLANET_FILE: https://planet.osm.org/pbf/full-history/history-latest.osm.pbf
+    TIME_UPDATE_INTERVAL: 24h
+    TAGINFO_PROJECT_REPO: https://github.com/taginfo/taginfo-projects.git
+    DOWNLOAD_DB: "languages wiki"
+    CREATE_DB: "db projects chronology"
+    ENVIRONMENT: development
+    AWS_S3_BUCKET: taginfo
+    INTERVAL_DOWNLOAD_DATA: 3600
+  resources:
+    enabled: false
+    requests:
       enabled: false
-      requests:
-        memory: "13Gi"
-        cpu: "3600m"
-      limits:
-        memory: "14Gi"
-        cpu: "3800m"
-      nodeAffinity:
-        enabled: false
-        key: "nodegroup_type"
-        values: ["job"]
-    nodeSelector:
+      memory: "13Gi"
+      cpu: "3600m"
+    limits:
       enabled: false
-      label_key: nodegroup_type
-      label_value: web
-    nodeAffinity:
-      enabled: false
-      key: "nodegroup_type"
-      values: ["web"]
+      memory: "14Gi"
+      cpu: "3800m"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: job
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["job"]
 # ====================================================================================================
 # Variables for osm-simple-metrics
 # ====================================================================================================
@@ -1152,8 +1167,8 @@ osmSimpleMetrics:
 monitoringReplication:
   enabled: false
   image:
-    name: "ghcr.io/osm-seed/replication-job"
-    tag: "0.1.0-n770.hd15c9f2"
+    name: ""
+    tag: ""
   priorityClass: "medium-priority"
   serviceAccount:
     enabled: true
@@ -1225,8 +1240,8 @@ osmchaWeb:
 osmchaApi:
   enabled: false
   image:
-    name: "ghcr.io/osmcha/osmcha-django"
-    tag: "61a80e897b45fb9b1a177bf433fb79bfa7fda59d"
+    name: ""
+    tag: ""
   ingressDomain: osmcha.dev.osmseed.org
   priorityClass: "medium-priority"
   env:
