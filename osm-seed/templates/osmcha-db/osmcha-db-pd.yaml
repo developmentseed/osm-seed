@@ -1,5 +1,8 @@
 {{- if .Values.osmchaDb.enabled -}}
 {{- if .Values.osmchaDb.persistenceDisk.enabled -}}
+
+############## k3s: dynamic provisioning via local-path. No PV needed. ##############
+{{- if ne .Values.cloudProvider "k3s" }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -53,6 +56,7 @@ spec:
     diskURI: {{ .Values.osmchaDb.persistenceDisk.AZURE_diskURI }}
   {{- end }}
 ---
+{{- end }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -63,6 +67,15 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
+  ############## k3s ##############
+  {{- if eq .Values.cloudProvider "k3s" }}
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.osmchaDb.persistenceDisk.localVolumeSize }}
+  {{- else }}
   ############## Minikube ##############
   {{- if eq .Values.cloudProvider "minikube" }}
   storageClassName: local-storage
@@ -94,5 +107,6 @@ spec:
       {{- if eq .Values.cloudProvider "azure" }}
       storage: {{ .Values.osmchaDb.persistenceDisk.AZURE_diskSize }}
       {{- end }}
+  {{- end }}
 {{- end }}
 {{- end }}

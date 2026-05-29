@@ -1,4 +1,4 @@
-{{- if and .Values.taginfo.enabled (eq .Values.serviceType "ClusterIP") .Values.ingressClassName }}
+{{- if and .Values.taginfoWeb.enabled (eq .Values.serviceType "ClusterIP") .Values.ingressClassName }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -32,15 +32,15 @@ spec:
   {{- if eq .Values.ingressClassNameType "nlb" }}
   tls:
   - hosts:
-    {{- if .Values.taginfo.ingressDomain }}
-    - {{ .Values.taginfo.ingressDomain }}
+    {{- if .Values.taginfoWeb.ingressDomain }}
+    - {{ .Values.taginfoWeb.ingressDomain }}
     {{- else }}
     - taginfo.{{ .Values.domain }}
     {{- end }}
     secretName: {{ template "osm-seed.fullname" . }}-secret-taginfo
   {{- end }}
   rules:
-  - host: {{ if .Values.taginfo.ingressDomain }}{{ .Values.taginfo.ingressDomain }}{{ else }}taginfo.{{ .Values.domain }}{{ end }}
+  - host: {{ if .Values.taginfoWeb.ingressDomain }}{{ .Values.taginfoWeb.ingressDomain }}{{ else }}taginfo.{{ .Values.domain }}{{ end }}
     http:
       paths:
       - path: /

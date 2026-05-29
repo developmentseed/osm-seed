@@ -1,5 +1,8 @@
 {{- if and .Values.nominatimApi.enabled (not .Values.nominatimApi.externalService.enabled) }}
 {{- if .Values.nominatimApi.persistenceDisk.enabled -}}
+
+############## k3s: dynamic provisioning via local-path. No PV needed. ##############
+{{- if ne .Values.cloudProvider "k3s" }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -45,6 +48,7 @@ spec:
     fsType: ext4
   {{- end }}
 ---
+{{- end }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -55,11 +59,20 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
+  ############## k3s ##############
+  {{- if eq .Values.cloudProvider "k3s" }}
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.nominatimApi.persistenceDisk.localVolumeSize }}
+  {{- else }}
   ############## Minikube ##############
   {{- if eq .Values.cloudProvider "minikube" }}
   storageClassName: local-storage
   {{- else }}
-  ############## Other providers ##############
+  ############## Other providers (aws, gcp) ##############
   storageClassName: ""
   {{- end }}
   volumeName: {{ .Release.Name }}-nominatim-pv
@@ -81,5 +94,6 @@ spec:
       {{- if eq .Values.cloudProvider "gcp" }}
       storage: {{ .Values.nominatimApi.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
+  {{- end }}
 {{- end }}
 {{- end }}

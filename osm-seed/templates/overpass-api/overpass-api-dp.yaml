@@ -1,5 +1,8 @@
 {{- if and .Values.overpassApi.enabled (not .Values.overpassApi.externalService.enabled) }}
 {{- if .Values.overpassApi.persistenceDisk.enabled -}}
+
+############## k3s: dynamic provisioning via local-path. No PV needed. ##############
+{{- if ne .Values.cloudProvider "k3s" }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -23,7 +26,7 @@ spec:
 
   ############## AWS Provider ##############
   {{- if eq .Values.cloudProvider "aws" }}
-  storageClassName: "" 
+  storageClassName: ""
   capacity:
     storage: {{ .Values.overpassApi.persistenceDisk.AWS_ElasticBlockStore_size }}
   accessModes:
@@ -45,6 +48,7 @@ spec:
     fsType: ext4
   {{- end }}
 ---
+{{- end }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -55,11 +59,20 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
+  ############## k3s ##############
+  {{- if eq .Values.cloudProvider "k3s" }}
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.overpassApi.persistenceDisk.localVolumeSize }}
+  {{- else }}
   ############## Minikube ##############
   {{- if eq .Values.cloudProvider "minikube" }}
   storageClassName: local-storage
   {{- else }}
-  ############## Other providers ##############
+  ############## Other providers (aws, gcp) ##############
   storageClassName: ""
   {{- end }}
   volumeName: {{ .Release.Name }}-overpass-api-pv
@@ -76,10 +89,11 @@ spec:
       {{- if eq .Values.cloudProvider "aws" }}
       storage: {{ .Values.overpassApi.persistenceDisk.AWS_ElasticBlockStore_size }}
       {{- end }}
-      
+
       ############## GCP Provider ##############
       {{- if eq .Values.cloudProvider "gcp" }}
       storage: {{ .Values.overpassApi.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
+  {{- end }}
 {{- end }}
 {{- end }}

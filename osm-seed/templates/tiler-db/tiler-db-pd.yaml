@@ -1,6 +1,9 @@
 {{- if .Values.tilerDb.enabled -}}
 {{- if not .Values.tilerDb.useExternalHost.enabled -}}
 {{- if .Values.tilerDb.persistenceDisk.enabled -}}
+
+############## k3s: dynamic provisioning via local-path. No PV needed. ##############
+{{- if ne .Values.cloudProvider "k3s" }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -46,6 +49,7 @@ spec:
     fsType: ext4
   {{- end }}
 ---
+{{- end }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -56,6 +60,15 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
+  ############## k3s ##############
+  {{- if eq .Values.cloudProvider "k3s" }}
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.tilerDb.persistenceDisk.localVolumeSize }}
+  {{- else }}
   ############## Minikube ##############
   {{- if eq .Values.cloudProvider "minikube" }}
   storageClassName: local-storage
@@ -82,6 +95,7 @@ spec:
       {{- if eq .Values.cloudProvider "gcp" }}
       storage: {{ .Values.tilerDb.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
+  {{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
