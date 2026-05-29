@@ -1,4 +1,4 @@
-{{- if and .Values.tilerServer.enabled (not .Values.tilerServer.externalService.enabled) }}
+{{- if .Values.tilerServer.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

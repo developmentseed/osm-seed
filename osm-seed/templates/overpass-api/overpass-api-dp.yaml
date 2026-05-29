@@ -1,4 +1,4 @@
-{{- if and .Values.overpassApi.enabled (not .Values.overpassApi.externalService.enabled) }}
+{{- if .Values.overpassApi.enabled }}
 {{- if .Values.overpassApi.persistenceDisk.enabled -}}
 
 ############## k3s: dynamic provisioning via local-path. No PV needed. ##############

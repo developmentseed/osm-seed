@@ -1,4 +1,4 @@
-{{- if and .Values.overpassApi.enabled (not .Values.overpassApi.externalService.enabled) }}
+{{- if .Values.overpassApi.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

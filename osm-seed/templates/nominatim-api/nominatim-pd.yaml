@@ -1,4 +1,4 @@
-{{- if and .Values.nominatimApi.enabled (not .Values.nominatimApi.externalService.enabled) }}
+{{- if .Values.nominatimApi.enabled }}
 {{- if .Values.nominatimApi.persistenceDisk.enabled -}}
 
 ############## k3s: dynamic provisioning via local-path. No PV needed. ##############

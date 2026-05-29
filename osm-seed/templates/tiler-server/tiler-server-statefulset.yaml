@@ -1,4 +1,4 @@
-{{- if and .Values.tilerServer.enabled (not .Values.tilerServer.externalService.enabled) }}
+{{- if .Values.tilerServer.enabled }}
 {{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "file" }}
 apiVersion: apps/v1
 kind: StatefulSet

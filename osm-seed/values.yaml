@@ -689,10 +689,6 @@ tilerServer:
   image:
     name: ""
     tag: ""
-  externalService:
-    enabled: true
-    ip: "37.1.1.5"
-    port: 9090
   priorityClass: "medium-priority"
   serviceAccount:
     enabled: true
@@ -989,10 +985,6 @@ overpassApi:
   image:
     name: ""
     tag: ""
-  externalService:
-    enabled: true
-    ip: "37.1.1.5"
-    port: 9090
   priorityClass: "medium-priority"
   serviceAnnotations: {}
   ingressDomain: overpass-api.dev.osmseed.org
