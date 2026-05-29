@@ -13,24 +13,6 @@ cloudStorageOps() {
 		echo s3://${AWS_S3_BUCKET}/${cloudpath} >${LOCAL_STATE_FILE}
 		aws s3 cp ${LOCAL_STATE_FILE} s3://${AWS_S3_BUCKET}/${BACKUP_CLOUD_FOLDER}/state.txt
 		;;
-	gcp)
-		gsutil cp ${filepath} gs://${GCP_STORAGE_BUCKET}/${cloudpath}
-		echo "gs://${GCP_STORAGE_BUCKET}/${CLOUD_BACKUP_FILE}" >${LOCAL_STATE_FILE}
-		gsutil cp ${LOCAL_STATE_FILE} gs://${GCP_STORAGE_BUCKET}/${BACKUP_CLOUD_FOLDER}/state.txt
-		;;
-	azure)
-		az storage blob upload \
-			--container-name ${AZURE_CONTAINER_NAME} \
-			--file ${filepath} \
-			--name ${cloudpath} \
-			--output table
-		echo "blob://${AZURE_STORAGE_ACCOUNT}/${AZURE_CONTAINER_NAME}/${CLOUD_BACKUP_FILE}" >${LOCAL_STATE_FILE}
-		az storage blob upload \
-			--container-name ${AZURE_CONTAINER_NAME} \
-			--file ${LOCAL_STATE_FILE} \
-			--name ${BACKUP_CLOUD_FOLDER}/state.txt \
-			--output table
-		;;
 	esac
 }
 
