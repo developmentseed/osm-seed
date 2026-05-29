@@ -52,36 +52,9 @@ spec:
           {{- end }}
         {{- end }}
         env:
-            # Tiler
-          - name: TILER_IMPORT_FROM
-            value: {{ .Values.tilerImposm.env.TILER_IMPORT_FROM | quote }}
-          - name: TILER_IMPORT_PBF_URL
-            value: {{ .Values.tilerImposm.env.TILER_IMPORT_PBF_URL | quote }}
-          - name: REPLICATION_URL
-            value: {{ .Values.tilerImposm.env.REPLICATION_URL | quote }}
-          - name: SEQUENCE_NUMBER
-            value: {{ .Values.tilerImposm.env.SEQUENCE_NUMBER | quote }}
-          - name: OVERWRITE_STATE
-            value: {{ .Values.tilerImposm.env.OVERWRITE_STATE | quote }}
-          - name: UPLOAD_EXPIRED_FILES
-            value: {{ .Values.tilerImposm.env.UPLOAD_EXPIRED_FILES | quote }}
-          - name: IMPORT_NATURAL_EARTH
-            value: {{ .Values.tilerImposm.env.IMPORT_NATURAL_EARTH | quote }}
-          - name: IMPORT_OSM_LAND
-            value: {{ .Values.tilerImposm.env.IMPORT_OSM_LAND | quote }}
-          - name: IMPOSM3_IMPORT_LAYERS
-            value: {{ .Values.tilerImposm.env.IMPOSM3_IMPORT_LAYERS | quote }}
-          - name: CLOUDPROVIDER
-            value: {{ .Values.cloudProvider }}
-          # In case cloudProvider=aws
-          {{- if eq .Values.cloudProvider "aws" }}
-          - name: AWS_S3_BUCKET
-            value: {{ .Values.AWS_S3_BUCKET }}
-          {{- end }}
-          # In case cloudProvider=gcp
-          {{- if eq .Values.cloudProvider "gcp" }}
-          - name: GCP_STORAGE_BUCKET
-            value: {{ .Values.GCP_STORAGE_BUCKET }}
+          {{- range $k, $v := .Values.tilerImposm.env }}
+          - name: {{ $k }}
+            value: {{ $v | quote }}
           {{- end }}
         envFrom:
         - configMapRef:
