@@ -52,7 +52,7 @@ charts:
       valuesPath: overpassApi.image
       contextPath: images/overpass-api
     taginfo:
-      valuesPath: taginfo.image
+      valuesPath: taginfoDataProcessor.image
       contextPath: images/taginfo
     taginfo-web:
       valuesPath: taginfoWeb.image
