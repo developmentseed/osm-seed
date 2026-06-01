@@ -53,6 +53,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-overpass-api-pv-claim
+  annotations:
+    "helm.sh/resource-policy": keep
   labels:
     app: {{ template "osm-seed.name" . }}
     component: db-pd
