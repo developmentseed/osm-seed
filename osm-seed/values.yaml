@@ -884,6 +884,56 @@ tilerCache:
     label_value: web
 
 # ====================================================================================================
+# Tiler monitor (pipeline): FastAPI that checks changesets reach the tiler DB / tiles / S3.
+# Runs only pipeline-monitor (main.py); the language monitor is a separate workload.
+# ====================================================================================================
+tilerMonitorPipeline:
+  enabled: false
+  # Default image for standalone/direct installs; chartpress overrides name/tag
+  # in the umbrella chart (valuesPath osm-seed.tilerMonitorPipeline.image).
+  image:
+    name: "ghcr.io/openhistoricalmap/tiler-monitor-pipeline"
+    tag: "0.0.1"
+  replicaCount: 1
+  env:
+    MONITOR_PORT: 8001
+    OHM_API_BASE: https://www.openhistoricalmap.org/api/0.6
+    CHANGESET_LIMIT: 30
+    TILE_CHECK_ZOOM: 16
+    TILER_MONITORING_CHECK_INTERVAL: "1h"
+    TILER_MONITORING_MISSING_THRESHOLD_PCT: 10
+    TILER_MONITORING_MAX_RETRIES: 3
+    TILER_MONITORING_FULL_CHECK_SAMPLE_PCT: 25
+    TILER_MONITORING_BASE_URL: ""
+    TILER_MONITORING_SLACK_WEBHOOK_URL: ""
+    OHM_COMMENT_USER: ""
+    OHM_COMMENT_PASSWORD: ""
+    VERBOSE_LOGGING: "false"
+  # SQLite retry store lives here (TILER_MONITORING_RETRY_DB defaults to /data/pipeline_retries.db)
+  persistenceDisk:
+    enabled: false
+    mountPath: /data
+    # k3s: dynamic local-path, or static hostPath when staticHostPath=true
+    staticHostPath: false
+    localVolumeHostPath: /mnt/tiler-monitor-pipeline-data
+    localVolumeSize: 1Gi
+    # AWS
+    AWS_ElasticBlockStore_volumeID: ""
+    AWS_ElasticBlockStore_size: 1Gi
+  resources:
+    enabled: false
+    requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
+      memory: "512Mi"
+      cpu: "0.5"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+
+# ====================================================================================================
 # Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3
 # ====================================================================================================
 tilerServerCacheCleaner:
