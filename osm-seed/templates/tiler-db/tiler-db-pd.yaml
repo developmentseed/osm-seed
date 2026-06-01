@@ -1,5 +1,4 @@
 {{- if .Values.tilerDb.enabled -}}
-{{- if not .Values.tilerDb.useExternalHost.enabled -}}
 {{- if .Values.tilerDb.persistenceDisk.enabled -}}
 
 ############## k3s: dynamic provisioning via local-path. No PV needed. ##############
@@ -96,6 +95,5 @@ spec:
       storage: {{ .Values.tilerDb.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
   {{- end }}
-{{- end }}
 {{- end }}
 {{- end }}
