@@ -1,0 +1,51 @@
+{{- if .Values.tilerMonitorLanguage.enabled -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-tiler-monitor-language
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-monitor-language
+    release: {{ .Release.Name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-tiler-monitor-language
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-monitor-language
+    release: {{ .Release.Name }}
+rules:
+  # exec create_mviews.sh inside the imposm statefulset pod
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+  # rollout restart Martin + wait for rollout status
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "patch"]
+  - apiGroups: ["apps"]
+    resources: ["statefulsets", "replicasets"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-tiler-monitor-language
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-monitor-language
+    release: {{ .Release.Name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-tiler-monitor-language
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-tiler-monitor-language
+    namespace: {{ .Release.Namespace }}
+{{- end }}
