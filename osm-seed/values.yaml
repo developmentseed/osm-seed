@@ -557,8 +557,6 @@ osmProcessor:
 # ====================================================================================================
 tilerDb:
   enabled: false
-  useExternalHost: # In case you are using an external host for the database, make sure you add POSTGRES_HOST
-    enabled: false
   image:
     name: ""
     tag: ""
@@ -643,13 +641,22 @@ tilerImposm:
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
-    TILER_IMPORT_LIMIT: 
-      https://gist.githubusercontent.com/Rub21/96bdcac5eb11f0b36ba8d0352ac537f4/raw/2606f2e207d4a0d895897a83efa1efacefd36eb4/monaco.geojson
-    TILER_CACHE_AWS_ENDPOINT: ""
+    REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates/
+    SEQUENCE_NUMBER: "0"
+    OVERWRITE_STATE: false
     UPLOAD_EXPIRED_FILES: true
     IMPORT_NATURAL_EARTH: true
     IMPORT_OSM_LAND: true
     IMPOSM3_IMPORT_LAYERS: all
+    # Refresh/recreate materialized views during replication updates
+    REFRESH_MVIEWS: false
+    RECREATE_MVIEWS_ON_UPDATE: false
+    # Upload of expired-tiles files needs CLOUDPROVIDER set (aws|gcp) + bucket/creds.
+    # If CLOUDPROVIDER is unset the upload is skipped.
+    CLOUDPROVIDER: aws
+    AWS_S3_BUCKET: ""
+    AWS_ACCESS_KEY_ID: ""
+    AWS_SECRET_ACCESS_KEY: ""
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
@@ -733,6 +740,77 @@ tilerServer:
       enabled: false
       memory: "2Gi"
       cpu: "2"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
+
+# ====================================================================================================
+# Variables for tiler-server-martin (Martin + Nginx vector tile server)
+# ====================================================================================================
+tilerServerMartin:
+  enabled: false
+  image:
+    name: ""
+    tag: ""
+  priorityClass: "medium-priority"
+  replicaCount: 1
+  # POSTGRES_* are injected from the tiler-db configmap (envFrom).
+  env:
+    OHM_DOMAIN: openhistoricalmap.org
+    MARTIN_WORKER_PROCESSES: 8
+    MARTIN_POOL_SIZE: 50
+    # Only needed to publish vtiles_languages.geojson to S3.
+    # If AWS_S3_BUCKET is empty the upload is skipped.
+    AWS_S3_BUCKET: ""
+    AWS_ACCESS_KEY_ID: ""
+    AWS_SECRET_ACCESS_KEY: ""
+  resources:
+    enabled: false
+    requests:
+      enabled: false
+      memory: "1Gi"
+      cpu: "2"
+    limits:
+      enabled: false
+      memory: "2Gi"
+      cpu: "2"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
+
+# ====================================================================================================
+# Variables for tiler-varnish (HTTP cache in front of tiler-server-martin)
+# ====================================================================================================
+tilerVarnish:
+  enabled: false
+  image:
+    name: ""
+    tag: ""
+  priorityClass: "medium-priority"
+  replicaCount: 1
+  # Varnish malloc storage sizes
+  dynamicSize: "16G"
+  staticSize: "4G"
+  resources:
+    enabled: false
+    requests:
+      enabled: false
+      memory: "1Gi"
+      cpu: "1"
+    limits:
+      enabled: false
+      memory: "24Gi"
+      cpu: "4"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
