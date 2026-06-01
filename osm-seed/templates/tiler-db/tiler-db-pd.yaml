@@ -1,8 +1,8 @@
 {{- if .Values.tilerDb.enabled -}}
 {{- if .Values.tilerDb.persistenceDisk.enabled -}}
 
-############## k3s: dynamic provisioning via local-path. No PV needed. ##############
-{{- if ne .Values.cloudProvider "k3s" }}
+############## k3s: dynamic local-path (no PV) OR static hostPath when staticHostPath=true ##############
+{{- if or (ne .Values.cloudProvider "k3s") (and (eq .Values.cloudProvider "k3s") .Values.tilerDb.persistenceDisk.staticHostPath) }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -13,17 +13,6 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  ############## Minikube ##############
-  {{- if eq .Values.cloudProvider "minikube" }}
-  storageClassName: local-storage
-  capacity:
-    storage: {{ .Values.tilerDb.persistenceDisk.localVolumeSize }}
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: {{ .Values.tilerDb.persistenceDisk.localVolumeHostPath | quote }}
-  {{- end }}
-
   ############## AWS Provider ##############
   {{- if eq .Values.cloudProvider "aws" }}
   storageClassName: ""
@@ -36,16 +25,17 @@ spec:
     fsType: ext4
   {{- end }}
 
-  ############## GCP Provider ##############
-  {{- if eq .Values.cloudProvider "gcp" }}
+  ############## k3s static hostPath (fixed dir = data identity, reusable across releases) ##############
+  {{- if and (eq .Values.cloudProvider "k3s") .Values.tilerDb.persistenceDisk.staticHostPath }}
   storageClassName: ""
+  persistentVolumeReclaimPolicy: Retain
   capacity:
-    storage: {{ .Values.tilerDb.persistenceDisk.GCP_gcePersistentDisk_size }}
+    storage: {{ .Values.tilerDb.persistenceDisk.localVolumeSize }}
   accessModes:
     - ReadWriteOnce
-  gcePersistentDisk:
-    pdName: {{ .Values.tilerDb.persistenceDisk.GCP_gcePersistentDisk_pdName }}
-    fsType: ext4
+  hostPath:
+    path: {{ .Values.tilerDb.persistenceDisk.localVolumeHostPath | quote }}
+    type: DirectoryOrCreate
   {{- end }}
 ---
 {{- end }}
@@ -63,38 +53,28 @@ metadata:
 spec:
   ############## k3s ##############
   {{- if eq .Values.cloudProvider "k3s" }}
+  {{- if .Values.tilerDb.persistenceDisk.staticHostPath }}
+  storageClassName: ""
+  volumeName: {{ .Release.Name }}-tiler-db-pv
+  {{- else }}
   storageClassName: local-path
+  {{- end }}
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: {{ .Values.tilerDb.persistenceDisk.localVolumeSize }}
   {{- else }}
-  ############## Minikube ##############
-  {{- if eq .Values.cloudProvider "minikube" }}
-  storageClassName: local-storage
-  {{- else }}
   ############## Other providers ##############
   storageClassName: ""
-  {{- end }}
   volumeName: {{ .Release.Name }}-tiler-db-pv
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      ############# Minikube ##############
-      {{- if eq .Values.cloudProvider "minikube" }}
-      storage: {{ .Values.tilerDb.persistenceDisk.localVolumeSize }}
-      {{- end }}
-
       ############## AWS Provider ##############
       {{- if eq .Values.cloudProvider "aws" }}
       storage: {{ .Values.tilerDb.persistenceDisk.AWS_ElasticBlockStore_size }}
-      {{- end }}
-
-      ############## GCP Provider ##############
-      {{- if eq .Values.cloudProvider "gcp" }}
-      storage: {{ .Values.tilerDb.persistenceDisk.GCP_gcePersistentDisk_size }}
       {{- end }}
   {{- end }}
 {{- end }}

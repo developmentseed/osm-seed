@@ -6,7 +6,7 @@
 # The version of the image group in osm-seed, get it here: https://github.com/orgs/osm-seed/packages
 osmSeedVersion: develop-9302179
 environment: development
-# cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, gcp, azure, minikube
+# cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, k3s
 cloudProvider: aws
 # ====================================================================================================
 # AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
@@ -91,19 +91,12 @@ db:
     enabled: false
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
-    # Minikube
+    # k3s (local-path dynamic / static hostPath)
     localVolumeHostPath: /mnt/db-data
     localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-06a278f66b15d4b3c
     AWS_ElasticBlockStore_size: 50Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-disk-db-v1
-    GCP_gcePersistentDisk_size: 50Gi
-    # Azure
-    AZURE_diskName: osmseed-api-db-v1
-    AZURE_diskURI: /subscriptions/../../providers/Microsoft.Compute/disks/osmseed-api-db-v1
-    AZURE_diskSize: 20Gi
   resources:
     enabled: false
     requests:
@@ -577,15 +570,13 @@ tilerDb:
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-d
-    # Minikube
+    # k3s: staticHostPath=true uses a fixed hostPath dir (reusable across releases); false = dynamic local-path
+    staticHostPath: false
     localVolumeHostPath: /mnt/tiler-db-data
     localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-0cf316caac04fc623
     AWS_ElasticBlockStore_size: 20Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-disk-tilerdb-v1
-    GCP_gcePersistentDisk_size: 50Gi
   sharedMemorySize: 64Mi
   resources:
     enabled: false
@@ -661,15 +652,13 @@ tilerImposm:
     enabled: false
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
-    # Minikube
+    # k3s: staticHostPath=true uses a fixed hostPath dir (reusable across releases); false = dynamic local-path
+    staticHostPath: false
     localVolumeHostPath: /mnt/tiler-imposm-data
     localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 50Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-disk-imposm-v1
-    GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
     requests:
@@ -721,15 +710,12 @@ tilerServer:
     enabled: false
     accessMode: ReadWriteOnce
     mountPath: /mnt/data
-    # Minikube
+    # k3s (local-path dynamic / static hostPath)
     localVolumeHostPath: /mnt/tiler-server-data
     localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 50Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-disk-db-v1
-    GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
     requests:
@@ -819,6 +805,86 @@ tilerVarnish:
     enabled: false
     key: "nodegroup_type"
     values: ["web"]
+
+# ====================================================================================================
+# Variables for ohmx-adiff-builder (builds augmented diffs from OSMX into S3)
+# ====================================================================================================
+ohmxAdiffBuilder:
+  enabled: false
+  image:
+    name: "ghcr.io/openhistoricalmap/ohmx-adiff-builder"
+    tag: "0.0.1"
+  # serviceAccountName: ohm-s3-bucket-access-staging
+  # awsSecretName: ohmx-adiff-aws-creds
+  # WORKDIR inside the container is /data
+  env:
+    PLANET_PBF_URL: https://s3.amazonaws.com/planet.openhistoricalmap.org/planet/planet-latest.osm.pbf
+    REPLICATION_URL: https://s3.amazonaws.com/planet.openhistoricalmap.org/replication/minute
+    API_URL: https://www.openhistoricalmap.org
+    OSMX_INITIAL_SEQNUM: "0"
+    AWS_S3_BUCKET: s3://planet.openhistoricalmap.org
+  persistenceDisk:
+    mountPath: /data
+    size: 50Gi
+    storageClassName: ""
+  resources:
+    enabled: false
+    requests:
+      memory: "2Gi"
+      cpu: "1"
+    limits:
+      memory: "4Gi"
+      cpu: "2"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
+
+# ====================================================================================================
+# Variables for tiler-cache-purge (SQS-driven cache invalidation, sends BAN to Varnish)
+# ====================================================================================================
+tilerCachePurge:
+  enabled: false
+  image:
+    name: "ghcr.io/openhistoricalmap/tiler-cache"
+    tag: "0.0.1"
+  # ServiceAccount with RBAC to spawn purge Jobs
+  serviceAccountName: job-service-account
+  env:
+    REGION_NAME: us-east-1
+    SQS_QUEUE_URL: ""
+    NODEGROUP_TYPE: web
+    MAX_ACTIVE_JOBS: 2
+    DELETE_OLD_JOBS_AGE: 3600
+    EXECUTE_PURGE: true
+    EXECUTE_SEED: false
+    PURGE_MIN_ZOOM: 3
+    PURGE_MAX_ZOOM: 12
+    SEED_MIN_ZOOM: 0
+    SEED_MAX_ZOOM: 12
+    SEED_CONCURRENCY: 64
+    PURGE_CONCURRENCY: 64
+    ZOOM_LEVELS_TO_DELETE: 13,14,15,16,17,18,19,20
+    S3_BUCKET_CACHE_TILER: tiler-cache
+    S3_BUCKET_PATH_FILES: mnt/data/osm
+    # Varnish endpoint to send BAN requests
+    VARNISH_URL: ""
+  resources:
+    enabled: false
+    requests:
+      memory: "512Mi"
+      cpu: "0.5"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
 
 # ====================================================================================================
 # Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3
@@ -1037,15 +1103,13 @@ nominatimApi:
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/14/main
     subPath: nominatim-pgdata
-    # Minikube
+    # k3s: staticHostPath=true uses a fixed hostPath dir (reusable across releases); false = dynamic local-path
+    staticHostPath: false
     localVolumeHostPath: /mnt/nominatim-db-data
     localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-0403ccb65fb4a85e9
     AWS_ElasticBlockStore_size: 100Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-disk-nominatim_db-v1
-    GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
@@ -1080,15 +1144,13 @@ overpassApi:
     enabled: false
     accessMode: ReadWriteOnce
     mountPath: /db
-    # Minikube
+    # k3s: staticHostPath=true uses a fixed hostPath dir (reusable across releases); false = dynamic local-path
+    staticHostPath: false
     localVolumeHostPath: /mnt/overpass-api-db-data
     localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 50Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-disk-overpass-v1
-    GCP_gcePersistentDisk_size: 50Gi
   resources:
     enabled: false
     requests:
@@ -1382,15 +1444,13 @@ osmchaDb:
     enabled: false
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
-    # Minikube
+    # k3s: staticHostPath=true uses a fixed hostPath dir (reusable across releases); false = dynamic local-path
+    staticHostPath: false
     localVolumeHostPath: /mnt/db-data/osmcha-data
     localVolumeSize: 10Gi
     # AWS
     AWS_ElasticBlockStore_volumeID: vol-1234bcd
     AWS_ElasticBlockStore_size: 50Gi
-    # GCP
-    GCP_gcePersistentDisk_pdName: osmseed-osmcha-disk--v1
-    GCP_gcePersistentDisk_size: 50Gi
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
