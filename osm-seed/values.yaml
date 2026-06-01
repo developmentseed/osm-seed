@@ -812,9 +812,6 @@ tilerVarnish:
 osmxAdiffBuilder:
   enabled: false
   # NOTE: image repo keeps the ohmx name (not renamed in ghcr).
-  image:
-    name: "ghcr.io/openhistoricalmap/ohmx-adiff-builder"
-    tag: "0.0.1"
   # serviceAccountName: ohm-s3-bucket-access-staging
   # awsSecretName: ohmx-adiff-aws-creds
   # WORKDIR inside the container is /data
@@ -851,42 +848,36 @@ osmxAdiffBuilder:
     values: ["web"]
 
 # ====================================================================================================
-# Variables for tiler-cache-purge (SQS-driven cache invalidation, sends BAN to Varnish)
+# Tiler cache: runs sqs_processor.py (purge/seed from AWS SQS) + main.py (/clean-cache API), like the compose tiler_sqs_cleaner
 # ====================================================================================================
-tilerCachePurge:
+tilerCache:
   enabled: false
+  # Default image for standalone/direct installs; chartpress overrides name/tag
+  # in the umbrella chart (valuesPath osm-seed.tilerCache.image).
   image:
     name: "ghcr.io/openhistoricalmap/tiler-cache"
     tag: "0.0.1"
-  # ServiceAccount with RBAC to spawn purge Jobs
-  serviceAccountName: job-service-account
+  replicaCount: 1
   env:
-    REGION_NAME: us-east-1
-    SQS_QUEUE_URL: ""
-    NODEGROUP_TYPE: web
-    MAX_ACTIVE_JOBS: 2
-    DELETE_OLD_JOBS_AGE: 3600
-    EXECUTE_PURGE: true
-    EXECUTE_SEED: false
-    PURGE_MIN_ZOOM: 3
-    PURGE_MAX_ZOOM: 12
-    SEED_MIN_ZOOM: 0
-    SEED_MAX_ZOOM: 12
-    SEED_CONCURRENCY: 64
-    PURGE_CONCURRENCY: 64
-    ZOOM_LEVELS_TO_DELETE: 13,14,15,16,17,18,19,20
-    S3_BUCKET_CACHE_TILER: tiler-cache
-    S3_BUCKET_PATH_FILES: mnt/data/osm
-    # Varnish endpoint to send BAN requests
+    PORT: 8000
+    ENVIRONMENT: development
+    # Varnish endpoint to send BAN requests. Empty => http://<release>-tiler-varnish:6081
     VARNISH_URL: ""
+    ZOOM_LEVELS_TO_DELETE: 13,14,15,16,17,18,19,20
+    # SQS processor (purge/seed): remote AWS queue + credentials
+    SQS_QUEUE_URL: ""
+    AWS_REGION_NAME: us-east-1
+    # AWS creds for boto3. On EKS use a serviceAccount/IRSA instead and leave these empty.
+    AWS_ACCESS_KEY_ID: ""
+    AWS_SECRET_ACCESS_KEY: ""
   resources:
     enabled: false
     requests:
+      memory: "256Mi"
+      cpu: "0.25"
+    limits:
       memory: "512Mi"
       cpu: "0.5"
-    limits:
-      memory: "1Gi"
-      cpu: "1"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type

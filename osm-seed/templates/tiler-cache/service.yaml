@@ -1,0 +1,21 @@
+{{- if .Values.tilerCache.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-tiler-cache
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-cache-service
+    release: {{ .Release.Name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-tiler-cache
+  ports:
+    - name: http
+      port: {{ .Values.tilerCache.env.PORT }}
+      targetPort: {{ .Values.tilerCache.env.PORT }}
+      protocol: TCP
+{{- end }}
