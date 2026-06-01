@@ -807,10 +807,11 @@ tilerVarnish:
     values: ["web"]
 
 # ====================================================================================================
-# Variables for ohmx-adiff-builder (builds augmented diffs from OSMX into S3)
+# Variables for osmx-adiff-builder (builds augmented diffs from OSMX into S3)
 # ====================================================================================================
-ohmxAdiffBuilder:
+osmxAdiffBuilder:
   enabled: false
+  # NOTE: image repo keeps the ohmx name (not renamed in ghcr).
   image:
     name: "ghcr.io/openhistoricalmap/ohmx-adiff-builder"
     tag: "0.0.1"
@@ -824,9 +825,14 @@ ohmxAdiffBuilder:
     OSMX_INITIAL_SEQNUM: "0"
     AWS_S3_BUCKET: s3://planet.openhistoricalmap.org
   persistenceDisk:
+    enabled: true
     mountPath: /data
     size: 50Gi
     storageClassName: ""
+    # k3s: staticHostPath=true uses a fixed hostPath dir (reusable across releases); false = dynamic local-path
+    staticHostPath: true
+    localVolumeHostPath: /mnt/osmx-adiff-data
+    localVolumeSize: 50Gi
   resources:
     enabled: false
     requests:
