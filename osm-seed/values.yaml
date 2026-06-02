@@ -848,6 +848,33 @@ osmxAdiffBuilder:
     values: ["web"]
 
 # ====================================================================================================
+# Variables for the planet-stats daily pipeline (stats dashboard + boundary viewer)
+# Computes daily statistics from the planet file. State round-trips through S3.
+# ====================================================================================================
+planetStats:
+  enabled: false
+  image:
+    name: ""
+    tag: ""
+  serviceAccount:
+    enabled: false
+    name: ""
+  priorityClass: "medium-priority"
+  schedule: "0 4 * * *"
+  env:
+    PUBLISH_TARGET: "s3"
+    DASHBOARD_DIR: "/mnt/planet-stats"
+    PLANET_STATS_STATE_S3_URI: ""
+    AWS_S3_ENDPOINT: ""
+  resources:
+    enabled: false
+  nodeSelector:
+    enabled: false
+  nodeAffinity:
+    enabled: false
+
+
+# ====================================================================================================
 # Tiler cache: runs sqs_processor.py (purge/seed from AWS SQS) + main.py (/clean-cache API), like the compose tiler_sqs_cleaner
 # ====================================================================================================
 tilerCache:
@@ -928,6 +955,35 @@ tilerMonitorPipeline:
     limits:
       memory: "512Mi"
       cpu: "0.5"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+
+# ====================================================================================================
+# Tiler monitor (language): CronJob that recreates mviews + restarts Martin when new languages appear.
+# Needs RBAC (exec into imposm, rollout restart Martin) — see templates/tiler-monitor-language/rbac.yaml.
+# ====================================================================================================
+tilerMonitorLanguage:
+  enabled: false
+  image:
+    name: "ghcr.io/openhistoricalmap/tiler-monitor-language"
+    tag: "0.0.1"
+  # hourly
+  schedule: "0 * * * *"
+  # kill a run if it exceeds this (mview recreation can take a while)
+  activeDeadlineSeconds: 5400
+  env:
+    TILER_MONITORING_NIM_NUMBER_LANGUAGES: 5
+    TILER_MONITORING_FORCE_LANGUAGES_GENERATION: "false"
+  resources:
+    enabled: false
+    requests:
+      memory: "128Mi"
+      cpu: "0.1"
+    limits:
+      memory: "256Mi"
+      cpu: "0.25"
   nodeSelector:
     enabled: false
     label_key: nodegroup_type
