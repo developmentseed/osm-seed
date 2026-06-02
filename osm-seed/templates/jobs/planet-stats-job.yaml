@@ -29,7 +29,7 @@ spec:
           containers:
           - name: {{ .Release.Name }}-planet-stats-job
             image: {{ .Values.planetStats.image.name }}:{{ .Values.planetStats.image.tag }}
-            command: ['/app/run.sh']
+            command: ['/app/start.sh']
             {{- if .Values.planetStats.resources.enabled }}
             resources:
               requests:
