@@ -45,10 +45,14 @@ spec:
           livenessProbe:
             exec:
               command: ["/app/healthcheck.sh"]
-            initialDelaySeconds: 600
-            periodSeconds: 60
-            timeoutSeconds: 10
-            failureThreshold: 3
+            # initialDelaySeconds must cover the initial osmx build (download planet
+            # + build db from OSMX_INITIAL_SEQNUM) before create_diff_files starts;
+            # too low and liveness kills the pod mid-build in a restart loop.
+            {{- $probe := default dict .Values.osmxAdiffBuilder.livenessProbe }}
+            initialDelaySeconds: {{ $probe.initialDelaySeconds | default 600 }}
+            periodSeconds: {{ $probe.periodSeconds | default 60 }}
+            timeoutSeconds: {{ $probe.timeoutSeconds | default 10 }}
+            failureThreshold: {{ $probe.failureThreshold | default 3 }}
           {{- if .Values.osmxAdiffBuilder.resources.enabled }}
           resources:
             requests:
