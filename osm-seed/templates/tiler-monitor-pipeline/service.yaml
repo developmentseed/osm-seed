@@ -1,0 +1,21 @@
+{{- if .Values.tilerMonitorPipeline.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-tiler-monitor-pipeline
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-monitor-pipeline-service
+    release: {{ .Release.Name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-tiler-monitor-pipeline
+  ports:
+    - name: http
+      port: {{ .Values.tilerMonitorPipeline.env.MONITOR_PORT }}
+      targetPort: {{ .Values.tilerMonitorPipeline.env.MONITOR_PORT }}
+      protocol: TCP
+{{- end }}

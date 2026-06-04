@@ -1,0 +1,90 @@
+{{- if .Values.osmxAdiffBuilder.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-osmx-adiff-builder
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmx-adiff-builder-statefulset
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  serviceName: {{ .Release.Name }}-osmx-adiff-builder
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-osmx-adiff-builder
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-osmx-adiff-builder
+    spec:
+      {{- if .Values.osmxAdiffBuilder.serviceAccountName }}
+      serviceAccountName: {{ .Values.osmxAdiffBuilder.serviceAccountName }}
+      {{- end }}
+      containers:
+        - name: osmx-adiff-builder
+          image: "{{ .Values.osmxAdiffBuilder.image.name }}:{{ .Values.osmxAdiffBuilder.image.tag }}"
+          env:
+            {{- range $k, $v := .Values.osmxAdiffBuilder.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          {{- if .Values.osmxAdiffBuilder.awsSecretName }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.osmxAdiffBuilder.awsSecretName }}
+          {{- end }}
+          volumeMounts:
+            - name: osmx-db
+              mountPath: {{ .Values.osmxAdiffBuilder.persistenceDisk.mountPath }}
+          livenessProbe:
+            exec:
+              command: ["/app/healthcheck.sh"]
+            # initialDelaySeconds must cover the initial osmx build (download planet
+            # + build db from OSMX_INITIAL_SEQNUM) before create_diff_files starts;
+            # too low and liveness kills the pod mid-build in a restart loop.
+            {{- $probe := default dict .Values.osmxAdiffBuilder.livenessProbe }}
+            initialDelaySeconds: {{ $probe.initialDelaySeconds | default 600 }}
+            periodSeconds: {{ $probe.periodSeconds | default 60 }}
+            timeoutSeconds: {{ $probe.timeoutSeconds | default 10 }}
+            failureThreshold: {{ $probe.failureThreshold | default 3 }}
+          {{- if .Values.osmxAdiffBuilder.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.osmxAdiffBuilder.resources.requests.memory }}
+              cpu: {{ .Values.osmxAdiffBuilder.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.osmxAdiffBuilder.resources.limits.memory }}
+              cpu: {{ .Values.osmxAdiffBuilder.resources.limits.cpu }}
+          {{- end }}
+      volumes:
+        - name: osmx-db
+        {{- if .Values.osmxAdiffBuilder.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-osmx-adiff-builder-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      {{- if .Values.osmxAdiffBuilder.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.osmxAdiffBuilder.nodeSelector.label_key }}: {{ .Values.osmxAdiffBuilder.nodeSelector.label_value }}
+      {{- end }}
+      {{- if .Values.osmxAdiffBuilder.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.osmxAdiffBuilder.nodeAffinity.key }}
+                    operator: In
+                    values:
+                    {{- range .Values.osmxAdiffBuilder.nodeAffinity.values }}
+                      - {{ . | quote }}
+                    {{- end }}
+      {{- end }}
+{{- end }}

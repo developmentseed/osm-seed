@@ -1,5 +1,4 @@
 {{- if .Values.tilerDb.enabled -}}
-{{- if not .Values.tilerDb.useExternalHost.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -39,10 +38,9 @@ spec:
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
            {{- if and .Values.tilerDb.postgresqlConfig.enabled .Values.tilerDb.persistenceDisk.enabled }}
-          command:
-            - "sh"
+          args:
             - "-c"
-            - "su postgres -c 'postgres -c config_file=/etc/postgresql/postgresql.conf'"
+            - "config_file=/etc/postgresql/postgresql.conf"
            {{- end }}
           livenessProbe:
             exec:
@@ -120,5 +118,4 @@ spec:
                       - {{ . | quote }}
                     {{- end }}
       {{- end }}
-{{- end }}
 {{- end }}

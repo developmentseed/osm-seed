@@ -1,0 +1,78 @@
+{{- if .Values.planetStats.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-planet-stats-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: planet-stats-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ quote .Values.planetStats.schedule }}
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          {{- if .Values.planetStats.serviceAccount.enabled }}
+          serviceAccountName: {{ .Values.planetStats.serviceAccount.name }}
+          automountServiceAccountToken: true
+          {{- end }}
+          {{- if .Values.planetStats.priorityClass }}
+          priorityClassName: {{ .Release.Name }}-{{ .Values.planetStats.priorityClass }}
+          {{- end }}
+          containers:
+          - name: {{ .Release.Name }}-planet-stats-job
+            image: {{ .Values.planetStats.image.name }}:{{ .Values.planetStats.image.tag }}
+            command: ['/app/start.sh']
+            {{- if .Values.planetStats.resources.enabled }}
+            resources:
+              requests:
+                memory: {{ .Values.planetStats.resources.requests.memory }}
+                cpu: {{ .Values.planetStats.resources.requests.cpu }}
+              limits:
+                memory: {{ .Values.planetStats.resources.limits.memory }}
+                cpu: {{ .Values.planetStats.resources.limits.cpu }}
+            {{- end }}
+            env:
+              - name: CLOUDPROVIDER
+                value: {{ .Values.cloudProvider }}
+              # Pipeline config + static S3 credentials (state round-trip + planet fetch)
+              {{- range $k, $v := .Values.planetStats.env }}
+              - name: {{ $k }}
+                value: {{ $v | quote }}
+              {{- end }}
+              {{- if eq .Values.cloudProvider "aws" }}
+              - name: AWS_S3_BUCKET
+                value: {{ .Values.AWS_S3_BUCKET }}
+              {{- end }}
+              {{- if eq .Values.cloudProvider "gcp" }}
+              - name: GCP_STORAGE_BUCKET
+                value: {{ .Values.GCP_STORAGE_BUCKET }}
+              {{- end }}
+          restartPolicy: OnFailure
+          {{- if .Values.planetStats.nodeSelector.enabled }}
+          nodeSelector:
+            {{ .Values.planetStats.nodeSelector.label_key }} : {{ .Values.planetStats.nodeSelector.label_value }}
+          {{- end }}
+          # Affinity settings
+          {{- if .Values.planetStats.nodeAffinity.enabled }}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: {{ .Values.planetStats.nodeAffinity.key }}
+                        operator: In
+                        values:
+                        {{- range .Values.planetStats.nodeAffinity.values }}
+                          - {{ . | quote }}
+                        {{- end }}
+          {{- end }}
+      backoffLimit: 3
+{{- end }}

@@ -1,0 +1,22 @@
+{{- if .Values.tilerVarnish.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-tiler-varnish
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-varnish-service
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  type: {{ .Values.serviceType }}
+  ports:
+    - name: http
+      port: 6081
+      protocol: TCP
+      targetPort: http
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-tiler-varnish
+{{- end }}

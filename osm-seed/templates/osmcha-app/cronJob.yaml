@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-osmcha-fetch-changesets-cronjob
+  name: {{ .Release.Name }}-osmcha-fetch-changesets
   labels:
     app: {{ template "osm-seed.name" . }}
     component: osmcha-app-deployment
@@ -40,7 +40,7 @@ spec:
 apiVersion: batch/v1
 kind: CronJob 
 metadata:
-  name: {{ .Release.Name }}-osmcha-process-changesets-cronjob
+  name: {{ .Release.Name }}-osmcha-process-changesets
   labels:
     app: {{ template "osm-seed.name" . }}
     component: osmcha-app-deployment

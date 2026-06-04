@@ -1,5 +1,4 @@
 {{- if .Values.tilerDb.enabled -}}
-{{- if not .Values.tilerDb.useExternalHost.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -17,5 +16,4 @@ spec:
     app: {{ .Release.Name }}-tiler-db
     release: {{ .Release.Name }}
     run: {{ .Release.Name }}-tiler-db
-{{- end }}
 {{- end }}

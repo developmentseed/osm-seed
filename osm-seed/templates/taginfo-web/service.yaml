@@ -1,4 +1,4 @@
-{{- if .Values.taginfo.enabled -}}
+{{- if .Values.taginfoWeb.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -18,7 +18,7 @@ metadata:
     {{- end }}
 
     {{- if and  (eq .Values.ingressClassNameType "alb" ) (eq .Values.serviceType "ClusterIP") }}
-    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.taginfo.healthCheckPath | default "/" }}
+    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.taginfoWeb.healthCheckPath | default "/" }}
     {{- end }}
 spec:
   type: {{ .Values.serviceType }}
