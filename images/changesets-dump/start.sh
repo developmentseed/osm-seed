@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
-set -e
+set -eo pipefail
+# Trace every command (prints to stderr with line numbers) to find where it dies
+export PS4='+ [$(date +%T)] line ${LINENO}: '
+set -x
+
+# Print container memory usage every 10s so an OOMKill shows the last RSS peak
+log_memory() {
+    while true; do
+        local used
+        used=$(cat /sys/fs/cgroup/memory.current 2>/dev/null || cat /sys/fs/cgroup/memory/memory.usage_in_bytes 2>/dev/null)
+        echo "[MEM $(date +%T)] cgroup_used=$(( ${used:-0} / 1024 / 1024 ))Mi | $(ps -eo rss,comm --sort=-rss --no-headers 2>/dev/null | head -3 | tr '\n' ' ')"
+        sleep 10
+    done
+}
+log_memory &
+MEM_LOGGER_PID=$!
+trap 'kill $MEM_LOGGER_PID 2>/dev/null' EXIT
 
 export VOLUME_DIR=/mnt/data
 export PLANET_EPOCH_DATE="${PLANET_EPOCH_DATE:-1970-01-01}"
@@ -77,8 +93,10 @@ upload_changesets_file() {
 # ===============================
 download_dump_file
 echo "Generating changesets dump with planet-dump-ng..."
-planet-dump-ng \
+echo ">>> planet-dump-ng START $(date +%T) dumpFile=$dumpFile size=$(du -h "$dumpFile" | cut -f1)"
+stdbuf -oL -eL planet-dump-ng \
 	--dump-file "$dumpFile" \
-	--changesets "$local_changesetsFile"
+	--changesets "$local_changesetsFile" 2>&1
+echo ">>> planet-dump-ng DONE $(date +%T) output=$(du -h "$local_changesetsFile" | cut -f1)"
 
 upload_changesets_file

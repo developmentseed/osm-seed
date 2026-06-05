@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
-set -e
+set -eo pipefail
+# Trace every command (prints to stderr with line numbers) to find where it dies
+export PS4='+ [$(date +%T)] line ${LINENO}: '
+set -x
+
+# Print container memory usage every 10s so an OOMKill shows the last RSS peak
+log_memory() {
+    while true; do
+        local used
+        used=$(cat /sys/fs/cgroup/memory.current 2>/dev/null || cat /sys/fs/cgroup/memory/memory.usage_in_bytes 2>/dev/null)
+        echo "[MEM $(date +%T)] cgroup_used=$(( ${used:-0} / 1024 / 1024 ))Mi | $(ps -eo rss,comm --sort=-rss --no-headers 2>/dev/null | head -3 | tr '\n' ' ')"
+        sleep 10
+    done
+}
+log_memory &
+MEM_LOGGER_PID=$!
+trap 'kill $MEM_LOGGER_PID 2>/dev/null' EXIT
 
 export VOLUME_DIR=/mnt/data
 export PLANET_EPOCH_DATE="${PLANET_EPOCH_DATE:-1970-01-01}"
@@ -100,17 +116,19 @@ upload_planet_file() {
 download_dump_file
 echo "Generating planet file with planet-dump-ng..."
 
+echo ">>> planet-dump-ng START $(date +%T) dumpFile=$dumpFile size=$(du -h "$dumpFile" | cut -f1)"
 if [ -n "$PLANET_DUMP_NG_METADATA_URL" ]; then
     curl "$PLANET_DUMP_NG_METADATA_URL" -o metadata.yml
-    planet-dump-ng \
+    stdbuf -oL -eL planet-dump-ng \
         --dump-file "$dumpFile" \
         --pbf "$local_planetPBFFile" \
-        -M metadata.yml
+        -M metadata.yml 2>&1
 else
-    planet-dump-ng \
+    stdbuf -oL -eL planet-dump-ng \
         --dump-file "$dumpFile" \
-        --pbf "$local_planetPBFFile"
+        --pbf "$local_planetPBFFile" 2>&1
 fi
+echo ">>> planet-dump-ng DONE $(date +%T) output=$(du -h "$local_planetPBFFile" | cut -f1)"
 
 # Upload results
 upload_planet_file
