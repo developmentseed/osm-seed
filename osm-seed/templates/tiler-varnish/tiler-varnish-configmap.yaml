@@ -41,6 +41,13 @@ data:
             return (synth(200, "Banned: " + req.http.X-Ban-Regex));
         }
 
+        # Backward-compat: tileset viejo "osm" -> "ohm" (issue #1382).
+        # Rewrite antes del hash: requests /maps/osm comparten cache con /maps/ohm.
+        # El boundary (/|\.json) protege /maps/osm_land (tiles static).
+        if (req.url ~ "^/maps/osm(/|\.json)") {
+            set req.url = regsub(req.url, "^/maps/osm", "/maps/ohm");
+        }
+
         # fresh_tiles=1: fuerza MISS y cachea la respuesta fresh
         # (reemplaza la entrada vieja)
         if (req.url ~ "[?&]fresh_tiles=1") {
