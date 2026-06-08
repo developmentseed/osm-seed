@@ -51,6 +51,8 @@ RUN set -ex \
         gsutil \
         azure-cli \
         postgresql-client-17 \
+        osmium-tool \
+        python3-pyosmium \
         libxml2 \
         libboost-filesystem1.74.0 \
         libboost-program-options1.74.0 \
