@@ -51,6 +51,10 @@ spec:
                 value: {{ $job.env.BACKUP_CLOUD_FILE }}
               - name: AWS_S3_BUCKET
                 value: {{ $job.env.AWS_S3_BUCKET }}
+              # Minute replication stream. The backup reads its state.txt to store
+              # the seqno next to the dump, so planet dumps know their position.
+              - name: MINUTE_REPLICATION_URL
+                value: {{ $job.env.MINUTE_REPLICATION_URL }}
               # Clean up options
               - name: CLEANUP_BACKUPS
                 value: {{ quote $job.env.CLEANUP_BACKUPS }}

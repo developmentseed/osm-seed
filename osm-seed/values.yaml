@@ -365,6 +365,9 @@ dbBackupRestore:
         BACKUP_CLOUD_FOLDER: database/web-db
         BACKUP_CLOUD_FILE: osmseed-api-web-db
         AWS_S3_BUCKET: secure-bucket
+        # Replication stream read at backup time to store the seqno next to the dump.
+        # Generic OSM default; deployments override it with their own stream.
+        MINUTE_REPLICATION_URL: https://planet.openstreetmap.org/replication/minute
         # Clean up backups options
         CLEANUP_BACKUPS: true
         RETENTION_DAYS: "30"

@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -e
 export PGPASSWORD=$POSTGRES_PASSWORD
+
+# osmdbt publishes the minute replication stream. Its state.txt has the current
+# sequenceNumber, which tracks the database WAL. Read it at backup time so the
+# dump knows its replication position. Default points at OSM; each deployment
+# sets its own URL via env (OHM uses its own stream).
+export MINUTE_REPLICATION_URL="${MINUTE_REPLICATION_URL:-https://planet.openstreetmap.org/replication/minute}"
 # Upload files
 cloudStorageOps() {
 	local LOCAL_STATE_FILE=state.txt
@@ -17,22 +23,42 @@ cloudStorageOps() {
 }
 
 backupDB() {
-    local LOCAL_BACKUP_FILE="${BACKUP_CLOUD_FILE}.dump"
-    local LOCAL_BACKUP_FILE_GZIP="${BACKUP_CLOUD_FILE}.dump.gz"
-    local CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}.dump.gz"
-
+    local BASE="${BACKUP_CLOUD_FILE}"
     if [ "$SET_DATE_AT_NAME" == "true" ]; then
         local CURRENT_DATE
         CURRENT_DATE=$(date '+%Y%m%d-%H%M')
-        LOCAL_BACKUP_FILE="${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump"
-        LOCAL_BACKUP_FILE_GZIP="${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump.gz"
-        CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BACKUP_CLOUD_FILE}-${CURRENT_DATE}.dump.gz"
+        BASE="${BACKUP_CLOUD_FILE}-${CURRENT_DATE}"
+    fi
+    local LOCAL_BACKUP_FILE="${BASE}.dump"
+    local LOCAL_BACKUP_FILE_GZIP="${BASE}.dump.gz"
+    local CLOUD_BACKUP_FILE="${BACKUP_CLOUD_FOLDER}/${BASE}.dump.gz"
+    local LOCAL_SEQNO_FILE="${BASE}.state.txt"
+    local CLOUD_SEQNO_FILE="${BACKUP_CLOUD_FOLDER}/${BASE}.state.txt"
+
+    # Read the replication position before the snapshot. Doing it first keeps the
+    # seqno at or behind the dump's data, which is the safe side: a consumer
+    # replays a few extra diffs instead of skipping some. The seqno comes from the
+    # osmdbt minute state, which tracks the WAL.
+    echo "Capturing replication state from ${MINUTE_REPLICATION_URL}/state.txt"
+    if wget -qO "${LOCAL_SEQNO_FILE}" "${MINUTE_REPLICATION_URL}/state.txt"; then
+        echo "Replication state captured for this dump:"
+        cat "${LOCAL_SEQNO_FILE}"
+    else
+        echo "WARNING: could not fetch replication state; dump will have no seqno sidecar"
+        rm -f "${LOCAL_SEQNO_FILE}"
     fi
 
     # Backup database with pg_dump custom format (-Fc) + gzip
     echo "Backing up DB ${POSTGRES_DB} into ${LOCAL_BACKUP_FILE_GZIP}"
     pg_dump -h "${POSTGRES_HOST}" -U "${POSTGRES_USER}" -Fc "${POSTGRES_DB}" | gzip -9 > "${LOCAL_BACKUP_FILE}.gz"
     cloudStorageOps "${LOCAL_BACKUP_FILE_GZIP}" "${CLOUD_BACKUP_FILE}"
+
+    # Upload the seqno sidecar next to the dump, so planet-dump can read the exact
+    # replication position for this dump instead of guessing it from a timestamp.
+    if [ -f "${LOCAL_SEQNO_FILE}" ]; then
+        echo "Uploading seqno sidecar to s3://${AWS_S3_BUCKET}/${CLOUD_SEQNO_FILE}"
+        aws s3 cp "${LOCAL_SEQNO_FILE}" "s3://${AWS_S3_BUCKET}/${CLOUD_SEQNO_FILE}"
+    fi
 }
 
 restoreDB() {
