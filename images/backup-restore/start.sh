@@ -41,6 +41,10 @@ backupDB() {
     # osmdbt minute state, which tracks the WAL.
     echo "Capturing replication state from ${MINUTE_REPLICATION_URL}/state.txt"
     if wget -qO "${LOCAL_SEQNO_FILE}" "${MINUTE_REPLICATION_URL}/state.txt"; then
+        # osmdbt state.txt only has sequenceNumber + timestamp. Add the stream URL
+        # so planet-dump can write a complete header (seqno + base_url) from this
+        # one file, without needing the replication URL in its own env.
+        echo "replicationBaseUrl=${MINUTE_REPLICATION_URL}" >> "${LOCAL_SEQNO_FILE}"
         echo "Replication state captured for this dump:"
         cat "${LOCAL_SEQNO_FILE}"
     else
