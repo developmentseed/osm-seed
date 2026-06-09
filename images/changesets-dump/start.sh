@@ -3,19 +3,13 @@ set -e
 
 export VOLUME_DIR=/mnt/data
 export PLANET_EPOCH_DATE="${PLANET_EPOCH_DATE:-1970-01-01}"
-date=$(date '+%y%m%d_%H%M')
 
-local_changesetsFile=$VOLUME_DIR/changesets-${date}.osm.bz2
 folder_changesetsFile=planet/changesets
-cloud_changesetsFile=${folder_changesetsFile}/changesets-${date}.osm.bz2
 stateFile="$VOLUME_DIR/state.txt"
 dumpFile="$VOLUME_DIR/input-latest.dump"
 
-# If overwrite flag is enabled, use fixed filenames
-if [ "$OVERWRITE_CHANGESETS_FILE" == "true" ]; then
-	local_changesetsFile=$VOLUME_DIR/changesets-latest.osm.bz2
-	cloud_changesetsFile=planet/changesets-latest.osm.bz2
-fi
+# Date taken from the backup filename, so the changesets dump keeps the backup's name.
+BACKUP_DATE=""
 
 # ===============================
 # Download db .dump file
@@ -39,6 +33,10 @@ download_dump_file() {
         actual_dump_url="$DUMP_CLOUD_URL"
         aws s3 cp "$DUMP_CLOUD_URL" "$temp_dump_file"
     fi
+
+    # Reuse the backup's date (YYYYMMDD-HHMM in its filename) so the changesets dump
+    # shares the same name. Empty if the backup doesn't date its files.
+    BACKUP_DATE=$(basename "$actual_dump_url" | grep -oE '[0-9]{8}-[0-9]{4}' | head -1)
 
     local is_gzip=false
     if [[ "$actual_dump_url" == *.gz ]] || [[ "$temp_dump_file" == *.gz ]]; then
@@ -76,6 +74,23 @@ upload_changesets_file() {
 # Generate changesets dump
 # ===============================
 download_dump_file
+
+# Name the changesets dump after the backup it came from, so they stay in sync.
+# Backup date is YYYYMMDD-HHMM; reformat to yymmdd_HHMM. Fall back to wall-clock.
+if [ -n "$BACKUP_DATE" ]; then
+    date=$(echo "$BACKUP_DATE" | sed -E 's/^[0-9]{2}([0-9]{6})-([0-9]{4})/\1_\2/')
+else
+    date=$(date '+%y%m%d_%H%M')
+fi
+local_changesetsFile=$VOLUME_DIR/changesets-${date}.osm.bz2
+cloud_changesetsFile=${folder_changesetsFile}/changesets-${date}.osm.bz2
+
+# If overwrite flag is enabled, use fixed filenames
+if [ "$OVERWRITE_CHANGESETS_FILE" == "true" ]; then
+	local_changesetsFile=$VOLUME_DIR/changesets-latest.osm.bz2
+	cloud_changesetsFile=planet/changesets-latest.osm.bz2
+fi
+
 echo "Generating changesets dump with planet-dump-ng..."
 planet-dump-ng \
 	--dump-file "$dumpFile" \
