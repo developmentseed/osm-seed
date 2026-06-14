@@ -1,77 +1,43 @@
 {{- if and .Values.web.enabled (eq .Values.serviceType "ClusterIP") .Values.ingressClassName }}
+{{- /*
+Provider-agnostic Ingress. Pass whatever your ingress controller needs in
+web.ingressAnnotations and pick the class with ingressClassName:
+  - Traefik:  ingressClassName: traefik, ingressAnnotations: {}
+  - AWS ALB:        ingressClassName: alb, ingressAnnotations: { alb.ingress.kubernetes.io/...: ... }
+  - nginx:          ingressClassName: nginx, ingressAnnotations: { nginx.ingress.kubernetes.io/...: ... }
+Hosts default to web/api/apex of domain. Set web.ingressHosts to override
+*/ -}}
+{{- $primary := .Values.web.ingressDomain | default (printf "web.%s" .Values.domain) -}}
+{{- $hosts := .Values.web.ingressHosts | default (list $primary (printf "api.%s" .Values.domain) .Values.domain) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress-web
+  {{- with .Values.web.ingressAnnotations }}
   annotations:
-    ## NLB 
-    {{- if eq .Values.ingressClassNameType "nlb" }}
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
-    nginx.ingress.kubernetes.io/proxy-body-size: 200m
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    {{- end }}
-    # ALB
-    {{- if eq .Values.ingressClassNameType "alb" }}
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/group.name: {{ .Release.Name }}
-    alb.ingress.kubernetes.io/scheme: "internet-facing"
-    alb.ingress.kubernetes.io/target-type: "ip"
-    alb.ingress.kubernetes.io/listen-ports: '{{ .Values.alb.listenPorts | default "[{\"HTTP\":80},{\"HTTPS\":443}]" }}'
-    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.alb.certificateArn }}"
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    ## Enable WAF
-    {{- if .Values.alb.enableWaf.enabled }}
-    alb.ingress.kubernetes.io/waf-acl-arn: "{{ .Values.alb.enableWaf.wafAclArn }}"
-    {{- end }}
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   ingressClassName: {{ .Values.ingressClassName }}
-  {{- if eq .Values.ingressClassNameType "nlb" }}
+  {{- if .Values.web.tls.enabled }}
   tls:
     - hosts:
-        {{- if .Values.web.ingressDomain }}
-        - {{ .Values.web.ingressDomain }}
-        {{- else }}
-        - web.{{ .Values.domain }}
+        {{- range $hosts }}
+        - {{ . }}
         {{- end }}
-        - api.{{ .Values.domain }}
-        - {{ .Values.domain }}
-      secretName: {{ .Release.Name }}-tls-secret
+      secretName: {{ .Values.web.tls.secretName | default (printf "%s-tls-secret" .Release.Name) }}
   {{- end }}
   rules:
-    - host: {{ if .Values.web.ingressDomain }}{{ .Values.web.ingressDomain }}{{ else }}web.{{ .Values.domain }}{{ end }}
+    {{- range $hosts }}
+    - host: {{ . }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}-service-web
+                name: {{ $.Release.Name }}-service-web
                 port:
                   number: 80
-
-    - host: api.{{ .Values.domain }}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Release.Name }}-service-web
-                port:
-                  number: 80
-
-    - host: {{ .Values.domain }}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Release.Name }}-service-web
-                port:
-                  number: 80
+    {{- end }}
 {{- end }}
