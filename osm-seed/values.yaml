@@ -1,8 +1,8 @@
 # Image group version: https://github.com/orgs/osm-seed/packages
-osmSeedVersion: develop-9302179
+osmSeedVersion: v1
 environment: development
 
-# Where to deploy: aws, gcp, azure, k3s, minikube
+# Where to deploy: aws, gcp, azure, k3s
 cloudProvider: aws
 # Cloud storage bucket for the provider set above
 AWS_S3_BUCKET: s3://osm-seed
@@ -17,8 +17,8 @@ createClusterIssuer: false
 # <component>.ingress.className. Leave empty if you expose services another way.
 ingressClassName: ""
 
-# Base domain. Components default to <name>.<domain>, e.g. web.dev.osmseed.org.
-domain: dev.osmseed.org
+# Base domain. Components default to <name>.<domain>, e.g. web.osmseed.org.
+domain: osmseed.org
 
 # Email for Let's Encrypt expiry notices.
 adminEmail: admin@osmseed.org
@@ -106,15 +106,15 @@ web:
     enabled: false
     className: ""
     hosts:
-      - www.dev.osmseed.org
+      - www.osmseed.org
       - dev.osmseed.org
-      - api.dev.osmseed.org
+      - api.osmseed.org
     annotations: {}
     tls:
       enabled: false
       secretName: ""
   env:
-    SERVER_URL: "www.dev.osmseed.org"
+    SERVER_URL: "www.osmseed.org"
     SERVER_PROTOCOL: "https"
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
@@ -530,11 +530,6 @@ tilerDb:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "1234"
     POSTGRES_PORT: 5432
-    # POSTGRES_DB_MAX_CONNECTIONS: 100
-    # POSTGRES_DB_SHARED_BUFFERS: 128MB
-    # POSTGRES_DB_WORK_MEM: 4MB
-    # POSTGRES_DB_MAINTENANCE_WORK_MEM: 64MB
-    # POSTGRES_DB_EFFECTIVE_CACHE_SIZE: 4GB
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
@@ -1089,7 +1084,7 @@ tmApi:
     className: ""
     annotations: {}
     hosts:
-      - tm-api.dev.osmseed.org
+      - tm-api.osmseed.org
     tls:
       enabled: false
       secretName: ""
@@ -1165,7 +1160,7 @@ nominatimApi:
     className: ""
     annotations: {}
     hosts:
-      - nominatim-api.dev.osmseed.org
+      - nominatim-api.osmseed.org
     tls:
       enabled: false
       secretName: ""
@@ -1232,7 +1227,7 @@ overpassApi:
     className: ""
     annotations: {}
     hosts:
-      - overpass-api.dev.osmseed.org
+      - overpass-api.osmseed.org
     tls:
       enabled: false
       secretName: ""
@@ -1494,7 +1489,7 @@ osmchaApi:
     className: ""
     annotations: {}
     hosts:
-      - osmcha.dev.osmseed.org
+      - osmcha.osmseed.org
     tls:
       enabled: false
       secretName: ""
@@ -1503,9 +1498,6 @@ osmchaApi:
     DJANGO_SETTINGS_MODULE: "config.settings.production"
     OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
     DJANGO_SECRET_KEY: abc
-    ## ohm
-    # OAUTH_OSM_KEY: abc
-    # OAUTH_OSM_SECRET: bdc
     DJANGO_SECURE_SSL_REDIRECT: "False"
     OSM_SERVER_URL: https://www.osmseed.org
     OAUTH_REDIRECT_URI: https://osmcha-staging.osmseed.org/oauth-landing.html
@@ -1513,11 +1505,6 @@ osmchaApi:
     ## frontend
     OSMCHA_URL: https://osmcha-staging.osmseed.org
     OSMCHA_API_URL: www.osmseed.org
-    # REACT_APP_OSM_URL: https://www.osmseed.org
-    # REACT_APP_OSM_API: https://www.osmseed.org/api/0.6
-    # REACT_APP_OVERPASS_BASE: //overpass-api.osmseed.org/api/interpreter
-    # REACT_APP_DISABLE_REAL_CHANGESETS: 1
-    # REACT_APP_MAPBOX_ACCESS_TOKEN: "pk.abc.df"
     OAUTH2_OSM_KEY: abc
     OAUTH2_OSM_SECRET: xyz
   resources:
