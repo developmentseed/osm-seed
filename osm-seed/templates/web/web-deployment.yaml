@@ -97,31 +97,12 @@ spec:
               value: {{ .Values.web.env.OAUTH_KEY }}
             - name: OPENSTREETMAP_memcache_servers
               value: {{ .Release.Name }}-memcached:11211
-              # Set SERVER_URL in case we use ingress
-              {{- if eq .Values.serviceType "ClusterIP" }}
+              # SERVER_URL / SERVER_PROTOCOL are plain env vars. They fall back to
+              # the legacy ingressDomain/domain so existing values keep working.
             - name: SERVER_URL
-              {{- if .Values.web.ingressDomain }}
-              value: {{ .Values.web.ingressDomain }}
-              {{- else }}
-              value: {{ .Values.domain }}
-              {{- end }}
+              value: {{ .Values.web.env.SERVER_URL | default .Values.web.ingressDomain | default .Values.domain | quote }}
             - name: SERVER_PROTOCOL
-              value : "https"
-              {{- end }}
-              # Set SERVER_URL in case we use LoadBalancer
-              {{- if eq .Values.serviceType "LoadBalancer" }}
-            - name: SERVER_URL
-              value: {{ .Values.domain }}
-            - name: SERVER_PROTOCOL
-              value : "https"
-              {{- end }}
-              # Set SERVER_URL in case we use NodePort
-              {{- if eq .Values.serviceType "NodePort" }}
-            - name: SERVER_URL
-              value: dns
-            - name: SERVER_PROTOCOL
-              value : http
-              {{- end }}
+              value: {{ .Values.web.env.SERVER_PROTOCOL | default "https" | quote }}
               # Nominatim domain
             - name: NOMINATIM_URL
               value: {{ .Values.web.env.NOMINATIM_URL }}

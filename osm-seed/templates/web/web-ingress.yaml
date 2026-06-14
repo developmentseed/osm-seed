@@ -1,31 +1,27 @@
-{{- if and .Values.web.enabled (eq .Values.serviceType "ClusterIP") .Values.ingressClassName }}
-{{- /*
-Provider-agnostic Ingress. Pass whatever your ingress controller needs in
-web.ingressAnnotations and pick the class with ingressClassName:
-  - Traefik:  ingressClassName: traefik, ingressAnnotations: {}
-  - AWS ALB:        ingressClassName: alb, ingressAnnotations: { alb.ingress.kubernetes.io/...: ... }
-  - nginx:          ingressClassName: nginx, ingressAnnotations: { nginx.ingress.kubernetes.io/...: ... }
-Hosts default to web/api/apex of domain. Set web.ingressHosts to override
-*/ -}}
+{{- if (.Values.web.ingress | default dict).enabled }}
+{{- /* Toggle with web.ingress.enabled. Set web.ingress.{className,annotations,hosts,tls}.
+       className falls back to the global ingressClassName. hosts default to
+       web/api/apex of domain. Pass any controller's annotations verbatim. */ -}}
+{{- $ing := .Values.web.ingress -}}
 {{- $primary := .Values.web.ingressDomain | default (printf "web.%s" .Values.domain) -}}
-{{- $hosts := .Values.web.ingressHosts | default (list $primary (printf "api.%s" .Values.domain) .Values.domain) -}}
+{{- $hosts := $ing.hosts | default (list $primary (printf "api.%s" .Values.domain) .Values.domain) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress-web
-  {{- with .Values.web.ingressAnnotations }}
+  {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingressClassName }}
-  {{- if .Values.web.tls.enabled }}
+  ingressClassName: {{ $ing.className | default .Values.ingressClassName }}
+  {{- if ($ing.tls | default dict).enabled }}
   tls:
     - hosts:
         {{- range $hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ .Values.web.tls.secretName | default (printf "%s-tls-secret" .Release.Name) }}
+      secretName: {{ ($ing.tls | default dict).secretName | default (printf "%s-tls-secret" .Release.Name) }}
   {{- end }}
   rules:
     {{- range $hosts }}
