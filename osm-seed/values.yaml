@@ -757,6 +757,15 @@ tilerVarnish:
     tag: ""
   priorityClass: "medium-priority"
   replicaCount: 1
+  serviceAnnotations: {}
+  ingress:
+    enabled: false
+    className: ""
+    hosts: []
+    annotations: {}
+    tls:
+      enabled: false
+      secretName: ""
   # Varnish malloc storage sizes
   dynamicSize: "16G"
   staticSize: "4G"
@@ -966,45 +975,6 @@ tilerMonitorLanguage:
 # ====================================================================================================
 # Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3
 # ====================================================================================================
-tilerServerCacheCleaner:
-  enabled: false
-  image:
-    name: ""
-    tag: ""
-  priorityClass: "medium-priority"
-  serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
-  replicaCount: 1
-  command: "./tile_cache_downloader.sh & ./expire-watcher.sh"
-  resources:
-    enabled: false
-    requests:
-      enabled: false
-      memory: "1Gi"
-      cpu: "2"
-    limits:
-      enabled: false
-      memory: "2Gi"
-      cpu: "2"
-  env:
-    KILL_PROCESS: manually
-    MAX_NUM_PS: 3
-    PROCESS_NAME: tegola
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 2
-    cpuUtilization: 60
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
-  nodeAffinity:
-    enabled: false
-    key: "nodegroup_type"
-    values: ["web"]
-
 tilerCacheCleanerJob:
   enabled: false
   image:

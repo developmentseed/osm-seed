@@ -1,11 +1,10 @@
-{{- if .Values.tmApi.ingress.enabled }}
-{{- $ing := .Values.tmApi.ingress -}}
-{{- $primary := .Values.tmApi.ingressDomain | default (printf "tm-api.%s" .Values.domain) -}}
-{{- $hosts := $ing.hosts | default (list $primary) -}}
+{{- if .Values.tilerVarnish.ingress.enabled }}
+{{- $ing := .Values.tilerVarnish.ingress -}}
+{{- $hosts := $ing.hosts | default (list (printf "vtiles.%s" .Values.domain)) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-ingress-tm-api
+  name: {{ .Release.Name }}-ingress-tiler-varnish
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -18,7 +17,7 @@ spec:
         {{- range $hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-tm-api" (include "osm-seed.fullname" .)) }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-tiler-varnish" .Release.Name) }}
   {{- end }}
   rules:
     {{- range $hosts }}
@@ -29,8 +28,8 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ $.Release.Name }}-tasking-manager-api
+                name: {{ $.Release.Name }}-tiler-varnish
                 port:
-                  number: 80
+                  number: 6081
     {{- end }}
 {{- end }}

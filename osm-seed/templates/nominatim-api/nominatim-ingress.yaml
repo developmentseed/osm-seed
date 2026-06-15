@@ -1,6 +1,4 @@
-{{- if (.Values.nominatimApi.ingress | default dict).enabled }}
-{{- /* Toggle with nominatimApi.ingress.enabled. Set nominatimApi.ingress.{className,annotations,hosts,tls}.
-       className falls back to the global ingressClassName. */ -}}
+{{- if .Values.nominatimApi.ingress.enabled }}
 {{- $ing := .Values.nominatimApi.ingress -}}
 {{- $primary := .Values.nominatimApi.ingressDomain | default (printf "nominatim-api.%s" .Values.domain) -}}
 {{- $hosts := $ing.hosts | default (list $primary) -}}
@@ -14,13 +12,13 @@ metadata:
   {{- end }}
 spec:
   ingressClassName: {{ $ing.className | default .Values.ingressClassName }}
-  {{- if ($ing.tls | default dict).enabled }}
+  {{- if $ing.tls.enabled }}
   tls:
     - hosts:
         {{- range $hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ ($ing.tls | default dict).secretName | default (printf "%s-secret-nominatim" (include "osm-seed.fullname" .)) }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-nominatim" (include "osm-seed.fullname" .)) }}
   {{- end }}
   rules:
     {{- range $hosts }}

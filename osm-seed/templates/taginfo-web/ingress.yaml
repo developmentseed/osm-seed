@@ -1,6 +1,4 @@
-{{- if (.Values.taginfoWeb.ingress | default dict).enabled }}
-{{- /* Toggle with taginfoWeb.ingress.enabled. Set taginfoWeb.ingress.{className,annotations,hosts,tls}.
-       className falls back to the global ingressClassName. */ -}}
+{{- if .Values.taginfoWeb.ingress.enabled }}
 {{- $ing := .Values.taginfoWeb.ingress -}}
 {{- $primary := .Values.taginfoWeb.ingressDomain | default (printf "taginfo.%s" .Values.domain) -}}
 {{- $hosts := $ing.hosts | default (list $primary) -}}
@@ -14,13 +12,13 @@ metadata:
   {{- end }}
 spec:
   ingressClassName: {{ $ing.className | default .Values.ingressClassName }}
-  {{- if ($ing.tls | default dict).enabled }}
+  {{- if $ing.tls.enabled }}
   tls:
     - hosts:
         {{- range $hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ ($ing.tls | default dict).secretName | default (printf "%s-secret-taginfo" (include "osm-seed.fullname" .)) }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-taginfo" (include "osm-seed.fullname" .)) }}
   {{- end }}
   rules:
     {{- range $hosts }}
