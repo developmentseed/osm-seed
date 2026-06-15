@@ -1,4 +1,4 @@
-{{- if .Values.tilerVarnish.ingress.enabled }}
+{{- if and .Values.tilerVarnish.enabled .Values.tilerVarnish.ingress.enabled }}
 {{- $ing := .Values.tilerVarnish.ingress -}}
 {{- $hosts := $ing.hosts | default (list (printf "vtiles.%s" .Values.domain)) -}}
 apiVersion: networking.k8s.io/v1

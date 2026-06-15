@@ -1,4 +1,4 @@
-{{- if .Values.osmchaApi.ingress.enabled }}
+{{- if and .Values.osmchaApi.enabled .Values.osmchaApi.ingress.enabled }}
 {{- $ing := .Values.osmchaApi.ingress -}}
 {{- $primary := .Values.osmchaApi.ingressDomain | default (printf "osmcha.%s" .Values.domain) -}}
 {{- $hosts := $ing.hosts | default (list $primary) -}}

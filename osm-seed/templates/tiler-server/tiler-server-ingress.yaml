@@ -1,4 +1,4 @@
-{{- if .Values.tilerServer.ingress.enabled }}
+{{- if and .Values.tilerServer.enabled .Values.tilerServer.ingress.enabled }}
 {{- $ing := .Values.tilerServer.ingress -}}
 {{- $primary := .Values.tilerServer.ingressDomain | default (printf "tiler.%s" .Values.domain) -}}
 {{- $hosts := $ing.hosts | default (list $primary) -}}

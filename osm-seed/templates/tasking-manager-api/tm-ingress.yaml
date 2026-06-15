@@ -1,4 +1,4 @@
-{{- if .Values.tmApi.ingress.enabled }}
+{{- if and .Values.tmApi.enabled .Values.tmApi.ingress.enabled }}
 {{- $ing := .Values.tmApi.ingress -}}
 {{- $primary := .Values.tmApi.ingressDomain | default (printf "tm-api.%s" .Values.domain) -}}
 {{- $hosts := $ing.hosts | default (list $primary) -}}

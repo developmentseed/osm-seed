@@ -1,4 +1,4 @@
-{{- if .Values.taginfoWeb.ingress.enabled }}
+{{- if and .Values.taginfoWeb.enabled .Values.taginfoWeb.ingress.enabled }}
 {{- $ing := .Values.taginfoWeb.ingress -}}
 {{- $primary := .Values.taginfoWeb.ingressDomain | default (printf "taginfo.%s" .Values.domain) -}}
 {{- $hosts := $ing.hosts | default (list $primary) -}}
