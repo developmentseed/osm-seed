@@ -67,103 +67,31 @@ spec:
             {{- end }}
           {{- end }}
           env:
+            # ---- Computed / cluster-specific (not plain web.env pass-throughs) ----
             - name: GET_HOSTS_FROM
               value: dns
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-db # This should give us the host for DB on the cluster.
+              value: {{ .Release.Name }}-db
             - name: POSTGRES_DB
               value: {{ .Values.db.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
               value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
               value: {{ .Values.db.env.POSTGRES_USER }}
-            - name: MAILER_ADDRESS
-              value: {{ .Values.web.env.MAILER_ADDRESS }}
-            - name: MAILER_DOMAIN
-              value: {{ .Values.web.env.MAILER_DOMAIN }}
-            - name: MAILER_USERNAME
-              value: {{ .Values.web.env.MAILER_USERNAME }}
-            - name: MAILER_PASSWORD
-              value: {{ quote .Values.web.env.MAILER_PASSWORD }}
-            - name: MAILER_FROM
-              value: {{ .Values.web.env.MAILER_FROM }}
-            - name: MAILER_PORT
-              value: {{ .Values.web.env.MAILER_PORT | default "25" | quote }}
-            - name: OPENSTREETMAP_id_key
-              value: {{ .Values.web.env.OSM_id_key }}
-            - name: OAUTH_CLIENT_ID
-              value: {{ .Values.web.env.OAUTH_CLIENT_ID }}
-            - name: OAUTH_KEY
-              value: {{ .Values.web.env.OAUTH_KEY }}
             - name: OPENSTREETMAP_memcache_servers
               value: {{ .Release.Name }}-memcached:11211
-              # SERVER_URL / SERVER_PROTOCOL are plain env vars. They fall back to
-              # the legacy ingressDomain/domain so existing values keep working.
-            - name: SERVER_URL
-              value: {{ .Values.web.env.SERVER_URL | default .Values.web.ingressDomain | default .Values.domain | quote }}
-            - name: SERVER_PROTOCOL
-              value: {{ .Values.web.env.SERVER_PROTOCOL | default "https" | quote }}
-              # Nominatim domain
-            - name: NOMINATIM_URL
-              value: {{ .Values.web.env.NOMINATIM_URL }}
-              # Nominatim domain
-            - name: OVERPASS_URL
-              value: {{ .Values.web.env.OVERPASS_URL }}
-            # Here can be added other Env variables for monitoring, debugging, etc.
-            - name: NEW_RELIC_LICENSE_KEY
-              value: {{ .Values.web.env.NEW_RELIC_LICENSE_KEY | default ""}}
-            - name: NEW_RELIC_APP_NAME
-              value: {{ .Values.web.env.NEW_RELIC_APP_NAME | default ""}}
-            - name: ORGANIZATION_NAME
-              value: {{ .Values.web.env.ORGANIZATION_NAME | default "OpenStreetMap"}}
-            - name: WEBSITE_STATUS
-              value: {{ .Values.web.env.WEBSITE_STATUS | default "online"}}
-            - name: API_TIMEOUT
-              value: {{ .Values.web.env.API_TIMEOUT | default "30" | quote }}
-            - name: WEB_TIMEOUT
-              value: {{ .Values.web.env.WEB_TIMEOUT | default "30" | quote }}
-            # This parameter is specifically if you want to restore a any backup to db, 
-            # you done need to set this values.yaml in case you don't use
-            - name: BACKUP_FILE_URL
-              value: {{ .Values.web.env.BACKUP_FILE_URL | default "none" | quote }}
-            - name: RAILS_CREDENTIALS_YML_ENC
-              value: {{ .Values.web.env.RAILS_CREDENTIALS_YML_ENC | quote }}
-            - name: RAILS_MASTER_KEY
-              value: {{ .Values.web.env.RAILS_MASTER_KEY | quote }}
-            - name: RAILS_ENV
-              value: {{ .Values.web.env.RAILS_ENV | quote }}
-            - name: RAILS_LOG_LEVEL
-              value: {{ .Values.web.env.RAILS_LOG_LEVEL | default "info" | quote }}
-            - name: RAILS_STORAGE_SERVICE
-              value: {{ .Values.web.env.RAILS_STORAGE_SERVICE | default "local" | quote }}
-            - name: RAILS_STORAGE_REGION
-              value: {{ .Values.web.env.RAILS_STORAGE_REGION | quote }}
-            - name: RAILS_STORAGE_BUCKET
-              value: {{ .Values.web.env.RAILS_STORAGE_BUCKET | quote }}
-            # Cgimap run in external container
-            {{- if and .Values.web.env.EXTERNAL_CGIMAP .Values.cgimap.enabled }}
+            # cgimap always runs as its own pod (external)
             - name: EXTERNAL_CGIMAP
-              value: {{ .Values.web.env.EXTERNAL_CGIMAP | quote }}
+              value: "true"
             - name: CGIMAP_URL
               value: {{ .Release.Name }}-cgimap-service
             - name: CGIMAP_PORT
               value: {{ quote 80 }}
-            {{- else }}
-            - name: CGIMAP_URL
-              value: "127.0.0.1"
-            - name: CGIMAP_PORT
-              value: {{ quote 8000 }}
+            # ---- Everything else passes straight through from web.env ----
+            {{- range $k, $v := .Values.web.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
             {{- end }}
-            - name: PASSENGER_MAX_POOL_SIZE
-              value: {{ .Values.web.env.PASSENGER_MAX_POOL_SIZE | default "6" | quote }}
-            - name: OPENSTREETMAP_AUTH_ID
-              value: {{ .Values.web.env.OPENSTREETMAP_AUTH_ID | default "" | quote }}
-            - name: OPENSTREETMAP_AUTH_SECRET
-              value: {{ .Values.web.env.OPENSTREETMAP_AUTH_SECRET | default "" | quote }}
-            - name: WIKIPEDIA_AUTH_ID
-              value: {{ .Values.web.env.WIKIPEDIA_AUTH_ID | default "" | quote }}
-            - name: WIKIPEDIA_AUTH_SECRET
-              value: {{ .Values.web.env.WIKIPEDIA_AUTH_SECRET | default "" | quote }}
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory
