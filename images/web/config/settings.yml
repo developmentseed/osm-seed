@@ -168,10 +168,12 @@ csp_enforce: false
 # URL for reporting Content-Security-Policy violations
 #csp_report_url: ""
 # Storage services to use in production mode
-avatar_storage: "s3" # TODO: Change to S3
-trace_file_storage: "s3" # TODO: Change to S3
-trace_image_storage: "s3" # TODO: Change to S3
-trace_icon_storage: "s3" # TODO: Change to S3
+# Default to "local" (Disk service); override per-deployment with
+# OPENSTREETMAP_*_storage env vars (e.g. "s3" when RAILS_STORAGE_SERVICE=s3).
+avatar_storage: "local"
+trace_file_storage: "local"
+trace_image_storage: "local"
+trace_icon_storage: "local"
 # Root URL for storage services
 # avatar_storage_url:
 # trace_image_storage_url:
