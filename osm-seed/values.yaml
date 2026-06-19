@@ -1150,6 +1150,8 @@ nominatimApi:
       https://gist.githubusercontent.com/lonvia/8502c61b3dd159e67eb8be8368d864c1/raw/d05a1d681230632bb2e35cbf363f2baec8acd657/address-levels.json
     UPDATE_MODE: continuous #Options: `continuous`/`once`/`catch-up`/`none` (default: `none`)
     OSMSEED_WEB_API_DOMAIN: www.openstreetmap.org
+    # Public host the UI calls for the Nominatim API. Should match ingress.hosts[0].
+    NOMINATIM_API_ENDPOINT: nominatim-api.osmseed.org
   resources:
     enabled: false
     requests:
