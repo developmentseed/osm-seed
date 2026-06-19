@@ -1,7 +1,6 @@
 {{- if and .Values.web.enabled .Values.web.ingress.enabled }}
 {{- $ing := .Values.web.ingress -}}
-{{- $primary := .Values.web.ingressDomain | default (printf "web.%s" .Values.domain) -}}
-{{- $hosts := $ing.hosts | default (list $primary (printf "api.%s" .Values.domain) .Values.domain) -}}
+{{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

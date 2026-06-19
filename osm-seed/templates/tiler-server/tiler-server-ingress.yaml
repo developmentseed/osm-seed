@@ -1,7 +1,6 @@
 {{- if and .Values.tilerServer.enabled .Values.tilerServer.ingress.enabled }}
 {{- $ing := .Values.tilerServer.ingress -}}
-{{- $primary := .Values.tilerServer.ingressDomain | default (printf "tiler.%s" .Values.domain) -}}
-{{- $hosts := $ing.hosts | default (list $primary) -}}
+{{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

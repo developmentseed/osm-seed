@@ -1,6 +1,6 @@
 {{- if and .Values.tilerVarnish.enabled .Values.tilerVarnish.ingress.enabled }}
 {{- $ing := .Values.tilerVarnish.ingress -}}
-{{- $hosts := $ing.hosts | default (list (printf "vtiles.%s" .Values.domain)) -}}
+{{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

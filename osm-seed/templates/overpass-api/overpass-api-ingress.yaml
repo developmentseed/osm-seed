@@ -1,7 +1,6 @@
 {{- if and .Values.overpassApi.enabled .Values.overpassApi.ingress.enabled }}
 {{- $ing := .Values.overpassApi.ingress -}}
-{{- $primary := .Values.overpassApi.ingressDomain | default (printf "overpass-api.%s" .Values.domain) -}}
-{{- $hosts := $ing.hosts | default (list $primary) -}}
+{{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
