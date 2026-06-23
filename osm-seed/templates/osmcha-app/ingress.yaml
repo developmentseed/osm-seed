@@ -1,47 +1,35 @@
-{{- if and .Values.osmchaApi.enabled (eq .Values.serviceType "ClusterIP") .Values.ingressClassName }}
+{{- if and .Values.osmchaApi.enabled .Values.osmchaApi.ingress.enabled }}
+{{- $ing := .Values.osmchaApi.ingress -}}
+{{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ template "osm-seed.fullname" . }}-ingress-osmcha-app
+  {{- with $ing.annotations }}
   annotations:
-    ## NLB 
-    {{- if eq .Values.ingressClassNameType "nlb" }}
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
-    nginx.ingress.kubernetes.io/proxy-body-size: 200m
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    {{- end }}
-    # ALB
-    {{- if eq .Values.ingressClassNameType "alb" }}
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/group.name: {{ .Release.Name }}
-    alb.ingress.kubernetes.io/scheme: "internet-facing"
-    alb.ingress.kubernetes.io/target-type: "ip" 
-    alb.ingress.kubernetes.io/listen-ports: '{{ .Values.alb.listenPorts | default "[{\"HTTP\":80},{\"HTTPS\":443}]" }}'
-    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.alb.certificateArn }}"
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingressClassName }}
+  ingressClassName: {{ $ing.className | default .Values.ingressClassName }}
+  {{- if $ing.tls.enabled }}
   tls:
     - hosts:
-      {{- if .Values.osmchaApi.ingressDomain }}
-      - {{ .Values.osmchaApi.ingressDomain }}
-      {{- else }}
-      - osmcha.{{ .Values.domain }}
-      {{- end }}
-      secretName: {{ template "osm-seed.fullname" . }}-secret-osmcha
+        {{- range $hosts }}
+        - {{ . }}
+        {{- end }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-osmcha" (include "osm-seed.fullname" .)) }}
+  {{- end }}
   rules:
-  - host: {{ if .Values.osmchaApi.ingressDomain }}{{ .Values.osmchaApi.ingressDomain }}{{ else }}osmcha.{{ .Values.domain }}{{ end }}
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ template "osm-seed.fullname" . }}-osmcha-app
-            port:
-              number: 80
+    {{- range $hosts }}
+    - host: {{ . }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "osm-seed.fullname" $ }}-osmcha-app
+                port:
+                  number: 80
+    {{- end }}
 {{- end }}

@@ -8,14 +8,10 @@ metadata:
     component: cgimap-service
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
+  {{- with .Values.cgimap.serviceAnnotations }}
   annotations:
-    # NLB
-    {{- if and  (eq .Values.ingressClassNameType "nlb" ) (eq .Values.serviceType "ClusterIP") }}
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
-    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.serviceType }}
   ports:

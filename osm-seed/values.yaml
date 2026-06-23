@@ -1,81 +1,32 @@
-# ====================================================================================================
-# ====================================================================================================
-# ==================================Global Configurations=============================================
-# ====================================================================================================
-# ====================================================================================================
-# The version of the image group in osm-seed, get it here: https://github.com/orgs/osm-seed/packages
-osmSeedVersion: develop-9302179
+# Image group version: https://github.com/orgs/osm-seed/packages
+osmSeedVersion: v1
 environment: development
-# cloudProvider is provider where you are going to deploy osm-seed, it could be: aws, k3s
+
+# Where to deploy: aws, gcp, azure, k3s
 cloudProvider: aws
-# ====================================================================================================
-# AWS: In case you are using the cloudProvider=aws set the below variables, We are assuming the nodes has a policies access to S3
-# ====================================================================================================
+# Cloud storage bucket for the provider set above
 AWS_S3_BUCKET: s3://osm-seed
-# ====================================================================================================
-# GCP: In case you are using the cloudProvider=gcp set the below variables, We are assuming the nodes has a policies to upload files to cloud storage
-# ====================================================================================================
-GCP_STORAGE_BUCKET: gs://osm-seed-test
-# ====================================================================================================
-# AZURE: In case you are using the cloudProvider=azure set the below variables
-# ====================================================================================================
-AZURE_STORAGE_ACCOUNT: osmseed
-AZURE_CONTAINER_NAME: osm-seed
-AZURE_STORAGE_CONNECTION_STRING: xyz..
-# ====================================================
-# AWS: Specify ARN for SSL certificate, currently assumes a single wildcard cert
-# ====================================================
-AWS_SSL_ARN: false
-# Specify serviceType.
-#
-# serviceType can be one of three values: 'NodePort', 'ClusterIP' or 'LoadBalancer'
-# Use `NodePort` for local testing on minikube.
-#
-# The recommended setting is `ClusterIP`, and then following the instructions to
-# point a DNS record to the cluster IP address. This will setup the ingress rules
-# for all services as subdomains and configure SSL using Lets Encrypt.
-#
-# If you specify `LoadBalancer` as the service type, if you also specify
-# an `AWS_SSL_ARN` that is a wildcart certificate, that will be configured
-# as the SSL certificate for your services. Else, you will need to configure
-# SSL separately.
-# serviceType: NodePort
+
+# Service type: NodePort, ClusterIP or LoadBalancer. ClusterIP is recommended;
 serviceType: ClusterIP
+
+# Create a cert-manager ClusterIssuer (Let's Encrypt). Opt-in.
 createClusterIssuer: false
-## Ingress configuration
-## ingressClassNameType can be: alb, nlb, or "" (empty to disable ingress)
-ingressClassNameType: ""
-## ingressClassName can be: alb, nginx, nginx-nlb, or "" (empty to disable ingress)
+
+# Default ingress class for all components. Override per component with
+# <component>.ingress.className. Leave empty if you expose services another way.
 ingressClassName: ""
-alb:
-  certificateArn: ""
-  enableWaf:
-    enabled: false
-    wafAclArn: ""
-# Domain that is pointed to the clusterIP
-# You will need to create an A record like *.osmseed.example.com pointed to the ClusterIP
-# Then, the cluster configuration will setup services at their respective subdomains:
-# - web.osmseed.example.com
-# - overpass.osmseed.example.com
-# - nominatim.osmseed.example.com
-# - etc.
-domain: dev.osmseed.org
-# ====================================================================================================
-# Configuration for Lets Encrypt setup
-# ====================================================================================================
 
-# Admin Email address used when generating Lets Encrypt certificates.
-# You will be notified of expirations, etc. on this email address.
+# Base domain. Components default to <name>.<domain>, e.g. web.osmseed.org.
+domain: osmseed.org
+
+# Email for Let's Encrypt expiry notices.
 adminEmail: admin@osmseed.org
-# ====================================================================================================
-# ====================================================================================================
-# ==================================Pods Configurations===============================================
-# ====================================================================================================
-# ====================================================================================================
 
 # ====================================================================================================
-# Variables for osm-seed database
+# Web Api Database
 # ====================================================================================================
+
 db:
   enabled: false
   image:
@@ -147,9 +98,24 @@ web:
     name: ohm-web-s3-bucket-access-staging
   priorityClass: "high-priority"
   replicaCount: 1
-  ingressDomain: www.dev.osmseed.org
   serviceAnnotations: {}
+  # Per-component Ingress. enabled toggles creation; className falls back to the
+  # global ingressClassName; annotations are passed verbatim (provider-specific
+  # lives here); hosts default to web/api/apex of domain; tls is opt-in.
+  ingress:
+    enabled: false
+    className: ""
+    hosts:
+      - www.osmseed.org
+      - dev.osmseed.org
+      - api.osmseed.org
+    annotations: {}
+    tls:
+      enabled: false
+      secretName: ""
   env:
+    SERVER_URL: "www.osmseed.org"
+    SERVER_PROTOCOL: "https"
     MAILER_ADDRESS: smtp.gmail.com
     MAILER_DOMAIN: gmail.com
     MAILER_USERNAME: example@gmail.com
@@ -170,7 +136,6 @@ web:
     RAILS_STORAGE_SERVICE: local
     RAILS_STORAGE_REGION: us-east-1
     RAILS_STORAGE_BUCKET: osmseed-website-bucket
-    EXTERNAL_CGIMAP: false
     PASSENGER_MAX_POOL_SIZE: 6
     OPENSTREETMAP_AUTH_ID: ""
     OPENSTREETMAP_AUTH_SECRET: ""
@@ -246,6 +211,7 @@ cgimap:
     name: ""
     tag: ""
   enabled: false
+  serviceAnnotations: {}
   priorityClass: "low-priority"
   resources:
     enabled: false
@@ -563,11 +529,6 @@ tilerDb:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "1234"
     POSTGRES_PORT: 5432
-    # POSTGRES_DB_MAX_CONNECTIONS: 100
-    # POSTGRES_DB_SHARED_BUFFERS: 128MB
-    # POSTGRES_DB_WORK_MEM: 4MB
-    # POSTGRES_DB_MAINTENANCE_WORK_MEM: 64MB
-    # POSTGRES_DB_EFFECTIVE_CACHE_SIZE: 4GB
   persistenceDisk:
     enabled: false
     accessMode: ReadWriteOnce
@@ -694,7 +655,15 @@ tilerServer:
     name: ohm-s3-bucket-access-staging
   replicaCount: 1
   serviceAnnotations: {}
-  ingressDomain: tiler2.dev.openhistoricalmap.org
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - tiler2.dev.openhistoricalmap.org
+    tls:
+      enabled: false
+      secretName: ""
   env:
     TILER_SERVER_PORT: 9090
     TILER_CACHE_TYPE: s3 #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
@@ -787,6 +756,15 @@ tilerVarnish:
     tag: ""
   priorityClass: "medium-priority"
   replicaCount: 1
+  serviceAnnotations: {}
+  ingress:
+    enabled: false
+    className: ""
+    hosts: []
+    annotations: {}
+    tls:
+      enabled: false
+      secretName: ""
   # Varnish malloc storage sizes
   dynamicSize: "16G"
   staticSize: "4G"
@@ -819,7 +797,8 @@ osmxAdiffBuilder:
   # awsSecretName: ohmx-adiff-aws-creds
   # WORKDIR inside the container is /data
   env:
-    PLANET_PBF_URL: https://s3.amazonaws.com/planet.openhistoricalmap.org/planet/planet-latest.osm.pbf
+    PLANET_PBF_URL: 
+      https://s3.amazonaws.com/planet.openhistoricalmap.org/planet/planet-latest.osm.pbf
     REPLICATION_URL: https://s3.amazonaws.com/planet.openhistoricalmap.org/replication/minute
     API_URL: https://www.openhistoricalmap.org
     OSMX_INITIAL_SEQNUM: "0"
@@ -885,8 +864,8 @@ tilerCache:
   # Default image for standalone/direct installs; chartpress overrides name/tag
   # in the umbrella chart (valuesPath osm-seed.tilerCache.image).
   image:
-    name: "ghcr.io/openhistoricalmap/tiler-cache"
-    tag: "0.0.1"
+    name: ""
+    tag: ""
   replicaCount: 1
   env:
     PORT: 8000
@@ -922,8 +901,8 @@ tilerMonitorPipeline:
   # Default image for standalone/direct installs; chartpress overrides name/tag
   # in the umbrella chart (valuesPath osm-seed.tilerMonitorPipeline.image).
   image:
-    name: "ghcr.io/openhistoricalmap/tiler-monitor-pipeline"
-    tag: "0.0.1"
+    name: ""
+    tag: ""
   replicaCount: 1
   env:
     MONITOR_PORT: 8001
@@ -970,8 +949,8 @@ tilerMonitorPipeline:
 tilerMonitorLanguage:
   enabled: false
   image:
-    name: "ghcr.io/openhistoricalmap/tiler-monitor-language"
-    tag: "0.0.1"
+    name: ""
+    tag: ""
   # hourly
   schedule: "0 * * * *"
   # kill a run if it exceeds this (mview recreation can take a while)
@@ -995,45 +974,6 @@ tilerMonitorLanguage:
 # ====================================================================================================
 # Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3
 # ====================================================================================================
-tilerServerCacheCleaner:
-  enabled: false
-  image:
-    name: ""
-    tag: ""
-  priorityClass: "medium-priority"
-  serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
-  replicaCount: 1
-  command: "./tile_cache_downloader.sh & ./expire-watcher.sh"
-  resources:
-    enabled: false
-    requests:
-      enabled: false
-      memory: "1Gi"
-      cpu: "2"
-    limits:
-      enabled: false
-      memory: "2Gi"
-      cpu: "2"
-  env:
-    KILL_PROCESS: manually
-    MAX_NUM_PS: 3
-    PROCESS_NAME: tegola
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 2
-    cpuUtilization: 60
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
-  nodeAffinity:
-    enabled: false
-    key: "nodegroup_type"
-    values: ["web"]
-
 tilerCacheCleanerJob:
   enabled: false
   image:
@@ -1108,7 +1048,15 @@ tmApi:
     tag: ""
   priorityClass: "medium-priority"
   replicaCount: 1
-  ingressDomain: tm-api.dev.osmseed.org
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - tm-api.osmseed.org
+    tls:
+      enabled: false
+      secretName: ""
   serviceAnnotations: {}
   env:
     POSTGRES_HOST: "tm"
@@ -1176,7 +1124,15 @@ nominatimApi:
   priorityClass: "medium-priority"
   serviceAnnotations: {}
   replicaCount: 1
-  ingressDomain: nominatim-api.dev.osmseed.org
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - nominatim-api.osmseed.org
+    tls:
+      enabled: false
+      secretName: ""
   env:
     PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
     REPLICATION_URL: http://download.geofabrik.de/europe/monaco-updates
@@ -1194,6 +1150,8 @@ nominatimApi:
       https://gist.githubusercontent.com/lonvia/8502c61b3dd159e67eb8be8368d864c1/raw/d05a1d681230632bb2e35cbf363f2baec8acd657/address-levels.json
     UPDATE_MODE: continuous #Options: `continuous`/`once`/`catch-up`/`none` (default: `none`)
     OSMSEED_WEB_API_DOMAIN: www.openstreetmap.org
+    # Public host the UI calls for the Nominatim API. Should match ingress.hosts[0].
+    NOMINATIM_API_ENDPOINT: nominatim-api.osmseed.org
   resources:
     enabled: false
     requests:
@@ -1235,7 +1193,15 @@ overpassApi:
     tag: ""
   priorityClass: "medium-priority"
   serviceAnnotations: {}
-  ingressDomain: overpass-api.dev.osmseed.org
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - overpass-api.osmseed.org
+    tls:
+      enabled: false
+      secretName: ""
   env:
     OVERPASS_META: "yes"
     OVERPASS_MODE: init
@@ -1292,7 +1258,15 @@ taginfoWeb:
     enabled: false
     name: ""
   serviceAnnotations: {}
-  ingressDomain: taginfo-dev.staging.openhistoricalmap.org
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - taginfo-dev.staging.openhistoricalmap.org
+    tls:
+      enabled: false
+      secretName: ""
   env:
     OVERWRITE_CONFIG_URL: ""
     TAGINFO_DB_BASE_URL: https://planet.openhistoricalmap.org.s3.amazonaws.com/taginfo
@@ -1480,15 +1454,21 @@ osmchaApi:
   image:
     name: ""
     tag: ""
-  ingressDomain: osmcha.dev.osmseed.org
+  serviceAnnotations: {}
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - osmcha.osmseed.org
+    tls:
+      enabled: false
+      secretName: ""
   priorityClass: "medium-priority"
   env:
     DJANGO_SETTINGS_MODULE: "config.settings.production"
     OSMCHA_FRONTEND_VERSION: "v0.86.0-production"
     DJANGO_SECRET_KEY: abc
-    ## ohm
-    # OAUTH_OSM_KEY: abc
-    # OAUTH_OSM_SECRET: bdc
     DJANGO_SECURE_SSL_REDIRECT: "False"
     OSM_SERVER_URL: https://www.osmseed.org
     OAUTH_REDIRECT_URI: https://osmcha-staging.osmseed.org/oauth-landing.html
@@ -1496,11 +1476,6 @@ osmchaApi:
     ## frontend
     OSMCHA_URL: https://osmcha-staging.osmseed.org
     OSMCHA_API_URL: www.osmseed.org
-    # REACT_APP_OSM_URL: https://www.osmseed.org
-    # REACT_APP_OSM_API: https://www.osmseed.org/api/0.6
-    # REACT_APP_OVERPASS_BASE: //overpass-api.osmseed.org/api/interpreter
-    # REACT_APP_DISABLE_REAL_CHANGESETS: 1
-    # REACT_APP_MAPBOX_ACCESS_TOKEN: "pk.abc.df"
     OAUTH2_OSM_KEY: abc
     OAUTH2_OSM_SECRET: xyz
   resources:

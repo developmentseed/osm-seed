@@ -1,77 +1,35 @@
-{{- if and .Values.web.enabled (eq .Values.serviceType "ClusterIP") .Values.ingressClassName }}
+{{- if and .Values.web.enabled .Values.web.ingress.enabled }}
+{{- $ing := .Values.web.ingress -}}
+{{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress-web
+  {{- with $ing.annotations }}
   annotations:
-    ## NLB 
-    {{- if eq .Values.ingressClassNameType "nlb" }}
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
-    nginx.ingress.kubernetes.io/proxy-body-size: 200m
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    {{- end }}
-    # ALB
-    {{- if eq .Values.ingressClassNameType "alb" }}
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/group.name: {{ .Release.Name }}
-    alb.ingress.kubernetes.io/scheme: "internet-facing"
-    alb.ingress.kubernetes.io/target-type: "ip"
-    alb.ingress.kubernetes.io/listen-ports: '{{ .Values.alb.listenPorts | default "[{\"HTTP\":80},{\"HTTPS\":443}]" }}'
-    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.alb.certificateArn }}"
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    ## Enable WAF
-    {{- if .Values.alb.enableWaf.enabled }}
-    alb.ingress.kubernetes.io/waf-acl-arn: "{{ .Values.alb.enableWaf.wafAclArn }}"
-    {{- end }}
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingressClassName }}
-  {{- if eq .Values.ingressClassNameType "nlb" }}
+  ingressClassName: {{ $ing.className | default .Values.ingressClassName }}
+  {{- if $ing.tls.enabled }}
   tls:
     - hosts:
-        {{- if .Values.web.ingressDomain }}
-        - {{ .Values.web.ingressDomain }}
-        {{- else }}
-        - web.{{ .Values.domain }}
+        {{- range $hosts }}
+        - {{ . }}
         {{- end }}
-        - api.{{ .Values.domain }}
-        - {{ .Values.domain }}
-      secretName: {{ .Release.Name }}-tls-secret
+      secretName: {{ $ing.tls.secretName | default (printf "%s-tls-secret" .Release.Name) }}
   {{- end }}
   rules:
-    - host: {{ if .Values.web.ingressDomain }}{{ .Values.web.ingressDomain }}{{ else }}web.{{ .Values.domain }}{{ end }}
+    {{- range $hosts }}
+    - host: {{ . }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}-service-web
+                name: {{ $.Release.Name }}-service-web
                 port:
                   number: 80
-
-    - host: api.{{ .Values.domain }}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Release.Name }}-service-web
-                port:
-                  number: 80
-
-    - host: {{ .Values.domain }}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Release.Name }}-service-web
-                port:
-                  number: 80
+    {{- end }}
 {{- end }}

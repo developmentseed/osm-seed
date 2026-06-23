@@ -8,18 +8,10 @@ metadata:
     component: taginfo-service
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
+  {{- with .Values.taginfoWeb.serviceAnnotations }}
   annotations:
-    # NLB
-    {{- if and  (eq .Values.ingressClassNameType "nlb" ) (eq .Values.serviceType "ClusterIP") }}
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
-    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
-    {{- end }}
-
-    {{- if and  (eq .Values.ingressClassNameType "alb" ) (eq .Values.serviceType "ClusterIP") }}
-    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.taginfoWeb.healthCheckPath | default "/" }}
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.serviceType }}
   ports:
@@ -27,12 +19,6 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-  {{- if and (eq .Values.serviceType "LoadBalancer") .Values.AWS_SSL_ARN }}
-    - port: 443
-      targetPort: http
-      protocol: TCP
-      name: https
-  {{- end }}
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}

@@ -1,10 +1,10 @@
-{{- if and .Values.taginfoWeb.enabled .Values.taginfoWeb.ingress.enabled }}
-{{- $ing := .Values.taginfoWeb.ingress -}}
+{{- if and .Values.tilerVarnish.enabled .Values.tilerVarnish.ingress.enabled }}
+{{- $ing := .Values.tilerVarnish.ingress -}}
 {{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-ingress-taginfo-api
+  name: {{ .Release.Name }}-ingress-tiler-varnish
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -17,7 +17,7 @@ spec:
         {{- range $hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-taginfo" (include "osm-seed.fullname" .)) }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-tiler-varnish" .Release.Name) }}
   {{- end }}
   rules:
     {{- range $hosts }}
@@ -28,8 +28,8 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "osm-seed.fullname" $ }}-taginfo
+                name: {{ $.Release.Name }}-tiler-varnish
                 port:
-                  number: 80
+                  number: 6081
     {{- end }}
 {{- end }}

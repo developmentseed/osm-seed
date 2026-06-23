@@ -1,71 +1,55 @@
-{{- if and .Values.nominatimApi.enabled (eq .Values.serviceType "ClusterIP") .Values.ingressClassName }}
+{{- if and .Values.nominatimApi.enabled .Values.nominatimApi.ingress.enabled }}
+{{- $ing := .Values.nominatimApi.ingress -}}
+{{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ template "osm-seed.fullname" . }}-ingress-nominatim-api
+  {{- with $ing.annotations }}
   annotations:
-    ## NLB 
-    {{- if eq .Values.ingressClassNameType "nlb" }}
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: {{ .Release.Name }}-letsencrypt-prod-issuer
-    nginx.ingress.kubernetes.io/proxy-body-size: 200m
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    {{- end }}
-    # ALB
-    {{- if eq .Values.ingressClassNameType "alb" }}
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/group.name: {{ .Release.Name }}
-    alb.ingress.kubernetes.io/scheme: "internet-facing"
-    alb.ingress.kubernetes.io/target-type: "ip" 
-    alb.ingress.kubernetes.io/listen-ports: '{{ .Values.alb.listenPorts | default "[{\"HTTP\":80},{\"HTTPS\":443}]" }}'
-    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.alb.certificateArn }}"
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    # Enable WAF
-    {{- if .Values.alb.enableWaf.enabled }}
-    alb.ingress.kubernetes.io/waf-acl-arn: "{{ .Values.alb.enableWaf.wafAclArn }}"
-    {{- end }}
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingressClassName }}
+  ingressClassName: {{ $ing.className | default .Values.ingressClassName }}
+  {{- if $ing.tls.enabled }}
   tls:
-  - hosts:
-    {{- if .Values.nominatimApi.ingressDomain }}
-    - {{ .Values.nominatimApi.ingressDomain }}
-    {{- else }}
-    - nominatim-api.{{ .Values.domain }}
-    {{- end }}
-    secretName: {{ template "osm-seed.fullname" . }}-secret-nominatim
+    - hosts:
+        {{- range $hosts }}
+        - {{ . }}
+        {{- end }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-nominatim" (include "osm-seed.fullname" .)) }}
+  {{- end }}
   rules:
-  - host: {{ if .Values.nominatimApi.ingressDomain }}{{ .Values.nominatimApi.ingressDomain }}{{ else }}nominatim-api.{{ .Values.domain }}{{ end }}
-    http:
-      {{- if .Values.nominatimUI.enabled }}
-      paths:
-      # Routes to the API
-      - path: /((?:search|reverse|lookup|status|deletable|polygons|details)(?:\.php)?)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: {{ .Release.Name }}-nominatim-api
-            port:
-              number: 80
-      # Fallback route for static UI
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Release.Name }}-nominatim-ui
-            port:
-              number: 80
-      {{- else }}
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Release.Name }}-nominatim-api
-            port:
-              number: 80
-      {{- end }}
+    {{- range $hosts }}
+    - host: {{ . }}
+      http:
+        {{- if $.Values.nominatimUI.enabled }}
+        paths:
+        # Routes to the API
+        - path: /((?:search|reverse|lookup|status|deletable|polygons|details)(?:\.php)?)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: {{ $.Release.Name }}-nominatim-api
+              port:
+                number: 80
+        # Fallback route for static UI
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ $.Release.Name }}-nominatim-ui
+              port:
+                number: 80
+        {{- else }}
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ $.Release.Name }}-nominatim-api
+              port:
+                number: 80
+        {{- end }}
+    {{- end }}
 {{- end }}

@@ -80,10 +80,16 @@ EOF
   sed -i -e 's/memcache_servers: \[\]/memcache_servers: "'$OPENSTREETMAP_memcache_servers'"/g' $workdir/config/settings.yml
 
   ## Setting up storage
-  sed -i -e 's/avatar_storage: ".*"/avatar_storage: "'$OPENSTREETMAP_avatar_storage'"/g' $workdir/config/settings.yml
-  sed -i -e 's/trace_file_storage: ".*"/trace_file_storage: "'$OPENSTREETMAP_trace_file_storage'"/g' $workdir/config/settings.yml
-  sed -i -e 's/trace_image_storage: ".*"/trace_image_storage: "'$OPENSTREETMAP_trace_image_storage'"/g' $workdir/config/settings.yml
-  sed -i -e 's/trace_icon_storage: ".*"/trace_icon_storage: "'$OPENSTREETMAP_trace_icon_storage'"/g' $workdir/config/settings.yml
+  # Only override when the env var is set, otherwise keep the default in settings.yml
+  # (an empty value would fail Config validation: "must be filled").
+  [ -n "$OPENSTREETMAP_avatar_storage" ] && \
+    sed -i -e 's/avatar_storage: ".*"/avatar_storage: "'$OPENSTREETMAP_avatar_storage'"/g' $workdir/config/settings.yml
+  [ -n "$OPENSTREETMAP_trace_file_storage" ] && \
+    sed -i -e 's/trace_file_storage: ".*"/trace_file_storage: "'$OPENSTREETMAP_trace_file_storage'"/g' $workdir/config/settings.yml
+  [ -n "$OPENSTREETMAP_trace_image_storage" ] && \
+    sed -i -e 's/trace_image_storage: ".*"/trace_image_storage: "'$OPENSTREETMAP_trace_image_storage'"/g' $workdir/config/settings.yml
+  [ -n "$OPENSTREETMAP_trace_icon_storage" ] && \
+    sed -i -e 's/trace_icon_storage: ".*"/trace_icon_storage: "'$OPENSTREETMAP_trace_icon_storage'"/g' $workdir/config/settings.yml
 
   #### Setting up nominatim url
   sed -i -e 's/nominatim-api.openstreetmap.org/'$NOMINATIM_URL'/g' $workdir/config/settings.yml

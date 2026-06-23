@@ -74,7 +74,7 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - >
-              echo "Nominatim_Config.Nominatim_API_Endpoint = 'https://{{ .Values.nominatimApi.ingressDomain }}/';"
+              echo "Nominatim_Config.Nominatim_API_Endpoint = 'https://{{ .Values.nominatimApi.env.NOMINATIM_API_ENDPOINT }}/';"
               >> /usr/share/nginx/html/ui/theme/config.theme.js &&
               nginx -g "daemon off;"
         {{- end }}
