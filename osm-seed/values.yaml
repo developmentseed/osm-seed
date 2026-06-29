@@ -593,6 +593,15 @@ tilerImposm:
     enabled: true
     name: ohm-web-s3-bucket-access-staging
   priorityClass: "medium-priority"
+  # Liveness probe runs ./liveness.sh, which kills the pod once it has been up
+  # longer than initialDelaySeconds without imposm becoming ready. A fresh full
+  # import can take longer than the default, so raise initialDelaySeconds when
+  # building from scratch.
+  livenessProbe:
+    initialDelaySeconds: 7200
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
