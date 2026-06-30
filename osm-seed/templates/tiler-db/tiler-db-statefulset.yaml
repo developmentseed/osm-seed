@@ -47,7 +47,7 @@ spec:
               command:
               - sh
               - -c
-              - exec pg_isready --host $POD_IP
+              - exec pg_isready --host $POD_IP -U $POSTGRES_USER -d $POSTGRES_DB
             initialDelaySeconds: 120
             timeoutSeconds: 5
             failureThreshold: 6
@@ -56,7 +56,7 @@ spec:
               command:
               - sh
               - -c
-              - exec pg_isready --host $POD_IP
+              - exec pg_isready --host $POD_IP -U $POSTGRES_USER -d $POSTGRES_DB
             initialDelaySeconds: 5
             timeoutSeconds: 3
             periodSeconds: 5
