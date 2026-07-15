@@ -39,13 +39,10 @@ spec:
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
-          # livenessProbe:
-          #   httpGet:
-          #     path: /status
-          #     port: 8080
-          #   initialDelaySeconds: 40000
-          #   timeoutSeconds: 5
-          #   failureThreshold: 6
+          {{- with .Values.nominatimApi.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: nominatim-db-storage
               mountPath: {{ .Values.nominatimApi.persistenceDisk.mountPath }}
