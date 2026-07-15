@@ -28,16 +28,18 @@ spec:
       - name: {{ .Release.Name }}-tiler-imposm-sts
         image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}
         command: ['./start.sh']
+        {{- if .Values.tilerImposm.livenessProbe.enabled }}
         livenessProbe:
             exec:
               command:
               - /bin/bash
               - -c
               - ./liveness.sh
-            initialDelaySeconds: 7200
-            timeoutSeconds: 5
-            periodSeconds: 10
-            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.tilerImposm.livenessProbe.initialDelaySeconds | default 7200 }}
+            timeoutSeconds: {{ .Values.tilerImposm.livenessProbe.timeoutSeconds | default 5 }}
+            periodSeconds: {{ .Values.tilerImposm.livenessProbe.periodSeconds | default 10 }}
+            failureThreshold: {{ .Values.tilerImposm.livenessProbe.failureThreshold | default 3 }}
+        {{- end }}
         {{- if .Values.tilerImposm.resources.enabled }}
         resources:
           {{- if .Values.tilerImposm.resources.requests.enabled }}

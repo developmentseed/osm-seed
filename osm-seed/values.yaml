@@ -593,6 +593,12 @@ tilerImposm:
     enabled: true
     name: ohm-web-s3-bucket-access-staging
   priorityClass: "medium-priority"
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 14400
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
   env:
     TILER_IMPORT_FROM: osm
     TILER_IMPORT_PBF_URL: http://download.geofabrik.de/europe/monaco-latest.osm.pbf
