@@ -39,6 +39,10 @@ spec:
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
+          {{- with .Values.nominatimApi.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.nominatimApi.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
