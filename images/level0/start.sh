@@ -28,6 +28,9 @@ if [ -n "${OVERPASS_API:-}" ] && ! grep -qF "${OVERPASS_API}" "$OSMAPI"; then
   sed -i "s|'overpass.private.coffee/api'|'${OVERPASS_API}', 'overpass.private.coffee/api'|" "$OSMAPI"
 fi
 
+# Fix upstream typo in read_user(): row[0] -> $row[0]
+sed -i 's|\$text = row\[0\];|\$text = \$row[0];|' /var/www/level0/www/core.php
+
 grep -qF 'ConfigurableOAuthProvider(' "$OSMAPI"
 grep -qF 'OSM_WEBSITE_URL' "$OSMAPI"
 
