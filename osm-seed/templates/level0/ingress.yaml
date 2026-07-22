@@ -1,0 +1,35 @@
+{{- if and .Values.level0.enabled .Values.level0.ingress.enabled }}
+{{- $ing := .Values.level0.ingress -}}
+{{- $hosts := $ing.hosts -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress-level0
+  {{- with $ing.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ $ing.className | default .Values.ingressClassName }}
+  {{- if $ing.tls.enabled }}
+  tls:
+    - hosts:
+        {{- range $hosts }}
+        - {{ . }}
+        {{- end }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-level0" (include "osm-seed.fullname" .)) }}
+  {{- end }}
+  rules:
+    {{- range $hosts }}
+    - host: {{ . }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $.Release.Name }}-level0
+                port:
+                  number: 80
+    {{- end }}
+{{- end }}
