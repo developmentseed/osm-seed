@@ -1558,6 +1558,9 @@ planetFiles:
 
 level0:
   enabled: true
+  image:
+    name: ""
+    tag: ""
   replicas: 1
   priorityClass: "medium-priority"
   serviceAccount:
