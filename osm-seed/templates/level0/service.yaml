@@ -1,0 +1,26 @@
+{{- if .Values.level0.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-level0
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: level0-service
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+  {{- with .Values.level0.serviceAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.serviceType }}
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+    run: {{ .Release.Name }}-level0
+{{- end }}

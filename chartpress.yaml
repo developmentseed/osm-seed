@@ -75,3 +75,6 @@ charts:
     cgimap:
       valuesPath: cgimap.image
       contextPath: images/cgimap
+    level0:
+      valuesPath: level0.image
+      contextPath: images/level0

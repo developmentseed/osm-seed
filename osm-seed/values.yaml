@@ -1555,3 +1555,49 @@ planetFiles:
   image:
     name: ""
     tag: ""
+
+level0:
+  enabled: true
+  image:
+    name: ""
+    tag: ""
+  replicas: 1
+  priorityClass: "medium-priority"
+  serviceAccount:
+    enabled: false
+    name: ""
+  serviceAnnotations: {}
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - level0-dev.openstreetmap.org
+    tls:
+      enabled: false
+      secretName: ""
+  env:
+    OSM_WEBSITE_URL: https://www.openstreetmap.org
+    OSM_API_URL: https://www.openstreetmap.org/api/0.6/
+    OAUTH2_CLIENT_ID: "xyz"
+    OAUTH2_CLIENT_SECRET: "abc"
+    OVERPASS_API: "overpass-api.oenstreetmap.org"
+    MAX_REQUEST_OBJECTS: "500"
+  resources:
+    enabled: false
+    requests:
+      enabled: false
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      enabled: false
+      memory: "512Mi"
+      cpu: "1"
+  nodeSelector:
+    enabled: false
+    label_key: nodegroup_type
+    label_value: web
+  nodeAffinity:
+    enabled: false
+    key: "nodegroup_type"
+    values: ["web"]
