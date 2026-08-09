@@ -39,13 +39,23 @@ spec:
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
-          {{- with .Values.nominatimApi.startupProbe }}
+          {{- if .Values.nominatimApi.startupProbe.enabled }}
           startupProbe:
-            {{- toYaml . | nindent 12 }}
+            httpGet:
+              path: {{ .Values.nominatimApi.startupProbe.path | default "/status" }}
+              port: {{ .Values.nominatimApi.startupProbe.port | default 8080 }}
+            periodSeconds: {{ .Values.nominatimApi.startupProbe.periodSeconds | default 60 }}
+            timeoutSeconds: {{ .Values.nominatimApi.startupProbe.timeoutSeconds | default 30 }}
+            failureThreshold: {{ .Values.nominatimApi.startupProbe.failureThreshold | default 1440 }}
           {{- end }}
-          {{- with .Values.nominatimApi.livenessProbe }}
+          {{- if .Values.nominatimApi.livenessProbe.enabled }}
           livenessProbe:
-            {{- toYaml . | nindent 12 }}
+            httpGet:
+              path: {{ .Values.nominatimApi.livenessProbe.path | default "/status" }}
+              port: {{ .Values.nominatimApi.livenessProbe.port | default 8080 }}
+            periodSeconds: {{ .Values.nominatimApi.livenessProbe.periodSeconds | default 60 }}
+            timeoutSeconds: {{ .Values.nominatimApi.livenessProbe.timeoutSeconds | default 30 }}
+            failureThreshold: {{ .Values.nominatimApi.livenessProbe.failureThreshold | default 6 }}
           {{- end }}
           volumeMounts:
             - name: nominatim-db-storage
