@@ -16,6 +16,7 @@ spec:
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: 120
+      activeDeadlineSeconds: 600
       template:
         spec:
           containers:
@@ -54,6 +55,7 @@ spec:
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: 120
+      activeDeadlineSeconds: 600
       template:
         spec:
           containers:
