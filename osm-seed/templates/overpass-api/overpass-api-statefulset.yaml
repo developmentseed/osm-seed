@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-overpass-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: overpass-api-statefulset
+    component: overpass-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -72,7 +72,7 @@ spec:
         - name: overpass-api-storage
         {{- if .Values.overpassApi.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-overpass-api-pv-claim
+            claimName: {{ .Release.Name }}-overpass-api-data
         {{- else }}
           emptyDir: {}
         {{- end }}

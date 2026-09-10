@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-nominatim
+  name: {{ .Release.Name }}-nominatim-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatim-api-statefulset
+    component: nominatim-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -14,14 +14,14 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-nominatim
-  serviceName: {{ .Release.Name }}-nominatim
+      run: {{ .Release.Name }}-nominatim-api
+  serviceName: {{ .Release.Name }}-nominatim-api
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-nominatim
+        run: {{ .Release.Name }}-nominatim-api
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.nominatimApi.priorityClass | default "medium-priority" }}
       containers:
@@ -93,7 +93,7 @@ spec:
         - name: nominatim-db-storage
         {{- if .Values.nominatimApi.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-nominatim-pv-claim
+            claimName: {{ .Release.Name }}-nominatim-data
         {{- else }}
           emptyDir: {}
         {{- end }}

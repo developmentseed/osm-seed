@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-planet-dump-job
+  name: {{ .Release.Name }}-planet-dump
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: planet-dump-job
+    component: planet-dump
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -24,7 +24,7 @@ spec:
           automountServiceAccountToken: true
           {{- end }}
           containers:
-          - name: {{ .Release.Name }}-planet-dump-job
+          - name: {{ .Release.Name }}-planet-dump
             image: "{{ .Values.planetDump.image.name }}:{{ .Values.planetDump.image.tag }}"
             command: ['/start.sh']
             {{- if .Values.planetDump.resources.enabled }}   

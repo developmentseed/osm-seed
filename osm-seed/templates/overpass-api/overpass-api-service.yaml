@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-overpass-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: overpass-api-service
+    component: overpass-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   {{- with .Values.overpassApi.serviceAnnotations }}

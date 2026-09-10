@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-cgimap-deployment
+  name: {{ .Release.Name }}-cgimap
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: cgimap-deployment
+    component: cgimap
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -14,13 +14,13 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-cgimap-deployment
+      run: {{ .Release.Name }}-cgimap
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-cgimap-deployment
+        run: {{ .Release.Name }}-cgimap
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.cgimap.priorityClass | default "high-priority" }}
       containers:

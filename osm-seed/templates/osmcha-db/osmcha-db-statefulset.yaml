@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-osmcha-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmcha-db-statefulset
+    component: osmcha-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -88,7 +88,7 @@ spec:
         - name: postgres-storage
         {{- if .Values.osmchaDb.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-osmcha-db-pv-claim
+            claimName: {{ .Release.Name }}-osmcha-db-data
         {{- else }}
           emptyDir: {}
         {{- end }}

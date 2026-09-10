@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-osmcha-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmcha-db-service
+    component: osmcha-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:

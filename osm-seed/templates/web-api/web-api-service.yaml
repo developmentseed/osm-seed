@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-web-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: web-api-service
+    component: web-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   {{- with .Values.webApi.serviceAnnotations }}

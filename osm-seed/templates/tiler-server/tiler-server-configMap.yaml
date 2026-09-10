@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-tiler-server-cm
+  name: {{ .Release.Name }}-tiler-server-env
 data:
     TILER_SERVER_PORT: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
     TILER_CACHE_TYPE: {{ .Values.tilerServer.env.TILER_CACHE_TYPE | quote }}

@@ -6,10 +6,10 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Release.Name }}-overpass-api-pv
+  name: {{ .Release.Name }}-overpass-api-data
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: overpass-api-pd
+    component: overpass-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -42,12 +42,12 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-overpass-api-pv-claim
+  name: {{ .Release.Name }}-overpass-api-data
   annotations:
     "helm.sh/resource-policy": keep
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: overpass-api-pd
+    component: overpass-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -55,7 +55,7 @@ spec:
   {{- if eq .Values.cloudProvider "k3s" }}
   {{- if .Values.overpassApi.persistenceDisk.staticHostPath }}
   storageClassName: ""
-  volumeName: {{ .Release.Name }}-overpass-api-pv
+  volumeName: {{ .Release.Name }}-overpass-api-data
   {{- else }}
   storageClassName: local-path
   {{- end }}
@@ -67,7 +67,7 @@ spec:
   {{- else }}
   ############## Other providers ##############
   storageClassName: ""
-  volumeName: {{ .Release.Name }}-overpass-api-pv
+  volumeName: {{ .Release.Name }}-overpass-api-data
   accessModes:
     - ReadWriteOnce
   resources:

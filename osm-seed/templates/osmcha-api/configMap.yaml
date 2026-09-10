@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-osmcha-common-env
+  name: {{ .Release.Name }}-osmcha-api-env
 data:
     # DB
     POSTGRES_HOST: {{ .Release.Name }}-osmcha-db

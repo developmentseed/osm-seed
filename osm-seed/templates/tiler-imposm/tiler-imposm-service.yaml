@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-imposm
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-imposm-service
+    component: tiler-imposm
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -14,7 +14,7 @@ spec:
     - port: 3000
       targetPort: 3000
   selector:
-    app: {{ .Release.Name }}-tiler-imposm-sts
+    app: {{ .Release.Name }}-tiler-imposm
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-tiler-imposm-sts
+    run: {{ .Release.Name }}-tiler-imposm
 {{- end }}

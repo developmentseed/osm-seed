@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-tasking-manager-api 
+  name: {{ .Release.Name }}-tm-api 
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tasking-manager-api-deployment
+    component: tm-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -14,13 +14,13 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-tasking-manager-api
+      run: {{ .Release.Name }}-tm-api
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-tasking-manager-api
+        run: {{ .Release.Name }}-tm-api
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.tmApi.priorityClass | default "medium-priority" }}
       initContainers:
@@ -34,9 +34,9 @@ spec:
             - head
           envFrom:
             - configMapRef:
-                name: {{ .Release.Name }}-tm-common-env
+                name: {{ .Release.Name }}-tm-api-env
       containers:
-        - name: {{ .Chart.Name }}-tasking-manager-api
+        - name: {{ .Chart.Name }}-tm-api
           image: "{{ .Values.tmApi.image.name }}:{{ .Values.tmApi.image.tag }}"
           ports:
             - name: http
@@ -63,7 +63,7 @@ spec:
           {{- end }}
           envFrom:
           - configMapRef:
-              name: {{ .Release.Name }}-tm-common-env
+              name: {{ .Release.Name }}-tm-api-env
 
       {{- if .Values.tmApi.nodeSelector.enabled }}
       nodeSelector:

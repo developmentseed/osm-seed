@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-tasking-manager-db
+  name: {{ .Release.Name }}-tm-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tm-db-statefulset
+    component: tm-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -14,14 +14,14 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-tasking-manager-db
-  serviceName: {{ .Release.Name }}-tasking-manager-db
+      run: {{ .Release.Name }}-tm-db
+  serviceName: {{ .Release.Name }}-tm-db
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-tasking-manager-db
+        run: {{ .Release.Name }}-tm-db
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.tmDb.priorityClass | default "medium-priority" }}
       containers:
@@ -33,7 +33,7 @@ spec:
               protocol: TCP
           env:
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-tasking-manager-db
+              value: {{ .Release.Name }}-tm-db
             - name: POSTGRES_DB
               value: {{ .Values.tmDb.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
@@ -95,7 +95,7 @@ spec:
         - name: postgres-storage
         {{- if .Values.tmDb.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-tasking-manager-db-pv-claim
+            claimName: {{ .Release.Name }}-tm-db-data
         {{- else }}
           emptyDir: {}
         {{- end }}

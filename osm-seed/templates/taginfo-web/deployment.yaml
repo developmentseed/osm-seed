@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-taginfo-web
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: taginfo-web-deployment
+    component: taginfo-web
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:

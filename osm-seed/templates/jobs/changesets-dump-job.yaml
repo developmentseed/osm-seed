@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-changesets-dump-job
+  name: {{ .Release.Name }}-changesets-dump
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: changesets-dump-job
+    component: changesets-dump
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -24,7 +24,7 @@ spec:
           automountServiceAccountToken: true
           {{- end }}
           containers:
-          - name: {{ .Release.Name }}-changesets-dump-job
+          - name: {{ .Release.Name }}-changesets-dump
             image: "{{ .Values.changesetsDump.image.name }}:{{ .Values.changesetsDump.image.tag }}"
             command: ['/start.sh']
             {{- if .Values.changesetsDump.resources.enabled }}

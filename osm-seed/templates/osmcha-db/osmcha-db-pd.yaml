@@ -6,10 +6,10 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Release.Name }}-osmcha-db-pv
+  name: {{ .Release.Name }}-osmcha-db-data
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmcha-db-pv
+    component: osmcha-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -40,12 +40,12 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-osmcha-db-pv-claim
+  name: {{ .Release.Name }}-osmcha-db-data
   annotations:
     "helm.sh/resource-policy": keep
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmcha-db-pvc
+    component: osmcha-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -53,7 +53,7 @@ spec:
   {{- if eq .Values.cloudProvider "k3s" }}
   {{- if .Values.osmchaDb.persistenceDisk.staticHostPath }}
   storageClassName: ""
-  volumeName: {{ .Release.Name }}-osmcha-db-pv
+  volumeName: {{ .Release.Name }}-osmcha-db-data
   {{- else }}
   storageClassName: local-path
   {{- end }}
@@ -65,7 +65,7 @@ spec:
   {{- else }}
   ############## Other providers ##############
   storageClassName: ""
-  volumeName: {{ .Release.Name }}-osmcha-db-pv
+  volumeName: {{ .Release.Name }}-osmcha-db-data
   accessModes:
     - ReadWriteOnce
   resources:

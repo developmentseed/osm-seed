@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-ingress-nominatim-api
+  name: {{ .Release.Name }}-nominatim-api
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-web-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: web-api-deployment
+    component: web-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -84,7 +84,7 @@ spec:
             - name: EXTERNAL_CGIMAP
               value: "true"
             - name: CGIMAP_URL
-              value: {{ .Release.Name }}-cgimap-service
+              value: {{ .Release.Name }}-cgimap
             - name: CGIMAP_PORT
               value: {{ quote 80 }}
             # ---- Everything else passes straight through from web.env ----

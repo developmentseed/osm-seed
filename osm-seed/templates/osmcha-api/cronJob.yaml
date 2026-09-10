@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-osmcha-fetch-changesets
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmcha-app-deployment
+    component: osmcha-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -30,7 +30,7 @@ spec:
               python manage.py fetchchangesets
             envFrom:
             - configMapRef:
-                name: {{ .Release.Name }}-osmcha-common-env
+                name: {{ .Release.Name }}-osmcha-api-env
           restartPolicy: Never
           {{- if .Values.osmchaApi.nodeSelector.enabled }}
           nodeSelector:
@@ -44,7 +44,7 @@ metadata:
   name: {{ .Release.Name }}-osmcha-process-changesets
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmcha-app-deployment
+    component: osmcha-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -71,7 +71,7 @@ spec:
               python manage.py backfill_changesets_id --start_id=100000
             envFrom:
             - configMapRef:
-                name: {{ .Release.Name }}-osmcha-common-env
+                name: {{ .Release.Name }}-osmcha-api-env
           restartPolicy: Never
           {{- if .Values.osmchaApi.nodeSelector.enabled }}
           nodeSelector:

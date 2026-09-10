@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-populate-apidb-job
+  name: {{ .Release.Name }}-populate-apidb
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: populate-apidb-job
+    component: populate-apidb
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -16,7 +16,7 @@ spec:
         automountServiceAccountToken: true
         {{- end }}
         containers:
-        - name: {{ .Release.Name }}-populate-apidb-job
+        - name: {{ .Release.Name }}-populate-apidb
           image: "{{ .Values.populateApidb.image.name }}:{{ .Values.populateApidb.image.tag }}"
           command: ['/start.sh']
           {{- if .Values.populateApidb.resources.enabled }}   

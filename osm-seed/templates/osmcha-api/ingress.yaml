@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-ingress-osmcha-app
+  name: {{ .Release.Name }}-osmcha-api
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -28,7 +28,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ $.Release.Name }}-osmcha-app
+                name: {{ $.Release.Name }}-osmcha-api
                 port:
                   number: 80
     {{- end }}

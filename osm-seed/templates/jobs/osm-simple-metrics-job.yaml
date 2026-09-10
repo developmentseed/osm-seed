@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-osm-simple-metrics-job
+  name: {{ .Release.Name }}-osm-simple-metrics
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osm-simple-metrics-job
+    component: osm-simple-metrics
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -24,7 +24,7 @@ spec:
           automountServiceAccountToken: true
           {{- end }}
           containers:
-          - name: {{ .Release.Name }}-osm-simple-metrics-job
+          - name: {{ .Release.Name }}-osm-simple-metrics
             image: "{{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}"
             {{- if .Values.osmSimpleMetrics.resources.enabled }}
             resources:

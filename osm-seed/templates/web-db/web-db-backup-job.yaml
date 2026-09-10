@@ -3,9 +3,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ $.Release.Name }}-{{ $job.name }}-backup-job
+  name: {{ $.Release.Name }}-{{ $job.name }}-backup
   labels:
-    component: {{ $job.name }}-job
+    component: {{ $job.name }}-backup
     environment: {{ $.Values.environment }}
     release: {{ $.Release.Name }}
 spec:
@@ -24,7 +24,7 @@ spec:
           automountServiceAccountToken: true
           {{- end }}
           containers:
-          - name: {{ $job.name }}-backup-job
+          - name: {{ $job.name }}-backup
             image: "{{ $.Values.dbBackupRestore.image.name }}:{{ $.Values.dbBackupRestore.image.tag }}"
             command: ['/start.sh']
             env:
@@ -68,7 +68,7 @@ spec:
             {{ if eq $job.name "tm-db" }}
               # DB credentials
               - name: POSTGRES_HOST
-                value: {{ $.Release.Name }}-tasking-manager-db
+                value: {{ $.Release.Name }}-tm-db
               - name: POSTGRES_DB
                 value: {{ $.Values.tmDb.env.POSTGRES_DB }}
               - name: POSTGRES_PASSWORD

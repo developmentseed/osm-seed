@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-server
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-server-statefulset
+    component: tiler-server
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -58,9 +58,9 @@ spec:
           {{- end }}
           envFrom:
           - configMapRef:
-              name: {{ .Release.Name }}-tiler-server-cm
+              name: {{ .Release.Name }}-tiler-server-env
           - configMapRef:
-              name: {{ .Release.Name }}-tiler-db-cm
+              name: {{ .Release.Name }}-tiler-db-env
           volumeMounts:
           - mountPath: /mnt/data
             name: tiler-server-storage
@@ -69,7 +69,7 @@ spec:
         - name: tiler-server-storage
         {{- if .Values.tilerServer.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-tiler-server-pv-claim
+            claimName: {{ .Release.Name }}-tiler-server-data
         {{- else }}
           emptyDir: {}
         {{- end }}

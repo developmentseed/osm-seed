@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-osmx-adiff-builder
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmx-adiff-builder-statefulset
+    component: osmx-adiff-builder
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -66,7 +66,7 @@ spec:
         - name: osmx-db
         {{- if .Values.osmxAdiffBuilder.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-osmx-adiff-builder-pv-claim
+            claimName: {{ .Release.Name }}-osmx-adiff-builder-data
         {{- else }}
           emptyDir: {}
         {{- end }}

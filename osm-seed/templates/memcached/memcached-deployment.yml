@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-memcached
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: memcached-deployment
+    component: memcached
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:

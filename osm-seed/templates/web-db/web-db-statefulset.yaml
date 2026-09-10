@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-web-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: web-db-statefulset
+    component: web-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -101,7 +101,7 @@ spec:
         - name: postgres-storage
         {{- if .Values.webDb.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-web-db-pv-claim
+            claimName: {{ .Release.Name }}-web-db-data
         {{- else }}
           emptyDir: {}
         {{- end }}

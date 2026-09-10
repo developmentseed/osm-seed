@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-ingress-overpass-api
+  name: {{ .Release.Name }}-overpass-api
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

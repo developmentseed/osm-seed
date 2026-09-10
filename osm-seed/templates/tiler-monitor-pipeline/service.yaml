@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-monitor-pipeline
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-monitor-pipeline-service
+    component: tiler-monitor-pipeline
     release: {{ .Release.Name }}
 spec:
   type: ClusterIP

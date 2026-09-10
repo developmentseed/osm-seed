@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-nominatim-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatim-api-service
+    component: nominatim-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   {{- with .Values.nominatimApi.serviceAnnotations }}
@@ -22,7 +22,7 @@ spec:
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-nominatim
+    run: {{ .Release.Name }}-nominatim-api
 {{- end }}
 ---
 {{- if and .Values.nominatimApi.enabled .Values.nominatimUI.enabled }}
@@ -32,7 +32,7 @@ metadata:
   name: {{ .Release.Name }}-nominatim-ui
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: nominatim-ui-service
+    component: nominatim-ui
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -45,5 +45,5 @@ spec:
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-nominatim
+    run: {{ .Release.Name }}-nominatim-api
 {{- end }}

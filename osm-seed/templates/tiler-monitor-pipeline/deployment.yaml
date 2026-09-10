@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-monitor-pipeline
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-monitor-pipeline-deployment
+    component: tiler-monitor-pipeline
     release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.tilerMonitorPipeline.replicaCount }}
@@ -42,7 +42,7 @@ spec:
           envFrom:
           # POSTGRES_* for the tiler DB
           - configMapRef:
-              name: {{ .Release.Name }}-tiler-db-cm
+              name: {{ .Release.Name }}-tiler-db-env
               optional: true
           {{- if .Values.tilerMonitorPipeline.persistenceDisk.enabled }}
           volumeMounts:
@@ -74,7 +74,7 @@ spec:
       volumes:
         - name: monitor-storage
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-tiler-monitor-pipeline-pv-claim
+            claimName: {{ .Release.Name }}-tiler-monitor-pipeline-data
       {{- end }}
       {{- if .Values.tilerMonitorPipeline.nodeSelector.enabled }}
       nodeSelector:

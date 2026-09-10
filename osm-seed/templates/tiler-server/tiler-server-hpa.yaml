@@ -3,7 +3,7 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ .Release.Name }}-hpa-tiler-server
+  name: {{ .Release.Name }}-tiler-server
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

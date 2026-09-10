@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-tm-common-env
+  name: {{ .Release.Name }}-tm-api-env
 data:
-  POSTGRES_HOST: {{ .Release.Name }}-tasking-manager-db
+  POSTGRES_HOST: {{ .Release.Name }}-tm-db
   POSTGRES_DB: {{ quote .Values.tmDb.env.POSTGRES_DB | default "" }}
   POSTGRES_PASSWORD: {{ quote .Values.tmDb.env.POSTGRES_PASSWORD | default "" }}
   POSTGRES_USER: {{ quote .Values.tmDb.env.POSTGRES_USER | default "" }}
   POSTGRES_PORT: "5432"
-  TM_DB: {{ quote (printf "postgresql+asyncpg://%s:%s@%s-tasking-manager-db/%s" .Values.tmDb.env.POSTGRES_USER .Values.tmDb.env.POSTGRES_PASSWORD .Release.Name .Values.tmDb.env.POSTGRES_DB) }}
+  TM_DB: {{ quote (printf "postgresql+asyncpg://%s:%s@%s-tm-db/%s" .Values.tmDb.env.POSTGRES_USER .Values.tmDb.env.POSTGRES_PASSWORD .Release.Name .Values.tmDb.env.POSTGRES_DB) }}
   TM_ORG_NAME: {{ quote .Values.tmApi.env.TM_ORG_NAME | default "" }}
   TM_ORG_CODE: {{ quote .Values.tmApi.env.TM_ORG_CODE | default "" }}
   TM_ORG_URL: {{ quote .Values.tmApi.env.TM_ORG_URL | default "" }}

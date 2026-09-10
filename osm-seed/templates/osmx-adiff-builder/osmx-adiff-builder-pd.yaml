@@ -6,10 +6,10 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Release.Name }}-osmx-adiff-builder-pv
+  name: {{ .Release.Name }}-osmx-adiff-builder-data
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmx-adiff-builder-pv
+    component: osmx-adiff-builder
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -27,12 +27,12 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-osmx-adiff-builder-pv-claim
+  name: {{ .Release.Name }}-osmx-adiff-builder-data
   annotations:
     "helm.sh/resource-policy": keep
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmx-adiff-builder-pvc
+    component: osmx-adiff-builder
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -40,7 +40,7 @@ spec:
   {{- if eq .Values.cloudProvider "k3s" }}
   {{- if .Values.osmxAdiffBuilder.persistenceDisk.staticHostPath }}
   storageClassName: ""
-  volumeName: {{ .Release.Name }}-osmx-adiff-builder-pv
+  volumeName: {{ .Release.Name }}-osmx-adiff-builder-data
   {{- else }}
   storageClassName: local-path
   {{- end }}

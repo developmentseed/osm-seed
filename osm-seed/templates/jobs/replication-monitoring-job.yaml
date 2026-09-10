@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-replication-monitoring-job
+  name: {{ .Release.Name }}-replication-monitoring
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: replication-monitoring-job
+    component: replication-monitoring
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -24,7 +24,7 @@ spec:
           automountServiceAccountToken: true
           {{- end }}
           containers:
-          - name: {{ .Release.Name }}-replication-monitoring-job
+          - name: {{ .Release.Name }}-replication-monitoring
             image: "{{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}"
             command: ['/monitoring.py']
             {{- if .Values.monitoringReplication.resources.enabled }}   
