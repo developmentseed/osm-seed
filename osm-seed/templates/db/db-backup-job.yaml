@@ -25,7 +25,7 @@ spec:
           {{- end }}
           containers:
           - name: {{ $job.name }}-backup-job
-            image: {{ $.Values.dbBackupRestore.image.name }}:{{ $.Values.dbBackupRestore.image.tag }}
+            image: "{{ $.Values.dbBackupRestore.image.name }}:{{ $.Values.dbBackupRestore.image.tag }}"
             command: ['/start.sh']
             env:
             # Env vars for api-web database
@@ -60,7 +60,7 @@ spec:
                 value: {{ quote $job.env.CLEANUP_BACKUPS }}
               - name: RETENTION_DAYS
                 value: {{ quote $job.env.RETENTION_DAYS }}
-              # In case DB_ACTION=restore, adn the backup url
+              # In case DB_ACTION=restore, and the backup url
               - name: RESTORE_URL_FILE
                 value: {{ $job.env.RESTORE_URL_FILE}}
             {{- end }}
@@ -92,7 +92,7 @@ spec:
                 value: {{ quote $job.env.CLEANUP_BACKUPS }}
               - name: RETENTION_DAYS
                 value: {{ quote $job.env.RETENTION_DAYS }}
-              # In case DB_ACTION=restore, adn the backup url
+              # In case DB_ACTION=restore, and the backup url
               - name: RESTORE_URL_FILE
                 value: {{ $job.env.RESTORE_URL_FILE}}
             {{- end }}
@@ -124,7 +124,7 @@ spec:
                 value: {{ quote $job.env.CLEANUP_BACKUPS }}
               - name: RETENTION_DAYS
                 value: {{ quote $job.env.RETENTION_DAYS }}
-              # In case DB_ACTION=restore, adn the backup url
+              # In case DB_ACTION=restore, and the backup url
               - name: RESTORE_URL_FILE
                 value: {{ $job.env.RESTORE_URL_FILE}}
             {{- end }}

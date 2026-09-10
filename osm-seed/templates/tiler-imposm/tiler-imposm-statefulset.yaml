@@ -26,7 +26,7 @@ spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerImposm.priorityClass | default "medium-priority" }}
       containers:
       - name: {{ .Release.Name }}-tiler-imposm-sts
-        image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}
+        image: "{{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}"
         command: ['./start.sh']
         {{- if .Values.tilerImposm.livenessProbe.enabled }}
         livenessProbe:
@@ -40,7 +40,7 @@ spec:
             periodSeconds: {{ .Values.tilerImposm.livenessProbe.periodSeconds | default 10 }}
             failureThreshold: {{ .Values.tilerImposm.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
-        {{- if .Values.tilerImposm.resources.enabled }}
+        {{- if and .Values.tilerImposm.resources.enabled (or .Values.tilerImposm.resources.requests.enabled .Values.tilerImposm.resources.limits.enabled) }}
         resources:
           {{- if .Values.tilerImposm.resources.requests.enabled }}
           requests:

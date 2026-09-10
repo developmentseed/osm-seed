@@ -41,7 +41,7 @@ spec:
                 - name: {{ $k }}
                   value: {{ $v | quote }}
                 {{- end }}
-              {{- if .Values.taginfoDataProcessor.resources.enabled }}
+              {{- if and .Values.taginfoDataProcessor.resources.enabled (or .Values.taginfoDataProcessor.resources.requests.enabled .Values.taginfoDataProcessor.resources.limits.enabled) }}
               resources:
                 {{- if .Values.taginfoDataProcessor.resources.requests.enabled }}
                 requests:

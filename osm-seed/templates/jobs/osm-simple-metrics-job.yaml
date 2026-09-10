@@ -25,7 +25,7 @@ spec:
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-osm-simple-metrics-job
-            image: {{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}
+            image: "{{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}"
             {{- if .Values.osmSimpleMetrics.resources.enabled }}
             resources:
               requests:

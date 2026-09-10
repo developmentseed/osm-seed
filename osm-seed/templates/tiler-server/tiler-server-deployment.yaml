@@ -42,7 +42,7 @@ spec:
               port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
             initialDelaySeconds: 1000
             timeoutSeconds: 30
-          {{- if .Values.tilerServer.resources.enabled }}
+          {{- if and .Values.tilerServer.resources.enabled (or .Values.tilerServer.resources.requests.enabled .Values.tilerServer.resources.limits.enabled) }}
           resources:
             {{- if .Values.tilerServer.resources.requests.enabled }}
             requests:

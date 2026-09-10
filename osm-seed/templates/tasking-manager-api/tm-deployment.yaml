@@ -48,7 +48,7 @@ spec:
               port: 5000
             initialDelaySeconds: 120
             timeoutSeconds: 30
-          {{- if .Values.tmApi.resources.enabled }}
+          {{- if and .Values.tmApi.resources.enabled (or .Values.tmApi.resources.requests.enabled .Values.tmApi.resources.limits.enabled) }}
           resources:
             {{- if .Values.tmApi.resources.requests.enabled }}
             requests:

@@ -48,7 +48,7 @@ spec:
               port: http
             initialDelaySeconds: 60
             periodSeconds: 20
-          {{- if .Values.tilerServerMartin.resources.enabled }}
+          {{- if and .Values.tilerServerMartin.resources.enabled (or .Values.tilerServerMartin.resources.requests.enabled .Values.tilerServerMartin.resources.limits.enabled) }}
           resources:
             {{- if .Values.tilerServerMartin.resources.requests.enabled }}
             requests:

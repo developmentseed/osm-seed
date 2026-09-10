@@ -53,7 +53,7 @@ spec:
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
             {{- end }}
-          {{- if .Values.web.resources.enabled }}
+          {{- if and .Values.web.resources.enabled (or .Values.web.resources.requests.enabled .Values.web.resources.limits.enabled) }}
           resources:
             {{- if .Values.web.resources.requests.enabled }}
             requests:

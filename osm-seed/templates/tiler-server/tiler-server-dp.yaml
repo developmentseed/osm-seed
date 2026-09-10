@@ -31,7 +31,7 @@ metadata:
     "helm.sh/resource-policy": keep
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-pd
+    component: tiler-server-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:

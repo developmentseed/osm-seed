@@ -54,7 +54,7 @@ spec:
           volumeMounts:
           - mountPath: /db
             name: overpass-api-storage
-          {{- if .Values.overpassApi.resources.enabled }}
+          {{- if and .Values.overpassApi.resources.enabled (or .Values.overpassApi.resources.requests.enabled .Values.overpassApi.resources.limits.enabled) }}
           resources:
             {{- if .Values.overpassApi.resources.requests.enabled }}
             requests:

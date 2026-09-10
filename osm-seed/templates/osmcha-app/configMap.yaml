@@ -20,8 +20,6 @@ data:
     DJANGO_SECRET_KEY: {{ .Values.osmchaApi.env.DJANGO_SECRET_KEY | quote }}
     DJANGO_SETTINGS_MODULE: {{ .Values.osmchaApi.env.DJANGO_SETTINGS_MODULE | quote }}
     OSMCHA_FRONTEND_VERSION: {{ .Values.osmchaApi.env.OSMCHA_FRONTEND_VERSION | quote }}
-    # OAUTH_OSM_KEY: {{ .Values.osmchaApi.env.OAUTH_OSM_KEY | quote }}
-    # OAUTH_OSM_SECRET: {{ .Values.osmchaApi.env.OAUTH_OSM_SECRET | quote }}
     OAUTH_REDIRECT_URI: {{ .Values.osmchaApi.env.OAUTH_REDIRECT_URI | quote }}
     DJANGO_SECURE_SSL_REDIRECT: "False"
     DJANGO_DEBUG: "False"

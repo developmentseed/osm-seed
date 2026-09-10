@@ -13,10 +13,14 @@ spec:
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-replication-job
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-replication-job
     spec:
       {{- if .Values.replicationJob.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.replicationJob.serviceAccount.name }}
@@ -25,7 +29,7 @@ spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.replicationJob.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Release.Name }}-replication-job-deployment
-          image: {{ .Values.replicationJob.image.name }}:{{ .Values.replicationJob.image.tag }}
+          image: "{{ .Values.replicationJob.image.name }}:{{ .Values.replicationJob.image.tag }}"
           command: ['/start.sh']
           livenessProbe:
             exec:

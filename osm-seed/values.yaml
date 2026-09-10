@@ -2,10 +2,19 @@
 osmSeedVersion: v1
 environment: development
 
+# Override the chart name / full release name used in resource names.
+nameOverride: ""
+fullnameOverride: ""
+
 # Where to deploy: aws, gcp, azure, k3s
 cloudProvider: aws
-# Cloud storage bucket for the provider set above
+# Cloud storage bucket for the provider set above. Only the block for the
+# selected cloudProvider is read; the others can stay empty.
 AWS_S3_BUCKET: s3://osm-seed
+GCP_STORAGE_BUCKET: ""
+AZURE_STORAGE_ACCOUNT: ""
+AZURE_CONTAINER_NAME: ""
+AZURE_STORAGE_CONNECTION_STRING: ""
 
 # Service type: NodePort, ClusterIP or LoadBalancer. ClusterIP is recommended;
 serviceType: ClusterIP
@@ -37,12 +46,15 @@ db:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "1234"
+    POSTGRES_PORT: 5432
+    PGDATA: /var/lib/postgresql/data
     ENVIRONMENT: "production"
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
-    # k3s (local-path dynamic / static hostPath)
+    # k3s: staticHostPath=true uses a fixed hostPath dir (reusable across releases); false = dynamic local-path
+    staticHostPath: false
     localVolumeHostPath: /mnt/db-data
     localVolumeSize: 10Gi
     # AWS
@@ -60,6 +72,8 @@ db:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: database
   sharedMemorySize: 64Mi
   # To use postgresqlConfig, you need to have already $PGDATA set up
   postgresqlConfig:
@@ -151,15 +165,17 @@ web:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
   autoscaling:
     enabled: true
     minReplicas: 1
     maxReplicas: 6
     cpuUtilization:
-      enable: false
+      enabled: false
       value: 85
     memoryUtilization:
-      enable: false
+      enabled: false
       value: 85
     behavior:
       scaleUp:
@@ -184,6 +200,7 @@ web:
 # ====================================================================================================
 memcached:
   enabled: false
+  replicaCount: 1
   priorityClass: "high-priority"
   resources:
     enabled: false
@@ -211,6 +228,7 @@ cgimap:
     name: ""
     tag: ""
   enabled: false
+  replicaCount: 1
   serviceAnnotations: {}
   priorityClass: "low-priority"
   resources:
@@ -390,6 +408,38 @@ dbBackupRestore:
         enabled: false
         key: "nodegroup_type"
         values: ["web"]
+    - name: tm-db
+      enabled: false
+      serviceAccount:
+        enabled: false
+        name: ""
+      schedule: "0 3 * * *"
+      env:
+        DB_ACTION: backup
+        SET_DATE_AT_NAME: true
+        BACKUP_CLOUD_FOLDER: database/tm-db
+        BACKUP_CLOUD_FILE: osmseed-tm-db
+        AWS_S3_BUCKET: secure-bucket
+        CLEANUP_BACKUPS: true
+        RETENTION_DAYS: "30"
+      resources:
+        enabled: false
+        requests:
+          enabled: false
+          memory: "1Gi"
+          cpu: "2"
+        limits:
+          enabled: false
+          memory: "2Gi"
+          cpu: "2"
+      nodeSelector:
+        enabled: false
+        label_key: nodegroup_type
+        label_value: web
+      nodeAffinity:
+        enabled: false
+        key: "nodegroup_type"
+        values: ["web"]
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
@@ -461,7 +511,7 @@ replicationJob:
     key: "nodegroup_type"
     values: ["web"]
 # ====================================================================================================
-# Variables for osm-seed to pupulate the apidb
+# Variables for osm-seed to populate the apidb
 # ====================================================================================================
 populateApidb:
   enabled: false
@@ -672,7 +722,8 @@ tilerServer:
       secretName: ""
   env:
     TILER_SERVER_PORT: 9090
-    TILER_CACHE_TYPE: s3 #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
+    # s3 renders a Deployment (stateless); file renders a StatefulSet with persistenceDisk
+    TILER_CACHE_TYPE: s3
     TILER_CACHE_BASEPATH: /mnt/data
     TILER_CACHE_MAX_ZOOM: 22
     # in case s3
@@ -680,9 +731,17 @@ tilerServer:
     TILER_CACHE_REGION: us-east-1
     TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
     TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
+    # Optional custom S3 endpoint (MinIO, etc.). Empty = AWS default.
+    TILER_CACHE_AWS_ENDPOINT: ""
     EXECUTE_REINDEX: false
     EXECUTE_VACUUM_ANALYZE: false
   command: "./start.sh" # ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
+  # HPA. Only applies when TILER_CACHE_TYPE=s3 (Deployment).
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 4
+    cpuUtilization: 60
   # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
     enabled: false
@@ -798,9 +857,20 @@ tilerVarnish:
 # ====================================================================================================
 osmxAdiffBuilder:
   enabled: false
-  # NOTE: image repo keeps the ohmx name (not renamed in ghcr).
-  # serviceAccountName: ohm-s3-bucket-access-staging
-  # awsSecretName: ohmx-adiff-aws-creds
+  # Image is not built by this repo's chartpress; set it from the umbrella chart.
+  image:
+    name: ""
+    tag: ""
+  # ServiceAccount with S3 access (IRSA). Empty = default SA.
+  serviceAccountName: ""
+  # Secret with AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY, loaded via envFrom. Empty = skip.
+  awsSecretName: ""
+  # initialDelaySeconds must cover the initial osmx build (planet download + db build)
+  livenessProbe:
+    initialDelaySeconds: 600
+    periodSeconds: 60
+    timeoutSeconds: 10
+    failureThreshold: 3
   # WORKDIR inside the container is /data
   env:
     PLANET_PBF_URL: 
@@ -856,10 +926,20 @@ planetStats:
     AWS_S3_ENDPOINT: ""
   resources:
     enabled: false
+    requests:
+      memory: "2Gi"
+      cpu: "1"
+    limits:
+      memory: "4Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: job
   nodeAffinity:
     enabled: false
+    key: "nodegroup_type"
+    values: ["job"]
 
 
 # ====================================================================================================
@@ -978,7 +1058,7 @@ tilerMonitorLanguage:
     label_value: web
 
 # ====================================================================================================
-# Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3
+# Variables for tiler-server cache cleaner, only available in case the TILER_CACHE_TYPE = s3
 # ====================================================================================================
 tilerCacheCleanerJob:
   enabled: false
@@ -1021,10 +1101,19 @@ tmDb:
     POSTGRES_DB: tm
     POSTGRES_PASSWORD: tm
     POSTGRES_USER: postgres
+    # Postgres tuning passed to the image entrypoint
+    POSTGRES_DB_MAX_CONNECTIONS: 100
+    POSTGRES_DB_SHARED_BUFFERS: 128MB
+    POSTGRES_DB_WORK_MEM: 4MB
+    POSTGRES_DB_MAINTENANCE_WORK_MEM: 64MB
+    POSTGRES_DB_EFFECTIVE_CACHE_SIZE: 4GB
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
+    # AWS (only provider supported by tm-db-pd.yaml today)
+    AWS_ElasticBlockStore_volumeID: ""
+    AWS_ElasticBlockStore_size: 20Gi
   resources:
     enabled: false
     requests:
@@ -1075,6 +1164,10 @@ tmApi:
     TM_ORG_URL: "openstreetmap.org"
     TM_ORG_PRIVACY_POLICY_URL: "openstreetmap.org/copyright"
     TM_ORG_GITHUB: "github.com/openstreetmap"
+    TM_ORG_TWITTER: ""
+    TM_ORG_FB: ""
+    TM_ORG_INSTAGRAM: ""
+    TM_ORG_YOUTUBE: ""
     OSM_SERVER_URL: "https://openstreetmap.org"
     OSM_NOMINATIM_SERVER_URL: "https://nominatim.openstreetmap.org"
     OSM_REGISTER_URL: "https://openstreetmap.org/user/new"
@@ -1084,6 +1177,7 @@ tmApi:
     TM_CONSUMER_KEY: "example"
     TM_CONSUMER_SECRET: "example"
     TM_EMAIL_FROM_ADDRESS: "no-reply@openstreetmap.org"
+    TM_EMAIL_CONTACT_ADDRESS: ""
     TM_SMTP_HOST: "email-smtp.us-east-1.amazonaws.com"
     TM_SMTP_PORT: 25
     TM_SMTP_USER: ""
@@ -1091,6 +1185,15 @@ tmApi:
     TM_DEFAULT_LOCALE: "en"
     TM_APP_API_URL: ""
     TM_APP_BASE_URL: ""
+    TM_APP_API_VERSION: "v2"
+    TM_IMPORT_MAX_FILESIZE: 1000000
+    TM_MAX_AOI_AREA: 5000
+    TM_DEFAULT_CHANGESET_COMMENT: ""
+    # OAuth2 app registered in the OSM website
+    TM_CLIENT_ID: ""
+    TM_CLIENT_SECRET: ""
+    TM_REDIRECT_URI: ""
+    TM_SCOPE: ""
     OHSOME_STATS_TOKEN: "dummy-token-for-migrations"
     POSTGRES_TEST_DB: "postgresql://user:pass@db:5432/test_db"
   resources:
@@ -1158,6 +1261,22 @@ nominatimApi:
     OSMSEED_WEB_API_DOMAIN: www.openstreetmap.org
     # Public host the UI calls for the Nominatim API. Should match ingress.hosts[0].
     NOMINATIM_API_ENDPOINT: nominatim-api.osmseed.org
+  # First import can take many hours: startupProbe keeps liveness off until /status answers.
+  # failureThreshold * periodSeconds = max import time allowed (1440 * 60s = 24h).
+  startupProbe:
+    enabled: true
+    path: /status
+    port: 8080
+    periodSeconds: 60
+    timeoutSeconds: 30
+    failureThreshold: 1440
+  livenessProbe:
+    enabled: true
+    path: /status
+    port: 8080
+    periodSeconds: 60
+    timeoutSeconds: 30
+    failureThreshold: 6
   resources:
     enabled: false
     requests:
@@ -1380,7 +1499,7 @@ osmSimpleMetrics:
     key: "nodegroup_type"
     values: ["web"]
 # ====================================================================================================
-# Variables for osm-simple-metrics
+# Variables for replication monitoring (checks the replication stream and can create missing files)
 # ====================================================================================================
 monitoringReplication:
   enabled: false
@@ -1460,6 +1579,7 @@ osmchaApi:
   image:
     name: ""
     tag: ""
+  replicaCount: 1
   serviceAnnotations: {}
   ingress:
     enabled: false
@@ -1581,7 +1701,7 @@ level0:
     OSM_API_URL: https://www.openstreetmap.org/api/0.6/
     OAUTH2_CLIENT_ID: "xyz"
     OAUTH2_CLIENT_SECRET: "abc"
-    OVERPASS_API: "overpass-api.oenstreetmap.org"
+    OVERPASS_API: "overpass-api.openstreetmap.org"
     MAX_REQUEST_OBJECTS: "500"
   resources:
     enabled: false

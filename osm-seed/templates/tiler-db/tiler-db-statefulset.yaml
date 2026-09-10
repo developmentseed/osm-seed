@@ -70,7 +70,7 @@ spec:
             {{- end }}
             - name: shared-memory
               mountPath: /dev/shm
-          {{- if .Values.tilerDb.resources.enabled }}
+          {{- if and .Values.tilerDb.resources.enabled (or .Values.tilerDb.resources.requests.enabled .Values.tilerDb.resources.limits.enabled) }}
           resources:
             {{- if .Values.tilerDb.resources.requests.enabled }}
             requests:

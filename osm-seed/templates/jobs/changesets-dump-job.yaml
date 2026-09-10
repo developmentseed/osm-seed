@@ -25,7 +25,7 @@ spec:
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-changesets-dump-job
-            image: {{ .Values.changesetsDump.image.name }}:{{ .Values.changesetsDump.image.tag }}
+            image: "{{ .Values.changesetsDump.image.name }}:{{ .Values.changesetsDump.image.tag }}"
             command: ['/start.sh']
             {{- if .Values.changesetsDump.resources.enabled }}
             resources:

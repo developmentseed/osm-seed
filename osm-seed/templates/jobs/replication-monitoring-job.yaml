@@ -25,7 +25,7 @@ spec:
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-replication-monitoring-job
-            image: {{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}
+            image: "{{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}"
             command: ['/monitoring.py']
             {{- if .Values.monitoringReplication.resources.enabled }}   
             resources:

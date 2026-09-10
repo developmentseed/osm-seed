@@ -25,7 +25,7 @@ spec:
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-planet-dump-job
-            image: {{ .Values.planetDump.image.name }}:{{ .Values.planetDump.image.tag }}
+            image: "{{ .Values.planetDump.image.name }}:{{ .Values.planetDump.image.tag }}"
             command: ['/start.sh']
             {{- if .Values.planetDump.resources.enabled }}   
             resources:

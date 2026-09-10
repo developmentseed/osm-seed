@@ -60,7 +60,7 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 10
             failureThreshold: 3
-          {{- if .Values.taginfoWeb.resources.enabled }}
+          {{- if and .Values.taginfoWeb.resources.enabled (or .Values.taginfoWeb.resources.requests.enabled .Values.taginfoWeb.resources.limits.enabled) }}
           resources:
             {{- if .Values.taginfoWeb.resources.requests.enabled }}
             requests:

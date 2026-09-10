@@ -61,7 +61,6 @@ spec:
           containers:
           - name: {{ .Release.Name }}-osmcha-process-changesets
             image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
-            imagePullPolicy: IfNotPresent
             imagePullPolicy: Always
             command:
             - /bin/sh

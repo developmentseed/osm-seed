@@ -61,7 +61,7 @@ spec:
             - name: nominatim-db-storage
               mountPath: {{ .Values.nominatimApi.persistenceDisk.mountPath }}
               subPath: {{ .Values.nominatimApi.persistenceDisk.subPath }}
-          {{- if .Values.nominatimApi.resources.enabled }}
+          {{- if and .Values.nominatimApi.resources.enabled (or .Values.nominatimApi.resources.requests.enabled .Values.nominatimApi.resources.limits.enabled) }}
           resources:
             {{- if .Values.nominatimApi.resources.requests.enabled }}
             requests:
