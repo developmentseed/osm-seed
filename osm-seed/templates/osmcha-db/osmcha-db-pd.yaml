@@ -9,7 +9,7 @@ metadata:
   name: {{ .Release.Name }}-osmcha-db-pv
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-osmcha-pv
+    component: osmcha-db-pv
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -45,7 +45,7 @@ metadata:
     "helm.sh/resource-policy": keep
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-osmcha-pvc
+    component: osmcha-db-pvc
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:

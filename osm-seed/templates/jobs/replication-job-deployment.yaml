@@ -52,15 +52,15 @@ spec:
           {{- end }}
           env:
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-db
+              value: {{ .Release.Name }}-web-db
             - name: POSTGRES_DB
-              value: {{ .Values.db.env.POSTGRES_DB }}
+              value: {{ .Values.webDb.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
-              value: {{ .Values.db.env.POSTGRES_USER }}
+              value: {{ .Values.webDb.env.POSTGRES_USER }}
             - name: POSTGRES_PORT
-              value: {{ .Values.db.env.POSTGRES_PORT | quote}}
+              value: {{ .Values.webDb.env.POSTGRES_PORT | quote}}
             - name: REPLICATION_FOLDER
               value: replication/minute
             - name: CLOUDPROVIDER

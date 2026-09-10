@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-osmcha-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-tiler-statefulset
+    component: osmcha-db-statefulset
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:

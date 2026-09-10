@@ -32,13 +32,13 @@ spec:
             {{ if eq $job.name "web-db" }}
               # DB credentials
               - name: POSTGRES_HOST
-                value: {{ $.Release.Name }}-db
+                value: {{ $.Release.Name }}-web-db
               - name: POSTGRES_DB
-                value: {{ $.Values.db.env.POSTGRES_DB }}
+                value: {{ $.Values.webDb.env.POSTGRES_DB }}
               - name: POSTGRES_PASSWORD
-                value: {{ quote $.Values.db.env.POSTGRES_PASSWORD }}
+                value: {{ quote $.Values.webDb.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
-                value: {{ $.Values.db.env.POSTGRES_USER }}
+                value: {{ $.Values.webDb.env.POSTGRES_USER }}
               # DB action: backup/restore
               - name: DB_ACTION
                 value: {{quote $job.env.DB_ACTION }}

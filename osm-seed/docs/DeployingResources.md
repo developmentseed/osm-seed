@@ -10,12 +10,12 @@ Let's keep the following files in `template` folder.
 
 ```
 _helpers.tpl
-db-pd.yaml
-db-service.yaml
-db-statefulset.yaml
+web-db-pd.yaml
+web-db-service.yaml
+web-db-statefulset.yaml
 ingress.yaml
-web-deployment.yaml
-web-service.yaml
+web-api-deployment.yaml
+web-api-service.yaml
 ```
 
 Make sure you `value.yaml` configuration was filled, and then execute 👇
@@ -30,14 +30,14 @@ let's check if the pods are running 👇
 ```
 $ kubectl get pods
 NAME                                READY     STATUS    RESTARTS   AGE
-dev-db-0                            1/1       Running   0          9m
-dev-osm-seed-web-d9584cd86-hb7q8    1/1       Running   0          9m
+dev-web-db-0                            1/1       Running   0          9m
+dev-web-api-d9584cd86-hb7q8    1/1       Running   0          9m
 ```
 
 Let's get the IP where our aplication is running 👇
 
 ```
-$ minikube service dev-osm-seed-web --url
+$ minikube service dev-web-api --url
 http://192.168.64.26:32331
 ```
 
@@ -70,13 +70,13 @@ In order to deploy this container, we can use `kubectl` [explaining here](RunInd
 ```
 _helpers.tpl
 db-backup-job.yaml
-db-pd.yaml
-db-service.yaml
-db-statefulset.yaml
+web-db-pd.yaml
+web-db-service.yaml
+web-db-statefulset.yaml
 ingress.yaml
 populate-apidb-job.yaml
-web-deployment.yaml
-web-service.yaml
+web-api-deployment.yaml
+web-api-service.yaml
 ```
 
 And then let's upgrade the chart 👇
@@ -91,8 +91,8 @@ You will see a result like this 👇
 ```
 $ kubectl get pods
 NAME                                READY     STATUS      RESTARTS   AGE
-dev-db-0                            1/1       Running     0          4m
-dev-osm-seed-web-7687fd75db-f77gc   1/1       Running     0          49s
+dev-web-db-0                            1/1       Running     0          4m
+dev-web-api-7687fd75db-f77gc   1/1       Running     0          49s
 dev-populate-apidb-job-pg68l        0/1       Completed   0          4m
 ```
 
@@ -118,15 +118,15 @@ The reults would be like this 👇
 ```
 _helpers.tpl
 db-backup-job.yaml
-db-pd.yaml
-db-service.yaml
-db-statefulset.yaml
+web-db-pd.yaml
+web-db-service.yaml
+web-db-statefulset.yaml
 id-editor-deployment.yaml
 id-editor-service.yaml
 ingress.yaml
 populate-apidb-job.yaml
-web-deployment.yaml
-web-service.yaml
+web-api-deployment.yaml
+web-api-service.yaml
 ```
 
 Before the update the chart, we need to register a client application, to do that use the OSM-API Domain or IP. 👇.
@@ -160,9 +160,9 @@ Result 👇
 
 ```
 NAME                                      READY     STATUS              RESTARTS   AGE
-dev-db-0                                  1/1       Running             0          9m
+dev-web-db-0                                  1/1       Running             0          9m
 dev-osm-seed-id-editor-785b89c7bd-hj5j5   0/1       ContainerCreating   0          7s
-dev-osm-seed-web-7687fd75db-f77gc         1/1       Running             0          6m
+dev-web-api-7687fd75db-f77gc         1/1       Running             0          6m
 dev-populate-apidb-job-pg68l              0/1       Completed           0          9m
 ```
 

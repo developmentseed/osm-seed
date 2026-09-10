@@ -1,11 +1,11 @@
-{{- if .Values.db.enabled -}}
+{{- if .Values.webDb.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-db
+  name: {{ .Release.Name }}-web-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-statefulset
+    component: web-db-statefulset
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -14,19 +14,19 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-db
-  serviceName: {{ .Release.Name }}-db
+      run: {{ .Release.Name }}-web-db
+  serviceName: {{ .Release.Name }}-web-db
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-db
+        run: {{ .Release.Name }}-web-db
     spec:
-      priorityClassName: {{ .Release.Name }}-{{ .Values.db.priorityClass | default "high-priority" }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.webDb.priorityClass | default "high-priority" }}
       containers:
-        - name: {{ .Chart.Name }}-db
-          image: "{{ .Values.db.image.name }}:{{ .Values.db.image.tag }}"
+        - name: {{ .Chart.Name }}-web-db
+          image: "{{ .Values.webDb.image.name }}:{{ .Values.webDb.image.tag }}"
           ports:
             - name: postgres
               containerPort: 5432
@@ -35,22 +35,22 @@ spec:
             # - name: GET_HOSTS_FROM
             #   value: dns
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-db
+              value: {{ .Release.Name }}-web-db
             - name: POSTGRES_DB
-              value: {{ .Values.db.env.POSTGRES_DB }}
+              value: {{ .Values.webDb.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
-              value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
+              value: {{ default "postgres" .Values.webDb.env.POSTGRES_USER | quote }}
             - name: PGUSER
-              value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
+              value: {{ default "postgres" .Values.webDb.env.POSTGRES_USER | quote }}
             - name: ENVIRONMENT
               value: {{ .Values.environment }}
             - name: PGDATA
-              value: {{ .Values.db.env.PGDATA }}
+              value: {{ .Values.webDb.env.PGDATA }}
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
-          {{- if .Values.db.postgresqlConfig.enabled }}
+          {{- if .Values.webDb.postgresqlConfig.enabled }}
           command:
             - "sh"
             - "-c"
@@ -76,58 +76,58 @@ spec:
             periodSeconds: 5
           volumeMounts:
             - name: postgres-storage
-              mountPath: {{ .Values.db.persistenceDisk.mountPath }}
-              # subPath: {{ .Values.db.persistenceDisk.subPath }}
+              mountPath: {{ .Values.webDb.persistenceDisk.mountPath }}
+              # subPath: {{ .Values.webDb.persistenceDisk.subPath }}
             - name: shared-memory
               mountPath: /dev/shm
-            {{- if .Values.db.postgresqlConfig.enabled }}
+            {{- if .Values.webDb.postgresqlConfig.enabled }}
             - name: db-postgresql-config
               mountPath: /etc/postgresql/
             {{- end }}
-          {{- if and .Values.db.resources.enabled (or .Values.db.resources.requests.enabled .Values.db.resources.limits.enabled) }}
+          {{- if and .Values.webDb.resources.enabled (or .Values.webDb.resources.requests.enabled .Values.webDb.resources.limits.enabled) }}
           resources:
-            {{- if .Values.db.resources.requests.enabled }}
+            {{- if .Values.webDb.resources.requests.enabled }}
             requests:
-              memory: {{ .Values.db.resources.requests.memory }}
-              cpu: {{ .Values.db.resources.requests.cpu }}
+              memory: {{ .Values.webDb.resources.requests.memory }}
+              cpu: {{ .Values.webDb.resources.requests.cpu }}
             {{- end }}
-            {{- if .Values.db.resources.limits.enabled }}
+            {{- if .Values.webDb.resources.limits.enabled }}
             limits:
-              memory: {{ .Values.db.resources.limits.memory }}
-              cpu: {{ .Values.db.resources.limits.cpu }}
+              memory: {{ .Values.webDb.resources.limits.memory }}
+              cpu: {{ .Values.webDb.resources.limits.cpu }}
             {{- end }}
           {{- end }}
       volumes:
         - name: postgres-storage
-        {{- if .Values.db.persistenceDisk.enabled }}
+        {{- if .Values.webDb.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-pv-claim
+            claimName: {{ .Release.Name }}-web-db-pv-claim
         {{- else }}
           emptyDir: {}
         {{- end }}
         - name: shared-memory
           emptyDir:
             medium: Memory
-            sizeLimit: {{ .Values.db.sharedMemorySize }}
-        {{- if .Values.db.postgresqlConfig.enabled }}
+            sizeLimit: {{ .Values.webDb.sharedMemorySize }}
+        {{- if .Values.webDb.postgresqlConfig.enabled }}
         - name: db-postgresql-config
           configMap:
-            name: {{ .Release.Name }}-db-postgresql-config
+            name: {{ .Release.Name }}-web-db-postgresql-config
         {{- end }}
-      {{- if .Values.db.nodeSelector.enabled }}
+      {{- if .Values.webDb.nodeSelector.enabled }}
       nodeSelector:
-        {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
+        {{ .Values.webDb.nodeSelector.label_key }} : {{ .Values.webDb.nodeSelector.label_value }}
       {{- end }}
-      {{- if .Values.db.nodeAffinity.enabled }}
+      {{- if .Values.webDb.nodeAffinity.enabled }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: {{ .Values.db.nodeAffinity.key }}
+                  - key: {{ .Values.webDb.nodeAffinity.key }}
                     operator: In
                     values:
-                    {{- range .Values.db.nodeAffinity.values }}
+                    {{- range .Values.webDb.nodeAffinity.values }}
                       - {{ . | quote }}
                     {{- end }}
       {{- end }}

@@ -24,10 +24,10 @@ domain: osmseed.org
 adminEmail: admin@osmseed.org
 
 # ====================================================================================================
-# Web Api Database
+# web-db: PostgreSQL for the OSM website / API (apidb)
 # ====================================================================================================
 
-db:
+webDb:
   enabled: false
   image:
     name: ""
@@ -91,9 +91,9 @@ db:
     key: "nodegroup_type"
     values: ["database"]
 # ====================================================================================================
-# Variables for osm-seed website
+# web-api: OSM website + API (openstreetmap-website, Rails)
 # ====================================================================================================
-web:
+webApi:
   enabled: false
   image:
     name: ""

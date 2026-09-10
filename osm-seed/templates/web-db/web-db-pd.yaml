@@ -1,15 +1,15 @@
-{{- if .Values.db.enabled -}}
-{{- if .Values.db.persistenceDisk.enabled -}}
+{{- if .Values.webDb.enabled -}}
+{{- if .Values.webDb.persistenceDisk.enabled -}}
 
 ############## k3s: dynamic local-path (no PV) OR static hostPath when staticHostPath=true ##############
-{{- if or (ne .Values.cloudProvider "k3s") (and (eq .Values.cloudProvider "k3s") .Values.db.persistenceDisk.staticHostPath) }}
+{{- if or (ne .Values.cloudProvider "k3s") (and (eq .Values.cloudProvider "k3s") .Values.webDb.persistenceDisk.staticHostPath) }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Release.Name }}-pv
+  name: {{ .Release.Name }}-web-db-pv
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-pd
+    component: web-db-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -17,24 +17,24 @@ spec:
   {{- if eq .Values.cloudProvider "aws" }}
   storageClassName: ""
   capacity:
-    storage: {{ .Values.db.persistenceDisk.AWS_ElasticBlockStore_size }}
+    storage: {{ .Values.webDb.persistenceDisk.AWS_ElasticBlockStore_size }}
   accessModes:
     - ReadWriteOnce
   awsElasticBlockStore:
-    volumeID: {{ .Values.db.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
+    volumeID: {{ .Values.webDb.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
     fsType: ext4
   {{- end }}
 
   ############## k3s static hostPath (fixed dir = data identity, reusable across releases) ##############
-  {{- if and (eq .Values.cloudProvider "k3s") .Values.db.persistenceDisk.staticHostPath }}
+  {{- if and (eq .Values.cloudProvider "k3s") .Values.webDb.persistenceDisk.staticHostPath }}
   storageClassName: ""
   persistentVolumeReclaimPolicy: Retain
   capacity:
-    storage: {{ .Values.db.persistenceDisk.localVolumeSize }}
+    storage: {{ .Values.webDb.persistenceDisk.localVolumeSize }}
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: {{ .Values.db.persistenceDisk.localVolumeHostPath | quote }}
+    path: {{ .Values.webDb.persistenceDisk.localVolumeHostPath | quote }}
     type: DirectoryOrCreate
   {{- end }}
 ---
@@ -42,20 +42,20 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-pv-claim
+  name: {{ .Release.Name }}-web-db-pv-claim
   annotations:
     "helm.sh/resource-policy": keep
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-pd
+    component: web-db-pd
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
   ############## k3s ##############
   {{- if eq .Values.cloudProvider "k3s" }}
-  {{- if .Values.db.persistenceDisk.staticHostPath }}
+  {{- if .Values.webDb.persistenceDisk.staticHostPath }}
   storageClassName: ""
-  volumeName: {{ .Release.Name }}-pv
+  volumeName: {{ .Release.Name }}-web-db-pv
   {{- else }}
   storageClassName: local-path
   {{- end }}
@@ -63,18 +63,18 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.db.persistenceDisk.localVolumeSize }}
+      storage: {{ .Values.webDb.persistenceDisk.localVolumeSize }}
   {{- else }}
   ############## Other providers ##############
   storageClassName: ""
-  volumeName: {{ .Release.Name }}-pv
+  volumeName: {{ .Release.Name }}-web-db-pv
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       ############## AWS Provider ##############
       {{- if eq .Values.cloudProvider "aws" }}
-      storage: {{ .Values.db.persistenceDisk.AWS_ElasticBlockStore_size }}
+      storage: {{ .Values.webDb.persistenceDisk.AWS_ElasticBlockStore_size }}
       {{- end }}
   {{- end }}
 {{- end }}

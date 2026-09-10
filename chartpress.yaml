@@ -7,10 +7,10 @@ charts:
 
   images:
     web:
-      valuesPath: web.image
+      valuesPath: webApi.image
       contextPath: images/web
     db:
-      valuesPath: db.image
+      valuesPath: webDb.image
       contextPath: images/db
     backup-restore:
       valuesPath: dbBackupRestore.image

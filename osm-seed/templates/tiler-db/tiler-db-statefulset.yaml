@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-db
   labels:
     app: {{ .Release.Name }}-tiler-db
-    component: db-tiler-statefulset
+    component: tiler-db-statefulset
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:

@@ -99,7 +99,7 @@ mkdir -p $PWD/data/nominatim-db-data
 helm install develop osm-seed -f osm-seed/values.yaml
 
 # Expose web contianer service
-minikube service develop-osm-seed-web --url
+minikube service develop-web-api --url
 
 # Update develop version
 helm upgrade develop osm-seed -f osm-seed/values.yaml
