@@ -2,19 +2,10 @@
 osmSeedVersion: v1
 environment: development
 
-# Override the chart name / full release name used in resource names.
-nameOverride: ""
-fullnameOverride: ""
-
-# Where to deploy: aws, gcp, azure, k3s
+# Where to deploy: aws or k3s. Templates still carry gcp/azure blocks but they are not supported.
 cloudProvider: aws
-# Cloud storage bucket for the provider set above. Only the block for the
-# selected cloudProvider is read; the others can stay empty.
+# Cloud storage bucket for the provider set above
 AWS_S3_BUCKET: s3://osm-seed
-GCP_STORAGE_BUCKET: ""
-AZURE_STORAGE_ACCOUNT: ""
-AZURE_CONTAINER_NAME: ""
-AZURE_STORAGE_CONNECTION_STRING: ""
 
 # Service type: NodePort, ClusterIP or LoadBalancer. ClusterIP is recommended;
 serviceType: ClusterIP

@@ -17,7 +17,7 @@ spec:
         {{- range $hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-level0" (include "osm-seed.fullname" .)) }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-level0" .Release.Name) }}
   {{- end }}
   rules:
     {{- range $hosts }}

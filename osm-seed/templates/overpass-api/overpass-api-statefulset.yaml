@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-overpass-api
+  name: {{ .Release.Name }}-overpass-api
   labels:
     app: {{ template "osm-seed.name" . }}
     component: overpass-api-statefulset

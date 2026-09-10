@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-ingress-nominatim-api
+  name: {{ .Release.Name }}-ingress-nominatim-api
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -17,7 +17,7 @@ spec:
         {{- range $hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-nominatim" (include "osm-seed.fullname" .)) }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-nominatim" .Release.Name) }}
   {{- end }}
   rules:
     {{- range $hosts }}

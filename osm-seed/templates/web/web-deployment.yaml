@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-web
+  name: {{ .Release.Name }}-web
   labels:
     app: {{ template "osm-seed.name" . }}
     component: web-deployment
