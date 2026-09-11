@@ -14,7 +14,7 @@ Note: Ensure that you are running PostgreSQL on your local machine. For example:
 
 
 ```sh
-kubectl port-forward staging-db-0 5432:5432
+kubectl port-forward staging-web-db-0 5432:5432
 ```
 
 Check results:
