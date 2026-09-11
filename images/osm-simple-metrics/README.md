@@ -1,18 +1,14 @@
-# OSM Simple Metrics
+# osm-simple-metrics
 
-This is a container that allows to extract simple metrics calculations for an OSM database.
+Runs [osm-simple-metrics](https://github.com/developmentseed/osm-simple-metrics) against the apidb and uploads the CSV results to S3. Runs as a CronJob.
 
-Repo: https://github.com/developmentseed/osm-simple-metrics
-
-#### Building the container
-
-
-```sh
-docker compose -f compose/osm-simple-metrics.yml build
-```
-
-#### Access the container
+| | |
+|---|---|
+| Base image | `node:18` |
+| Chart values key | `osmSimpleMetrics` |
+| Compose | `compose/osm-simple-metrics.yaml` service `osm-simple-metrics` |
+| Env files | `compose/envs/.env.db.example`, `compose/envs/.env.cloudprovider.example` |
 
 ```sh
-docker-compose -f compose/osm-simple-metrics.yml run osm-simple-metrics bash
+cd compose && docker compose -f osm-simple-metrics.yaml build osm-simple-metrics && docker compose -f osm-simple-metrics.yaml up osm-simple-metrics
 ```

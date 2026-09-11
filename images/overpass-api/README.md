@@ -1,18 +1,14 @@
-# Overpass api
+# overpass-api
 
-This continaer is base on: https://github.com/wiktorn/Overpass-API
+[Overpass API](https://github.com/wiktorn/Overpass-API) with an entrypoint that imports a planet file on first start and then applies minute diffs.
 
-### Configuration
-
-In order to run this container we need environment variables, these can be found in the following files👇:
-
-- [..env.overpass.example](./../../envs/.env.overpass.example)
-
-**Note**: Rename the above files as `.env.overpass`
-
-#### Running nominatim - DB and API container
+| | |
+|---|---|
+| Base image | `wiktorn/overpass-api:0.7.62` |
+| Chart values key | `overpassApi` |
+| Compose | `compose/overpass.yaml` service `overpass-api` |
+| Env files | `compose/envs/.env.overpass.example` |
 
 ```sh
-    # Docker compose
-    docker-compose run overpass-api
+cd compose && docker compose -f overpass.yaml build overpass-api && docker compose -f overpass.yaml up overpass-api
 ```

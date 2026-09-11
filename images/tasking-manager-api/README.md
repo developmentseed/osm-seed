@@ -1,13 +1,14 @@
-# Docker setup for Tasking Manager 4 API
+# tasking-manager-api
 
-### Configuration
-1. Copy `./envs/.env.tasking-manager.example` to `./envs/.env.tasking-manager`
-2. This setup doesn't come with a database container, so you'd have to standup your own. For now.
-3. Supply appropirate environment variables, particularly OAuth keys and database credentials
+[HOT Tasking Manager](https://github.com/hotosm/tasking-manager) backend (gunicorn, port 5000), built from a pinned commit. The same image runs the DB migrations.
 
+| | |
+|---|---|
+| Base image | `ubuntu:20.04` |
+| Chart values key | `tmApi` |
+| Compose | `compose/tasking-manager.yaml` service `tmapi` |
+| Env files | `compose/envs/.env.tasking-manager.example` |
 
-### Build and run
-* `cd tasking-manager-api`
-* `docker build -t osmseed-tasking-manager-api:v1 .`
-* `docker run --env-file ../.env-tasking-manager -p "5000:5000" -t osmseed-tasking-manager-api:v1`
-
+```sh
+cd compose && docker compose -f tasking-manager.yaml build tmapi && docker compose -f tasking-manager.yaml up tmapi
+```

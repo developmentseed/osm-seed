@@ -1,22 +1,14 @@
-# openstreetmap-cgimap
+# cgimap
 
-This container is built using the configuration from Zerebubuth's OpenStreetMap CGImap GitHub repository, with minor modifications.
+Builds [CGImap](https://github.com/zerebubuth/openstreetmap-cgimap), the C++ implementation of the read-heavy API 0.6 calls (`map`, node/way/relation reads). The website proxies those calls here.
 
-
-# Build and up 
-
-```sh
-docker compose -f compose/cgimap.yml build
-docker compose -f compose/cgimap.yml up
-```
-
-Note: Ensure that you are running PostgreSQL on your local machine. For example:
-
+| | |
+|---|---|
+| Base image | `debian:bookworm-slim` |
+| Chart values key | `cgimap` |
+| Compose | `compose/cgimap.yaml` service `cgimap` |
+| Env files | `compose/envs/.env.db.example` |
 
 ```sh
-kubectl port-forward staging-web-db-0 5432:5432
+cd compose && docker compose -f cgimap.yaml build cgimap && docker compose -f cgimap.yaml up cgimap
 ```
-
-Check results:
-
-http://localhost/api/0.6/map?bbox=-77.09529161453248,-12.071898885565846,-77.077374458313,-12.066474684936727

@@ -1,4 +1,3 @@
-version: '3'
 services:
   # #####################################################
   # ## cgmap section
@@ -11,8 +10,8 @@ services:
     ports:
     - '80:80'
     volumes:
-    - ../data/cgimap-data:/apps/data/
+    - ./data/cgimap-data:/apps/data/
     # command: >
     #   /bin/bash -c " ./start.sh"
     env_file:
-    - ../envs/.env.db
+    - ./envs/.env.db

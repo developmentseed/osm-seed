@@ -1,4 +1,3 @@
-version: '3'
 services:
   #####################################################
   ## Populate apidb from PBF file
@@ -9,7 +8,7 @@ services:
       context: ../images/populate-apidb
       dockerfile: Dockerfile
     volumes:
-      - ../data/populate-apidb-data:/mnt/data
+      - ./data/populate-apidb-data:/mnt/data
     command: >
       /bin/bash -c "
         echo Sleep for a while populate-apidb!;
@@ -18,5 +17,5 @@ services:
         /start.sh
       "
     env_file:
-      - ../envs/.env.db
-      - ../envs/.env.db-utils
+      - ./envs/.env.db
+      - ./envs/.env.db-utils

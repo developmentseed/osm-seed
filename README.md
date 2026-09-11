@@ -1,140 +1,81 @@
-# OSM SEED
+<p align="center">
+  <img src="docs/img/osm-seed.png" alt="osm-seed" width="260">
+</p>
 
-> An easily installable package for the OpenStreetMap software stack
+<h1 align="center">osm-seed</h1>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<p align="center">Docker images and a Helm chart to run your own OpenStreetMap software stack</p>
 
-**osm-seed** provides a complete, production-ready deployment solution for running your own instance of the OpenStreetMap software stack. Whether you need to manage geospatial datasets that can't be added to the main OpenStreetMap project, or want to leverage the proven OSM infrastructure for your own use case, osm-seed makes it simple to install and manage.
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
 
-## Table of Contents
-
-- [Why osm-seed?](#why-osm-seed)
-- [Features](#features)
-- [Components](#components)
-- [Quick Start](#quick-start)
-- [Installation](#installation)
-- [License & Attribution](#license--attribution)
-- [Contributing](#contributing)
-- [Roadmap](#roadmap)
-
-## Why osm-seed?
-
-OpenStreetMap runs open source software to manage geospatial data for the entire planet. It has given birth to an entire ecosystem of tools to edit, export, and process spatial data.
-
-Very often, one wants to manage geospatial datasets that cannot be added to the main OpenStreetMap project, either due to license restrictions, or because the data doesn't fit within the scope of the OpenStreetMap project. However, it is still convenient and desirable to use the OpenStreetMap software backend, along with tools like [JOSM](https://josm.openstreetmap.de/) to edit data, and [`osmium`](https://osmcode.org/osmium-tool/) to export and process data.
-
-The OpenStreetMap software stack has proven itself on a planetary scale, with thousands of hours of development work behind it. This project aims to leverage this power by making it simple to install and manage your own instance of the OpenStreetMap software.
-
-## Features
-
-- 🐳 **Docker-based**: All components are containerized for easy deployment
-- ☸️ **Kubernetes-ready**: Includes Helm charts for production deployments
-- 🔄 **Complete stack**: From database to web interface, tiles to geocoding
-- 📦 **Modular**: Run individual components or the full stack
-- 🔧 **Configurable**: Extensive environment variable configuration
-- 📊 **Production-tested**: Based on the same infrastructure that powers OpenStreetMap
+OpenStreetMap runs open source software to manage geospatial data for the whole planet,
+with an ecosystem of tools to edit, export and process it. Sometimes you need that stack
+for data that cannot live in OpenStreetMap itself, because of its license or its scope.
+osm-seed packages the OSM software so you can install and run your own instance, and it
+uses the upstream code as is: changes go upstream, not into a fork.
 
 ## Components
 
-This project provides Docker container definitions for various aspects of the OpenStreetMap software stack, along with configuration scripts to run on a Kubernetes cluster.
+Each component is a Docker image in [`images/`](images/) and a set of resources in the
+Helm chart. Every image folder has a short README.
 
-### Core OSM Components
+| Image | What it does |
+|---|---|
+| [`web`](images/web) | openstreetmap-website: the website and API 0.6 |
+| [`db`](images/db) | PostgreSQL 17 for the API database, with the osmdbt replication plugin |
+| [`cgimap`](images/cgimap) | C++ implementation of the read-heavy API calls |
+| [`populate-apidb`](images/populate-apidb) | Import a PBF or OSM file into the API database |
+| [`replication-job`](images/replication-job) | Publish minute diffs to S3 |
+| [`changeset-replication-job`](images/changeset-replication-job) | Publish changeset diffs to S3 |
+| [`planet-dump`](images/planet-dump), [`full-history`](images/full-history), [`changesets-dump`](images/changesets-dump) | Planet, full-history and changesets exports (built on [`osm-processor`](images/osm-processor)) |
+| [`planet-files`](images/planet-files) | Web page that serves the planet and replication files |
+| [`backup-restore`](images/backup-restore) | Database backups to S3 and restores |
+| [`osm-simple-metrics`](images/osm-simple-metrics) | Basic edit metrics |
+| [`tiler-db`](images/tiler-db), [`tiler-imposm`](images/tiler-imposm), [`tiler-server`](images/tiler-server) | Vector tiles: PostGIS, imposm3 import and updates, Tegola |
+| [`nominatim`](images/nominatim) | [Nominatim](https://nominatim.org/) geocoder |
+| [`overpass-api`](images/overpass-api) | [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API) |
+| [`taginfo`](images/taginfo), [`taginfo-web`](images/taginfo-web) | [Taginfo](https://wiki.openstreetmap.org/wiki/Taginfo) databases and website |
+| [`tasking-manager-api`](images/tasking-manager-api) | [HOT Tasking Manager](https://github.com/hotosm/tasking-manager) backend |
+| [`osmcha-db`](images/osmcha-db), [`osmcha-web`](images/osmcha-web) | [OSMCha](https://osmcha.org/) database and frontend |
+| [`level0`](images/level0) | [Level0](https://github.com/Zverik/Level0) text editor |
 
-| Component | Description | Link |
-|-----------|-------------|------|
-| [`web`](images/web) | OpenStreetMap Rails Port web interface | [OSM Wiki](https://wiki.openstreetmap.org/wiki/Main_Page) |
-| [`db`](images/db) | PostgreSQL database for OSM API | - |
-| [`populate-apidb`](images/populate-apidb) | Data import using `osmium` | - |
-| [`planet-dump`](images/planet-dump) | Export planet replication in PBF format | - |
-| [`full-history`](images/full-history) | Export full planet replication in PBF format | - |
-| [`replication-job`](images/replication-job) | Export data from api-db (minute/hour/day) | - |
-| [`db-backup-restore`](images/backup-restore) | Database backup and restore utilities | - |
+Images are published to `ghcr.io/osm-seed/<name>` on every push to `develop`.
 
-### Tiling Infrastructure
+## Run it
 
-| Component | Description | Link |
-|-----------|-------------|------|
-| [`tiler-db`](images/tiler-db) | PostgreSQL database for tile generation | - |
-| [`tiler-imposm`](images/tiler-imposm) | Updates from minute replication job | - |
-| [`tiler-server`](images/tiler-server) | Vector tile server based on Tegola | [Tegola](https://github.com/go-spatial/tegola) |
+**On Kubernetes with Helm** (recommended): the chart in [`osm-seed/`](osm-seed/) deploys
+any set of components. See [osm-seed/README.md](osm-seed/README.md).
 
-### Additional Services
-
-| Component | Description | Link |
-|-----------|-------------|------|
-| [`nominatim`](images/nominatim) | Geocoding service using planet-dump and replication-job | [Nominatim](https://nominatim.org/) |
-| [`overpass-api`](images/overpass-api) | Read-only API for filtering map data | [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API) |
-| [`taginfo`](images/taginfo) | Service for finding and aggregating OSM tag information | [Taginfo](https://wiki.openstreetmap.org/wiki/Taginfo) |
-| [`tasking-manager-api`](images/tasking-manager-api) | Task manager REST API | [Task Manager](https://github.com/pgmorgan/task-manager-api) |
-
-### Deployment
-
-- **Helm Chart**: A complete [Helm chart](https://www.helm.sh/) simplifying the process of deploying the entire system onto a Kubernetes cluster. See the [chart documentation](osm-seed/README.md) for details.
-
-## Quick Start
-
-### Using Docker Compose (Local Development)
-
-```bash
-# Run just the website
-docker compose -f compose/web.yml up
-
-# Run website with data import
-docker compose -f compose/web.yml -f compose/populate-apidb.yml up
+```sh
+helm repo add osm-seed https://osm-seed.github.io/osm-seed-chart
+helm install osm osm-seed/osm-seed -f myvalues.yaml
 ```
 
-### Using Helm (Kubernetes)
+**Locally with Docker Compose**, to develop or test single images. See
+[compose/README.md](compose/README.md).
 
-The recommended way to install osm-seed is to use the published Helm chart. See [INSTALL.md](INSTALL.md) for detailed instructions.
+```sh
+cd compose
+./envs/envs.sh
+docker compose -f web.yaml up
+```
 
-## Installation
-
-For detailed installation instructions, see [INSTALL.md](INSTALL.md).
-
-### Requirements
-
-- Docker and Docker Compose (for local development)
-- Kubernetes cluster (for production deployment)
-- Helm 3.x (for Kubernetes deployment)
-
-### Using OSM Data
-
-If you plan to use data from the main OpenStreetMap project in your OSM Seed instance, please make sure you're familiar with [the ODbL license](https://wiki.osmfoundation.org/wiki/Licence).
-
-## License & Attribution
-
-This project is licensed under the MIT License. See [LICENSE.txt](LICENSE.txt) for details.
-
-### Credits
-
-**osm-seed** was originally created by [Development Seed](https://developmentseed.org/), a technology company that builds open source tools for mapping and geospatial data.
-
-- **Original Repository**: [developmentseed/osm-seed](https://github.com/developmentseed/osm-seed)
-- **Copyright**: Copyright (c) 2018 Development Seed
-
-This project builds upon and extends the outstanding work done by the Development Seed team. We sincerely appreciate their lasting contributions to the open-source geospatial community.
-
-### Current Maintainers
-
-In January 2026, osm-seed transitioned to its own organization to provide greater flexibility and independence. The project is now maintained by:
-
-- [@Rub21](https://github.com/Rub21)
-- [@batpad](https://github.com/batpad)
-- [@geohacker](https://github.com/geohacker)
-
-
-We continue to build upon the foundation laid by Development Seed while steering the project toward new directions and improvements.
+If you load data from OpenStreetMap into your instance, follow
+[the ODbL license](https://wiki.osmfoundation.org/wiki/Licence).
 
 ## Contributing
 
-We welcome contributions! If you're interested in contributing, please see our [Contributor Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of Conduct](CODE_OF_CONDUCT.md).
 
-We are always interested in collaborations and contributions. If this project helps what you're trying to do, we'd love to hear from you!
+## Credits and license
 
-## Roadmap
+osm-seed was created by [Development Seed](https://developmentseed.org/) in 2018
+([developmentseed/osm-seed](https://github.com/developmentseed/osm-seed)). Since January
+2026 it lives in its own organization and is maintained by
+[@Rub21](https://github.com/Rub21), [@batpad](https://github.com/batpad) and
+[@geohacker](https://github.com/geohacker).
 
-Eventually, the goal is to include more tools from the OSM ecosystem as part of this stack, and continue to make the process as simple and reproducible as possible. Take a look at our [roadmap](ROADMAP.md) to see what's planned.
-
----
-
-**Note**: This project explicitly aims to NOT fork OpenStreetMap, but to use the OpenStreetMap codebase as-is, and aims to contribute additions and improvements upstream. It serves as the "package management" layer, allowing one to easily install and manage OSM and related software through a single interface.
+MIT License, see [LICENSE.txt](LICENSE.txt).

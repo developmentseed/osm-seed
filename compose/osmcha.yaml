@@ -6,7 +6,7 @@ services:
     volumes:
       # Copy static files into a shared volume so the frontend can serve them
       - staticfiles:/app/staticfiles
-    env_file: ./../envs/.env.osmcha
+    env_file: ././envs/.env.osmcha
     ports:
       - "5001:5000"
     entrypoint: ["/bin/sh", "-c"]
@@ -24,7 +24,7 @@ services:
     volumes:
       # frontend serves django app's static files via shared volume
       - staticfiles:/srv/www/static/django
-    env_file: ./../envs/.env.osmcha
+    env_file: ././envs/.env.osmcha
 
     ports:
       - "8000:80"

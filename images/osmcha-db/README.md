@@ -1,12 +1,12 @@
-# Postgres  14 for OpenStreetMap Changeset Analyzer (OSMCha)
+# osmcha-db
 
-## Build
-```sh
-docker compose -f <PathTo>/compose/osmcha.yml build
-```
+PostgreSQL 14 + PostGIS for OSMCha (`init-postgis.sql` enables the extension).
 
-## Run
+| | |
+|---|---|
+| Base image | `postgres:14` |
+| Chart values key | `osmchaDb` |
+| Compose | `compose/osmcha.yaml` |
+| Env files | `compose/envs/.env.osmcha.example` |
 
-```sh
-docker compose -f <PathTo>/compose/osmcha.yml up
-```
+- osmcha.yaml uses a stock postgis image for the DB; this image is what the chart deploys.

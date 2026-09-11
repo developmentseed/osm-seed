@@ -1,44 +1,17 @@
-# Docker setup for openstreetmap-website
+# web
 
-The docker container installs dependencies required for the website, checks out the latest openstreetmap-website code from github and sets up config files.
+Builds [openstreetmap-website](https://github.com/openstreetmap/openstreetmap-website) (website + API 0.6) at a pinned commit, applies the patches in `patches/` and writes its config from env vars at start.
 
-# Configuration
+| | |
+|---|---|
+| Base image | `ruby:3.3-slim` |
+| Chart values key | `webApi` |
+| Compose | `compose/web.yaml` service `web` |
+| Env files | `compose/envs/.env.web.example`, `compose/envs/.env.db.example` |
 
-In order to run this container we need environment variables, these can be found in the following files👇:
-
-- [.env.web.example](./../../.env.web.example)
-- [.env.db.example](./../../.env.db.example)
-
-**Note**: 
-- Rename the above files as `.env.web` and `.env.db`
-
-### Email configuration
-
-For sending email it is necessary to set the required variables, osm-seed has been tested with gmail and SES-AWS providers - SMTP.
-- Gmail
-    - Use or create an existing email account.
-    - Make sure "IMAP Access" and "Allow less secure apps" are enabled in your account.
-
-- SES AWS 
-    - You have to create verified email or domain in you AWs acount.
-    - Create an SMTP user, it will give you a user and password.
-    - You have to activate SES for production, otherwise you can only send email to verified emails.
-
-Find examples oh how to setup the configuration for each provider at [.env.web.example](./../../.env.web.example)
-
-# Running web container
+- Needs `db` (apidb) and, in production, `cgimap` and `memcached`.
+- Email (SMTP) settings are in `.env.web.example`.
 
 ```sh
-    # Docker compose
-    docker-compose run web
-
-    # Docker
-    docker run \
-    --env-file ./envs/.env.web \
-    --env-file ./envs/.env.db \
-    --network osm-seed_default \
-    -p "80:80" \
-    -p "3000:3000" \
-    -h localhost \
-    -it osmseed-web:v1 bash
+cd compose && docker compose -f web.yaml build web && docker compose -f web.yaml up web
 ```

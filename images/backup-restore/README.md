@@ -1,30 +1,14 @@
-# Backup and Restore the osm-seed DB
+# backup-restore
 
-This container will create a backup of the osm-seed-db and compress according to the current date and then it will upload the backup file to s3 or Google store.
+Runs `pg_dump` of a database, compresses it with the date in the name and uploads it to S3; or restores a dump from S3. Used for web-db, tm-db and osmcha-db.
 
-
-### Configuration
-
-In order to run this container we need environment variables, these can be found in the following files👇:
-
-- [.env.db.example](./../../envs/.env.db.example)
-- [.env.db-utils.example](./../../envs/.env.db-utils.example)
-- [.env.cloudprovider.example](./../../envs/.env.cloudprovider.example)
-
-**Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
-
-### Running the container
+| | |
+|---|---|
+| Base image | `python:3.12-slim-bookworm` |
+| Chart values key | `dbBackupRestore` |
+| Compose | `compose/db-backup-restore.yaml` service `db-backup-restore` |
+| Env files | `compose/envs/.env.db.example`, `compose/envs/.env.db-utils.example`, `compose/envs/.env.cloudprovider.example` |
 
 ```sh
-  # Docker compose
-  docker-compose run db-backup-restore
-
-  # Docker compose
-  docker run \
-    --env-file ./envs/.env.db \
-    --env-file ./envs/.env.db-utils \
-    --env-file ./envs/.env.cloudprovider \
-    --network osm-seed_default \
-    -it osmseed-db-backup-restore:v1 
+cd compose && docker compose -f db-backup-restore.yaml build db-backup-restore && docker compose -f db-backup-restore.yaml up db-backup-restore
 ```
-

@@ -11,9 +11,9 @@ services:
     # ports:
     # - '5432:5432'
     volumes:
-    - ../data/db-data-pg14:/var/lib/postgresql/data
+    - ./data/db-data-pg14:/var/lib/postgresql/data
     env_file:
-    - ../envs/.env.db
+    - ./envs/.env.db
     restart: always
   web:
     image: osmseed-web:v1
@@ -23,8 +23,8 @@ services:
     ports:
     - '80:80'
     env_file:
-    - ../envs/.env.web
-    - ../envs/.env.db
+    - ./envs/.env.web
+    - ./envs/.env.db
     depends_on:
     - db
     restart: always
