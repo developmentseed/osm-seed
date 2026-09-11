@@ -56,10 +56,7 @@ spec:
               value: {{ .Values.webApi.env.WEBSITE_STATUS }}
             - name: MEMCACHE_SERVER
               value: {{ .Release.Name }}-memcached:11211
-      {{- if .Values.cgimap.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.cgimap | nindent 6 }}
       # Affinity settings
       {{- if .Values.cgimap.nodeAffinity.enabled }}
       affinity:

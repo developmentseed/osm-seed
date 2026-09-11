@@ -70,10 +70,7 @@ spec:
                 value: {{ .Values.monitoringReplication.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}
           restartPolicy: OnFailure
-          {{- if .Values.monitoringReplication.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.monitoringReplication.nodeSelector.label_key }} : {{ .Values.monitoringReplication.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" .Values.monitoringReplication | nindent 10 }}
           # Affinity settings
           {{- if .Values.monitoringReplication.nodeAffinity.enabled }}
           affinity:

@@ -41,3 +41,14 @@ resources:
   {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Node selector. Renders the "nodeSelector" key only when the component sets it.
+Usage: {{- include "osm-seed.nodeSelector" .Values.webApi | nindent 6 }}
+*/}}
+{{- define "osm-seed.nodeSelector" -}}
+{{- with .nodeSelector }}
+nodeSelector:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end -}}

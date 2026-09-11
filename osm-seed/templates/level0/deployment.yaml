@@ -61,10 +61,7 @@ spec:
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
-      {{- if .Values.level0.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.level0.nodeSelector.label_key }} : {{ .Values.level0.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.level0 | nindent 6 }}
       {{- if .Values.level0.nodeAffinity.enabled }}
       affinity:
         nodeAffinity:

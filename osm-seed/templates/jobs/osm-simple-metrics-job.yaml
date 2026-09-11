@@ -58,10 +58,7 @@ spec:
                 value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
               {{- end }}
           restartPolicy: OnFailure
-          {{- if .Values.osmSimpleMetrics.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.osmSimpleMetrics.nodeSelector.label_key }}: {{ .Values.osmSimpleMetrics.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" .Values.osmSimpleMetrics | nindent 10 }}
           # Affinity settings
           {{- if .Values.osmSimpleMetrics.nodeAffinity.enabled }}
           affinity:

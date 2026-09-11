@@ -85,10 +85,7 @@ spec:
             name: {{ .Release.Name }}-tiler-varnish-vcl
         - name: varnish-workdir
           emptyDir: {}
-      {{- if .Values.tilerVarnish.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tilerVarnish.nodeSelector.label_key }} : {{ .Values.tilerVarnish.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerVarnish | nindent 6 }}
       {{- if .Values.tilerVarnish.nodeAffinity.enabled }}
       affinity:
         nodeAffinity:

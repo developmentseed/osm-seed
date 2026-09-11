@@ -88,10 +88,7 @@ spec:
             medium: Memory
             sizeLimit: {{ .Values.webApi.sharedMemorySize }}
           name: shared-memory
-      {{- if .Values.webApi.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.webApi.nodeSelector.label_key }} : {{ .Values.webApi.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.webApi | nindent 6 }}
       # Node affinity
       {{- if .Values.webApi.nodeAffinity.enabled }}
       affinity:

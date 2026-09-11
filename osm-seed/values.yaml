@@ -52,10 +52,7 @@ webDb:
     AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: database
+  nodeSelector: {}
   sharedMemorySize: 64Mi
   # To use postgresqlConfig, you need to have already $PGDATA set up
   postgresqlConfig:
@@ -136,10 +133,7 @@ webApi:
     OPENSTREETMAP_AUTH_ID: ""
     OPENSTREETMAP_AUTH_SECRET: ""
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -176,10 +170,7 @@ memcached:
   replicaCount: 1
   priorityClass: "high-priority"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -202,10 +193,7 @@ cgimap:
     maxReplicas: 4
     cpuUtilization: 60
     memoryUtilization: 60
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -230,10 +218,7 @@ fullHistory:
     PLANET_EPOCH_DATE: '1970-01-01'
     PLANET_DUMP_NG_METADATA_URL: https://osmseed.org/metadata/planet-meta.yaml
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -256,10 +241,7 @@ changesetsDump:
     DUMP_CLOUD_URL: s3://osm-seed/db.dump
     PLANET_EPOCH_DATE: '1970-01-01'
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -293,10 +275,7 @@ dbBackupRestore:
         CLEANUP_BACKUPS: true
         RETENTION_DAYS: "30"
       resources: {}
-      nodeSelector:
-        enabled: false
-        label_key: nodegroup_type
-        label_value: web
+      nodeSelector: {}
       nodeAffinity:
         enabled: false
         key: "nodegroup_type"
@@ -319,10 +298,7 @@ dbBackupRestore:
         CLEANUP_BACKUPS: true
         RETENTION_DAYS: "30"
       resources: {}
-      nodeSelector:
-        enabled: false
-        label_key: nodegroup_type
-        label_value: web
+      nodeSelector: {}
       nodeAffinity:
         enabled: false
         key: "nodegroup_type"
@@ -342,10 +318,7 @@ dbBackupRestore:
         CLEANUP_BACKUPS: true
         RETENTION_DAYS: "30"
       resources: {}
-      nodeSelector:
-        enabled: false
-        label_key: nodegroup_type
-        label_value: web
+      nodeSelector: {}
       nodeAffinity:
         enabled: false
         key: "nodegroup_type"
@@ -370,10 +343,7 @@ planetDump:
     PLANET_EPOCH_DATE: '1970-01-01'
     PLANET_DUMP_NG_METADATA_URL: https://osmseed.org/metadata/planet-meta.yaml
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -394,10 +364,7 @@ replicationJob:
     ENABLE_SEND_SLACK_MESSAGE: "false"
     SLACK_WEBHOOK_URL: "null"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -417,10 +384,7 @@ populateApidb:
   env:
     URL_FILE_TO_IMPORT: "http://download.geofabrik.de/europe/monaco-latest.osm.pbf"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -487,10 +451,7 @@ tilerDb:
       max_worker_processes = 4
       max_parallel_workers_per_gather = 2
       max_parallel_workers = 4
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -545,10 +506,7 @@ tilerImposm:
     AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -610,10 +568,7 @@ tilerServer:
     AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -640,10 +595,7 @@ tilerServerMartin:
     AWS_ACCESS_KEY_ID: ""
     AWS_SECRET_ACCESS_KEY: ""
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -672,10 +624,7 @@ tilerVarnish:
   dynamicSize: "16G"
   staticSize: "4G"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -718,10 +667,7 @@ osmxAdiffBuilder:
     localVolumeHostPath: /mnt/osmx-adiff-data
     localVolumeSize: 50Gi
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -747,10 +693,7 @@ planetStats:
     PLANET_STATS_STATE_S3_URI: ""
     AWS_S3_ENDPOINT: ""
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: job
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -781,11 +724,7 @@ tilerCache:
     AWS_ACCESS_KEY_ID: ""
     AWS_SECRET_ACCESS_KEY: ""
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
-
+  nodeSelector: {}
 # ====================================================================================================
 # Tiler monitor (pipeline): FastAPI that checks changesets reach the tiler DB / tiles / S3.
 # Runs only pipeline-monitor (main.py); the language monitor is a separate workload.
@@ -824,11 +763,7 @@ tilerMonitorPipeline:
     AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 1Gi
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
-
+  nodeSelector: {}
 # ====================================================================================================
 # Tiler monitor (language): CronJob that recreates mviews + restarts Martin when new languages appear.
 # Needs RBAC (exec into imposm, rollout restart Martin) — see templates/tiler-monitor-language/rbac.yaml.
@@ -846,11 +781,7 @@ tilerMonitorLanguage:
     TILER_MONITORING_NIM_NUMBER_LANGUAGES: 5
     TILER_MONITORING_FORCE_LANGUAGES_GENERATION: "false"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
-
+  nodeSelector: {}
 # ====================================================================================================
 # Variables for tiler-server cache cleaner, only available in case the TILER_CACHE_TYPE = s3
 # ====================================================================================================
@@ -865,10 +796,7 @@ tilerCacheCleanerJob:
   maxZoom: 20
   overwrite: true
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -900,10 +828,7 @@ tmDb:
     AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 20Gi
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -973,10 +898,7 @@ tmApi:
     OHSOME_STATS_TOKEN: "dummy-token-for-migrations"
     POSTGRES_TEST_DB: "postgresql://user:pass@db:5432/test_db"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1057,10 +979,7 @@ nominatimApi:
     # AWS
     AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 100Gi
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1107,10 +1026,7 @@ overpassApi:
     AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1151,10 +1067,7 @@ taginfoWeb:
     INSTANCE_ICON: /img/logo/world.png
     INSTANCE_CONTACT: Anonymous
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1190,10 +1103,7 @@ taginfoDataProcessor:
     AWS_S3_BUCKET: taginfo
     INTERVAL_DOWNLOAD_DATA: 3600
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: job
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1212,10 +1122,7 @@ osmSimpleMetrics:
   priorityClass: "medium-priority"
   schedule: "* */1 * * *"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1237,10 +1144,7 @@ monitoringReplication:
     CREATE_MISSING_FILES: empty
     REPLICATION_SEQUENCE_NUMBER: "109789"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1258,10 +1162,7 @@ changesetReplicationJob:
     name: ""
   priorityClass: "medium-priority"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1309,10 +1210,7 @@ osmchaApi:
     OAUTH2_OSM_KEY: abc
     OAUTH2_OSM_SECRET: xyz
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1344,10 +1242,7 @@ osmchaDb:
     # AWS
     AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"
@@ -1390,10 +1285,7 @@ level0:
     OVERPASS_API: "overpass-api.osmseed.org"
     MAX_REQUEST_OBJECTS: "500"
   resources: {}
-  nodeSelector:
-    enabled: false
-    label_key: nodegroup_type
-    label_value: web
+  nodeSelector: {}
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"

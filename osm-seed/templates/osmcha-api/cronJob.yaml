@@ -32,10 +32,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-osmcha-api-env
           restartPolicy: Never
-          {{- if .Values.osmchaApi.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.osmchaApi.nodeSelector.label_key }}: {{ .Values.osmchaApi.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" .Values.osmchaApi | nindent 10 }}
 
 ---
 apiVersion: batch/v1
@@ -73,8 +70,5 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-osmcha-api-env
           restartPolicy: Never
-          {{- if .Values.osmchaApi.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.osmchaApi.nodeSelector.label_key }}: {{ .Values.osmchaApi.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" .Values.osmchaApi | nindent 10 }}
 {{- end }}

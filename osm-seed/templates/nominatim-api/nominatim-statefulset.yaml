@@ -85,10 +85,7 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-      {{- if .Values.nominatimApi.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.nominatimApi.nodeSelector.label_key }} : {{ .Values.nominatimApi.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.nominatimApi | nindent 6 }}
       # Affinity settings
       {{- if .Values.nominatimApi.nodeAffinity.enabled }}
       affinity:

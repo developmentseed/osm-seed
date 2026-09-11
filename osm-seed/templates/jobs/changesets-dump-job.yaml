@@ -40,10 +40,7 @@ spec:
               - name: PLANET_EPOCH_DATE
                 value: {{ .Values.changesetsDump.env.PLANET_EPOCH_DATE | quote }}
           restartPolicy: OnFailure
-          {{- if .Values.changesetsDump.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.changesetsDump.nodeSelector.label_key }} : {{ .Values.changesetsDump.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" .Values.changesetsDump | nindent 10 }}
           {{- if .Values.changesetsDump.nodeAffinity.enabled }}
           affinity:
             nodeAffinity:

@@ -87,10 +87,7 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-      {{- if .Values.tmDb.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tmDb.nodeSelector.label_key }} : {{ .Values.tmDb.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tmDb | nindent 6 }}
       # Affinity settings
       {{- if .Values.tmDb.nodeAffinity.enabled }}
       affinity:

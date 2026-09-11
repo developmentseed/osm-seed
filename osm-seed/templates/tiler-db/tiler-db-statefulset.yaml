@@ -88,10 +88,7 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: {{ .Values.tilerDb.sharedMemorySize | default "64Mi" }}
-      {{- if .Values.tilerDb.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tilerDb.nodeSelector.label_key }} : {{ .Values.tilerDb.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerDb | nindent 6 }}
       # Affinity settings
       {{- if .Values.tilerDb.nodeAffinity.enabled }}
       affinity:

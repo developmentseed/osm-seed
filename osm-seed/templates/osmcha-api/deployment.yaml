@@ -76,10 +76,7 @@ spec:
       volumes:
         - name: staticfiles
           emptyDir: {}
-      {{- if .Values.osmchaApi.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.osmchaApi.nodeSelector.label_key }} : {{ .Values.osmchaApi.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.osmchaApi | nindent 6 }}
       # Affinity settings
       {{- if .Values.osmchaApi.nodeAffinity.enabled }}
       affinity:

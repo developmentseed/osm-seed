@@ -74,10 +74,7 @@ spec:
                 value: {{ .Values.fullHistory.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}
           restartPolicy: OnFailure
-          {{- if .Values.fullHistory.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.fullHistory.nodeSelector.label_key }} : {{ .Values.fullHistory.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" .Values.fullHistory | nindent 10 }}
           # Affinity settings
           {{- if .Values.fullHistory.nodeAffinity.enabled }}
           affinity:

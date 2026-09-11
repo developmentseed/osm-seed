@@ -84,10 +84,7 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-      {{- if .Values.osmchaDb.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.osmchaDb.nodeSelector.label_key }} : {{ .Values.osmchaDb.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.osmchaDb | nindent 6 }}
       # Affinity settings
       {{- if .Values.osmchaDb.nodeAffinity.enabled }}
       affinity:

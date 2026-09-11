@@ -87,10 +87,7 @@ spec:
               value: {{ .Values.replicationJob.env.SLACK_WEBHOOK_URL | quote}}
             - name: ENVIROMENT
               value: {{ .Values.environment | quote}}
-      {{- if .Values.replicationJob.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.replicationJob.nodeSelector.label_key }} : {{ .Values.replicationJob.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.replicationJob | nindent 6 }}
       # Affinity settings
       {{- if .Values.replicationJob.nodeAffinity.enabled }}
       affinity:

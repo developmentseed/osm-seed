@@ -151,10 +151,7 @@ spec:
             # Node selector
             {{- include "osm-seed.resources" $job | nindent 12 }}
           restartPolicy: OnFailure
-          {{- if $job.nodeSelector.enabled }}
-          nodeSelector:
-            {{ $job.nodeSelector.label_key }} : {{ $job.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" $job | nindent 10 }}
           {{- if $job.nodeAffinity.enabled }}
           affinity:
             nodeAffinity:

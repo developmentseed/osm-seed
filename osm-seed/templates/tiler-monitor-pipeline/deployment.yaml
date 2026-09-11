@@ -68,8 +68,5 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-tiler-monitor-pipeline-data
       {{- end }}
-      {{- if .Values.tilerMonitorPipeline.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tilerMonitorPipeline.nodeSelector.label_key }} : {{ .Values.tilerMonitorPipeline.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerMonitorPipeline | nindent 6 }}
 {{- end }}

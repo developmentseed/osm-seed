@@ -74,10 +74,7 @@ spec:
                 value: {{ .Values.planetDump.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}
           restartPolicy: OnFailure
-          {{- if .Values.planetDump.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.planetDump.nodeSelector.label_key }} : {{ .Values.planetDump.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" .Values.planetDump | nindent 10 }}
           # Affinity settings
           {{- if .Values.planetDump.nodeAffinity.enabled }}
           affinity:

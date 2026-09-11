@@ -49,10 +49,7 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 20
           {{- include "osm-seed.resources" .Values.tilerServerMartin | nindent 10 }}
-      {{- if .Values.tilerServerMartin.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tilerServerMartin.nodeSelector.label_key }} : {{ .Values.tilerServerMartin.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerServerMartin | nindent 6 }}
       {{- if .Values.tilerServerMartin.nodeAffinity.enabled }}
       affinity:
         nodeAffinity:

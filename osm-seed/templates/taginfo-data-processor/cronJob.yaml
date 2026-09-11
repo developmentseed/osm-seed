@@ -42,10 +42,7 @@ spec:
                   value: {{ $v | quote }}
                 {{- end }}
               {{- include "osm-seed.resources" .Values.taginfoDataProcessor | nindent 14 }}
-          {{- if .Values.taginfoDataProcessor.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.taginfoDataProcessor.nodeSelector.label_key }} : {{ .Values.taginfoDataProcessor.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" .Values.taginfoDataProcessor | nindent 10 }}
           {{- if .Values.taginfoDataProcessor.nodeAffinity.enabled }}
           affinity:
             nodeAffinity:

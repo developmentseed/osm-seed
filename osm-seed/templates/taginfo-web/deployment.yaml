@@ -66,10 +66,7 @@ spec:
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
-      {{- if .Values.taginfoWeb.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.taginfoWeb.nodeSelector.label_key }} : {{ .Values.taginfoWeb.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.taginfoWeb | nindent 6 }}
       {{- if .Values.taginfoWeb.nodeAffinity.enabled }}
       affinity:
         nodeAffinity:

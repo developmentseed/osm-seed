@@ -61,10 +61,7 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-      {{- if .Values.tilerServer.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tilerServer.nodeSelector.label_key }} : {{ .Values.tilerServer.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerServer | nindent 6 }}
       # Affinity settings
       {{- if .Values.tilerServer.nodeAffinity.enabled }}
       affinity:

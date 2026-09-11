@@ -62,10 +62,7 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-      {{- if .Values.osmxAdiffBuilder.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.osmxAdiffBuilder.nodeSelector.label_key }}: {{ .Values.osmxAdiffBuilder.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.osmxAdiffBuilder | nindent 6 }}
       {{- if .Values.osmxAdiffBuilder.nodeAffinity.enabled }}
       affinity:
         nodeAffinity:

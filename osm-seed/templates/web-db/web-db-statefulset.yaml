@@ -102,10 +102,7 @@ spec:
           configMap:
             name: {{ .Release.Name }}-web-db-postgresql-config
         {{- end }}
-      {{- if .Values.webDb.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.webDb.nodeSelector.label_key }} : {{ .Values.webDb.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.webDb | nindent 6 }}
       {{- if .Values.webDb.nodeAffinity.enabled }}
       affinity:
         nodeAffinity:

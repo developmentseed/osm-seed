@@ -56,10 +56,7 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-      {{- if .Values.overpassApi.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.overpassApi.nodeSelector.label_key }} : {{ .Values.overpassApi.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.overpassApi | nindent 6 }}
       # Affinity settings
       {{- if .Values.overpassApi.nodeAffinity.enabled }}
       affinity:

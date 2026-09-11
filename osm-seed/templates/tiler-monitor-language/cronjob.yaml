@@ -47,8 +47,5 @@ spec:
                   name: {{ .Release.Name }}-tiler-db-env
                   optional: true
               {{- include "osm-seed.resources" .Values.tilerMonitorLanguage | nindent 14 }}
-          {{- if .Values.tilerMonitorLanguage.nodeSelector.enabled }}
-          nodeSelector:
-            {{ .Values.tilerMonitorLanguage.nodeSelector.label_key }} : {{ .Values.tilerMonitorLanguage.nodeSelector.label_value }}
-          {{- end }}
+          {{- include "osm-seed.nodeSelector" .Values.tilerMonitorLanguage | nindent 10 }}
 {{- end }}

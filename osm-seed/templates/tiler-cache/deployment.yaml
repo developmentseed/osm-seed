@@ -76,8 +76,5 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 20
           {{- include "osm-seed.resources" .Values.tilerCache | nindent 10 }}
-      {{- if .Values.tilerCache.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tilerCache.nodeSelector.label_key }} : {{ .Values.tilerCache.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerCache | nindent 6 }}
 {{- end }}

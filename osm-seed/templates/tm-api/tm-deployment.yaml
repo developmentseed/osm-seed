@@ -53,10 +53,7 @@ spec:
           - configMapRef:
               name: {{ .Release.Name }}-tm-api-env
 
-      {{- if .Values.tmApi.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tmApi.nodeSelector.label_key }} : {{ .Values.tmApi.nodeSelector.label_value }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tmApi | nindent 6 }}
       # Affinity settings
       {{- if .Values.tmApi.nodeAffinity.enabled }}
       affinity:
