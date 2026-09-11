@@ -1,128 +1,132 @@
-### Use Published Helm Chart
+# osm-seed Helm chart
 
-The recommended way to install osm-seed is to use the published Helm chart, rather than forking this repository. You can see a minimal example and basic instructions to do this at: https://github.com/developmentseed/osm-seed-deploy
+Runs an OpenStreetMap-style stack on Kubernetes: website and API, database with backups,
+replication and planet dumps, vector tiles, Nominatim, Overpass, Taginfo, Tasking Manager,
+OSMCha, Level0 and monitoring. Every component is off by default; turn on what you need.
 
-The below instructions are still useful reading if you are using Helm and Kubernetes for the first time, and can still be used to develop locally. For any real-world installs, we now highly recommend using the public Helm Chart to make it easier to manage custom changes, etc.
+## Requirements
 
-## Helm Chart configuration
+- Kubernetes 1.25 or newer
+- Helm 3
+- An ingress controller (ingress-nginx, Traefik) if you expose services with `ingress.enabled`
+- cert-manager if you want the chart to create a Let's Encrypt `ClusterIssuer` (`createClusterIssuer: true`)
 
-The `osm-seed` folder contains the `Helm` Chart to easily deploy osm-seed to a Kubernetes cluster. For more about helm, see https://helm.sh
-
-### Requirements
-
-  - `kubectl`: https://kubernetes.io/docs/tasks/tools/install-kubectl/
-  - `helm`: https://docs.helm.sh/using_helm/#installing-helm
-
-To test with a local Kubernetes cluster, you may also want to install `Minikube`: https://kubernetes.io/docs/tasks/tools/install-minikube/
-
-
-### Setup your cluster
-
-Follow instructions to setup a Kubernetes cluster on your favourite cloud / hosting provider: https://kubernetes.io/docs/setup/
-
-If you want to test locally, you can simply run `minikube start --cpus 4 --memory 8192` to start your locally running cluster. 
-
-
-### Setup `helm` on your cluster
-
-You need to install `helm` onto your cluster, and make sure it has adequate permissions to install and upgrade Charts.
-
-With `minikube` as your cluster backend, this can be accomplished with `helm init`. Depending on your Kubernetes cluster backend, you may need some extra steps to ensure `helm` has adequate permissions on your cluster. See https://github.com/kubernetes/helm/blob/master/docs/rbac.md
-
-### Install dependencies on your cluster
-
-To handle domain routing and SSL, osm-seed needs the nginx ingress controller setup on the cluster as well as Lets Encrypt to handle SSL certificate generation.
-
-You can do this with:
+## Install
 
 ```sh
-    helm upgrade --install ingress-nginx ingress-nginx \
-  --repo https://kubernetes.github.io/ingress-nginx \
-  --namespace ingress-nginx --create-namespace
+helm repo add osm-seed https://osm-seed.github.io/osm-seed-chart
+helm repo update
+helm install osm osm-seed/osm-seed -f myvalues.yaml
 ```
 
-or install using `kubectl`
+Minimal `myvalues.yaml` to run the website and API with a database:
+
+```yaml
+cloudProvider: k3s   # aws or k3s
+
+webDb:
+  enabled: true
+  persistenceDisk:
+    enabled: true
+webApi:
+  enabled: true
+  ingress:
+    enabled: true
+    hosts:
+      - www.example.org
+memcached:
+  enabled: true
+cgimap:
+  enabled: true
+```
+
+Upgrade and remove:
 
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/cloud/deploy.yaml
+helm upgrade osm osm-seed/osm-seed -f myvalues.yaml
+helm uninstall osm
 ```
 
-For more options and cloud-specific instructions, see: https://kubernetes.github.io/ingress-nginx/deploy/
+Resources are named `<release>-<component>`, for example `osm-web-api`, `osm-web-db`.
+Services use the same name as their workload.
 
-To install the Lets Encrypt `cert-manager` helm chart:
+## Components
+
+| Values key | Resource | What it does |
+|---|---|---|
+| `webDb` | `web-db` (StatefulSet) | PostgreSQL for the website and API (apidb) |
+| `webApi` | `web-api` (Deployment) | openstreetmap-website: website + API 0.6 |
+| `memcached` | `memcached` | Session cache for the website |
+| `cgimap` | `cgimap` | C++ implementation of the read-only API calls |
+| `populateApidb` | `populate-apidb` (Job) | Import a PBF into the apidb |
+| `replicationJob` | `replication-job` | Publish minute/hour/day diffs to S3 |
+| `changesetReplicationJob` | `changeset-replication-job` | Publish changeset diffs to S3 |
+| `planetDump` | `planet-dump` (CronJob) | Planet PBF export |
+| `fullHistory` | `full-history` (CronJob) | Full-history planet export |
+| `changesetsDump` | `changesets-dump` (CronJob) | Changesets dump export |
+| `dbBackupRestore` | `<db>-backup` (CronJob) | pg_dump to S3 / restore from S3 for web-db, tm-db, osmcha-db |
+| `osmProcessor` | `osm-processor` (Job) | One-off PBF processing |
+| `osmSimpleMetrics` | `osm-simple-metrics` (CronJob) | Basic edit metrics |
+| `monitoringReplication` | `replication-monitoring` (CronJob) | Checks the replication stream |
+| `tilerDb` | `tiler-db` (StatefulSet) | PostGIS for vector tiles |
+| `tilerImposm` | `tiler-imposm` (StatefulSet) | imposm3 import and updates into tiler-db |
+| `tilerServer` | `tiler-server` | Tegola vector tile server |
+| `tilerServerMartin` | `tiler-server-martin` | Martin vector tile server |
+| `tilerVarnish` | `tiler-varnish` | HTTP cache in front of the tile server |
+| `tilerCache` | `tiler-cache` | Tile cache purge and seed (SQS) |
+| `tilerMonitorPipeline` | `tiler-monitor-pipeline` | Checks that edits reach the tiles |
+| `tilerMonitorLanguage` | `tiler-monitor-language` (CronJob) | Rebuilds language views when new languages appear |
+| `osmxAdiffBuilder` | `osmx-adiff-builder` (StatefulSet) | Augmented diffs from OSMX to S3 |
+| `planetStats` | `planet-stats` (CronJob) | Daily statistics from the planet file |
+| `nominatimApi` | `nominatim-api` (StatefulSet) | Nominatim geocoder |
+| `nominatimUI` | `nominatim-ui` | Nominatim web UI (image only) |
+| `overpassApi` | `overpass-api` (StatefulSet) | Overpass API |
+| `taginfoWeb` | `taginfo-web` | Taginfo website |
+| `taginfoDataProcessor` | `taginfo-data-processor` (CronJob) | Builds the Taginfo databases |
+| `tmDb` | `tm-db` (StatefulSet) | PostgreSQL for Tasking Manager |
+| `tmApi` | `tm-api` | Tasking Manager API |
+| `osmchaDb` | `osmcha-db` (StatefulSet) | PostgreSQL for OSMCha |
+| `osmchaApi` | `osmcha-api` | OSMCha API and frontend |
+| `osmchaWeb` | part of `osmcha-api` | OSMCha frontend image |
+| `level0` | `level0` | Level0 editor |
+
+Each component has the same shape in `values.yaml`: `enabled`, `image`, `env`,
+`resources`, `nodeSelector`, `nodeAffinity`, and where it applies `persistenceDisk`,
+`ingress`, `serviceAccount`, `autoscaling`, `schedule`. See
+[values.yaml](values.yaml) for every key and its default.
+
+## Cloud provider and storage
+
+`cloudProvider` is `aws` or `k3s`.
+
+- `aws`: persistent components use a static EBS volume. Set
+  `persistenceDisk.AWS_ElasticBlockStore_volumeID` and `AWS_ElasticBlockStore_size`.
+  Jobs upload to `AWS_S3_BUCKET`.
+- `k3s`: with `persistenceDisk.staticHostPath: true` the chart creates a hostPath PV at
+  `localVolumeHostPath` (data survives reinstalls). With `false` it uses the `local-path`
+  storage class (dynamic, data is tied to the PVC).
+
+PVCs are kept on `helm uninstall` (`helm.sh/resource-policy: keep`). Delete them by hand.
+
+## Run a single job
+
+Render one template and apply it, for example to import data once:
 
 ```sh
-    helm repo add jetstack https://charts.jetstack.io
-    helm repo update
-    helm install \
-        cert-manager jetstack/cert-manager \
-        --namespace cert-manager \
-        --create-namespace \
-        --version v1.7.1 \
-        --set installCRDs=true
+helm template osm osm-seed/osm-seed -f myvalues.yaml \
+  --set populateApidb.enabled=true \
+  --show-only templates/jobs/populate-apidb-job.yaml | kubectl apply -f -
 ```
-For further information: https://cert-manager.io/docs/installation/helm/
 
-### Install osm-seed onto your cluster
+## Development
 
-Look at the [`values.yaml`](values.yaml) file in the `osm-seed` sub-folder to see the various configuration options and values that you need to configure for your installation. Then create a `myvalues.yaml` file, where you can over-ride any of the values defined in `values.yaml`.
+Chart and images are published from this repo with
+[chartpress](https://github.com/jupyterhub/chartpress) on every push to `develop`.
+Image tags in `values.yaml` are filled at publish time.
 
-You can then install `osm-seed` with:
-
-    helm install -f myvalues.yaml osm-seed/
-
-This will setup all the resources required and give you instructions to get the URL of your running instance. You can also use the standard `kubectl` commands to monitor your cluster, view the cluster dashboard, etc.
-
-This will output a generated name for the deployed `release`.
-
-To delete all resources created in the Helm chart:
-
-    helm delete <release-name> 
-
-
-## Install osm-seed on minikube cluster
+Lint and render locally:
 
 ```sh
-minikube delete --all
-minikube start --mount-string=$PWD/data/:/mnt/ --mount --driver=docker
-minikube ssh
-chartpress
-# It is necesary to create the folder in the shared folder 
-mkdir -p $PWD/data/db-data
-mkdir -p $PWD/data/tiler-db-data
-mkdir -p $PWD/data/tiler-imposm-data
-mkdir -p $PWD/data/tiler-server-data
-mkdir -p $PWD/data/overpass-api-db-data
-mkdir -p $PWD/data/nominatim-db-data
-
-# Install develop version
-helm install develop osm-seed -f osm-seed/values.yaml
-
-# Expose web contianer service
-minikube service develop-web-api --url
-
-# Update develop version
-helm upgrade develop osm-seed -f osm-seed/values.yaml
-
-# Delete develop version
-helm delete develop
-
+helm lint osm-seed
+helm template test osm-seed -f myvalues.yaml
 ```
-
-### Additional Notes
-
-When developing and testing locally, it is often useful to use the same `docker` context inside your minikube instance as your local machine. This avoids having to re-pull docker images from within your `minikube` VM. This can be accomplished with:
-
-    eval $(minikube docker-env)
-
-Some useful `kubectl` commands:
-
-To get the status of all resources:
-
-    kubectl get all
-
-To get logs from a running container:
-
-    kubectl logs <pod-id>
-
-Refer the `kubectl` [documentation](https://kubernetes.io/docs/reference/kubectl/overview/)
