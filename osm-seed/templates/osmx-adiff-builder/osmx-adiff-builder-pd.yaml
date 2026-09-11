@@ -1,8 +1,6 @@
-{{- if .Values.osmxAdiffBuilder.enabled -}}
-{{- if .Values.osmxAdiffBuilder.persistenceDisk.enabled -}}
-
-############## k3s static hostPath PV (fixed dir = data identity, reusable across releases) ##############
-{{- if and (eq .Values.cloudProvider "k3s") .Values.osmxAdiffBuilder.persistenceDisk.staticHostPath }}
+{{- if and .Values.osmxAdiffBuilder.enabled .Values.osmxAdiffBuilder.persistenceDisk.enabled }}
+{{- $pd := dict "root" . "values" .Values.osmxAdiffBuilder "name" (printf "%s-osmx-adiff-builder-data" .Release.Name) }}
+{{- if include "osm-seed.pv.static" $pd }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -13,15 +11,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  storageClassName: ""
-  persistentVolumeReclaimPolicy: Retain
-  capacity:
-    storage: {{ .Values.osmxAdiffBuilder.persistenceDisk.localVolumeSize }}
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: {{ .Values.osmxAdiffBuilder.persistenceDisk.localVolumeHostPath | quote }}
-    type: DirectoryOrCreate
+  {{- include "osm-seed.pv.spec" $pd | nindent 2 }}
 ---
 {{- end }}
 apiVersion: v1
@@ -36,29 +26,5 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  ############## k3s ##############
-  {{- if eq .Values.cloudProvider "k3s" }}
-  {{- if .Values.osmxAdiffBuilder.persistenceDisk.staticHostPath }}
-  storageClassName: ""
-  volumeName: {{ .Release.Name }}-osmx-adiff-builder-data
-  {{- else }}
-  storageClassName: local-path
-  {{- end }}
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.osmxAdiffBuilder.persistenceDisk.localVolumeSize }}
-  {{- else }}
-  ############## Other providers ##############
-  {{- if .Values.osmxAdiffBuilder.persistenceDisk.storageClassName }}
-  storageClassName: {{ .Values.osmxAdiffBuilder.persistenceDisk.storageClassName | quote }}
-  {{- end }}
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.osmxAdiffBuilder.persistenceDisk.size }}
-  {{- end }}
-{{- end }}
+  {{- include "osm-seed.pvc.spec" $pd | nindent 2 }}
 {{- end }}

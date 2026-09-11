@@ -1,8 +1,6 @@
-{{- if .Values.tilerMonitorPipeline.enabled -}}
-{{- if .Values.tilerMonitorPipeline.persistenceDisk.enabled -}}
-
-############## k3s: dynamic local-path (no PV) OR static hostPath when staticHostPath=true ##############
-{{- if or (ne .Values.cloudProvider "k3s") (and (eq .Values.cloudProvider "k3s") .Values.tilerMonitorPipeline.persistenceDisk.staticHostPath) }}
+{{- if and .Values.tilerMonitorPipeline.enabled .Values.tilerMonitorPipeline.persistenceDisk.enabled }}
+{{- $pd := dict "root" . "values" .Values.tilerMonitorPipeline "name" (printf "%s-tiler-monitor-pipeline-data" .Release.Name) }}
+{{- if include "osm-seed.pv.static" $pd }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -13,30 +11,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  ############## AWS Provider ##############
-  {{- if eq .Values.cloudProvider "aws" }}
-  storageClassName: ""
-  capacity:
-    storage: {{ .Values.tilerMonitorPipeline.persistenceDisk.AWS_ElasticBlockStore_size }}
-  accessModes:
-    - ReadWriteOnce
-  awsElasticBlockStore:
-    volumeID: {{ .Values.tilerMonitorPipeline.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
-    fsType: ext4
-  {{- end }}
-
-  ############## k3s static hostPath (fixed dir = data identity, reusable across releases) ##############
-  {{- if and (eq .Values.cloudProvider "k3s") .Values.tilerMonitorPipeline.persistenceDisk.staticHostPath }}
-  storageClassName: ""
-  persistentVolumeReclaimPolicy: Retain
-  capacity:
-    storage: {{ .Values.tilerMonitorPipeline.persistenceDisk.localVolumeSize }}
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: {{ .Values.tilerMonitorPipeline.persistenceDisk.localVolumeHostPath | quote }}
-    type: DirectoryOrCreate
-  {{- end }}
+  {{- include "osm-seed.pv.spec" $pd | nindent 2 }}
 ---
 {{- end }}
 apiVersion: v1
@@ -51,31 +26,5 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  ############## k3s ##############
-  {{- if eq .Values.cloudProvider "k3s" }}
-  {{- if .Values.tilerMonitorPipeline.persistenceDisk.staticHostPath }}
-  storageClassName: ""
-  volumeName: {{ .Release.Name }}-tiler-monitor-pipeline-data
-  {{- else }}
-  storageClassName: local-path
-  {{- end }}
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.tilerMonitorPipeline.persistenceDisk.localVolumeSize }}
-  {{- else }}
-  ############## Other providers ##############
-  storageClassName: ""
-  volumeName: {{ .Release.Name }}-tiler-monitor-pipeline-data
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      ############## AWS Provider ##############
-      {{- if eq .Values.cloudProvider "aws" }}
-      storage: {{ .Values.tilerMonitorPipeline.persistenceDisk.AWS_ElasticBlockStore_size }}
-      {{- end }}
-  {{- end }}
-{{- end }}
+  {{- include "osm-seed.pvc.spec" $pd | nindent 2 }}
 {{- end }}

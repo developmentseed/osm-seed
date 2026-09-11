@@ -1,8 +1,6 @@
-{{- if .Values.osmchaDb.enabled -}}
-{{- if .Values.osmchaDb.persistenceDisk.enabled -}}
-
-############## k3s: dynamic local-path (no PV) OR static hostPath when staticHostPath=true ##############
-{{- if or (ne .Values.cloudProvider "k3s") (and (eq .Values.cloudProvider "k3s") .Values.osmchaDb.persistenceDisk.staticHostPath) }}
+{{- if and .Values.osmchaDb.enabled .Values.osmchaDb.persistenceDisk.enabled }}
+{{- $pd := dict "root" . "values" .Values.osmchaDb "name" (printf "%s-osmcha-db-data" .Release.Name) }}
+{{- if include "osm-seed.pv.static" $pd }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -13,28 +11,7 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  accessModes:
-    - ReadWriteOnce
-  ############## AWS Provider ##############
-  {{- if eq .Values.cloudProvider "aws" }}
-  storageClassName: ""
-  capacity:
-    storage: {{ .Values.osmchaDb.persistenceDisk.AWS_ElasticBlockStore_size }}
-  awsElasticBlockStore:
-    volumeID: {{ .Values.osmchaDb.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
-    fsType: ext4
-  {{- end }}
-
-  ############## k3s static hostPath (fixed dir = data identity, reusable across releases) ##############
-  {{- if and (eq .Values.cloudProvider "k3s") .Values.osmchaDb.persistenceDisk.staticHostPath }}
-  storageClassName: ""
-  persistentVolumeReclaimPolicy: Retain
-  capacity:
-    storage: {{ .Values.osmchaDb.persistenceDisk.localVolumeSize }}
-  hostPath:
-    path: {{ .Values.osmchaDb.persistenceDisk.localVolumeHostPath | quote }}
-    type: DirectoryOrCreate
-  {{- end }}
+  {{- include "osm-seed.pv.spec" $pd | nindent 2 }}
 ---
 {{- end }}
 apiVersion: v1
@@ -49,31 +26,5 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  ############## k3s ##############
-  {{- if eq .Values.cloudProvider "k3s" }}
-  {{- if .Values.osmchaDb.persistenceDisk.staticHostPath }}
-  storageClassName: ""
-  volumeName: {{ .Release.Name }}-osmcha-db-data
-  {{- else }}
-  storageClassName: local-path
-  {{- end }}
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.osmchaDb.persistenceDisk.localVolumeSize }}
-  {{- else }}
-  ############## Other providers ##############
-  storageClassName: ""
-  volumeName: {{ .Release.Name }}-osmcha-db-data
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      ############## AWS Provider ##############
-      {{- if eq .Values.cloudProvider "aws" }}
-      storage: {{ .Values.osmchaDb.persistenceDisk.AWS_ElasticBlockStore_size }}
-      {{- end }}
-  {{- end }}
-{{- end }}
+  {{- include "osm-seed.pvc.spec" $pd | nindent 2 }}
 {{- end }}

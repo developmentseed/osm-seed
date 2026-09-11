@@ -1,6 +1,6 @@
-{{- if .Values.tilerServer.enabled }}
-{{ if eq .Values.tilerServer.env.TILER_CACHE_TYPE "file" }}
-{{- if .Values.tilerServer.persistenceDisk.enabled -}}
+{{- if and .Values.tilerServer.enabled (eq .Values.tilerServer.env.TILER_CACHE_TYPE "file") .Values.tilerServer.persistenceDisk.enabled }}
+{{- $pd := dict "root" . "values" .Values.tilerServer "name" (printf "%s-tiler-server-data" .Release.Name) }}
+{{- if include "osm-seed.pv.static" $pd }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -11,18 +11,9 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  ############## AWS Provider ##############
-  {{- if eq .Values.cloudProvider "aws" }}
-  storageClassName: ""
-  capacity:
-    storage: {{ .Values.tilerServer.persistenceDisk.AWS_ElasticBlockStore_size }}
-  accessModes:
-    - ReadWriteOnce
-  awsElasticBlockStore:
-    volumeID: {{ .Values.tilerServer.persistenceDisk.AWS_ElasticBlockStore_volumeID }}
-    fsType: ext4
-  {{- end }}
+  {{- include "osm-seed.pv.spec" $pd | nindent 2 }}
 ---
+{{- end }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -35,16 +26,5 @@ metadata:
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  storageClassName: ""
-  volumeName: {{ .Release.Name }}-tiler-server-data
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      ############## AWS Provider ##############
-      {{- if eq .Values.cloudProvider "aws" }}
-      storage: {{ .Values.tilerServer.persistenceDisk.AWS_ElasticBlockStore_size }}
-      {{- end }}
-{{- end }}
-{{- end }}
+  {{- include "osm-seed.pvc.spec" $pd | nindent 2 }}
 {{- end }}
