@@ -4,7 +4,7 @@ Docker container for taginfo that runs the web service and processes PBF files t
 
 ## Environment Variables
 
-Copy [`.env.taginfo.example`](./../../envs/.env.taginfo.example) to `.env.taginfo` and configure:
+Copy [`.env.taginfo.example`](./../../compose/envs/.env.taginfo.example) to `.env.taginfo` and configure:
 
 ### Planet Files
 - `URL_PLANET_FILE_STATE`: URL to state file with latest planet PBF URL (optional if `URL_PLANET_FILE` is set)
@@ -36,7 +36,7 @@ docker-compose run taginfo
 
 # Docker
 docker run \
-  --env-file ./envs/.env.taginfo \
+  --env-file ./compose/envs/.env.taginfo \
   -v ${PWD}/data/taginfo-data:/usr/src/app/data \
   --network osm-seed_default \
   -it osmseed-taginfo:v1

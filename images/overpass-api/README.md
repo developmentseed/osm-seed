@@ -6,7 +6,7 @@ This continaer is base on: https://github.com/wiktorn/Overpass-API
 
 In order to run this container we need environment variables, these can be found in the following files👇:
 
-- [..env.overpass.example](./../../envs/.env.overpass.example)
+- [..env.overpass.example](./../../compose/envs/.env.overpass.example)
 
 **Note**: Rename the above files as `.env.overpass`
 

@@ -6,8 +6,8 @@ This container is for rendering the vector tiles base on [Tegola](https://github
 
 In order to run this container we need environment variables, these can be found in the following files👇:
 
-- [.env.tiler-db.example](./../../envs/.env.tiler-db.example)
-- [.env.tiler-server.example](./../../envs/.env.tiler-server.example)
+- [.env.tiler-db.example](./../../compose/envs/.env.tiler-db.example)
+- [.env.tiler-server.example](./../../compose/envs/.env.tiler-server.example)
 
 **Note**: Rename the above files as `.env.tiler-db` and `.env.tiler-server`
 
@@ -19,8 +19,8 @@ In order to run this container we need environment variables, these can be found
 
     # Docker
     docker run \
-      --env-file ./envs/.env.tiler-db \
-      --env-file ./envs/.env.tiler-server \
+      --env-file ./compose/envs/.env.tiler-db \
+      --env-file ./compose/envs/.env.tiler-server \
       -v ${PWD}/data/tiler-server-data:/mnt/data \
       --network osm-seed_default \
       -p "9090:9090" \

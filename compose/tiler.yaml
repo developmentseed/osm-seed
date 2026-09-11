@@ -11,9 +11,9 @@ services:
     ports:
     - "5432:5432"
     volumes:
-    - ../data/tiler-db-data:/var/lib/postgresql/data
+    - ./data/tiler-db-data:/var/lib/postgresql/data
     env_file:
-    - ../envs/.env.tiler-db
+    - ./envs/.env.tiler-db
     restart: always
   # # ######################################################
   # # ### Tiler imposm for importing data
@@ -24,15 +24,15 @@ services:
   #     context: ../images/tiler-imposm
   #     dockerfile: Dockerfile
   #   volumes:
-  #   - ../data/tiler-imposm-data:/mnt/data
+  #   - ./data/tiler-imposm-data:/mnt/data
   #   # - ../images/tiler-imposm:/osm
   #   command:
   #   - sh
   #   - -c
   #   - "./start.sh"
   #   env_file:
-  #   - ../envs/.env.tiler-db
-  #   - ../envs/.env.tiler-imposm
+  #   - ./envs/.env.tiler-db
+  #   - ./envs/.env.tiler-imposm
   #   healthcheck:
   #     test: ["CMD", "./liveness.sh"]
   #     interval: 30s
@@ -50,11 +50,11 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../images/tiler-server:/app
-      - ../data/tiler-imposm-data:/mnt/data/imposm
+      - ./data/tiler-imposm-data:/mnt/data/imposm
     ports:
       - "9090:9090"
     command: "./start.sh"
     env_file:
-      - ../envs/.env.tiler-db
-      - ../envs/.env.tiler-server
+      - ./envs/.env.tiler-db
+      - ./envs/.env.tiler-server
     restart: always

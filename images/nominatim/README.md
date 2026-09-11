@@ -6,7 +6,7 @@ This version of Nominatim was copy from https://github.com/mediagis/nominatim-do
 
 In order to run this container we need environment variables, these can be found in the following files👇:
 
-- [.env.nominatim.example](./../../envs/.env.nominatim.example)
+- [.env.nominatim.example](./../../compose/envs/.env.nominatim.example)
 
 **Note**: Rename the above files as `.env.nominatim`
 

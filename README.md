@@ -73,23 +73,20 @@ This project provides Docker container definitions for various aspects of the Op
 
 ## Quick Start
 
-### Using Docker Compose (Local Development)
-
-```bash
-# Run just the website
-docker compose -f compose/web.yml up
-
-# Run website with data import
-docker compose -f compose/web.yml -f compose/populate-apidb.yml up
-```
-
 ### Using Helm (Kubernetes)
 
-The recommended way to install osm-seed is to use the published Helm chart. See [INSTALL.md](INSTALL.md) for detailed instructions.
+The recommended way to run osm-seed is the published Helm chart. See
+[osm-seed/README.md](osm-seed/README.md).
 
-## Installation
+### Using Docker Compose (local development)
 
-For detailed installation instructions, see [INSTALL.md](INSTALL.md).
+To run or build single containers on one machine, see [compose/README.md](compose/README.md).
+
+```bash
+cd compose
+./envs/envs.sh
+docker compose -f web.yaml up
+```
 
 ### Requirements
 

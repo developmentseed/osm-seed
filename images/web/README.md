@@ -34,8 +34,8 @@ Find examples oh how to setup the configuration for each provider at [.env.web.e
 
     # Docker
     docker run \
-    --env-file ./envs/.env.web \
-    --env-file ./envs/.env.db \
+    --env-file ./compose/envs/.env.web \
+    --env-file ./compose/envs/.env.db \
     --network osm-seed_default \
     -p "80:80" \
     -p "3000:3000" \

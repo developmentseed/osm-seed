@@ -8,11 +8,11 @@ Repo: https://github.com/developmentseed/osm-simple-metrics
 
 
 ```sh
-docker compose -f compose/osm-simple-metrics.yml build
+docker compose -f compose/osm-simple-metrics.yaml build
 ```
 
 #### Access the container
 
 ```sh
-docker-compose -f compose/osm-simple-metrics.yml run osm-simple-metrics bash
+docker-compose -f compose/osm-simple-metrics.yaml run osm-simple-metrics bash
 ```

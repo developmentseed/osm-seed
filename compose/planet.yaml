@@ -1,4 +1,3 @@
-version: '3'
 services:
   osm-processor:
     image: osmseed-osm-processor:v1
@@ -6,12 +5,12 @@ services:
       context: ../images/osm-processor
       dockerfile: Dockerfile
     volumes:
-    - ../data/osm-processor-data:/mnt/data
+    - ./data/osm-processor-data:/mnt/data
     command: /start.sh
     env_file:
-    - ../envs/.env.db
-    - ../envs/.env.db-utils
-    - ../envs/.env.cloudprovider
+    - ./envs/.env.db
+    - ./envs/.env.db-utils
+    - ./envs/.env.cloudprovider
     restart: always
 
   #####################################################
@@ -23,13 +22,13 @@ services:
       context: ../images/replication-job
       dockerfile: Dockerfile
     volumes:
-    - ../data/replication-job-data:/mnt/data
+    - ./data/replication-job-data:/mnt/data
     # - ./../images/replication-job:/app
     command: /start.sh
     env_file:
-    - ../envs/.env.db
-    - ../envs/.env.db-utils
-    - ../envs/.env.cloudprovider
+    - ./envs/.env.db
+    - ./envs/.env.db-utils
+    - ./envs/.env.cloudprovider
     restart: always
 
   ######################################################
@@ -41,12 +40,12 @@ services:
       context: ../images/planet-dump
       dockerfile: Dockerfile
     volumes:
-    - ../data/planet-dump-data:/mnt/data
+    - ./data/planet-dump-data:/mnt/data
     command: /start.sh;
     env_file:
-    - ../envs/.env.db
-    - ../envs/.env.db-utils
-    - ../envs/.env.cloudprovider
+    - ./envs/.env.db
+    - ./envs/.env.db-utils
+    - ./envs/.env.cloudprovider
     restart: always
 
   #####################################################
@@ -58,12 +57,12 @@ services:
       context: ../images/full-history
       dockerfile: Dockerfile
     volumes:
-    - ../data/full-history-data:/mnt/data
+    - ./data/full-history-data:/mnt/data
     command: /start.sh
     env_file:
-    - ../envs/.env.db
-    - ../envs/.env.db-utils
-    - ../envs/.env.cloudprovider
+    - ./envs/.env.db
+    - ./envs/.env.db-utils
+    - ./envs/.env.cloudprovider
     restart: always
 
   #####################################################
@@ -75,12 +74,12 @@ services:
       context: ../images/changesets-dump
       dockerfile: Dockerfile
     volumes:
-    - ../data/changesets-dump-data:/mnt/data
+    - ./data/changesets-dump-data:/mnt/data
     command: /start.sh
     env_file:
-    - ../envs/.env.db
-    - ../envs/.env.db-utils
-    - ../envs/.env.cloudprovider
+    - ./envs/.env.db
+    - ./envs/.env.db-utils
+    - ./envs/.env.cloudprovider
     restart: always
 
   #####################################################
@@ -92,13 +91,13 @@ services:
       context: ../images/changeset-replication-job
       dockerfile: Dockerfile
     volumes:
-    - ../data/changeset-replication-job-data:/mnt/changesets
+    - ./data/changeset-replication-job-data:/mnt/changesets
     command: >
       /bin/bash -c "./start.sh"
     env_file:
-    - ../envs/.env.db
-    - ../envs/.env.db-utils
-    - ../envs/.env.cloudprovider
+    - ./envs/.env.db
+    - ./envs/.env.db-utils
+    - ./envs/.env.cloudprovider
     restart: always
 
   ######################################################
@@ -114,12 +113,12 @@ services:
     - "8082:3000"
     volumes:
     # Serve minute replication files
-    - ../data/replication-job-data:/usr/share/nginx/html/server/static-files/replication/minute
+    - ./data/replication-job-data:/usr/share/nginx/html/server/static-files/replication/minute
     # Serve planet dump files
-    - ../data/planet-dump-data:/usr/share/nginx/html/server/static-files/planet
+    - ./data/planet-dump-data:/usr/share/nginx/html/server/static-files/planet
     # Serve full history planet file
-    - '.../data/full-history-data:/usr/share/nginx/html/server/static-files/full-planet'
-    - '../data/changeset-replication-job-data:/usr/share/nginx/html/server/static-files/changesets'
+    - './data/full-history-data:/usr/share/nginx/html/server/static-files/full-planet'
+    - './data/changeset-replication-job-data:/usr/share/nginx/html/server/static-files/changesets'
     # Development mode
     # - ./../images/planet-files/:/usr/share/nginx/html/
     restart: always

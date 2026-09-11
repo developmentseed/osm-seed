@@ -2,11 +2,11 @@
 
 ## Build
 ```sh
-docker compose -f <PathTo>/compose/osmcha.yml build
+docker compose -f <PathTo>/compose/osmcha.yaml build
 ```
 
 ## Run
 
 ```sh
-docker compose -f <PathTo>/compose/osmcha.yml up
+docker compose -f <PathTo>/compose/osmcha.yaml up
 ```

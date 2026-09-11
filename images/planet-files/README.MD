@@ -6,6 +6,6 @@ This container is based on Nginx and serves data related to planet, replication,
 
 # Build and bring up the container
 ```sh
-docker compose -f ./compose/planet.yml build
-docker compose -f ./compose/planet.yml up planet-files
+docker compose -f ./compose/planet.yaml build
+docker compose -f ./compose/planet.yaml up planet-files
 ```

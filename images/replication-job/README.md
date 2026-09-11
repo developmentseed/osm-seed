@@ -46,9 +46,9 @@ The container runs a continuous replication process that:
 
 The container requires environment variables from these files:
 
-- [.env.db.example](../../envs/.env.db.example) - Database connection
-- [.env.db-utils.example](../../envs/.env.db-utils.example) - Database utilities
-- [.env.cloudprovider.example](../../envs/.env.cloudprovider.example) - Cloud storage configuration
+- [.env.db.example](../../compose/envs/.env.db.example) - Database connection
+- [.env.db-utils.example](../../compose/envs/.env.db-utils.example) - Database utilities
+- [.env.cloudprovider.example](../../compose/envs/.env.cloudprovider.example) - Cloud storage configuration
 
 **Note**: Rename the above files as `.env.db`, `.env.db-utils` and `.env.cloudprovider`
 
@@ -100,9 +100,9 @@ docker-compose run replication-job
 
 ```sh
 docker run \
-  --env-file ./envs/.env.db \
-  --env-file ./envs/.env.replication-job \
-  --env-file ./envs/.env.cloudprovider \
+  --env-file ./compose/envs/.env.db \
+  --env-file ./compose/envs/.env.replication-job \
+  --env-file ./compose/envs/.env.cloudprovider \
   -v ${PWD}/data/replication-job-data:/mnt/data \
   --network osm-seed_default \
   -it osmseed-replication-job:v1

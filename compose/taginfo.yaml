@@ -5,14 +5,14 @@ services:
       context: ../images/taginfo
       dockerfile: Dockerfile
     volumes:
-      - ../data/taginfo-data:/usr/src/app/data
+      - ./data/taginfo-data:/usr/src/app/data
       - ${HOME}/.aws:/root/.aws:ro
       - ../images/taginfo/start.sh:/usr/src/app/start.sh
-      - ../data/taginfo-data-ohm:/osm/planet/var
+      - ./data/taginfo-data-ohm:/osm/planet/var
       - ../images/taginfo/config/taginfo-config.json:/usr/src/app/taginfo-config.json
 
     env_file:
-      - ../envs/.env.taginfo
+      - ./envs/.env.taginfo
   taginfo_web:
     build:
       context: ../images/taginfo-web
@@ -22,5 +22,5 @@ services:
     environment:
       TAGINFO_DB_BASE_URL: https://osmseed.org.s3.amazonaws.com/taginfo
     volumes:
-      - ../data/taginfo-data-web:/usr/src/app/data
+      - ./data/taginfo-data-web:/usr/src/app/data
     restart: unless-stopped

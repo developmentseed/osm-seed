@@ -33,8 +33,8 @@ tiler-imposm/diff/
 tiler-imposm/imposm3_expire_dir
 tiler-server/imposm/
 overpass-api-db/
-data/*/
-!data/README.md
+compose/data/*/
+!compose/data/README.md
 images/changeset-replication-job/config.yaml
 values_copy.yaml
 images/tiler-server/tegola-cache/
