@@ -121,7 +121,7 @@ helm template osm osm-seed/osm-seed -f myvalues.yaml \
 ## Development
 
 Chart and images are published from this repo with
-[chartpress](https://github.com/jupyterhub/chartpress) on every push to `develop`.
+[chartpress](https://github.com/jupyterhub/chartpress) on every push to `main`.
 Image tags in `values.yaml` are filled at publish time.
 
 Lint and render locally:

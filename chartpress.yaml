@@ -1,5 +1,6 @@
 charts:
 - name: osm-seed
+  baseVersion: 2.1.0-0.dev
   imagePrefix: ghcr.io/osm-seed/
   repo:
     git: osm-seed/osm-seed-chart
