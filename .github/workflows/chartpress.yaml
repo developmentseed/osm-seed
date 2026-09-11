@@ -1,6 +1,10 @@
 name: Chartpress Publish
 on:
   push:
+    branches: [main]
+    tags: ['*']
+  pull_request:
+    branches: [main]
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -34,21 +38,18 @@ jobs:
         git config --global user.name "Github Action"
 
     - name: Install dependencies
-      run: pip install chartpress==2.3.0 yq
-
-    - name: Set env vars
-      run: |
-        GIT_BRANCH_NAME=${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}
-        GIT_BRANCH_NAME=${GIT_BRANCH_NAME/\//_}
-        OSM_SEED_VERSION=$(yq -r .appVersion ./osm-seed/Chart.yaml)
-        echo "GIT_BRANCH_NAME=$GIT_BRANCH_NAME" >> $GITHUB_ENV
-        echo "OSM_SEED_VERSION=$OSM_SEED_VERSION" >> $GITHUB_ENV
+      run: pip install chartpress==2.3.0
 
     - name: Run Chartpress
       env:
         GITHUB_TOKEN: ${{ secrets.GHCR_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
       run: |
-        # Chartpress automatically detects changes via git and only builds/pushes what's needed
-        # With fetch-depth: 0, it can see the full git history to determine which images changed
-        chartpress --push --publish-chart --builder docker-buildx
+        # Pull requests only build to validate. Pushes to main and tags publish
+        # the chart and push the images. Chartpress uses the git history
+        # (fetch-depth: 0) to find which images changed.
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          chartpress --builder docker-buildx
+        else
+          chartpress --push --publish-chart --builder docker-buildx
+        fi
 

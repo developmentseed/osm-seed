@@ -6,7 +6,7 @@ We also ask that you be respectful in tone and language, and under no circumstan
 
 ### Making Pull Requests
 
-Even better than filing issues is making a Pull Request to fix something! We encourage you to try and fix things yourself and make Pull Requests, and we commit to being responsive and helpful while reviewing. When making a Pull Request, please make it against the `develop` branch in this repository. Where possible, please follow existing coding style practices - the only hard rule being please use spaces and not tabs for indentation, and the YAML files use 2 spaces for indents.
+Even better than filing issues is making a Pull Request to fix something! We encourage you to try and fix things yourself and make Pull Requests, and we commit to being responsive and helpful while reviewing. When making a Pull Request, please make it against the `main` branch in this repository. Where possible, please follow existing coding style practices - the only hard rule being please use spaces and not tabs for indentation, and the YAML files use 2 spaces for indents.
 
 ### Community
 
