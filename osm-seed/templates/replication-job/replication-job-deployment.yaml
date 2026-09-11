@@ -64,7 +64,7 @@ spec:
               value: {{ .Values.replicationJob.env.ENABLE_SEND_SLACK_MESSAGE | quote}}
             - name: SLACK_WEBHOOK_URL
               value: {{ .Values.replicationJob.env.SLACK_WEBHOOK_URL | quote}}
-            - name: ENVIROMENT
+            - name: ENVIRONMENT
               value: {{ .Values.environment | quote}}
       {{- include "osm-seed.nodeSelector" .Values.replicationJob | nindent 6 }}
       {{- include "osm-seed.nodeAffinity" .Values.replicationJob | nindent 6 }}

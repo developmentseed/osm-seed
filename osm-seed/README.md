@@ -115,7 +115,7 @@ Render one template and apply it, for example to import data once:
 ```sh
 helm template osm osm-seed/osm-seed -f myvalues.yaml \
   --set populateApidb.enabled=true \
-  --show-only templates/jobs/populate-apidb-job.yaml | kubectl apply -f -
+  --show-only templates/populate-apidb/populate-apidb-job.yaml | kubectl apply -f -
 ```
 
 ## Development

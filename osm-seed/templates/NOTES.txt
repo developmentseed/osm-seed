@@ -1,16 +1,31 @@
-1. Get the application URL by running these commands:
-{{- if contains "minikube" .Values.cloudProvider }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ .Release.Name }}-web-api)
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo http://$NODE_IP:$NODE_PORT
-{{- else if contains "aws" .Values.cloudProvider }}
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get svc -w {{ .Release.Name }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ .Release.Name }}-web-api -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-  echo http://$SERVICE_IP
-{{- else if contains "gcp" .Values.cloudProvider }}
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get svc -w {{ .Release.Name }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ .Release.Name }}-web-api -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-  echo http://$SERVICE_IP
+{{ .Chart.Name }} release "{{ .Release.Name }}" installed in namespace "{{ .Release.Namespace }}".
+
+Resources are named {{ .Release.Name }}-<component>. Pods:
+
+  kubectl get pods -n {{ .Release.Namespace }} -l release={{ .Release.Name }}
+{{- $hosts := list }}
+{{- range $key, $c := .Values }}
+{{- if kindIs "map" $c }}
+{{- if $c.enabled }}
+{{- with $c.ingress }}
+{{- if .enabled }}
+{{- range .hosts }}
+{{- $hosts = append $hosts (printf "%-22s https://%s" $key .) }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if $hosts }}
+
+Ingress hosts:
+{{- range $hosts }}
+  {{ . }}
+{{- end }}
+{{- else }}
+
+No ingress is enabled. Services are reachable inside the cluster, for example:
+
+  http://{{ .Release.Name }}-web-api.{{ .Release.Namespace }}.svc.cluster.local
 {{- end }}
