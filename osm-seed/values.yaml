@@ -1,5 +1,3 @@
-# Image group version: https://github.com/orgs/osm-seed/packages
-osmSeedVersion: v1
 environment: development
 
 # Where to deploy: aws or k3s. Templates still carry gcp/azure blocks but they are not supported.
@@ -16,9 +14,6 @@ createClusterIssuer: false
 # Default ingress class for all components. Override per component with
 # <component>.ingress.className. Leave empty if you expose services another way.
 ingressClassName: ""
-
-# Base domain. Components default to <name>.<domain>, e.g. web.osmseed.org.
-domain: osmseed.org
 
 # Email for Let's Encrypt expiry notices.
 adminEmail: admin@osmseed.org
@@ -782,25 +777,6 @@ tilerMonitorLanguage:
     TILER_MONITORING_FORCE_LANGUAGES_GENERATION: "false"
   resources: {}
   nodeSelector: {}
-# ====================================================================================================
-# Variables for tiler-server cache cleaner, only available in case the TILER_CACHE_TYPE = s3
-# ====================================================================================================
-tilerCacheCleanerJob:
-  enabled: false
-  image:
-    name: ""
-    tag: ""
-  priorityClass: "medium-priority"
-  tilesFile: imposm/imposm3_expire_dir/latest.tiles
-  minZoom: 0
-  maxZoom: 20
-  overwrite: true
-  resources: {}
-  nodeSelector: {}
-  nodeAffinity:
-    enabled: false
-    key: "nodegroup_type"
-    values: ["web"]
 # ====================================================================================================
 # Variables for Tasking Manager DB
 # ====================================================================================================
