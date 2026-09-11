@@ -1,30 +1,15 @@
-# Base container for dumping the OHM API DB to PBF / OSM XML
+# osm-processor
 
-Slim base image used by jobs that read the OpenHistoricalMap API DB into
-planet files (`planet-dump`, `full-history`, `changesets-dump`).
+Base image with osmium, osmosis and the AWS CLI. `planet-dump`, `full-history` and `changesets-dump` build on it; it has no entrypoint of its own.
 
-Contents:
+| | |
+|---|---|
+| Base image | `debian:bookworm-slim` |
+| Chart values key | `osmProcessor` |
+| Compose | `compose/planet.yaml` service `osm-processor` |
 
-- [planet-dump-ng](https://github.com/OpenHistoricalMap/planet-dump-ng) (built from the OHM `planet_epoch_date` branch)
-- Cloud CLIs: `awscli`, `gsutil`, `azure-cli`
-- `bzip2`, `curl`
+- Pinned by tag in the other three Dockerfiles; bump the tag there after changing this image.
 
-This image intentionally does **not** ship `osmosis`, `osmium-tool`,
-`pyosmium` or `postgresql-client`. Jobs that need to write to the API DB
-(e.g. `populate-apidb`) install their own toolchain.
-
-#### Building the container
-
-```
-cd osm-processor/
-docker build -t osmseed-osm-processor:v3 .
-```
-
-#### Access the container
-
-```
-docker run --env-file ./../.env \
-  --network osm-seed_default \
-  -v $(pwd)/../osm-processor-data:/mnt/data \
-  -i -t osmseed-osm-processor:v3 bash
+```sh
+cd compose && docker compose -f planet.yaml build osm-processor && docker compose -f planet.yaml up osm-processor
 ```

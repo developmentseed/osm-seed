@@ -1,44 +1,16 @@
-# Docker setup for postgres database instance
+# db
 
-The OSM `API server` database - builds off a **PostgreSQL 17** docker image, and installs custom functions needed by `openstreetmap`.
+PostgreSQL 17 for the website and API, with the `openstreetmap-website` SQL functions and the [osmdbt](https://github.com/openstreetmap/osmdbt) `osm-logical` plugin (v0.9) for logical replication.
 
-The database includes the **osmdbt plugin v0.9** for logical replication support.
+| | |
+|---|---|
+| Base image | `postgres:17` |
+| Chart values key | `webDb` |
+| Compose | `compose/web.yaml` service `db` |
+| Env files | `compose/envs/.env.db.example` |
 
-The functions currently are copied over from the `openstreetmap-website` code-base. There should ideally be a better way to do this.
-
-If run via the `docker-compose` file, running this container will expose the database on the host machine on port `5432`.
-
-### Configuration
-
-In order to run this container we need environment variables, these can be found in the following files👇:
-
-- [.env.db.example](./../../compose/envs/.env.db.example)
-
-**Note**: Rename the above files as `.env.db`
-
-### Running DB container
+- PostgreSQL 17.11+ only accepts whitelisted output plugins: set `output_plugin_libraries = 'pgoutput, test_decoding, osm-logical'` in `postgresql.conf` (see `webDb.postgresqlConfig.values` in the chart).
 
 ```sh
-  # Docker compose
-  docker-compose run db
-
-  # Docker
-  docker run \
-  --env-file ./compose/envs/.env.db \
-  --network osm-seed_default \
-  --name db \
-  -v ${PWD}/data/db-data:/var/lib/postgresql/data \
-  -p "5432:5432" \
-  -t osmseed-db:v1
+cd compose && docker compose -f web.yaml build db && docker compose -f web.yaml up db
 ```
-
-### Test DB connection
-
-```sh
-  pg_isready -h 127.0.0.1 -p 5432
-```
-
-### Installed Components
-
-- **PostgreSQL**: 17
-- **osmdbt plugin**: v0.9 (osm_logical replication plugin)

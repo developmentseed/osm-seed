@@ -69,6 +69,12 @@ webDb:
       max_worker_processes = 4
       max_parallel_workers_per_gather = 2
       max_parallel_workers = 4
+      # Needed by replication-job (osmdbt logical replication)
+      shared_preload_libraries = 'osm-logical'
+      wal_level = logical
+      max_replication_slots = 1
+      # PostgreSQL 17.11+ only allows whitelisted output plugins
+      output_plugin_libraries = 'pgoutput, test_decoding, osm-logical'
   nodeAffinity:
     enabled: false
     key: "nodegroup_type"

@@ -1,33 +1,14 @@
-# Tiler-DB
+# tiler-db
 
-PostGIS database container to store the osm-seed or osm data for tiling.
+PostGIS database for vector tiles. imposm writes here and tiler-server reads from it. `config/` holds the PostgreSQL tuning.
 
-### Configuration
-
-In order to run this container we need environment variables, these can be found in the following files👇:
-
-- [.env.tiler-db.example](./../../compose/envs/.env.tiler-db.example)
-
-**Note**: Rename the above files as `.env.tiler-db`
-
-
-#### Running tiler-DB container
+| | |
+|---|---|
+| Base image | `postgis/postgis:14-3.4` |
+| Chart values key | `tilerDb` |
+| Compose | `compose/tiler.yaml` service `tiler-db` |
+| Env files | `compose/envs/.env.tiler-db.example` |
 
 ```sh
-  # Docker compose
-  docker-compose tiler-db
-
-  #Dcoker 
-  docker run \
-    --env-file ./compose/envs/.env.db-tiler \
-    --network osm-seed_default \
-    -v ${PWD}/data/tiler-db-data:/mnt/data \
-    -p "5433:5432" \
-    -t osmseed-tiler-db:v1
-```
-
-### Test tiler-DB connection
-
-```sh
-  pg_isready -h 0.0.0.0 -p 5433
+cd compose && docker compose -f tiler.yaml build tiler-db && docker compose -f tiler.yaml up tiler-db
 ```
