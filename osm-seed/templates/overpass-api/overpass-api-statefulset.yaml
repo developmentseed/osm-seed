@@ -37,15 +37,7 @@ spec:
               port: 80
             initialDelaySeconds: 14400 # Normal update takes 2 hours aprrox, afther that start checking liveness 
             timeoutSeconds: 30
-          {{- if .Values.overpassApi.resources.enabled }}
-          resources:
-            requests:
-              memory: {{ .Values.overpassApi.resources.requests.memory }}
-              cpu: {{ .Values.overpassApi.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.overpassApi.resources.limits.memory }}
-              cpu: {{ .Values.overpassApi.resources.limits.cpu }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.overpassApi | nindent 10 }}
           env:
             {{- range $k, $v := .Values.overpassApi.env }}
             - name: {{ $k }}
@@ -54,19 +46,7 @@ spec:
           volumeMounts:
           - mountPath: /db
             name: overpass-api-storage
-          {{- if and .Values.overpassApi.resources.enabled (or .Values.overpassApi.resources.requests.enabled .Values.overpassApi.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.overpassApi.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.overpassApi.resources.requests.memory }}
-              cpu: {{ .Values.overpassApi.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.overpassApi.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.overpassApi.resources.limits.memory }}
-              cpu: {{ .Values.overpassApi.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.overpassApi | nindent 10 }}
       restartPolicy: Always
       volumes:
         - name: overpass-api-storage

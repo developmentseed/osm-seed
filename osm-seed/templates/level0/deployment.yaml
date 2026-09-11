@@ -55,19 +55,7 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 10
             failureThreshold: 3
-          {{- if and .Values.level0.resources.enabled (or .Values.level0.resources.requests.enabled .Values.level0.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.level0.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.level0.resources.requests.memory }}
-              cpu: {{ .Values.level0.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.level0.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.level0.resources.limits.memory }}
-              cpu: {{ .Values.level0.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.level0 | nindent 10 }}
           env:
             {{- range $k, $v := .Values.level0.env }}
             - name: {{ $k }}

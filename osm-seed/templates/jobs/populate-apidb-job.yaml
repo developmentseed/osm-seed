@@ -19,15 +19,7 @@ spec:
         - name: {{ .Release.Name }}-populate-apidb
           image: "{{ .Values.populateApidb.image.name }}:{{ .Values.populateApidb.image.tag }}"
           command: ['/start.sh']
-          {{- if .Values.populateApidb.resources.enabled }}   
-          resources:
-            requests:
-              memory: {{ .Values.populateApidb.resources.requests.memory }}
-              cpu: {{ .Values.populateApidb.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.populateApidb.resources.limits.memory }}
-              cpu: {{ .Values.populateApidb.resources.limits.cpu }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.populateApidb | nindent 10 }}
           env:
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-web-db
@@ -39,7 +31,7 @@ spec:
               value: {{ .Values.webDb.env.POSTGRES_USER }}
             - name: URL_FILE_TO_IMPORT
               value: {{.Values.populateApidb.env.URL_FILE_TO_IMPORT}}
-            {{- if .Values.populateApidb.resources.enabled }}   
+            {{- if .Values.populateApidb.resources.requests }}   
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.populateApidb.resources.requests.memory  | default "4Gi" | quote}}
             {{- end }}

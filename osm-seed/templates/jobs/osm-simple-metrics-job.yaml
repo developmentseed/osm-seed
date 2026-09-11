@@ -26,15 +26,7 @@ spec:
           containers:
           - name: {{ .Release.Name }}-osm-simple-metrics
             image: "{{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}"
-            {{- if .Values.osmSimpleMetrics.resources.enabled }}
-            resources:
-              requests:
-                memory: {{ .Values.osmSimpleMetrics.resources.requests.memory }}
-                cpu: {{ .Values.osmSimpleMetrics.resources.requests.cpu }}
-              limits:
-                memory: {{ .Values.osmSimpleMetrics.resources.limits.memory }}
-                cpu: {{ .Values.osmSimpleMetrics.resources.limits.cpu }}
-            {{- end }}
+            {{- include "osm-seed.resources" .Values.osmSimpleMetrics | nindent 12 }}
             env:
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-web-db

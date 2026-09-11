@@ -53,19 +53,7 @@ spec:
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
             {{- end }}
-          {{- if and .Values.webApi.resources.enabled (or .Values.webApi.resources.requests.enabled .Values.webApi.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.webApi.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.webApi.resources.requests.memory }}
-              cpu: {{ .Values.webApi.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.webApi.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.webApi.resources.limits.memory }}
-              cpu: {{ .Values.webApi.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.webApi | nindent 10 }}
           env:
             # ---- Computed / cluster-specific (not plain web.env pass-throughs) ----
             - name: GET_HOSTS_FROM

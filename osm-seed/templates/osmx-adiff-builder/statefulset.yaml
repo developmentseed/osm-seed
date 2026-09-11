@@ -53,15 +53,7 @@ spec:
             periodSeconds: {{ $probe.periodSeconds | default 60 }}
             timeoutSeconds: {{ $probe.timeoutSeconds | default 10 }}
             failureThreshold: {{ $probe.failureThreshold | default 3 }}
-          {{- if .Values.osmxAdiffBuilder.resources.enabled }}
-          resources:
-            requests:
-              memory: {{ .Values.osmxAdiffBuilder.resources.requests.memory }}
-              cpu: {{ .Values.osmxAdiffBuilder.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.osmxAdiffBuilder.resources.limits.memory }}
-              cpu: {{ .Values.osmxAdiffBuilder.resources.limits.cpu }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.osmxAdiffBuilder | nindent 10 }}
       volumes:
         - name: osmx-db
         {{- if .Values.osmxAdiffBuilder.persistenceDisk.enabled }}

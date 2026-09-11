@@ -46,15 +46,7 @@ spec:
               - configMapRef:
                   name: {{ .Release.Name }}-tiler-db-env
                   optional: true
-              {{- if .Values.tilerMonitorLanguage.resources.enabled }}
-              resources:
-                requests:
-                  memory: {{ .Values.tilerMonitorLanguage.resources.requests.memory }}
-                  cpu: {{ .Values.tilerMonitorLanguage.resources.requests.cpu }}
-                limits:
-                  memory: {{ .Values.tilerMonitorLanguage.resources.limits.memory }}
-                  cpu: {{ .Values.tilerMonitorLanguage.resources.limits.cpu }}
-              {{- end }}
+              {{- include "osm-seed.resources" .Values.tilerMonitorLanguage | nindent 14 }}
           {{- if .Values.tilerMonitorLanguage.nodeSelector.enabled }}
           nodeSelector:
             {{ .Values.tilerMonitorLanguage.nodeSelector.label_key }} : {{ .Values.tilerMonitorLanguage.nodeSelector.label_value }}

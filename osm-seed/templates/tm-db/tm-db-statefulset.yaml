@@ -78,19 +78,7 @@ spec:
             - name: postgres-storage
               mountPath: {{ .Values.tmDb.persistenceDisk.mountPath }}
               subPath: {{ .Values.tmDb.persistenceDisk.subPath }}
-          {{- if and .Values.tmDb.resources.enabled (or .Values.tmDb.resources.requests.enabled .Values.tmDb.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.tmDb.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.tmDb.resources.requests.memory }}
-              cpu: {{ .Values.tmDb.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.tmDb.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.tmDb.resources.limits.memory }}
-              cpu: {{ .Values.tmDb.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.tmDb | nindent 10 }}
       volumes:
         - name: postgres-storage
         {{- if .Values.tmDb.persistenceDisk.enabled }}

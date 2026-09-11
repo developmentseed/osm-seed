@@ -61,19 +61,7 @@ spec:
             - name: nominatim-db-storage
               mountPath: {{ .Values.nominatimApi.persistenceDisk.mountPath }}
               subPath: {{ .Values.nominatimApi.persistenceDisk.subPath }}
-          {{- if and .Values.nominatimApi.resources.enabled (or .Values.nominatimApi.resources.requests.enabled .Values.nominatimApi.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.nominatimApi.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.nominatimApi.resources.requests.memory }}
-              cpu: {{ .Values.nominatimApi.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.nominatimApi.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.nominatimApi.resources.limits.memory }}
-              cpu: {{ .Values.nominatimApi.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.nominatimApi | nindent 10 }}
           
         {{- if and .Values.nominatimApi.enabled .Values.nominatimUI.enabled }}
         - name: nominatim-ui

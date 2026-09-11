@@ -48,19 +48,7 @@ spec:
               port: http
             initialDelaySeconds: 60
             periodSeconds: 20
-          {{- if and .Values.tilerServerMartin.resources.enabled (or .Values.tilerServerMartin.resources.requests.enabled .Values.tilerServerMartin.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.tilerServerMartin.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.tilerServerMartin.resources.requests.memory }}
-              cpu: {{ .Values.tilerServerMartin.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.tilerServerMartin.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.tilerServerMartin.resources.limits.memory }}
-              cpu: {{ .Values.tilerServerMartin.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.tilerServerMartin | nindent 10 }}
       {{- if .Values.tilerServerMartin.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerServerMartin.nodeSelector.label_key }} : {{ .Values.tilerServerMartin.nodeSelector.label_value }}

@@ -40,19 +40,7 @@ spec:
             periodSeconds: {{ .Values.tilerImposm.livenessProbe.periodSeconds | default 10 }}
             failureThreshold: {{ .Values.tilerImposm.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
-        {{- if and .Values.tilerImposm.resources.enabled (or .Values.tilerImposm.resources.requests.enabled .Values.tilerImposm.resources.limits.enabled) }}
-        resources:
-          {{- if .Values.tilerImposm.resources.requests.enabled }}
-          requests:
-            memory: {{ .Values.tilerImposm.resources.requests.memory }}
-            cpu: {{ .Values.tilerImposm.resources.requests.cpu }}
-          {{- end }}
-          {{- if .Values.tilerImposm.resources.limits.enabled }}
-          limits:
-            memory: {{ .Values.tilerImposm.resources.limits.memory }}
-            cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
-          {{- end }}
-        {{- end }}
+        {{- include "osm-seed.resources" .Values.tilerImposm | nindent 8 }}
         env:
           {{- range $k, $v := .Values.tilerImposm.env }}
           - name: {{ $k }}

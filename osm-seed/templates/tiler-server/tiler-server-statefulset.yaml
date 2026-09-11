@@ -43,19 +43,7 @@ spec:
               port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
-          {{- if and .Values.tilerServer.resources.enabled (or .Values.tilerServer.resources.requests.enabled .Values.tilerServer.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.tilerServer.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.tilerServer.resources.requests.memory }}
-              cpu: {{ .Values.tilerServer.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.tilerServer.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.tilerServer.resources.limits.memory }}
-              cpu: {{ .Values.tilerServer.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.tilerServer | nindent 10 }}
           envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-tiler-server-env

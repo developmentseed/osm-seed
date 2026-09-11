@@ -56,15 +56,7 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-osmcha-api-env
-        {{- if .Values.osmchaApi.resources.enabled }}
-        resources:
-          requests:
-            memory: {{ .Values.osmchaApi.resources.requests.memory }}
-            cpu: {{ .Values.osmchaApi.resources.requests.cpu }}
-          limits:
-            memory: {{ .Values.osmchaApi.resources.limits.memory }}
-            cpu: {{ .Values.osmchaApi.resources.limits.cpu }}
-        {{- end }}
+        {{- include "osm-seed.resources" .Values.osmchaApi | nindent 8 }}
 
       - name: frontend-nginx
         image: "{{ .Values.osmchaWeb.image.name }}:{{ .Values.osmchaWeb.image.tag }}"

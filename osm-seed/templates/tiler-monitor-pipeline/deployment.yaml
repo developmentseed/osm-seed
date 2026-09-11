@@ -61,15 +61,7 @@ spec:
               port: {{ .Values.tilerMonitorPipeline.env.MONITOR_PORT }}
             initialDelaySeconds: 20
             periodSeconds: 20
-          {{- if .Values.tilerMonitorPipeline.resources.enabled }}
-          resources:
-            requests:
-              memory: {{ .Values.tilerMonitorPipeline.resources.requests.memory }}
-              cpu: {{ .Values.tilerMonitorPipeline.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.tilerMonitorPipeline.resources.limits.memory }}
-              cpu: {{ .Values.tilerMonitorPipeline.resources.limits.cpu }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.tilerMonitorPipeline | nindent 10 }}
       {{- if .Values.tilerMonitorPipeline.persistenceDisk.enabled }}
       volumes:
         - name: monitor-storage

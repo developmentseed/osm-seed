@@ -75,15 +75,7 @@ spec:
           volumeMounts:
             - name: postgres-storage
               mountPath: {{ .Values.osmchaDb.persistenceDisk.mountPath }}
-          {{- if .Values.osmchaDb.resources.enabled }}
-          resources:
-            requests:
-              memory: {{ .Values.osmchaDb.resources.requests.memory }}
-              cpu: {{ .Values.osmchaDb.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.osmchaDb.resources.limits.memory }}
-              cpu: {{ .Values.osmchaDb.resources.limits.cpu }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.osmchaDb | nindent 10 }}
       volumes:
         - name: postgres-storage
         {{- if .Values.osmchaDb.persistenceDisk.enabled }}

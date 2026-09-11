@@ -149,15 +149,7 @@ spec:
                 value: {{ $.Values.AZURE_STORAGE_CONNECTION_STRING }}
             {{- end }}
             # Node selector
-            {{- if $job.resources.enabled }}
-            resources:
-              requests:
-                memory: {{ $job.resources.requests.memory }}
-                cpu: {{ $job.resources.requests.cpu }}
-              limits:
-                memory: {{ $job.resources.limits.memory }}
-                cpu: {{ $job.resources.limits.cpu }}
-            {{- end }}
+            {{- include "osm-seed.resources" $job | nindent 12 }}
           restartPolicy: OnFailure
           {{- if $job.nodeSelector.enabled }}
           nodeSelector:

@@ -30,15 +30,7 @@ spec:
           - name: {{ .Release.Name }}-planet-stats
             image: "{{ .Values.planetStats.image.name }}:{{ .Values.planetStats.image.tag }}"
             command: ['/app/start.sh']
-            {{- if .Values.planetStats.resources.enabled }}
-            resources:
-              requests:
-                memory: {{ .Values.planetStats.resources.requests.memory }}
-                cpu: {{ .Values.planetStats.resources.requests.cpu }}
-              limits:
-                memory: {{ .Values.planetStats.resources.limits.memory }}
-                cpu: {{ .Values.planetStats.resources.limits.cpu }}
-            {{- end }}
+            {{- include "osm-seed.resources" .Values.planetStats | nindent 12 }}
             env:
               - name: CLOUDPROVIDER
                 value: {{ .Values.cloudProvider }}

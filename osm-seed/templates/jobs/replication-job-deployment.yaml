@@ -41,15 +41,7 @@ spec:
             timeoutSeconds: 5
             periodSeconds: 30
             failureThreshold: 3
-          {{- if .Values.replicationJob.resources.enabled }}
-          resources:
-            requests:
-              memory: {{ .Values.replicationJob.resources.requests.memory }}
-              cpu: {{ .Values.replicationJob.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.replicationJob.resources.limits.memory }}
-              cpu: {{ .Values.replicationJob.resources.limits.cpu }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.replicationJob | nindent 10 }}
           env:
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-web-db
@@ -85,7 +77,7 @@ spec:
               value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
             {{- end }}
               # Memory optimization for osmosis
-            {{- if .Values.replicationJob.resources.enabled }}
+            {{- if .Values.replicationJob.resources.requests }}
             - name: MEMORY_JAVACMD_OPTIONS
               value: {{ .Values.replicationJob.resources.requests.memory | default "2Gi" | quote}}
             {{- end }}

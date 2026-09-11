@@ -84,19 +84,7 @@ spec:
             - name: db-postgresql-config
               mountPath: /etc/postgresql/
             {{- end }}
-          {{- if and .Values.webDb.resources.enabled (or .Values.webDb.resources.requests.enabled .Values.webDb.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.webDb.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.webDb.resources.requests.memory }}
-              cpu: {{ .Values.webDb.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.webDb.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.webDb.resources.limits.memory }}
-              cpu: {{ .Values.webDb.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.webDb | nindent 10 }}
       volumes:
         - name: postgres-storage
         {{- if .Values.webDb.persistenceDisk.enabled }}

@@ -25,4 +25,4 @@ maintainers:
   - name: batpad
     url: https://github.com/batpad
 appVersion: 1.0.0
-version: ''
+version: 0.0.0-dev

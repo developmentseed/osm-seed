@@ -30,3 +30,14 @@ Create chart name and version as used by the chart label.
 {{- define "osm-seed.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Container resources. Renders the "resources" key only when the component sets it.
+Usage: {{- include "osm-seed.resources" .Values.webApi | nindent 10 }}
+*/}}
+{{- define "osm-seed.resources" -}}
+{{- with .resources }}
+resources:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end -}}

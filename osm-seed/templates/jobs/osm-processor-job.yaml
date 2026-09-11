@@ -15,15 +15,7 @@ spec:
         - name: {{ .Release.Name }}-osm-processor
           image: "{{ .Values.osmProcessor.image.name }}:{{ .Values.osmProcessor.image.tag }}"
           command: ['./start.sh']
-          {{- if .Values.osmProcessor.resources.enabled }}   
-          resources:
-            requests:
-              memory: {{ .Values.osmProcessor.resources.requests.memory }}
-              cpu: {{ .Values.osmProcessor.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.osmProcessor.resources.limits.memory }}
-              cpu: {{ .Values.osmProcessor.resources.limits.cpu }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.osmProcessor | nindent 10 }}
           env:
             - name: URL_FILE_TO_PROCESS
               value: {{.Values.osmProcessor.env.URL_FILE_TO_PROCESS}}

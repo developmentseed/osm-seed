@@ -27,15 +27,7 @@ spec:
           - name: {{ .Release.Name }}-replication-monitoring
             image: "{{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}"
             command: ['/monitoring.py']
-            {{- if .Values.monitoringReplication.resources.enabled }}   
-            resources:
-              requests:
-                memory: {{ .Values.monitoringReplication.resources.requests.memory }}
-                cpu: {{ .Values.monitoringReplication.resources.requests.cpu }}
-              limits:
-                memory: {{ .Values.monitoringReplication.resources.limits.memory }}
-                cpu: {{ .Values.monitoringReplication.resources.limits.cpu }}
-            {{- end }}
+            {{- include "osm-seed.resources" .Values.monitoringReplication | nindent 12 }}
             env:
               - name: POSTGRES_HOST
                 value: {{ .Release.Name }}-web-db
@@ -73,7 +65,7 @@ spec:
               value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
             {{- end }}
               # Memory optimization for osmosis
-              {{- if .Values.monitoringReplication.resources.enabled }}   
+              {{- if .Values.monitoringReplication.resources.requests }}   
               - name: MEMORY_JAVACMD_OPTIONS
                 value: {{ .Values.monitoringReplication.resources.requests.memory | default "2Gi" | quote}}
               {{- end }}

@@ -27,15 +27,7 @@ spec:
           - name: {{ .Release.Name }}-changesets-dump
             image: "{{ .Values.changesetsDump.image.name }}:{{ .Values.changesetsDump.image.tag }}"
             command: ['/start.sh']
-            {{- if .Values.changesetsDump.resources.enabled }}
-            resources:
-              requests:
-                memory: {{ .Values.changesetsDump.resources.requests.memory }}
-                cpu: {{ .Values.changesetsDump.resources.requests.cpu }}
-              limits:
-                memory: {{ .Values.changesetsDump.resources.limits.memory }}
-                cpu: {{ .Values.changesetsDump.resources.limits.cpu }}
-            {{- end }}
+            {{- include "osm-seed.resources" .Values.changesetsDump | nindent 12 }}
             env:
               - name: OVERWRITE_CHANGESETS_FILE
                 value: {{ .Values.changesetsDump.env.OVERWRITE_CHANGESETS_FILE | quote}}

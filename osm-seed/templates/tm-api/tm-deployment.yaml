@@ -48,19 +48,7 @@ spec:
               port: 5000
             initialDelaySeconds: 120
             timeoutSeconds: 30
-          {{- if and .Values.tmApi.resources.enabled (or .Values.tmApi.resources.requests.enabled .Values.tmApi.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.tmApi.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.tmApi.resources.requests.memory }}
-              cpu: {{ .Values.tmApi.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.tmApi.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.tmApi.resources.limits.memory }}
-              cpu: {{ .Values.tmApi.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.tmApi | nindent 10 }}
           envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-tm-api-env

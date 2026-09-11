@@ -70,19 +70,7 @@ spec:
             {{- end }}
             - name: shared-memory
               mountPath: /dev/shm
-          {{- if and .Values.tilerDb.resources.enabled (or .Values.tilerDb.resources.requests.enabled .Values.tilerDb.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.tilerDb.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.tilerDb.resources.requests.memory }}
-              cpu: {{ .Values.tilerDb.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.tilerDb.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.tilerDb.resources.limits.memory }}
-              cpu: {{ .Values.tilerDb.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.tilerDb | nindent 10 }}
       volumes:
         - name: postgres-storage
         {{- if .Values.tilerDb.persistenceDisk.enabled }}

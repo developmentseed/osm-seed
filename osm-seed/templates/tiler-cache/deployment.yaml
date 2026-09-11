@@ -75,15 +75,7 @@ spec:
               port: {{ .Values.tilerCache.env.PORT }}
             initialDelaySeconds: 30
             periodSeconds: 20
-          {{- if .Values.tilerCache.resources.enabled }}
-          resources:
-            requests:
-              memory: {{ .Values.tilerCache.resources.requests.memory }}
-              cpu: {{ .Values.tilerCache.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.tilerCache.resources.limits.memory }}
-              cpu: {{ .Values.tilerCache.resources.limits.cpu }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.tilerCache | nindent 10 }}
       {{- if .Values.tilerCache.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerCache.nodeSelector.label_key }} : {{ .Values.tilerCache.nodeSelector.label_value }}
