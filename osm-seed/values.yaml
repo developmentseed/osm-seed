@@ -634,8 +634,10 @@ osmxAdiffBuilder:
   image:
     name: ""
     tag: ""
-  # ServiceAccount with S3 access (IRSA). Empty = default SA.
-  serviceAccountName: ""
+  # ServiceAccount with S3 access (IRSA).
+  serviceAccount:
+    enabled: false
+    name: ""
   # Secret with AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY, loaded via envFrom. Empty = skip.
   awsSecretName: ""
   # initialDelaySeconds must cover the initial osmx build (planet download + db build)

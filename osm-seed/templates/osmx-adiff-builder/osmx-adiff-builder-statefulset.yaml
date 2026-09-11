@@ -23,9 +23,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-osmx-adiff-builder
     spec:
-      {{- if .Values.osmxAdiffBuilder.serviceAccountName }}
-      serviceAccountName: {{ .Values.osmxAdiffBuilder.serviceAccountName }}
-      {{- end }}
+      {{- include "osm-seed.serviceAccount" .Values.osmxAdiffBuilder | nindent 6 }}
       containers:
         - name: osmx-adiff-builder
           image: "{{ .Values.osmxAdiffBuilder.image.name }}:{{ .Values.osmxAdiffBuilder.image.tag }}"
