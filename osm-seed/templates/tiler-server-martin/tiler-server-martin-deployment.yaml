@@ -50,17 +50,5 @@ spec:
             periodSeconds: 20
           {{- include "osm-seed.resources" .Values.tilerServerMartin | nindent 10 }}
       {{- include "osm-seed.nodeSelector" .Values.tilerServerMartin | nindent 6 }}
-      {{- if .Values.tilerServerMartin.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.tilerServerMartin.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.tilerServerMartin.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.tilerServerMartin | nindent 6 }}
 {{- end }}

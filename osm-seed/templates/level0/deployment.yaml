@@ -62,17 +62,5 @@ spec:
               value: {{ $v | quote }}
             {{- end }}
       {{- include "osm-seed.nodeSelector" .Values.level0 | nindent 6 }}
-      {{- if .Values.level0.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.level0.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.level0.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.level0 | nindent 6 }}
 {{- end }}

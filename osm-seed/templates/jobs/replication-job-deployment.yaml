@@ -88,18 +88,5 @@ spec:
             - name: ENVIROMENT
               value: {{ .Values.environment | quote}}
       {{- include "osm-seed.nodeSelector" .Values.replicationJob | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.replicationJob.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.replicationJob.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.replicationJob.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.replicationJob | nindent 6 }}
 {{- end }}

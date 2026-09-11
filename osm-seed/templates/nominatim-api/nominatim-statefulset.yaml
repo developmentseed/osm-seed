@@ -86,18 +86,5 @@ spec:
           emptyDir: {}
         {{- end }}
       {{- include "osm-seed.nodeSelector" .Values.nominatimApi | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.nominatimApi.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.nominatimApi.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.nominatimApi.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.nominatimApi | nindent 6 }}
 {{- end }}

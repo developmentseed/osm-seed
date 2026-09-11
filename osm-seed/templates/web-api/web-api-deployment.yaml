@@ -89,29 +89,5 @@ spec:
             sizeLimit: {{ .Values.webApi.sharedMemorySize }}
           name: shared-memory
       {{- include "osm-seed.nodeSelector" .Values.webApi | nindent 6 }}
-      # Node affinity
-      {{- if .Values.webApi.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.webApi.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.webApi.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-        # Pod anti-affinity, to set that no two pods are scheduled on the same node
-        {{- if .Values.webApi.podAntiAffinity.enabled }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  app: {{ template "osm-seed.name" . }}
-                  release: {{ .Release.Name }}
-                  run: {{ .Release.Name }}-web-api
-              topologyKey: "kubernetes.io/hostname"
-        {{- end }}
-      {{- end }}
+      {{- include "osm-seed.affinity" (dict "root" . "values" .Values.webApi "component" "web-api") | nindent 6 }}
 {{- end }}

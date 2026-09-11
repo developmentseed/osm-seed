@@ -52,3 +52,45 @@ nodeSelector:
   {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Pod affinity: node affinity from <component>.nodeAffinity and, when the component has it,
+pod anti-affinity from <component>.podAntiAffinity (one pod per node).
+Usage: {{- include "osm-seed.affinity" (dict "root" . "values" .Values.webApi "component" "web-api") | nindent 6 }}
+*/}}
+{{- define "osm-seed.affinity" -}}
+{{- $v := .values -}}
+{{- $anti := and $v.podAntiAffinity $v.podAntiAffinity.enabled -}}
+{{- if or $v.nodeAffinity.enabled $anti }}
+affinity:
+  {{- if $v.nodeAffinity.enabled }}
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: {{ $v.nodeAffinity.key }}
+              operator: In
+              values:
+              {{- range $v.nodeAffinity.values }}
+                - {{ . | quote }}
+              {{- end }}
+  {{- end }}
+  {{- if $anti }}
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app: {{ template "osm-seed.name" .root }}
+            release: {{ .root.Release.Name }}
+            run: {{ .root.Release.Name }}-{{ .component }}
+        topologyKey: "kubernetes.io/hostname"
+  {{- end }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Node affinity only. Usage: {{- include "osm-seed.nodeAffinity" .Values.memcached | nindent 6 }}
+*/}}
+{{- define "osm-seed.nodeAffinity" -}}
+{{- include "osm-seed.affinity" (dict "values" .) -}}
+{{- end -}}

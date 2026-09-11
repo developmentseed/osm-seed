@@ -77,19 +77,6 @@ spec:
         - name: staticfiles
           emptyDir: {}
       {{- include "osm-seed.nodeSelector" .Values.osmchaApi | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.osmchaApi.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.osmchaApi.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.osmchaApi.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.osmchaApi | nindent 6 }}
 {{- end }}
 

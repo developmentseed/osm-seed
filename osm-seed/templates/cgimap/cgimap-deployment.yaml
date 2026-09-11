@@ -57,18 +57,5 @@ spec:
             - name: MEMCACHE_SERVER
               value: {{ .Release.Name }}-memcached:11211
       {{- include "osm-seed.nodeSelector" .Values.cgimap | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.cgimap.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.cgimap.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.cgimap.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.cgimap | nindent 6 }}
 {{- end }}

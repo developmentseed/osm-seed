@@ -57,18 +57,5 @@ spec:
           emptyDir: {}
         {{- end }}
       {{- include "osm-seed.nodeSelector" .Values.overpassApi | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.overpassApi.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.overpassApi.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.overpassApi.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.overpassApi | nindent 6 }}
 {{- end }}

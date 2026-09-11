@@ -54,18 +54,5 @@ spec:
               name: {{ .Release.Name }}-tm-api-env
 
       {{- include "osm-seed.nodeSelector" .Values.tmApi | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.tmApi.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.tmApi.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.tmApi.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.tmApi | nindent 6 }}
 {{- end }}

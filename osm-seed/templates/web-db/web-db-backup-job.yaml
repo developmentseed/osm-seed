@@ -152,19 +152,7 @@ spec:
             {{- include "osm-seed.resources" $job | nindent 12 }}
           restartPolicy: OnFailure
           {{- include "osm-seed.nodeSelector" $job | nindent 10 }}
-          {{- if $job.nodeAffinity.enabled }}
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: {{ $job.nodeAffinity.key }}
-                        operator: In
-                        values:
-                        {{- range $job.nodeAffinity.values }}
-                          - {{ . | quote }}
-                        {{- end }}
-          {{- end }}
+          {{- include "osm-seed.nodeAffinity" $job | nindent 10 }}
 ---
 {{- end }}
 {{- end }}

@@ -103,17 +103,5 @@ spec:
             name: {{ .Release.Name }}-web-db-postgresql-config
         {{- end }}
       {{- include "osm-seed.nodeSelector" .Values.webDb | nindent 6 }}
-      {{- if .Values.webDb.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.webDb.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.webDb.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.webDb | nindent 6 }}
 {{- end }}

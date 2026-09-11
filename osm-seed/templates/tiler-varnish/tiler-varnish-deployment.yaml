@@ -86,17 +86,5 @@ spec:
         - name: varnish-workdir
           emptyDir: {}
       {{- include "osm-seed.nodeSelector" .Values.tilerVarnish | nindent 6 }}
-      {{- if .Values.tilerVarnish.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.tilerVarnish.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.tilerVarnish.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.tilerVarnish | nindent 6 }}
 {{- end }}

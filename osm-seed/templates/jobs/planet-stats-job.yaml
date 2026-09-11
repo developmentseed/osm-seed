@@ -49,19 +49,6 @@ spec:
               {{- end }}
           restartPolicy: OnFailure
           {{- include "osm-seed.nodeSelector" .Values.planetStats | nindent 10 }}
-          # Affinity settings
-          {{- if .Values.planetStats.nodeAffinity.enabled }}
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: {{ .Values.planetStats.nodeAffinity.key }}
-                        operator: In
-                        values:
-                        {{- range .Values.planetStats.nodeAffinity.values }}
-                          - {{ . | quote }}
-                        {{- end }}
-          {{- end }}
+          {{- include "osm-seed.nodeAffinity" .Values.planetStats | nindent 10 }}
       backoffLimit: 3
 {{- end }}

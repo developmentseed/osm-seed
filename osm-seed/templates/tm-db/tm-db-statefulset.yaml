@@ -88,18 +88,5 @@ spec:
           emptyDir: {}
         {{- end }}
       {{- include "osm-seed.nodeSelector" .Values.tmDb | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.tmDb.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.tmDb.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.tmDb.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.tmDb | nindent 6 }}
 {{- end }}

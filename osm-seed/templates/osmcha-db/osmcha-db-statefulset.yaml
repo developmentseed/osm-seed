@@ -85,18 +85,5 @@ spec:
           emptyDir: {}
         {{- end }}
       {{- include "osm-seed.nodeSelector" .Values.osmchaDb | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.osmchaDb.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.osmchaDb.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.osmchaDb.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.osmchaDb | nindent 6 }}
 {{- end }}

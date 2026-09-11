@@ -43,17 +43,5 @@ spec:
                 {{- end }}
               {{- include "osm-seed.resources" .Values.taginfoDataProcessor | nindent 14 }}
           {{- include "osm-seed.nodeSelector" .Values.taginfoDataProcessor | nindent 10 }}
-          {{- if .Values.taginfoDataProcessor.nodeAffinity.enabled }}
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: {{ .Values.taginfoDataProcessor.nodeAffinity.key }}
-                        operator: In
-                        values:
-                        {{- range .Values.taginfoDataProcessor.nodeAffinity.values }}
-                          - {{ . | quote }}
-                        {{- end }}
-          {{- end }}
+          {{- include "osm-seed.nodeAffinity" .Values.taginfoDataProcessor | nindent 10 }}
 {{- end }}

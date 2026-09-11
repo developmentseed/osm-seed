@@ -89,18 +89,5 @@ spec:
             medium: Memory
             sizeLimit: {{ .Values.tilerDb.sharedMemorySize | default "64Mi" }}
       {{- include "osm-seed.nodeSelector" .Values.tilerDb | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.tilerDb.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.tilerDb.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.tilerDb.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.tilerDb | nindent 6 }}
 {{- end }}

@@ -62,18 +62,5 @@ spec:
           emptyDir: {}
         {{- end }}
       {{- include "osm-seed.nodeSelector" .Values.tilerImposm | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.tilerImposm.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.tilerImposm.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.tilerImposm.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.tilerImposm | nindent 6 }}
 {{- end }}

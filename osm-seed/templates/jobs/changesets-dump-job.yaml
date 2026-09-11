@@ -41,18 +41,6 @@ spec:
                 value: {{ .Values.changesetsDump.env.PLANET_EPOCH_DATE | quote }}
           restartPolicy: OnFailure
           {{- include "osm-seed.nodeSelector" .Values.changesetsDump | nindent 10 }}
-          {{- if .Values.changesetsDump.nodeAffinity.enabled }}
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: {{ .Values.changesetsDump.nodeAffinity.key }}
-                        operator: In
-                        values:
-                        {{- range .Values.changesetsDump.nodeAffinity.values }}
-                          - {{ . | quote }}
-                        {{- end }}
-          {{- end }}
+          {{- include "osm-seed.nodeAffinity" .Values.changesetsDump | nindent 10 }}
       backoffLimit: 3
 {{- end }}

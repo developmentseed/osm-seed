@@ -71,19 +71,6 @@ spec:
               {{- end }}
           restartPolicy: OnFailure
           {{- include "osm-seed.nodeSelector" .Values.monitoringReplication | nindent 10 }}
-          # Affinity settings
-          {{- if .Values.monitoringReplication.nodeAffinity.enabled }}
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: {{ .Values.monitoringReplication.nodeAffinity.key }}
-                        operator: In
-                        values:
-                        {{- range .Values.monitoringReplication.nodeAffinity.values }}
-                          - {{ . | quote }}
-                        {{- end }}
-          {{- end }}
+          {{- include "osm-seed.nodeAffinity" .Values.monitoringReplication | nindent 10 }}
       backoffLimit: 3
 {{- end }}

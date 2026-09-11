@@ -37,18 +37,5 @@ spec:
             {{- end }}
         restartPolicy: Never
         {{- include "osm-seed.nodeSelector" .Values.populateApidb | nindent 8 }}
-        # Affinity settings
-        {{- if .Values.populateApidb.nodeAffinity.enabled }}
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: {{ .Values.populateApidb.nodeAffinity.key }}
-                      operator: In
-                      values:
-                      {{- range .Values.populateApidb.nodeAffinity.values }}
-                        - {{ . | quote }}
-                      {{- end }}
-        {{- end }}
+        {{- include "osm-seed.nodeAffinity" .Values.populateApidb | nindent 8 }}
 {{- end }}

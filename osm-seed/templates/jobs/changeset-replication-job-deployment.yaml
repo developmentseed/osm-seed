@@ -69,18 +69,5 @@ spec:
               value: {{ .Values.changesetReplicationJob.resources.requests.memory | default "2Gi" | quote}}
             {{- end }}
       {{- include "osm-seed.nodeSelector" .Values.changesetReplicationJob | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.changesetReplicationJob.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.changesetReplicationJob.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.changesetReplicationJob.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.changesetReplicationJob | nindent 6 }}
 {{- end }}

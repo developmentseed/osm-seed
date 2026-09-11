@@ -32,18 +32,5 @@ spec:
               protocol: TCP
           {{- include "osm-seed.resources" .Values.memcached | nindent 10 }}
       {{- include "osm-seed.nodeSelector" .Values.memcached | nindent 6 }}
-      # Affinity settings
-      {{- if .Values.memcached.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.memcached.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.memcached.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.memcached | nindent 6 }}
 {{- end }}

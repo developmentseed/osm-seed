@@ -67,17 +67,5 @@ spec:
               value: {{ $v | quote }}
             {{- end }}
       {{- include "osm-seed.nodeSelector" .Values.taginfoWeb | nindent 6 }}
-      {{- if .Values.taginfoWeb.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.taginfoWeb.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.taginfoWeb.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeAffinity" .Values.taginfoWeb | nindent 6 }}
 {{- end }}
