@@ -1,6 +1,6 @@
-<p align="center">
+<!-- <p align="center">
   <img src="docs/img/osm-seed.png" alt="osm-seed" width="260">
-</p>
+</p> -->
 
 <h1 align="center">osm-seed</h1>
 
