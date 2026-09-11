@@ -105,3 +105,14 @@ serviceAccountName: {{ .serviceAccount.name }}
 automountServiceAccountToken: true
 {{- end }}
 {{- end -}}
+
+{{/*
+Env vars that tell jobs where to upload files, per cloudProvider.
+Usage: {{- include "osm-seed.cloudEnv" . | nindent 12 }}
+*/}}
+{{- define "osm-seed.cloudEnv" -}}
+{{- if eq .Values.cloudProvider "aws" }}
+- name: AWS_S3_BUCKET
+  value: {{ .Values.AWS_S3_BUCKET }}
+{{- end }}
+{{- end -}}

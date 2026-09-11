@@ -19,7 +19,4 @@ data:
     {{- if eq .Values.cloudProvider "aws" }}
     AWS_S3_BUCKET: {{ .Values.AWS_S3_BUCKET | quote }}
     {{- end }}
-    {{- if eq .Values.cloudProvider "gcp" }}
-    GCP_STORAGE_BUCKET: {{ .Values.GCP_STORAGE_BUCKET | quote }}
-    {{- end }}
 {{- end }}

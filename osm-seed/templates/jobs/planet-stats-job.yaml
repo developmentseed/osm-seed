@@ -36,14 +36,7 @@ spec:
               - name: {{ $k }}
                 value: {{ $v | quote }}
               {{- end }}
-              {{- if eq .Values.cloudProvider "aws" }}
-              - name: AWS_S3_BUCKET
-                value: {{ .Values.AWS_S3_BUCKET }}
-              {{- end }}
-              {{- if eq .Values.cloudProvider "gcp" }}
-              - name: GCP_STORAGE_BUCKET
-                value: {{ .Values.GCP_STORAGE_BUCKET }}
-              {{- end }}
+              {{- include "osm-seed.cloudEnv" . | nindent 14 }}
           restartPolicy: OnFailure
           {{- include "osm-seed.nodeSelector" .Values.planetStats | nindent 10 }}
           {{- include "osm-seed.nodeAffinity" .Values.planetStats | nindent 10 }}

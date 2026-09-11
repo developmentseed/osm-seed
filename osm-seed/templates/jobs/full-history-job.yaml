@@ -46,25 +46,7 @@ spec:
                 value: {{ .Values.fullHistory.env.PLANET_EPOCH_DATE | quote}}
               - name: PLANET_DUMP_NG_METADATA_URL
                 value: {{ .Values.fullHistory.env.PLANET_DUMP_NG_METADATA_URL | quote}}
-              # In case cloudProvider=aws
-              {{- if eq .Values.cloudProvider "aws" }}
-              - name: AWS_S3_BUCKET
-                value: {{ .Values.AWS_S3_BUCKET }}
-              {{- end }}
-              # In case cloudProvider=gcp
-              {{- if eq .Values.cloudProvider "gcp" }}
-              - name: GCP_STORAGE_BUCKET
-                value: {{ .Values.GCP_STORAGE_BUCKET }}
-              {{- end }}
-            # In case cloudProvider=azure
-            {{- if eq .Values.cloudProvider "azure" }}
-            - name: AZURE_STORAGE_ACCOUNT
-              value: {{ .Values.AZURE_STORAGE_ACCOUNT }}
-            - name: AZURE_CONTAINER_NAME
-              value: {{ .Values.AZURE_CONTAINER_NAME }}
-            - name: AZURE_STORAGE_CONNECTION_STRING
-              value: {{ .Values.AZURE_STORAGE_CONNECTION_STRING }}
-            {{- end }}
+              {{- include "osm-seed.cloudEnv" . | nindent 14 }}
               # Memory optimization for osmosis
               {{- if .Values.fullHistory.resources.requests }}   
               - name: MEMORY_JAVACMD_OPTIONS
