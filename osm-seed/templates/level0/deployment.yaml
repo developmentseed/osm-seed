@@ -22,10 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-level0
     spec:
-      {{- if .Values.level0.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.level0.serviceAccount.name }}
-      automountServiceAccountToken: true
-      {{- end }}
+      {{- include "osm-seed.serviceAccount" .Values.level0 | nindent 6 }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.level0.priorityClass | default "medium-priority" }}
       containers:
         - name: {{ .Chart.Name }}-level0

@@ -21,10 +21,7 @@ spec:
       {{- end }}
       template:
         spec:
-          {{- if .Values.taginfoDataProcessor.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.taginfoDataProcessor.serviceAccount.name }}
-          automountServiceAccountToken: true
-          {{- end }}
+          {{- include "osm-seed.serviceAccount" .Values.taginfoDataProcessor | nindent 10 }}
           priorityClassName: {{ .Release.Name }}-{{ .Values.taginfoDataProcessor.priorityClass | default "medium-priority" }}
           restartPolicy: OnFailure
           containers:

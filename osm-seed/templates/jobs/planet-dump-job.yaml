@@ -19,10 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if .Values.planetDump.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.planetDump.serviceAccount.name }}
-          automountServiceAccountToken: true
-          {{- end }}
+          {{- include "osm-seed.serviceAccount" .Values.planetDump | nindent 10 }}
           containers:
           - name: {{ .Release.Name }}-planet-dump
             image: "{{ .Values.planetDump.image.name }}:{{ .Values.planetDump.image.tag }}"

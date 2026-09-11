@@ -22,10 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-replication-job
     spec:
-      {{- if .Values.replicationJob.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.replicationJob.serviceAccount.name }}
-      automountServiceAccountToken: true
-      {{- end }}
+      {{- include "osm-seed.serviceAccount" .Values.replicationJob | nindent 6 }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.replicationJob.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Release.Name }}-replication-job-deployment

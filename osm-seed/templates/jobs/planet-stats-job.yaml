@@ -19,10 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if .Values.planetStats.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.planetStats.serviceAccount.name }}
-          automountServiceAccountToken: true
-          {{- end }}
+          {{- include "osm-seed.serviceAccount" .Values.planetStats | nindent 10 }}
           {{- if .Values.planetStats.priorityClass }}
           priorityClassName: {{ .Release.Name }}-{{ .Values.planetStats.priorityClass }}
           {{- end }}

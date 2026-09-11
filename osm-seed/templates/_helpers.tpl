@@ -94,3 +94,14 @@ Node affinity only. Usage: {{- include "osm-seed.nodeAffinity" .Values.memcached
 {{- define "osm-seed.nodeAffinity" -}}
 {{- include "osm-seed.affinity" (dict "values" .) -}}
 {{- end -}}
+
+{{/*
+Service account for the pod, when <component>.serviceAccount.enabled is true.
+Usage: {{- include "osm-seed.serviceAccount" .Values.webApi | nindent 6 }}
+*/}}
+{{- define "osm-seed.serviceAccount" -}}
+{{- if and .serviceAccount .serviceAccount.enabled }}
+serviceAccountName: {{ .serviceAccount.name }}
+automountServiceAccountToken: true
+{{- end }}
+{{- end -}}

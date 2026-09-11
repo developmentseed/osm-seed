@@ -19,10 +19,7 @@ spec:
       ttlSecondsAfterFinished: 60
       template:
         spec:
-          {{- if .Values.monitoringReplication.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.monitoringReplication.serviceAccount.name }}
-          automountServiceAccountToken: true
-          {{- end }}
+          {{- include "osm-seed.serviceAccount" .Values.monitoringReplication | nindent 10 }}
           containers:
           - name: {{ .Release.Name }}-replication-monitoring
             image: "{{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}"

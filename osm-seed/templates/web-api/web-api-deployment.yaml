@@ -22,10 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-web-api
     spec:
-      {{- if .Values.webApi.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.webApi.serviceAccount.name }}
-      automountServiceAccountToken: true
-      {{- end }}
+      {{- include "osm-seed.serviceAccount" .Values.webApi | nindent 6 }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.webApi.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Chart.Name }}-web-api

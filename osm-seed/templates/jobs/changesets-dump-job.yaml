@@ -19,10 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if .Values.changesetsDump.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.changesetsDump.serviceAccount.name }}
-          automountServiceAccountToken: true
-          {{- end }}
+          {{- include "osm-seed.serviceAccount" .Values.changesetsDump | nindent 10 }}
           containers:
           - name: {{ .Release.Name }}-changesets-dump
             image: "{{ .Values.changesetsDump.image.name }}:{{ .Values.changesetsDump.image.tag }}"

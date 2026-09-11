@@ -19,10 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if $job.serviceAccount.enabled }}
-          serviceAccountName: {{ $job.serviceAccount.name }}
-          automountServiceAccountToken: true
-          {{- end }}
+          {{- include "osm-seed.serviceAccount" $job | nindent 10 }}
           containers:
           - name: {{ $job.name }}-backup
             image: "{{ $.Values.dbBackupRestore.image.name }}:{{ $.Values.dbBackupRestore.image.tag }}"

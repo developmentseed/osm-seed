@@ -19,10 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if .Values.fullHistory.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.fullHistory.serviceAccount.name }}
-          automountServiceAccountToken: true
-          {{- end }}
+          {{- include "osm-seed.serviceAccount" .Values.fullHistory | nindent 10 }}
           containers:
           - name: {{ .Release.Name }}-full-history
             image: "{{ .Values.fullHistory.image.name }}:{{ .Values.fullHistory.image.tag }}"

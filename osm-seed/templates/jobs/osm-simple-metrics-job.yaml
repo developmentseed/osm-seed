@@ -19,10 +19,7 @@ spec:
       ttlSecondsAfterFinished: 300
       template:
         spec:
-          {{- if .Values.osmSimpleMetrics.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.osmSimpleMetrics.serviceAccount.name }}
-          automountServiceAccountToken: true
-          {{- end }}
+          {{- include "osm-seed.serviceAccount" .Values.osmSimpleMetrics | nindent 10 }}
           containers:
           - name: {{ .Release.Name }}-osm-simple-metrics
             image: "{{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}"

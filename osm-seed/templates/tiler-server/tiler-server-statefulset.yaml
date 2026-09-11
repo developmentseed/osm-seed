@@ -25,10 +25,7 @@ spec:
         run: {{ .Release.Name }}-tiler-server
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerServer.priorityClass | default "medium-priority" }}
-      {{- if .Values.tilerServer.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.tilerServer.serviceAccount.name }}
-      automountServiceAccountToken: true
-      {{- end }}
+      {{- include "osm-seed.serviceAccount" .Values.tilerServer | nindent 6 }}
       containers:
         - name: {{ .Chart.Name }}-tiler-server
           image: "{{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}"
