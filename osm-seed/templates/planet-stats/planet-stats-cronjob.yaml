@@ -1,0 +1,44 @@
+{{- if .Values.planetStats.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-planet-stats
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: planet-stats
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ quote .Values.planetStats.schedule }}
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          {{- include "osm-seed.serviceAccount" .Values.planetStats | nindent 10 }}
+          {{- if .Values.planetStats.priorityClass }}
+          priorityClassName: {{ .Release.Name }}-{{ .Values.planetStats.priorityClass }}
+          {{- end }}
+          containers:
+          - name: {{ .Release.Name }}-planet-stats
+            image: "{{ .Values.planetStats.image.name }}:{{ .Values.planetStats.image.tag }}"
+            command: ['/app/start.sh']
+            {{- include "osm-seed.resources" .Values.planetStats | nindent 12 }}
+            env:
+              - name: CLOUDPROVIDER
+                value: {{ .Values.cloudProvider }}
+              # Pipeline config + static S3 credentials (state round-trip + planet fetch)
+              {{- range $k, $v := .Values.planetStats.env }}
+              - name: {{ $k }}
+                value: {{ $v | quote }}
+              {{- end }}
+              {{- include "osm-seed.cloudEnv" . | nindent 14 }}
+          restartPolicy: OnFailure
+          {{- include "osm-seed.nodeSelector" .Values.planetStats | nindent 10 }}
+          {{- include "osm-seed.nodeAffinity" .Values.planetStats | nindent 10 }}
+      backoffLimit: 3
+{{- end }}

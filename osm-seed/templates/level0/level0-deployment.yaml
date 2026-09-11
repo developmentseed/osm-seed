@@ -1,0 +1,63 @@
+{{- if .Values.level0.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-level0
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: level0
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.level0.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-level0
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-level0
+    spec:
+      {{- include "osm-seed.serviceAccount" .Values.level0 | nindent 6 }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.level0.priorityClass | default "medium-priority" }}
+      containers:
+        - name: {{ .Chart.Name }}-level0
+          image: "{{ .Values.level0.image.name }}:{{ .Values.level0.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 3
+          {{- include "osm-seed.resources" .Values.level0 | nindent 10 }}
+          env:
+            {{- range $k, $v := .Values.level0.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.level0 | nindent 6 }}
+      {{- include "osm-seed.nodeAffinity" .Values.level0 | nindent 6 }}
+{{- end }}

@@ -1,0 +1,30 @@
+{{- if and .Values.osmxAdiffBuilder.enabled .Values.osmxAdiffBuilder.persistenceDisk.enabled }}
+{{- $pd := dict "root" . "values" .Values.osmxAdiffBuilder "name" (printf "%s-osmx-adiff-builder-data" .Release.Name) }}
+{{- if include "osm-seed.pv.static" $pd }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-osmx-adiff-builder-data
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmx-adiff-builder
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  {{- include "osm-seed.pv.spec" $pd | nindent 2 }}
+---
+{{- end }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-osmx-adiff-builder-data
+  annotations:
+    "helm.sh/resource-policy": keep
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmx-adiff-builder
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  {{- include "osm-seed.pvc.spec" $pd | nindent 2 }}
+{{- end }}

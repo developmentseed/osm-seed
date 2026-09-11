@@ -1,0 +1,68 @@
+{{- if .Values.taginfoWeb.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-taginfo-web
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: taginfo-web
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.taginfoWeb.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-taginfo-web
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-taginfo-web
+    spec:
+      {{- include "osm-seed.serviceAccount" .Values.taginfoWeb | nindent 6 }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.taginfoWeb.priorityClass | default "medium-priority" }}
+      containers:
+        - name: {{ .Chart.Name }}-taginfo-web
+          image: "{{ .Values.taginfoWeb.image.name }}:{{ .Values.taginfoWeb.image.tag }}"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              /usr/src/app/start.sh web
+          ports:
+            - name: http
+              containerPort: 4567
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 3
+          {{- include "osm-seed.resources" .Values.taginfoWeb | nindent 10 }}
+          env:
+            {{- range $k, $v := .Values.taginfoWeb.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.taginfoWeb | nindent 6 }}
+      {{- include "osm-seed.nodeAffinity" .Values.taginfoWeb | nindent 6 }}
+{{- end }}

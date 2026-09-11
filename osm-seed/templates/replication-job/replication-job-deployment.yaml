@@ -1,0 +1,71 @@
+{{- if .Values.replicationJob.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-replication-job
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: replication-job
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-replication-job
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-replication-job
+    spec:
+      {{- include "osm-seed.serviceAccount" .Values.replicationJob | nindent 6 }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.replicationJob.priorityClass | default "high-priority" }}
+      containers:
+        - name: {{ .Release.Name }}-replication-job-deployment
+          image: "{{ .Values.replicationJob.image.name }}:{{ .Values.replicationJob.image.tag }}"
+          command: ['/start.sh']
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /liveness.sh
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 30
+            failureThreshold: 3
+          {{- include "osm-seed.resources" .Values.replicationJob | nindent 10 }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-web-db
+            - name: POSTGRES_DB
+              value: {{ .Values.webDb.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.webDb.env.POSTGRES_USER }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.webDb.env.POSTGRES_PORT | quote}}
+            - name: REPLICATION_FOLDER
+              value: replication/minute
+            - name: CLOUDPROVIDER
+              value: {{ .Values.cloudProvider }}
+            {{- include "osm-seed.cloudEnv" . | nindent 12 }}
+              # Memory optimization for osmosis
+            {{- if .Values.replicationJob.resources.requests }}
+            - name: MEMORY_JAVACMD_OPTIONS
+              value: {{ .Values.replicationJob.resources.requests.memory | default "2Gi" | quote}}
+            {{- end }}
+            - name: ENABLE_SEND_SLACK_MESSAGE
+              value: {{ .Values.replicationJob.env.ENABLE_SEND_SLACK_MESSAGE | quote}}
+            - name: SLACK_WEBHOOK_URL
+              value: {{ .Values.replicationJob.env.SLACK_WEBHOOK_URL | quote}}
+            - name: ENVIRONMENT
+              value: {{ .Values.environment | quote}}
+      {{- include "osm-seed.nodeSelector" .Values.replicationJob | nindent 6 }}
+      {{- include "osm-seed.nodeAffinity" .Values.replicationJob | nindent 6 }}
+{{- end }}

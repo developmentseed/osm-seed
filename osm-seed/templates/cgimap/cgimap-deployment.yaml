@@ -40,19 +40,7 @@ spec:
             timeoutSeconds: 5
             periodSeconds: 10
             failureThreshold: 3
-          {{- if and .Values.cgimap.resources.enabled (or .Values.cgimap.resources.requests.enabled .Values.cgimap.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.cgimap.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.cgimap.resources.requests.memory }}
-              cpu: {{ .Values.cgimap.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.cgimap.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.cgimap.resources.limits.memory }}
-              cpu: {{ .Values.cgimap.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.cgimap | nindent 10 }}
           env:
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-web-db
@@ -68,22 +56,6 @@ spec:
               value: {{ .Values.webApi.env.WEBSITE_STATUS }}
             - name: MEMCACHE_SERVER
               value: {{ .Release.Name }}-memcached:11211
-      {{- if .Values.cgimap.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.cgimap.nodeSelector.label_key }} : {{ .Values.cgimap.nodeSelector.label_value }}
-      {{- end }}
-      # Affinity settings
-      {{- if .Values.cgimap.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.cgimap.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.cgimap.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.cgimap | nindent 6 }}
+      {{- include "osm-seed.nodeAffinity" .Values.cgimap | nindent 6 }}
 {{- end }}

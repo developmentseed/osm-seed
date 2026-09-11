@@ -1,0 +1,42 @@
+{{- if .Values.osmSimpleMetrics.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-osm-simple-metrics
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osm-simple-metrics
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ quote .Values.osmSimpleMetrics.schedule }}
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          {{- include "osm-seed.serviceAccount" .Values.osmSimpleMetrics | nindent 10 }}
+          containers:
+          - name: {{ .Release.Name }}-osm-simple-metrics
+            image: "{{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}"
+            {{- include "osm-seed.resources" .Values.osmSimpleMetrics | nindent 12 }}
+            env:
+              - name: POSTGRES_HOST
+                value: {{ .Release.Name }}-web-db
+              - name: POSTGRES_DB
+                value: {{ .Values.webDb.env.POSTGRES_DB }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
+              - name: POSTGRES_USER
+                value: {{ .Values.webDb.env.POSTGRES_USER }}
+              - name: CLOUDPROVIDER
+                value: {{ .Values.cloudProvider }}
+              {{- include "osm-seed.cloudEnv" . | nindent 14 }}
+          restartPolicy: OnFailure
+          {{- include "osm-seed.nodeSelector" .Values.osmSimpleMetrics | nindent 10 }}
+          {{- include "osm-seed.nodeAffinity" .Values.osmSimpleMetrics | nindent 10 }}
+{{- end }}

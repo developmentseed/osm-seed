@@ -1,0 +1,30 @@
+{{- if and .Values.osmchaDb.enabled .Values.osmchaDb.persistenceDisk.enabled }}
+{{- $pd := dict "root" . "values" .Values.osmchaDb "name" (printf "%s-osmcha-db-data" .Release.Name) }}
+{{- if include "osm-seed.pv.static" $pd }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-osmcha-db-data
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmcha-db
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  {{- include "osm-seed.pv.spec" $pd | nindent 2 }}
+---
+{{- end }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-osmcha-db-data
+  annotations:
+    "helm.sh/resource-policy": keep
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmcha-db
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  {{- include "osm-seed.pvc.spec" $pd | nindent 2 }}
+{{- end }}

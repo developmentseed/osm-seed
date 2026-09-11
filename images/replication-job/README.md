@@ -83,7 +83,7 @@ GRANT SELECT ON TABLE changesets TO osmdbt_user;
 #### Slack Notifications (Optional)
 - `ENABLE_SEND_SLACK_MESSAGE` - Enable Slack notifications (default: `false`)
 - `SLACK_WEBHOOK_URL` - Slack webhook URL for notifications
-- `ENVIROMENT` - Environment name for notifications (e.g., `production`, `staging`)
+- `ENVIRONMENT` - Environment name for notifications (e.g., `production`, `staging`)
 
 #### Working Directory
 - `WORKING_DIRECTORY` - Working directory path (default: `/mnt/data`)

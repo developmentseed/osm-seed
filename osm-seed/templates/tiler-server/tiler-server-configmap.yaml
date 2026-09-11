@@ -1,0 +1,22 @@
+{{- if .Values.tilerServer.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-tiler-server-env
+data:
+    TILER_SERVER_PORT: {{ .Values.tilerServer.env.TILER_SERVER_PORT | quote }}
+    TILER_CACHE_TYPE: {{ .Values.tilerServer.env.TILER_CACHE_TYPE | quote }}
+    TILER_CACHE_REGION: {{ .Values.tilerServer.env.TILER_CACHE_REGION | quote }}
+    TILER_CACHE_BUCKET: {{ .Values.tilerServer.env.TILER_CACHE_BUCKET | quote }}
+    TILER_CACHE_BASEPATH: {{ .Values.tilerServer.env.TILER_CACHE_BASEPATH | quote }}
+    TILER_CACHE_AWS_ACCESS_KEY_ID: {{ .Values.tilerServer.env.TILER_CACHE_AWS_ACCESS_KEY_ID | quote }}
+    TILER_CACHE_AWS_SECRET_ACCESS_KEY: {{ .Values.tilerServer.env.TILER_CACHE_AWS_SECRET_ACCESS_KEY | quote }}
+    TILER_CACHE_MAX_ZOOM: {{ .Values.tilerServer.env.TILER_CACHE_MAX_ZOOM | quote }}
+    TILER_CACHE_AWS_ENDPOINT: {{ .Values.tilerServer.env.TILER_CACHE_AWS_ENDPOINT | default "" | quote }}
+    EXECUTE_REINDEX: {{ .Values.tilerServer.env.EXECUTE_REINDEX | default "false" | quote }}
+    EXECUTE_VACUUM_ANALYZE: {{ .Values.tilerServer.env.EXECUTE_VACUUM_ANALYZE | default "false" | quote }}
+    CLOUDPROVIDER: {{ .Values.cloudProvider | quote }}
+    {{- if eq .Values.cloudProvider "aws" }}
+    AWS_S3_BUCKET: {{ .Values.AWS_S3_BUCKET | quote }}
+    {{- end }}
+{{- end }}

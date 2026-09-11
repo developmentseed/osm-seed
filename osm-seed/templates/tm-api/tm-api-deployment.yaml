@@ -1,0 +1,58 @@
+{{- if .Values.tmApi.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-tm-api 
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tm-api
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.tmApi.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-tm-api
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-tm-api
+    spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.tmApi.priorityClass | default "medium-priority" }}
+      initContainers:
+        - name: db-upgrade
+          image: "{{ .Values.tmApi.image.name }}:{{ .Values.tmApi.image.tag }}"
+          command:
+            - alembic
+            - -c
+            - /usr/src/app/migrations/alembic.ini
+            - upgrade
+            - head
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-tm-api-env
+      containers:
+        - name: {{ .Chart.Name }}-tm-api
+          image: "{{ .Values.tmApi.image.name }}:{{ .Values.tmApi.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 120
+            timeoutSeconds: 30
+          {{- include "osm-seed.resources" .Values.tmApi | nindent 10 }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-tm-api-env
+
+      {{- include "osm-seed.nodeSelector" .Values.tmApi | nindent 6 }}
+      {{- include "osm-seed.nodeAffinity" .Values.tmApi | nindent 6 }}
+{{- end }}

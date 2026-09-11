@@ -1,0 +1,55 @@
+{{- if .Values.monitoringReplication.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-replication-monitoring
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: replication-monitoring
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ quote .Values.monitoringReplication.schedule }}
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          {{- include "osm-seed.serviceAccount" .Values.monitoringReplication | nindent 10 }}
+          containers:
+          - name: {{ .Release.Name }}-replication-monitoring
+            image: "{{ .Values.monitoringReplication.image.name }}:{{ .Values.monitoringReplication.image.tag }}"
+            command: ['/monitoring.py']
+            {{- include "osm-seed.resources" .Values.monitoringReplication | nindent 12 }}
+            env:
+              - name: POSTGRES_HOST
+                value: {{ .Release.Name }}-web-db
+              - name: POSTGRES_DB
+                value: {{ .Values.webDb.env.POSTGRES_DB }}
+              - name: POSTGRES_PASSWORD
+                value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
+              - name: POSTGRES_USER
+                value: {{ .Values.webDb.env.POSTGRES_USER }}
+              - name: CLOUDPROVIDER
+                value: {{ .Values.cloudProvider }}
+              - name: REPLICATION_FOLDER
+                value: replication/minute
+              - name: CREATE_MISSING_FILES
+                value: {{ .Values.monitoringReplication.env.CREATE_MISSING_FILES }}
+              - name: REPLICATION_SEQUENCE_NUMBER
+                value: {{ .Values.monitoringReplication.env.REPLICATION_SEQUENCE_NUMBER | quote}}
+              {{- include "osm-seed.cloudEnv" . | nindent 14 }}
+              # Memory optimization for osmosis
+              {{- if .Values.monitoringReplication.resources.requests }}   
+              - name: MEMORY_JAVACMD_OPTIONS
+                value: {{ .Values.monitoringReplication.resources.requests.memory | default "2Gi" | quote}}
+              {{- end }}
+          restartPolicy: OnFailure
+          {{- include "osm-seed.nodeSelector" .Values.monitoringReplication | nindent 10 }}
+          {{- include "osm-seed.nodeAffinity" .Values.monitoringReplication | nindent 10 }}
+      backoffLimit: 3
+{{- end }}

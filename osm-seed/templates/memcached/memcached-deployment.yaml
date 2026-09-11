@@ -1,0 +1,36 @@
+{{- if .Values.memcached.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-memcached
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: memcached
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.memcached.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-memcached
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-memcached
+    spec:
+      priorityClassName: {{ .Release.Name }}-{{ .Values.memcached.priorityClass | default "high-priority" }}
+      containers:
+        - name: {{ .Chart.Name }}-memcached
+          image: "memcached"
+          ports:
+            - name: http
+              containerPort: 11211
+              protocol: TCP
+          {{- include "osm-seed.resources" .Values.memcached | nindent 10 }}
+      {{- include "osm-seed.nodeSelector" .Values.memcached | nindent 6 }}
+      {{- include "osm-seed.nodeAffinity" .Values.memcached | nindent 6 }}
+{{- end }}

@@ -1,0 +1,44 @@
+{{- if .Values.taginfoDataProcessor.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-taginfo-data-processor
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: taginfo-data-processor
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ .Values.taginfoDataProcessor.schedule | quote }}
+  concurrencyPolicy: {{ .Values.taginfoDataProcessor.concurrencyPolicy | default "Forbid" }}
+  startingDeadlineSeconds: 10
+  successfulJobsHistoryLimit: {{ .Values.taginfoDataProcessor.successfulJobsHistoryLimit | default 1 }}
+  failedJobsHistoryLimit: {{ .Values.taginfoDataProcessor.failedJobsHistoryLimit | default 3 }}
+  jobTemplate:
+    spec:
+      {{- with .Values.taginfoDataProcessor.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ . }}
+      {{- end }}
+      template:
+        spec:
+          {{- include "osm-seed.serviceAccount" .Values.taginfoDataProcessor | nindent 10 }}
+          priorityClassName: {{ .Release.Name }}-{{ .Values.taginfoDataProcessor.priorityClass | default "medium-priority" }}
+          restartPolicy: OnFailure
+          containers:
+            - name: {{ .Release.Name }}-taginfo-data-processor
+              image: "{{ .Values.taginfoDataProcessor.image.name }}:{{ .Values.taginfoDataProcessor.image.tag }}"
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  /usr/src/app/start.sh data
+              env:
+                {{- range $k, $v := .Values.taginfoDataProcessor.env }}
+                - name: {{ $k }}
+                  value: {{ $v | quote }}
+                {{- end }}
+              {{- include "osm-seed.resources" .Values.taginfoDataProcessor | nindent 14 }}
+          {{- include "osm-seed.nodeSelector" .Values.taginfoDataProcessor | nindent 10 }}
+          {{- include "osm-seed.nodeAffinity" .Values.taginfoDataProcessor | nindent 10 }}
+{{- end }}

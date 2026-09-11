@@ -1,0 +1,43 @@
+{{- if .Values.changesetsDump.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-changesets-dump
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: changesets-dump
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ quote .Values.changesetsDump.schedule }}
+  startingDeadlineSeconds: 100
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          {{- include "osm-seed.serviceAccount" .Values.changesetsDump | nindent 10 }}
+          containers:
+          - name: {{ .Release.Name }}-changesets-dump
+            image: "{{ .Values.changesetsDump.image.name }}:{{ .Values.changesetsDump.image.tag }}"
+            command: ['/start.sh']
+            {{- include "osm-seed.resources" .Values.changesetsDump | nindent 12 }}
+            env:
+              - name: OVERWRITE_CHANGESETS_FILE
+                value: {{ .Values.changesetsDump.env.OVERWRITE_CHANGESETS_FILE | quote}}
+              - name: CLOUDPROVIDER
+                value: {{ .Values.cloudProvider }}
+              - name: DUMP_CLOUD_URL
+                value: {{ .Values.changesetsDump.env.DUMP_CLOUD_URL | quote}}
+              - name: AWS_S3_BUCKET
+                value: {{ .Values.AWS_S3_BUCKET }}
+              - name: PLANET_EPOCH_DATE
+                value: {{ .Values.changesetsDump.env.PLANET_EPOCH_DATE | quote }}
+          restartPolicy: OnFailure
+          {{- include "osm-seed.nodeSelector" .Values.changesetsDump | nindent 10 }}
+          {{- include "osm-seed.nodeAffinity" .Values.changesetsDump | nindent 10 }}
+      backoffLimit: 3
+{{- end }}

@@ -1,0 +1,38 @@
+{{- if .Values.populateApidb.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-populate-apidb
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: populate-apidb
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+    template:
+      spec:
+        {{- include "osm-seed.serviceAccount" .Values.populateApidb | nindent 8 }}
+        containers:
+        - name: {{ .Release.Name }}-populate-apidb
+          image: "{{ .Values.populateApidb.image.name }}:{{ .Values.populateApidb.image.tag }}"
+          command: ['/start.sh']
+          {{- include "osm-seed.resources" .Values.populateApidb | nindent 10 }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-web-db
+            - name: POSTGRES_DB
+              value: {{ .Values.webDb.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ .Values.webDb.env.POSTGRES_USER }}
+            - name: URL_FILE_TO_IMPORT
+              value: {{.Values.populateApidb.env.URL_FILE_TO_IMPORT}}
+            {{- if .Values.populateApidb.resources.requests }}   
+            - name: MEMORY_JAVACMD_OPTIONS
+              value: {{ .Values.populateApidb.resources.requests.memory  | default "4Gi" | quote}}
+            {{- end }}
+        restartPolicy: Never
+        {{- include "osm-seed.nodeSelector" .Values.populateApidb | nindent 8 }}
+        {{- include "osm-seed.nodeAffinity" .Values.populateApidb | nindent 8 }}
+{{- end }}

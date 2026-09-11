@@ -19,10 +19,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-tiler-imposm
     spec:
-      {{- if .Values.tilerImposm.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.tilerImposm.serviceAccount.name }}
-      automountServiceAccountToken: true
-      {{- end }}
+      {{- include "osm-seed.serviceAccount" .Values.tilerImposm | nindent 6 }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerImposm.priorityClass | default "medium-priority" }}
       containers:
       - name: {{ .Release.Name }}-tiler-imposm
@@ -40,19 +37,7 @@ spec:
             periodSeconds: {{ .Values.tilerImposm.livenessProbe.periodSeconds | default 10 }}
             failureThreshold: {{ .Values.tilerImposm.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
-        {{- if and .Values.tilerImposm.resources.enabled (or .Values.tilerImposm.resources.requests.enabled .Values.tilerImposm.resources.limits.enabled) }}
-        resources:
-          {{- if .Values.tilerImposm.resources.requests.enabled }}
-          requests:
-            memory: {{ .Values.tilerImposm.resources.requests.memory }}
-            cpu: {{ .Values.tilerImposm.resources.requests.cpu }}
-          {{- end }}
-          {{- if .Values.tilerImposm.resources.limits.enabled }}
-          limits:
-            memory: {{ .Values.tilerImposm.resources.limits.memory }}
-            cpu: {{ .Values.tilerImposm.resources.limits.cpu }}
-          {{- end }}
-        {{- end }}
+        {{- include "osm-seed.resources" .Values.tilerImposm | nindent 8 }}
         env:
           {{- range $k, $v := .Values.tilerImposm.env }}
           - name: {{ $k }}
@@ -73,22 +58,6 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-      {{- if .Values.tilerImposm.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tilerImposm.nodeSelector.label_key }} : {{ .Values.tilerImposm.nodeSelector.label_value }}
-      {{- end }}
-      # Affinity settings
-      {{- if .Values.tilerImposm.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.tilerImposm.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.tilerImposm.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerImposm | nindent 6 }}
+      {{- include "osm-seed.nodeAffinity" .Values.tilerImposm | nindent 6 }}
 {{- end }}

@@ -71,19 +71,7 @@ spec:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 20
-          {{- if and .Values.tilerVarnish.resources.enabled (or .Values.tilerVarnish.resources.requests.enabled .Values.tilerVarnish.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.tilerVarnish.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.tilerVarnish.resources.requests.memory }}
-              cpu: {{ .Values.tilerVarnish.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.tilerVarnish.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.tilerVarnish.resources.limits.memory }}
-              cpu: {{ .Values.tilerVarnish.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.tilerVarnish | nindent 10 }}
           volumeMounts:
             - name: varnish-vcl
               mountPath: /etc/varnish/default.vcl
@@ -97,21 +85,6 @@ spec:
             name: {{ .Release.Name }}-tiler-varnish-vcl
         - name: varnish-workdir
           emptyDir: {}
-      {{- if .Values.tilerVarnish.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tilerVarnish.nodeSelector.label_key }} : {{ .Values.tilerVarnish.nodeSelector.label_value }}
-      {{- end }}
-      {{- if .Values.tilerVarnish.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.tilerVarnish.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.tilerVarnish.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerVarnish | nindent 6 }}
+      {{- include "osm-seed.nodeAffinity" .Values.tilerVarnish | nindent 6 }}
 {{- end }}

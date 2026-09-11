@@ -1,0 +1,28 @@
+{{- if .Values.osmProcessor.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-osm-processor
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osm-processor
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+    template:
+      spec:
+        containers:
+        - name: {{ .Release.Name }}-osm-processor
+          image: "{{ .Values.osmProcessor.image.name }}:{{ .Values.osmProcessor.image.tag }}"
+          command: ['./start.sh']
+          {{- include "osm-seed.resources" .Values.osmProcessor | nindent 10 }}
+          env:
+            - name: URL_FILE_TO_PROCESS
+              value: {{.Values.osmProcessor.env.URL_FILE_TO_PROCESS}}
+            - name: OSM_FILE_ACTION
+              value: {{.Values.osmProcessor.env.OSM_FILE_ACTION}}
+            - name: CLOUDPROVIDER
+              value: {{ .Values.cloudProvider }}
+            {{- include "osm-seed.cloudEnv" . | nindent 12 }}
+        restartPolicy: Never
+{{- end }}

@@ -25,10 +25,7 @@ spec:
         run: {{ .Release.Name }}-tiler-server
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerServer.priorityClass | default "medium-priority" }}
-      {{- if .Values.tilerServer.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.tilerServer.serviceAccount.name }}
-      automountServiceAccountToken: true
-      {{- end }}
+      {{- include "osm-seed.serviceAccount" .Values.tilerServer | nindent 6 }}
       containers:
         - name: {{ .Chart.Name }}-tiler-server
           image: "{{ .Values.tilerServer.image.name }}:{{ .Values.tilerServer.image.tag }}"
@@ -43,19 +40,7 @@ spec:
               port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
-          {{- if and .Values.tilerServer.resources.enabled (or .Values.tilerServer.resources.requests.enabled .Values.tilerServer.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.tilerServer.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.tilerServer.resources.requests.memory }}
-              cpu: {{ .Values.tilerServer.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.tilerServer.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.tilerServer.resources.limits.memory }}
-              cpu: {{ .Values.tilerServer.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.tilerServer | nindent 10 }}
           envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-tiler-server-env
@@ -73,23 +58,7 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-      {{- if .Values.tilerServer.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.tilerServer.nodeSelector.label_key }} : {{ .Values.tilerServer.nodeSelector.label_value }}
-      {{- end }}
-      # Affinity settings
-      {{- if .Values.tilerServer.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.tilerServer.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.tilerServer.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerServer | nindent 6 }}
+      {{- include "osm-seed.nodeAffinity" .Values.tilerServer | nindent 6 }}
 {{- end }}
 {{- end }}

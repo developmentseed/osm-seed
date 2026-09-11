@@ -22,10 +22,7 @@ spec:
         release: {{ .Release.Name }}
         run: {{ .Release.Name }}-web-api
     spec:
-      {{- if .Values.webApi.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.webApi.serviceAccount.name }}
-      automountServiceAccountToken: true
-      {{- end }}
+      {{- include "osm-seed.serviceAccount" .Values.webApi | nindent 6 }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.webApi.priorityClass | default "high-priority" }}
       containers:
         - name: {{ .Chart.Name }}-web-api
@@ -53,19 +50,7 @@ spec:
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
             {{- end }}
-          {{- if and .Values.webApi.resources.enabled (or .Values.webApi.resources.requests.enabled .Values.webApi.resources.limits.enabled) }}
-          resources:
-            {{- if .Values.webApi.resources.requests.enabled }}
-            requests:
-              memory: {{ .Values.webApi.resources.requests.memory }}
-              cpu: {{ .Values.webApi.resources.requests.cpu }}
-            {{- end }}
-            {{- if .Values.webApi.resources.limits.enabled }}
-            limits:
-              memory: {{ .Values.webApi.resources.limits.memory }}
-              cpu: {{ .Values.webApi.resources.limits.cpu }}
-            {{- end }}
-          {{- end }}
+          {{- include "osm-seed.resources" .Values.webApi | nindent 10 }}
           env:
             # ---- Computed / cluster-specific (not plain web.env pass-throughs) ----
             - name: GET_HOSTS_FROM
@@ -100,33 +85,6 @@ spec:
             medium: Memory
             sizeLimit: {{ .Values.webApi.sharedMemorySize }}
           name: shared-memory
-      {{- if .Values.webApi.nodeSelector.enabled }}
-      nodeSelector:
-        {{ .Values.webApi.nodeSelector.label_key }} : {{ .Values.webApi.nodeSelector.label_value }}
-      {{- end }}
-      # Node affinity
-      {{- if .Values.webApi.nodeAffinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: {{ .Values.webApi.nodeAffinity.key }}
-                    operator: In
-                    values:
-                    {{- range .Values.webApi.nodeAffinity.values }}
-                      - {{ . | quote }}
-                    {{- end }}
-        # Pod anti-affinity, to set that no two pods are scheduled on the same node
-        {{- if .Values.webApi.podAntiAffinity.enabled }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  app: {{ template "osm-seed.name" . }}
-                  release: {{ .Release.Name }}
-                  run: {{ .Release.Name }}-web-api
-              topologyKey: "kubernetes.io/hostname"
-        {{- end }}
-      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.webApi | nindent 6 }}
+      {{- include "osm-seed.affinity" (dict "root" . "values" .Values.webApi "component" "web-api") | nindent 6 }}
 {{- end }}

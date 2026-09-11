@@ -1,0 +1,74 @@
+{{- if .Values.osmchaApi.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-osmcha-fetch-changesets
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmcha-api
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ .Values.osmchaApi.fetch_changesets_cronjob | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 120
+      activeDeadlineSeconds: 600
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-osmcha-fetch-changesets
+            image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - |
+              python manage.py fetchchangesets
+            envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-osmcha-api-env
+          restartPolicy: Never
+          {{- include "osm-seed.nodeSelector" .Values.osmchaApi | nindent 10 }}
+
+---
+apiVersion: batch/v1
+kind: CronJob 
+metadata:
+  name: {{ .Release.Name }}-osmcha-process-changesets
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmcha-api
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  schedule: {{ .Values.osmchaApi.process_changesets_cronjob | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 120
+      activeDeadlineSeconds: 600
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-osmcha-process-changesets
+            image: "{{ .Values.osmchaApi.image.name }}:{{ .Values.osmchaApi.image.tag }}"
+            imagePullPolicy: Always
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -x
+              # Note: This is a hack to make sure for ohm
+              python manage.py backfill_changesets_id --start_id=100000
+            envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-osmcha-api-env
+          restartPolicy: Never
+          {{- include "osm-seed.nodeSelector" .Values.osmchaApi | nindent 10 }}
+{{- end }}

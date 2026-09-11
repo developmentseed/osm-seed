@@ -112,7 +112,7 @@ function enable_osmdbt_replication() {
         fi
         local error_msg="ERROR: Failed to enable osmdbt replication. Check PostgreSQL configuration (wal_level=logical, max_replication_slots >= 1, user with REPLICATION attribute)."
         echo "$(date +%F_%H:%M:%S): $error_msg"
-        send_slack_message "🚨 ${ENVIROMENT:-production}: $error_msg"
+        send_slack_message "🚨 ${ENVIRONMENT:-production}: $error_msg"
         return 1
     fi
 }
@@ -225,7 +225,7 @@ function upload_file_to_s3() {
     
     # Verify integrity before upload
     if ! verify_file_integrity "$local_file" "$file_type"; then
-        local error_msg="🚨 ${ENVIROMENT:-production}: Integrity check failed for $local_file. File will not be uploaded."
+        local error_msg="🚨 ${ENVIRONMENT:-production}: Integrity check failed for $local_file. File will not be uploaded."
         echo "$(date +%F_%H:%M:%S): $error_msg"
         return 1
     fi
@@ -243,7 +243,7 @@ function upload_file_to_s3() {
         echo "$(date +%F_%H:%M:%S): Successfully uploaded $relative_path to S3"
         return 0
     else
-        local error_msg="🚨 ${ENVIROMENT:-production}: Failed to upload $relative_path to S3"
+        local error_msg="🚨 ${ENVIRONMENT:-production}: Failed to upload $relative_path to S3"
         echo "$(date +%F_%H:%M:%S): $error_msg"
         return 1
     fi
@@ -440,7 +440,7 @@ function execute_replication_cycle() {
     # Step 1: Catch up old log files (if there are complete log files left over from a crash)
     echo "$(date +%F_%H:%M:%S): Step 1: Running osmdbt-catchup (processing old log files if any)..."
     if ! /osmdbt/build/src/osmdbt-catchup -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-catchup.log"; then
-        local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-catchup (step 1) failed"
+        local error_msg="🚨 ${ENVIRONMENT:-production}: osmdbt-catchup (step 1) failed"
         echo "$(date +%F_%H:%M:%S): $error_msg"
         send_slack_message "$error_msg"
         return 1
@@ -449,7 +449,7 @@ function execute_replication_cycle() {
     # Step 2: Get new log file with changes
     echo "$(date +%F_%H:%M:%S): Step 2: Running osmdbt-get-log (fetching new changes)..."
     if ! /osmdbt/build/src/osmdbt-get-log -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-get-log.log"; then
-        local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-get-log failed"
+        local error_msg="🚨 ${ENVIRONMENT:-production}: osmdbt-get-log failed"
         echo "$(date +%F_%H:%M:%S): $error_msg"
         send_slack_message "$error_msg"
         return 1
@@ -458,7 +458,7 @@ function execute_replication_cycle() {
     # Step 3: Catch up database to new log file
     echo "$(date +%F_%H:%M:%S): Step 3: Running osmdbt-catchup (updating database to new log file)..."
     if ! /osmdbt/build/src/osmdbt-catchup -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-catchup.log"; then
-        local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-catchup (step 3) failed"
+        local error_msg="🚨 ${ENVIRONMENT:-production}: osmdbt-catchup (step 3) failed"
         echo "$(date +%F_%H:%M:%S): $error_msg"
         send_slack_message "$error_msg"
         return 1
@@ -467,7 +467,7 @@ function execute_replication_cycle() {
     # Step 4: Create OSM diff files from log files
     echo "$(date +%F_%H:%M:%S): Step 4: Running osmdbt-create-diff (creating OSM change files)..."
     if ! /osmdbt/build/src/osmdbt-create-diff --quiet --with-comment --max-changes=50000 -c "$osmdbtConfig" 2>&1 | tee -a "${logDirectory}/osmdbt-create-diff.log"; then
-        local error_msg="🚨 ${ENVIROMENT:-production}: osmdbt-create-diff failed"
+        local error_msg="🚨 ${ENVIRONMENT:-production}: osmdbt-create-diff failed"
         echo "$(date +%F_%H:%M:%S): $error_msg"
         send_slack_message "$error_msg"
         return 1
@@ -491,7 +491,7 @@ function execute_replication_cycle() {
             verify_sequence_continuity
             return 0
         else
-            local error_msg="🚨 ${ENVIROMENT:-production}: Failed to upload replication files for $latest_osc"
+            local error_msg="🚨 ${ENVIRONMENT:-production}: Failed to upload replication files for $latest_osc"
             echo "$(date +%F_%H:%M:%S): $error_msg"
             return 1
         fi
@@ -519,7 +519,7 @@ function wait_for_postgresql() {
         sleep 2
     done
     
-    local error_msg="🚨 ${ENVIROMENT:-production}: PostgreSQL is not ready after $max_attempts attempts"
+    local error_msg="🚨 ${ENVIRONMENT:-production}: PostgreSQL is not ready after $max_attempts attempts"
     echo "$(date +%F_%H:%M:%S): $error_msg"
     return 1
 }

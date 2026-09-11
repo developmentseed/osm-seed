@@ -1,0 +1,30 @@
+{{- if and .Values.tilerServer.enabled (eq .Values.tilerServer.env.TILER_CACHE_TYPE "file") .Values.tilerServer.persistenceDisk.enabled }}
+{{- $pd := dict "root" . "values" .Values.tilerServer "name" (printf "%s-tiler-server-data" .Release.Name) }}
+{{- if include "osm-seed.pv.static" $pd }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-tiler-server-data
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-server
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  {{- include "osm-seed.pv.spec" $pd | nindent 2 }}
+---
+{{- end }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-tiler-server-data
+  annotations:
+    "helm.sh/resource-policy": keep
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-server
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  {{- include "osm-seed.pvc.spec" $pd | nindent 2 }}
+{{- end }}

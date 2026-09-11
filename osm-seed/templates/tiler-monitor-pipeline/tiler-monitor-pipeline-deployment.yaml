@@ -1,0 +1,72 @@
+{{- if .Values.tilerMonitorPipeline.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-tiler-monitor-pipeline
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: tiler-monitor-pipeline
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.tilerMonitorPipeline.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-tiler-monitor-pipeline
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-tiler-monitor-pipeline
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-tiler-monitor-pipeline
+          image: "{{ .Values.tilerMonitorPipeline.image.name }}:{{ .Values.tilerMonitorPipeline.image.tag }}"
+          # Image entrypoint already runs `python monitor.py` from /app; keep it explicit.
+          command:
+            - sh
+            - -c
+            - |
+              set -x
+              python monitor.py
+          ports:
+            - name: http
+              containerPort: {{ .Values.tilerMonitorPipeline.env.MONITOR_PORT }}
+          env:
+            {{- range $key, $value := .Values.tilerMonitorPipeline.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          envFrom:
+          # POSTGRES_* for the tiler DB
+          - configMapRef:
+              name: {{ .Release.Name }}-tiler-db-env
+              optional: true
+          {{- if .Values.tilerMonitorPipeline.persistenceDisk.enabled }}
+          volumeMounts:
+            - name: monitor-storage
+              mountPath: {{ .Values.tilerMonitorPipeline.persistenceDisk.mountPath }}
+          {{- end }}
+          # TCP probe only: /health reflects monitoring results (503 on downstream
+          # failures), not process health, so it must not gate liveness.
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.tilerMonitorPipeline.env.MONITOR_PORT }}
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.tilerMonitorPipeline.env.MONITOR_PORT }}
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          {{- include "osm-seed.resources" .Values.tilerMonitorPipeline | nindent 10 }}
+      {{- if .Values.tilerMonitorPipeline.persistenceDisk.enabled }}
+      volumes:
+        - name: monitor-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-tiler-monitor-pipeline-data
+      {{- end }}
+      {{- include "osm-seed.nodeSelector" .Values.tilerMonitorPipeline | nindent 6 }}
+{{- end }}
