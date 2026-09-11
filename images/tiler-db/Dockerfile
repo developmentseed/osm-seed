@@ -1,6 +1,4 @@
 FROM postgis/postgis:14-3.4
-RUN apt-get update
-RUN apt-get install -y git ca-certificates
 
 COPY ./config/docker-entrypoint.sh /usr/local/bin/
 RUN mkdir -p /docker-entrypoint-initdb.d
