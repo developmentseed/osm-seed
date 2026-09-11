@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-planet-stats-job
+  name: {{ .Release.Name }}-planet-stats
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: planet-stats-job
+    component: planet-stats
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -27,8 +27,8 @@ spec:
           priorityClassName: {{ .Release.Name }}-{{ .Values.planetStats.priorityClass }}
           {{- end }}
           containers:
-          - name: {{ .Release.Name }}-planet-stats-job
-            image: {{ .Values.planetStats.image.name }}:{{ .Values.planetStats.image.tag }}
+          - name: {{ .Release.Name }}-planet-stats
+            image: "{{ .Values.planetStats.image.name }}:{{ .Values.planetStats.image.tag }}"
             command: ['/app/start.sh']
             {{- if .Values.planetStats.resources.enabled }}
             resources:

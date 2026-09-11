@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-server-martin
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-server-martin-service
+    component: tiler-server-martin
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:

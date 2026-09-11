@@ -1,0 +1,14 @@
+{{- if .Values.webDb.enabled -}}
+{{- if .Values.webDb.postgresqlConfig.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-web-db-postgresql-config
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    release: {{ .Release.Name }}
+data:
+  postgresql.conf: |
+{{ .Values.webDb.postgresqlConfig.values | indent 4 }}
+{{- end }}
+{{- end }}

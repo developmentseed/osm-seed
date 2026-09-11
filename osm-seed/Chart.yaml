@@ -1,5 +1,28 @@
-apiVersion: v1
-description: "Helm Chart to deploy the OpenStreetMap software"
+apiVersion: v2
 name: osm-seed
+description: Helm chart to run a full OpenStreetMap-style stack on Kubernetes - website and API, database with backups, replication and planet dumps, vector tiles, Nominatim, Overpass, Taginfo, Tasking Manager, OSMCha, Level0 and monitoring
+type: application
+kubeVersion: ">=1.25.0"
+home: https://github.com/osm-seed/osm-seed
+sources:
+  - https://github.com/osm-seed/osm-seed
+  - https://github.com/osm-seed/osm-seed-chart
+keywords:
+  - openstreetmap
+  - osm
+  - gis
+  - vector-tiles
+  - nominatim
+  - overpass
+  - tasking-manager
+  - taginfo
+  - osmcha
+maintainers:
+  - name: Rub21
+    url: https://github.com/Rub21
+  - name: geohacker
+    url: https://github.com/geohacker
+  - name: batpad
+    url: https://github.com/batpad
 appVersion: 1.0.0
 version: ''

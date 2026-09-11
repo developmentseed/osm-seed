@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-db
   labels:
     app: {{ .Release.Name }}-tiler-db
-    component: db-tiler-statefulset
+    component: tiler-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -33,7 +33,7 @@ spec:
               protocol: TCP
           envFrom:
           - configMapRef:
-              name: {{ .Release.Name }}-tiler-db-cm
+              name: {{ .Release.Name }}-tiler-db-env
           env:
             - name: POD_IP
               valueFrom: { fieldRef: { fieldPath: status.podIP } }
@@ -70,7 +70,7 @@ spec:
             {{- end }}
             - name: shared-memory
               mountPath: /dev/shm
-          {{- if .Values.tilerDb.resources.enabled }}
+          {{- if and .Values.tilerDb.resources.enabled (or .Values.tilerDb.resources.requests.enabled .Values.tilerDb.resources.limits.enabled) }}
           resources:
             {{- if .Values.tilerDb.resources.requests.enabled }}
             requests:
@@ -87,7 +87,7 @@ spec:
         - name: postgres-storage
         {{- if .Values.tilerDb.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-tiler-db-pv-claim
+            claimName: {{ .Release.Name }}-tiler-db-data
         {{- else }}
           emptyDir: {}
         {{- end }}

@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-varnish-vcl
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-varnish-configmap
+    component: tiler-varnish
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 data:

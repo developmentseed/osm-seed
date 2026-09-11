@@ -2,12 +2,12 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ .Release.Name }}-cgimmap-hpa
+  name: {{ .Release.Name }}-cgimap
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ .Release.Name }}-cgimap-deployment
+    name: {{ .Release.Name }}-cgimap
   minReplicas: {{ .Values.cgimap.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.cgimap.autoscaling.maxReplicas }}
   metrics:

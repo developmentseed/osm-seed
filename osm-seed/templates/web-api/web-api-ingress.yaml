@@ -1,10 +1,10 @@
-{{- if and .Values.osmchaApi.enabled .Values.osmchaApi.ingress.enabled }}
-{{- $ing := .Values.osmchaApi.ingress -}}
+{{- if and .Values.webApi.enabled .Values.webApi.ingress.enabled }}
+{{- $ing := .Values.webApi.ingress -}}
 {{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-ingress-osmcha-app
+  name: {{ .Release.Name }}-web-api
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -17,7 +17,7 @@ spec:
         {{- range $hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-osmcha" (include "osm-seed.fullname" .)) }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-tls-secret" .Release.Name) }}
   {{- end }}
   rules:
     {{- range $hosts }}
@@ -28,7 +28,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "osm-seed.fullname" $ }}-osmcha-app
+                name: {{ $.Release.Name }}-web-api
                 port:
                   number: 80
     {{- end }}

@@ -1,19 +1,21 @@
-{{- if .Values.tmDb.enabled -}}
+{{- if .Values.webDb.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-tasking-manager-db
+  name: {{ .Release.Name }}-web-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tm-db-service
+    component: web-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
   ports:
     - port: 5432
       targetPort: 5432
+      # protocol: TCP
+      # name: http
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-tasking-manager-db
+    run: {{ .Release.Name }}-web-db
 {{- end }}

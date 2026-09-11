@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-cgimap-service
+  name: {{ .Release.Name }}-cgimap
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: cgimap-service
+    component: cgimap
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   {{- with .Values.cgimap.serviceAnnotations }}
@@ -22,5 +22,5 @@ spec:
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-cgimap-deployment
+    run: {{ .Release.Name }}-cgimap
 {{- end }}

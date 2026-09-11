@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-cache
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-cache-service
+    component: tiler-cache
     release: {{ .Release.Name }}
 spec:
   type: ClusterIP

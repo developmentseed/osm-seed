@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-level0
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: level0-service
+    component: level0
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   {{- with .Values.level0.serviceAnnotations }}

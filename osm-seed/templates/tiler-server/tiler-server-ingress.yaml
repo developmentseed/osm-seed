@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-ingress-tiler-server
+  name: {{ .Release.Name }}-tiler-server
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

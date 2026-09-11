@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-osmcha-app
+  name: {{ .Release.Name }}-osmcha-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osmcha-app-deployment
+    component: osmcha-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -14,13 +14,13 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-osmcha-app
+      run: {{ .Release.Name }}-osmcha-api
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-osmcha-app
+        run: {{ .Release.Name }}-osmcha-api
     spec:
       initContainers:
       - name: osmcha-init
@@ -32,7 +32,7 @@ spec:
           - python manage.py collectstatic --noinput
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-osmcha-common-env
+            name: {{ .Release.Name }}-osmcha-api-env
         volumeMounts:
         - name: staticfiles
           mountPath: /app/staticfiles
@@ -55,7 +55,7 @@ spec:
           mountPath: /staticfiles
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-osmcha-common-env
+            name: {{ .Release.Name }}-osmcha-api-env
         {{- if .Values.osmchaApi.resources.enabled }}
         resources:
           requests:

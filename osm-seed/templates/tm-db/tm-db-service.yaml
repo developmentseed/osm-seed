@@ -1,21 +1,19 @@
-{{- if .Values.db.enabled -}}
+{{- if .Values.tmDb.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-db
+  name: {{ .Release.Name }}-tm-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: db-service
+    component: tm-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
   ports:
     - port: 5432
       targetPort: 5432
-      # protocol: TCP
-      # name: http
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-db
+    run: {{ .Release.Name }}-tm-db
 {{- end }}

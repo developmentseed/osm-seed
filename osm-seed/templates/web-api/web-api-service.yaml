@@ -1,14 +1,14 @@
-{{- if .Values.web.enabled -}}
+{{- if .Values.webApi.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-service-web
+  name: {{ .Release.Name }}-web-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: web-service
+    component: web-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
-  {{- with .Values.web.serviceAnnotations }}
+  {{- with .Values.webApi.serviceAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -17,7 +17,7 @@ spec:
   selector:
     app: {{ template "osm-seed.name" . }}
     release: {{ .Release.Name }}
-    run: {{ .Release.Name }}-web
+    run: {{ .Release.Name }}-web-api
   ports:
     - name: http
       port: 80

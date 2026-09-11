@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-tiler-imposm-sts
+  name: {{ .Release.Name }}-tiler-imposm
   labels:
     app: {{ template "osm-seed.name" . }}
     component: tiler-imposm
@@ -11,13 +11,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app:  {{ .Release.Name }}-tiler-imposm-sts
+      app:  {{ .Release.Name }}-tiler-imposm
   serviceName: {{ .Release.Name }}-tiler-imposm
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-tiler-imposm-sts
+        app: {{ .Release.Name }}-tiler-imposm
     spec:
       {{- if .Values.tilerImposm.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.tilerImposm.serviceAccount.name }}
@@ -25,8 +25,8 @@ spec:
       {{- end }}
       priorityClassName: {{ .Release.Name }}-{{ .Values.tilerImposm.priorityClass | default "medium-priority" }}
       containers:
-      - name: {{ .Release.Name }}-tiler-imposm-sts
-        image: {{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}
+      - name: {{ .Release.Name }}-tiler-imposm
+        image: "{{ .Values.tilerImposm.image.name }}:{{ .Values.tilerImposm.image.tag }}"
         command: ['./start.sh']
         {{- if .Values.tilerImposm.livenessProbe.enabled }}
         livenessProbe:
@@ -40,7 +40,7 @@ spec:
             periodSeconds: {{ .Values.tilerImposm.livenessProbe.periodSeconds | default 10 }}
             failureThreshold: {{ .Values.tilerImposm.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
-        {{- if .Values.tilerImposm.resources.enabled }}
+        {{- if and .Values.tilerImposm.resources.enabled (or .Values.tilerImposm.resources.requests.enabled .Values.tilerImposm.resources.limits.enabled) }}
         resources:
           {{- if .Values.tilerImposm.resources.requests.enabled }}
           requests:
@@ -60,7 +60,7 @@ spec:
           {{- end }}
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-tiler-db-cm
+            name: {{ .Release.Name }}-tiler-db-env
         volumeMounts:
         - mountPath: {{ .Values.tilerImposm.persistenceDisk.mountPath }}
           name: tiler-imposm-storage
@@ -69,7 +69,7 @@ spec:
         - name: tiler-imposm-storage
         {{- if .Values.tilerImposm.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-tiler-imposm-pv-claim
+            claimName: {{ .Release.Name }}-tiler-imposm-data
         {{- else }}
           emptyDir: {}
         {{- end }}

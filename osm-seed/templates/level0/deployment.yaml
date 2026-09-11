@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-level0
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: level0-deployment
+    component: level0
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -55,7 +55,7 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 10
             failureThreshold: 3
-          {{- if .Values.level0.resources.enabled }}
+          {{- if and .Values.level0.resources.enabled (or .Values.level0.resources.requests.enabled .Values.level0.resources.limits.enabled) }}
           resources:
             {{- if .Values.level0.resources.requests.enabled }}
             requests:

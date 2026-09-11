@@ -13,10 +13,14 @@ spec:
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-changeset-replication-job
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-changeset-replication-job
     spec:
       {{- if .Values.changesetReplicationJob.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.changesetReplicationJob.serviceAccount.name }}
@@ -24,7 +28,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-changeset-replication-job-deployment
-          image: {{ .Values.changesetReplicationJob.image.name }}:{{ .Values.changesetReplicationJob.image.tag }}
+          image: "{{ .Values.changesetReplicationJob.image.name }}:{{ .Values.changesetReplicationJob.image.tag }}"
           # command: ['/start.sh']
           {{- if .Values.changesetReplicationJob.resources.enabled }}
           resources:
@@ -37,13 +41,13 @@ spec:
           {{- end }}
           env:
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-db
+              value: {{ .Release.Name }}-web-db
             - name: POSTGRES_DB
-              value: {{ .Values.db.env.POSTGRES_DB }}
+              value: {{ .Values.webDb.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
-              value: {{ .Values.db.env.POSTGRES_USER }}
+              value: {{ .Values.webDb.env.POSTGRES_USER }}
             - name: REPLICATION_FOLDER
               value: replication/minute
             - name: CLOUDPROVIDER

@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-overpass-api
+  name: {{ .Release.Name }}-overpass-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: overpass-api-statefulset
+    component: overpass-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -54,7 +54,7 @@ spec:
           volumeMounts:
           - mountPath: /db
             name: overpass-api-storage
-          {{- if .Values.overpassApi.resources.enabled }}
+          {{- if and .Values.overpassApi.resources.enabled (or .Values.overpassApi.resources.requests.enabled .Values.overpassApi.resources.limits.enabled) }}
           resources:
             {{- if .Values.overpassApi.resources.requests.enabled }}
             requests:
@@ -72,7 +72,7 @@ spec:
         - name: overpass-api-storage
         {{- if .Values.overpassApi.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-overpass-api-pv-claim
+            claimName: {{ .Release.Name }}-overpass-api-data
         {{- else }}
           emptyDir: {}
         {{- end }}

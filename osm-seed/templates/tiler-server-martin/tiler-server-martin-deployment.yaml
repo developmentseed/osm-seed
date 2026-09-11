@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-server-martin
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-server-martin-deployment
+    component: tiler-server-martin
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -37,7 +37,7 @@ spec:
             {{- end }}
           envFrom:
           - configMapRef:
-              name: {{ .Release.Name }}-tiler-db-cm
+              name: {{ .Release.Name }}-tiler-db-env
           readinessProbe:
             tcpSocket:
               port: http
@@ -48,7 +48,7 @@ spec:
               port: http
             initialDelaySeconds: 60
             periodSeconds: 20
-          {{- if .Values.tilerServerMartin.resources.enabled }}
+          {{- if and .Values.tilerServerMartin.resources.enabled (or .Values.tilerServerMartin.resources.requests.enabled .Values.tilerServerMartin.resources.limits.enabled) }}
           resources:
             {{- if .Values.tilerServerMartin.resources.requests.enabled }}
             requests:

@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-server
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-server-deployment
+    component: tiler-server
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -42,7 +42,7 @@ spec:
               port: {{ .Values.tilerServer.env.TILER_SERVER_PORT }}
             initialDelaySeconds: 1000
             timeoutSeconds: 30
-          {{- if .Values.tilerServer.resources.enabled }}
+          {{- if and .Values.tilerServer.resources.enabled (or .Values.tilerServer.resources.requests.enabled .Values.tilerServer.resources.limits.enabled) }}
           resources:
             {{- if .Values.tilerServer.resources.requests.enabled }}
             requests:
@@ -57,9 +57,9 @@ spec:
           {{- end }}
           envFrom:
           - configMapRef:
-              name: {{ .Release.Name }}-tiler-server-cm
+              name: {{ .Release.Name }}-tiler-server-env
           - configMapRef:
-              name: {{ .Release.Name }}-tiler-db-cm
+              name: {{ .Release.Name }}-tiler-db-env
       {{- if .Values.tilerServer.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.tilerServer.nodeSelector.label_key }} : {{ .Values.tilerServer.nodeSelector.label_value }}

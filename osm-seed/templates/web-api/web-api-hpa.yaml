@@ -1,0 +1,43 @@
+{{- if and .Values.webApi.enabled .Values.webApi.autoscaling.enabled -}}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-web-api
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-web-api
+  minReplicas: {{ .Values.webApi.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.webApi.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.webApi.autoscaling.cpuUtilization.enabled }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.webApi.autoscaling.cpuUtilization.value }}
+    {{- end }}
+    {{- if .Values.webApi.autoscaling.memoryUtilization.enabled }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.webApi.autoscaling.memoryUtilization.value }}
+    {{- end }}
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: {{ .Values.webApi.autoscaling.behavior.scaleUp.stabilizationWindowSeconds | default 60 }}
+      policies:
+        - type: Percent
+          value: {{ .Values.webApi.autoscaling.behavior.scaleUp.policyValue | default 100 }}
+          periodSeconds: {{ .Values.webApi.autoscaling.behavior.scaleUp.periodSeconds | default 60 }}
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.webApi.autoscaling.behavior.scaleDown.stabilizationWindowSeconds | default 60 }}
+      policies:
+        - type: Percent
+          value: {{ .Values.webApi.autoscaling.behavior.scaleDown.policyValue | default 50 }}
+          periodSeconds: {{ .Values.webApi.autoscaling.behavior.scaleDown.periodSeconds | default 60 }}
+{{- end }}

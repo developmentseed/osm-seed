@@ -34,7 +34,7 @@ spec:
                 - name: K8S_NAMESPACE
                   value: {{ .Release.Namespace | quote }}
                 - name: IMPOSM_STATEFULSET
-                  value: {{ .Release.Name }}-tiler-imposm-sts
+                  value: {{ .Release.Name }}-tiler-imposm
                 - name: MARTIN_DEPLOYMENT
                   value: {{ .Release.Name }}-tiler-server-martin
                 {{- range $key, $value := .Values.tilerMonitorLanguage.env }}
@@ -44,7 +44,7 @@ spec:
               envFrom:
               # POSTGRES_* for the tiler DB
               - configMapRef:
-                  name: {{ .Release.Name }}-tiler-db-cm
+                  name: {{ .Release.Name }}-tiler-db-env
                   optional: true
               {{- if .Values.tilerMonitorLanguage.resources.enabled }}
               resources:

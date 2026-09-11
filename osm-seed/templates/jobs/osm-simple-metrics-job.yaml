@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-osm-simple-metrics-job
+  name: {{ .Release.Name }}-osm-simple-metrics
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: osm-simple-metrics-job
+    component: osm-simple-metrics
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -24,8 +24,8 @@ spec:
           automountServiceAccountToken: true
           {{- end }}
           containers:
-          - name: {{ .Release.Name }}-osm-simple-metrics-job
-            image: {{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}
+          - name: {{ .Release.Name }}-osm-simple-metrics
+            image: "{{ .Values.osmSimpleMetrics.image.name }}:{{ .Values.osmSimpleMetrics.image.tag }}"
             {{- if .Values.osmSimpleMetrics.resources.enabled }}
             resources:
               requests:
@@ -37,13 +37,13 @@ spec:
             {{- end }}
             env:
               - name: POSTGRES_HOST
-                value: {{ .Release.Name }}-db
+                value: {{ .Release.Name }}-web-db
               - name: POSTGRES_DB
-                value: {{ .Values.db.env.POSTGRES_DB }}
+                value: {{ .Values.webDb.env.POSTGRES_DB }}
               - name: POSTGRES_PASSWORD
-                value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+                value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
               - name: POSTGRES_USER
-                value: {{ .Values.db.env.POSTGRES_USER }}
+                value: {{ .Values.webDb.env.POSTGRES_USER }}
               - name: CLOUDPROVIDER
                 value: {{ .Values.cloudProvider }}
               # In case cloudProvider=aws

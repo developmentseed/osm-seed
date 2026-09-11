@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-cgimap-deployment
+  name: {{ .Release.Name }}-cgimap
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: cgimap-deployment
+    component: cgimap
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
@@ -14,13 +14,13 @@ spec:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-cgimap-deployment
+      run: {{ .Release.Name }}-cgimap
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-cgimap-deployment
+        run: {{ .Release.Name }}-cgimap
     spec:
       priorityClassName: {{ .Release.Name }}-{{ .Values.cgimap.priorityClass | default "high-priority" }}
       containers:
@@ -40,7 +40,7 @@ spec:
             timeoutSeconds: 5
             periodSeconds: 10
             failureThreshold: 3
-          {{- if .Values.cgimap.resources.enabled }}
+          {{- if and .Values.cgimap.resources.enabled (or .Values.cgimap.resources.requests.enabled .Values.cgimap.resources.limits.enabled) }}
           resources:
             {{- if .Values.cgimap.resources.requests.enabled }}
             requests:
@@ -55,17 +55,17 @@ spec:
           {{- end }}
           env:
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-db
+              value: {{ .Release.Name }}-web-db
             - name: POSTGRES_DB
-              value: {{ .Values.db.env.POSTGRES_DB }}
+              value: {{ .Values.webDb.env.POSTGRES_DB }}
             - name: PGPASSWORD
-              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
-              value: {{ .Values.db.env.POSTGRES_USER }}
+              value: {{ .Values.webDb.env.POSTGRES_USER }}
             - name: WEBSITE_STATUS
-              value: {{ .Values.web.env.WEBSITE_STATUS }}
+              value: {{ .Values.webApi.env.WEBSITE_STATUS }}
             - name: MEMCACHE_SERVER
               value: {{ .Release.Name }}-memcached:11211
       {{- if .Values.cgimap.nodeSelector.enabled }}

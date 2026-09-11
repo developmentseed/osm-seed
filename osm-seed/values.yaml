@@ -2,7 +2,7 @@
 osmSeedVersion: v1
 environment: development
 
-# Where to deploy: aws, gcp, azure, k3s
+# Where to deploy: aws or k3s. Templates still carry gcp/azure blocks but they are not supported.
 cloudProvider: aws
 # Cloud storage bucket for the provider set above
 AWS_S3_BUCKET: s3://osm-seed
@@ -24,10 +24,10 @@ domain: osmseed.org
 adminEmail: admin@osmseed.org
 
 # ====================================================================================================
-# Web Api Database
+# web-db: PostgreSQL for the OSM website / API (apidb)
 # ====================================================================================================
 
-db:
+webDb:
   enabled: false
   image:
     name: ""
@@ -37,16 +37,19 @@ db:
     POSTGRES_DB: openstreetmap
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "1234"
+    POSTGRES_PORT: 5432
+    PGDATA: /var/lib/postgresql/data
     ENVIRONMENT: "production"
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
-    # k3s (local-path dynamic / static hostPath)
+    # k3s: staticHostPath=true uses a fixed hostPath dir (reusable across releases); false = dynamic local-path
+    staticHostPath: false
     localVolumeHostPath: /mnt/db-data
     localVolumeSize: 10Gi
     # AWS
-    AWS_ElasticBlockStore_volumeID: vol-06a278f66b15d4b3c
+    AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
   resources:
     enabled: false
@@ -60,6 +63,8 @@ db:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: database
   sharedMemorySize: 64Mi
   # To use postgresqlConfig, you need to have already $PGDATA set up
   postgresqlConfig:
@@ -86,16 +91,16 @@ db:
     key: "nodegroup_type"
     values: ["database"]
 # ====================================================================================================
-# Variables for osm-seed website
+# web-api: OSM website + API (openstreetmap-website, Rails)
 # ====================================================================================================
-web:
+webApi:
   enabled: false
   image:
     name: ""
     tag: ""
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   priorityClass: "high-priority"
   replicaCount: 1
   serviceAnnotations: {}
@@ -151,15 +156,17 @@ web:
       cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: web
   autoscaling:
     enabled: true
     minReplicas: 1
     maxReplicas: 6
     cpuUtilization:
-      enable: false
+      enabled: false
       value: 85
     memoryUtilization:
-      enable: false
+      enabled: false
       value: 85
     behavior:
       scaleUp:
@@ -174,7 +181,7 @@ web:
   livenessProbeExec: true
 
   nodeAffinity:
-    enabled: true
+    enabled: false
     key: "nodegroup_type"
     values: ["web"]
   podAntiAffinity: # To set that no two pods are scheduled on the same node
@@ -184,6 +191,7 @@ web:
 # ====================================================================================================
 memcached:
   enabled: false
+  replicaCount: 1
   priorityClass: "high-priority"
   resources:
     enabled: false
@@ -211,6 +219,7 @@ cgimap:
     name: ""
     tag: ""
   enabled: false
+  replicaCount: 1
   serviceAnnotations: {}
   priorityClass: "low-priority"
   resources:
@@ -247,8 +256,8 @@ fullHistory:
     tag: ""
   priorityClass: "low-priority"
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   schedule: "* * * * *"
   env:
     OVERWRITE_FHISTORY_FILE: false
@@ -284,8 +293,8 @@ changesetsDump:
     tag: ""
   priorityClass: "low-priority"
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   schedule: "* * * * *"
   env:
     OVERWRITE_CHANGESETS_FILE: false
@@ -319,8 +328,8 @@ dbBackupRestore:
   cronjobs:
     - name: web-db
       serviceAccount:
-        enabled: true
-        name: ohm-web-s3-bucket-access-staging
+        enabled: false
+        name: ""
       enabled: false
       schedule: "* * * * *"
       env:
@@ -333,7 +342,7 @@ dbBackupRestore:
         AWS_S3_BUCKET: secure-bucket
         # Replication stream read at backup time to store the seqno next to the dump.
         # Generic OSM default; deployments override it with their own stream.
-        MINUTE_REPLICATION_URL: https://planet.openstreetmap.org/replication/minute
+        MINUTE_REPLICATION_URL: https://planet.osmseed.org/replication/minute
         # Clean up backups options
         CLEANUP_BACKUPS: true
         RETENTION_DAYS: "30"
@@ -358,8 +367,8 @@ dbBackupRestore:
     - name: osmcha-db
       enabled: false
       serviceAccount:
-        enabled: true
-        name: ohm-web-s3-bucket-access-staging
+        enabled: false
+        name: ""
       schedule: "* * * * *"
       env:
         # DB action: backup/restore
@@ -390,6 +399,38 @@ dbBackupRestore:
         enabled: false
         key: "nodegroup_type"
         values: ["web"]
+    - name: tm-db
+      enabled: false
+      serviceAccount:
+        enabled: false
+        name: ""
+      schedule: "0 3 * * *"
+      env:
+        DB_ACTION: backup
+        SET_DATE_AT_NAME: true
+        BACKUP_CLOUD_FOLDER: database/tm-db
+        BACKUP_CLOUD_FILE: osmseed-tm-db
+        AWS_S3_BUCKET: secure-bucket
+        CLEANUP_BACKUPS: true
+        RETENTION_DAYS: "30"
+      resources:
+        enabled: false
+        requests:
+          enabled: false
+          memory: "1Gi"
+          cpu: "2"
+        limits:
+          enabled: false
+          memory: "2Gi"
+          cpu: "2"
+      nodeSelector:
+        enabled: false
+        label_key: nodegroup_type
+        label_value: web
+      nodeAffinity:
+        enabled: false
+        key: "nodegroup_type"
+        values: ["web"]
 # ====================================================================================================
 # Variables for osm-seed for osmosis, this configuration os to get the planet dump files from apidb
 # ====================================================================================================
@@ -399,8 +440,8 @@ planetDump:
     name: ""
     tag: ""
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   priorityClass: "medium-priority"
   schedule: "* * * * *"
   env:
@@ -436,8 +477,8 @@ replicationJob:
     name: ""
     tag: ""
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   priorityClass: "medium-priority"
   env:
     ENABLE_SEND_SLACK_MESSAGE: "false"
@@ -461,7 +502,7 @@ replicationJob:
     key: "nodegroup_type"
     values: ["web"]
 # ====================================================================================================
-# Variables for osm-seed to pupulate the apidb
+# Variables for osm-seed to populate the apidb
 # ====================================================================================================
 populateApidb:
   enabled: false
@@ -470,8 +511,8 @@ populateApidb:
     tag: ""
   priorityClass: "medium-priority"
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   env:
     URL_FILE_TO_IMPORT: "http://download.geofabrik.de/europe/monaco-latest.osm.pbf"
   resources:
@@ -539,7 +580,7 @@ tilerDb:
     localVolumeHostPath: /mnt/tiler-db-data
     localVolumeSize: 10Gi
     # AWS
-    AWS_ElasticBlockStore_volumeID: vol-0cf316caac04fc623
+    AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 20Gi
   sharedMemorySize: 64Mi
   resources:
@@ -590,8 +631,8 @@ tilerImposm:
     name: ""
     tag: ""
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   priorityClass: "medium-priority"
   livenessProbe:
     enabled: true
@@ -627,7 +668,7 @@ tilerImposm:
     localVolumeHostPath: /mnt/tiler-imposm-data
     localVolumeSize: 10Gi
     # AWS
-    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
   resources:
     enabled: false
@@ -657,8 +698,8 @@ tilerServer:
     tag: ""
   priorityClass: "medium-priority"
   serviceAccount:
-    enabled: true
-    name: ohm-s3-bucket-access-staging
+    enabled: false
+    name: ""
   replicaCount: 1
   serviceAnnotations: {}
   ingress:
@@ -666,13 +707,14 @@ tilerServer:
     className: ""
     annotations: {}
     hosts:
-      - tiler2.dev.openhistoricalmap.org
+      - tiler.osmseed.org
     tls:
       enabled: false
       secretName: ""
   env:
     TILER_SERVER_PORT: 9090
-    TILER_CACHE_TYPE: s3 #In case TILER_CACHE_TYPE=s3, the kubernetes teemplate will come up with a deployment pod
+    # s3 renders a Deployment (stateless); file renders a StatefulSet with persistenceDisk
+    TILER_CACHE_TYPE: s3
     TILER_CACHE_BASEPATH: /mnt/data
     TILER_CACHE_MAX_ZOOM: 22
     # in case s3
@@ -680,9 +722,17 @@ tilerServer:
     TILER_CACHE_REGION: us-east-1
     TILER_CACHE_AWS_ACCESS_KEY_ID: xyz
     TILER_CACHE_AWS_SECRET_ACCESS_KEY: xyz/q
+    # Optional custom S3 endpoint (MinIO, etc.). Empty = AWS default.
+    TILER_CACHE_AWS_ENDPOINT: ""
     EXECUTE_REINDEX: false
     EXECUTE_VACUUM_ANALYZE: false
   command: "./start.sh" # ./start.sh & ./tile_cache_downloader.sh & ./expire-watcher.sh
+  # HPA. Only applies when TILER_CACHE_TYPE=s3 (Deployment).
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 4
+    cpuUtilization: 60
   # In case you use TILER_CACHE_TYPE: file with  persistenceDisk
   persistenceDisk:
     enabled: false
@@ -692,7 +742,7 @@ tilerServer:
     localVolumeHostPath: /mnt/tiler-server-data
     localVolumeSize: 10Gi
     # AWS
-    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
   resources:
     enabled: false
@@ -725,7 +775,7 @@ tilerServerMartin:
   replicaCount: 1
   # POSTGRES_* are injected from the tiler-db configmap (envFrom).
   env:
-    OHM_DOMAIN: openhistoricalmap.org
+    OHM_DOMAIN: osmseed.org
     MARTIN_WORKER_PROCESSES: 8
     MARTIN_POOL_SIZE: 50
     # Only needed to publish vtiles_languages.geojson to S3.
@@ -798,17 +848,28 @@ tilerVarnish:
 # ====================================================================================================
 osmxAdiffBuilder:
   enabled: false
-  # NOTE: image repo keeps the ohmx name (not renamed in ghcr).
-  # serviceAccountName: ohm-s3-bucket-access-staging
-  # awsSecretName: ohmx-adiff-aws-creds
+  # Image is not built by this repo's chartpress; set it from the umbrella chart.
+  image:
+    name: ""
+    tag: ""
+  # ServiceAccount with S3 access (IRSA). Empty = default SA.
+  serviceAccountName: ""
+  # Secret with AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY, loaded via envFrom. Empty = skip.
+  awsSecretName: ""
+  # initialDelaySeconds must cover the initial osmx build (planet download + db build)
+  livenessProbe:
+    initialDelaySeconds: 600
+    periodSeconds: 60
+    timeoutSeconds: 10
+    failureThreshold: 3
   # WORKDIR inside the container is /data
   env:
     PLANET_PBF_URL: 
-      https://s3.amazonaws.com/planet.openhistoricalmap.org/planet/planet-latest.osm.pbf
-    REPLICATION_URL: https://s3.amazonaws.com/planet.openhistoricalmap.org/replication/minute
-    API_URL: https://www.openhistoricalmap.org
+      https://planet.osmseed.org/planet/planet-latest.osm.pbf
+    REPLICATION_URL: https://planet.osmseed.org/replication/minute
+    API_URL: https://www.osmseed.org
     OSMX_INITIAL_SEQNUM: "0"
-    AWS_S3_BUCKET: s3://planet.openhistoricalmap.org
+    AWS_S3_BUCKET: s3://planet.osmseed.org
   persistenceDisk:
     enabled: true
     mountPath: /data
@@ -856,10 +917,20 @@ planetStats:
     AWS_S3_ENDPOINT: ""
   resources:
     enabled: false
+    requests:
+      memory: "2Gi"
+      cpu: "1"
+    limits:
+      memory: "4Gi"
+      cpu: "2"
   nodeSelector:
     enabled: false
+    label_key: nodegroup_type
+    label_value: job
   nodeAffinity:
     enabled: false
+    key: "nodegroup_type"
+    values: ["job"]
 
 
 # ====================================================================================================
@@ -912,7 +983,7 @@ tilerMonitorPipeline:
   replicaCount: 1
   env:
     MONITOR_PORT: 8001
-    OHM_API_BASE: https://www.openhistoricalmap.org/api/0.6
+    OHM_API_BASE: https://www.osmseed.org/api/0.6
     CHANGESET_LIMIT: 30
     TILE_CHECK_ZOOM: 16
     TILER_MONITORING_CHECK_INTERVAL: "1h"
@@ -978,7 +1049,7 @@ tilerMonitorLanguage:
     label_value: web
 
 # ====================================================================================================
-# Variables for tiler-server cache cleaner, only avaliable in case the TILER_CACHE_TYPE = s3
+# Variables for tiler-server cache cleaner, only available in case the TILER_CACHE_TYPE = s3
 # ====================================================================================================
 tilerCacheCleanerJob:
   enabled: false
@@ -1021,10 +1092,19 @@ tmDb:
     POSTGRES_DB: tm
     POSTGRES_PASSWORD: tm
     POSTGRES_USER: postgres
+    # Postgres tuning passed to the image entrypoint
+    POSTGRES_DB_MAX_CONNECTIONS: 100
+    POSTGRES_DB_SHARED_BUFFERS: 128MB
+    POSTGRES_DB_WORK_MEM: 4MB
+    POSTGRES_DB_MAINTENANCE_WORK_MEM: 64MB
+    POSTGRES_DB_EFFECTIVE_CACHE_SIZE: 4GB
   persistenceDisk:
     enabled: false
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
+    # AWS (only provider supported by tm-db-pd.yaml today)
+    AWS_ElasticBlockStore_volumeID: ""
+    AWS_ElasticBlockStore_size: 20Gi
   resources:
     enabled: false
     requests:
@@ -1070,20 +1150,25 @@ tmApi:
     POSTGRES_PASSWORD: "tm"
     POSTGRES_USER: "postgres"
     POSTGRES_PORT: 5432
-    TM_ORG_NAME: "OpenStreetMap"
-    TM_ORG_CODE: "OSM"
-    TM_ORG_URL: "openstreetmap.org"
-    TM_ORG_PRIVACY_POLICY_URL: "openstreetmap.org/copyright"
-    TM_ORG_GITHUB: "github.com/openstreetmap"
-    OSM_SERVER_URL: "https://openstreetmap.org"
-    OSM_NOMINATIM_SERVER_URL: "https://nominatim.openstreetmap.org"
-    OSM_REGISTER_URL: "https://openstreetmap.org/user/new"
-    ID_EDITOR_URL: "https://openstreetmap.org/edit?editor=id"
-    POTLATCH2_EDITOR_URL: "https://openstreetmap.org/edit?editor=potlatch2"
+    TM_ORG_NAME: "OSM Seed"
+    TM_ORG_CODE: "OSMSEED"
+    TM_ORG_URL: "osmseed.org"
+    TM_ORG_PRIVACY_POLICY_URL: "osmseed.org/copyright"
+    TM_ORG_GITHUB: "github.com/osm-seed"
+    TM_ORG_TWITTER: ""
+    TM_ORG_FB: ""
+    TM_ORG_INSTAGRAM: ""
+    TM_ORG_YOUTUBE: ""
+    OSM_SERVER_URL: "https://www.osmseed.org"
+    OSM_NOMINATIM_SERVER_URL: "https://nominatim-api.osmseed.org"
+    OSM_REGISTER_URL: "https://www.osmseed.org/user/new"
+    ID_EDITOR_URL: "https://www.osmseed.org/edit?editor=id"
+    POTLATCH2_EDITOR_URL: "https://www.osmseed.org/edit?editor=potlatch2"
     TM_SECRET: "s0m3l0ngr4nd0mstr1ng-b3cr34tiv3"
     TM_CONSUMER_KEY: "example"
     TM_CONSUMER_SECRET: "example"
-    TM_EMAIL_FROM_ADDRESS: "no-reply@openstreetmap.org"
+    TM_EMAIL_FROM_ADDRESS: "no-reply@osmseed.org"
+    TM_EMAIL_CONTACT_ADDRESS: ""
     TM_SMTP_HOST: "email-smtp.us-east-1.amazonaws.com"
     TM_SMTP_PORT: 25
     TM_SMTP_USER: ""
@@ -1091,6 +1176,15 @@ tmApi:
     TM_DEFAULT_LOCALE: "en"
     TM_APP_API_URL: ""
     TM_APP_BASE_URL: ""
+    TM_APP_API_VERSION: "v2"
+    TM_IMPORT_MAX_FILESIZE: 1000000
+    TM_MAX_AOI_AREA: 5000
+    TM_DEFAULT_CHANGESET_COMMENT: ""
+    # OAuth2 app registered in the OSM website
+    TM_CLIENT_ID: ""
+    TM_CLIENT_SECRET: ""
+    TM_REDIRECT_URI: ""
+    TM_SCOPE: ""
     OHSOME_STATS_TOKEN: "dummy-token-for-migrations"
     POSTGRES_TEST_DB: "postgresql://user:pass@db:5432/test_db"
   resources:
@@ -1155,9 +1249,25 @@ nominatimApi:
     NOMINATIM_ADDRESS_LEVEL_CONFIG_URL: 
       https://gist.githubusercontent.com/lonvia/8502c61b3dd159e67eb8be8368d864c1/raw/d05a1d681230632bb2e35cbf363f2baec8acd657/address-levels.json
     UPDATE_MODE: continuous #Options: `continuous`/`once`/`catch-up`/`none` (default: `none`)
-    OSMSEED_WEB_API_DOMAIN: www.openstreetmap.org
+    OSMSEED_WEB_API_DOMAIN: www.osmseed.org
     # Public host the UI calls for the Nominatim API. Should match ingress.hosts[0].
     NOMINATIM_API_ENDPOINT: nominatim-api.osmseed.org
+  # First import can take many hours: startupProbe keeps liveness off until /status answers.
+  # failureThreshold * periodSeconds = max import time allowed (1440 * 60s = 24h).
+  startupProbe:
+    enabled: true
+    path: /status
+    port: 8080
+    periodSeconds: 60
+    timeoutSeconds: 30
+    failureThreshold: 1440
+  livenessProbe:
+    enabled: true
+    path: /status
+    port: 8080
+    periodSeconds: 60
+    timeoutSeconds: 30
+    failureThreshold: 6
   resources:
     enabled: false
     requests:
@@ -1178,7 +1288,7 @@ nominatimApi:
     localVolumeHostPath: /mnt/nominatim-db-data
     localVolumeSize: 10Gi
     # AWS
-    AWS_ElasticBlockStore_volumeID: vol-0403ccb65fb4a85e9
+    AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 100Gi
   nodeSelector:
     enabled: false
@@ -1227,7 +1337,7 @@ overpassApi:
     localVolumeHostPath: /mnt/overpass-api-db-data
     localVolumeSize: 10Gi
     # AWS
-    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
   resources:
     enabled: false
@@ -1269,16 +1379,16 @@ taginfoWeb:
     className: ""
     annotations: {}
     hosts:
-      - taginfo-dev.staging.openhistoricalmap.org
+      - taginfo.osmseed.org
     tls:
       enabled: false
       secretName: ""
   env:
     OVERWRITE_CONFIG_URL: ""
-    TAGINFO_DB_BASE_URL: https://planet.openhistoricalmap.org.s3.amazonaws.com/taginfo
+    TAGINFO_DB_BASE_URL: https://planet.osmseed.org/taginfo
     ENVIRONMENT: development
     FETCH_DB_FILES: "false"
-    INSTANCE_NAME: "OHM Taginfo"
+    INSTANCE_NAME: "OSM Seed Taginfo"
     INSTANCE_DESCRIPTION: "This is a taginfo test instance"
     INSTANCE_ICON: /img/logo/world.png
     INSTANCE_CONTACT: Anonymous
@@ -1357,8 +1467,8 @@ osmSimpleMetrics:
     name: ""
     tag: ""
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   priorityClass: "medium-priority"
   schedule: "* */1 * * *"
   resources:
@@ -1380,7 +1490,7 @@ osmSimpleMetrics:
     key: "nodegroup_type"
     values: ["web"]
 # ====================================================================================================
-# Variables for osm-simple-metrics
+# Variables for replication monitoring (checks the replication stream and can create missing files)
 # ====================================================================================================
 monitoringReplication:
   enabled: false
@@ -1389,8 +1499,8 @@ monitoringReplication:
     tag: ""
   priorityClass: "medium-priority"
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   schedule: "* */1 * * *"
   env:
     CREATE_MISSING_FILES: empty
@@ -1422,8 +1532,8 @@ changesetReplicationJob:
     name: ""
     tag: ""
   serviceAccount:
-    enabled: true
-    name: ohm-web-s3-bucket-access-staging
+    enabled: false
+    name: ""
   priorityClass: "medium-priority"
   resources:
     enabled: false
@@ -1460,6 +1570,7 @@ osmchaApi:
   image:
     name: ""
     tag: ""
+  replicaCount: 1
   serviceAnnotations: {}
   ingress:
     enabled: false
@@ -1477,10 +1588,10 @@ osmchaApi:
     DJANGO_SECRET_KEY: abc
     DJANGO_SECURE_SSL_REDIRECT: "False"
     OSM_SERVER_URL: https://www.osmseed.org
-    OAUTH_REDIRECT_URI: https://osmcha-staging.osmseed.org/oauth-landing.html
+    OAUTH_REDIRECT_URI: https://osmcha.osmseed.org/oauth-landing.html
     OSM_PLANET_BASE_URL: https://s3.amazonaws.com/planet.osmseed.org/replication/changesets/
     ## frontend
-    OSMCHA_URL: https://osmcha-staging.osmseed.org
+    OSMCHA_URL: https://osmcha.osmseed.org
     OSMCHA_API_URL: www.osmseed.org
     OAUTH2_OSM_KEY: abc
     OAUTH2_OSM_SECRET: xyz
@@ -1536,7 +1647,7 @@ osmchaDb:
     localVolumeHostPath: /mnt/db-data/osmcha-data
     localVolumeSize: 10Gi
     # AWS
-    AWS_ElasticBlockStore_volumeID: vol-1234bcd
+    AWS_ElasticBlockStore_volumeID: ""
     AWS_ElasticBlockStore_size: 50Gi
   nodeSelector:
     enabled: false
@@ -1557,7 +1668,7 @@ planetFiles:
     tag: ""
 
 level0:
-  enabled: true
+  enabled: false
   image:
     name: ""
     tag: ""
@@ -1572,16 +1683,16 @@ level0:
     className: ""
     annotations: {}
     hosts:
-      - level0-dev.openstreetmap.org
+      - level0.osmseed.org
     tls:
       enabled: false
       secretName: ""
   env:
-    OSM_WEBSITE_URL: https://www.openstreetmap.org
-    OSM_API_URL: https://www.openstreetmap.org/api/0.6/
+    OSM_WEBSITE_URL: https://www.osmseed.org
+    OSM_API_URL: https://www.osmseed.org/api/0.6/
     OAUTH2_CLIENT_ID: "xyz"
     OAUTH2_CLIENT_SECRET: "abc"
-    OVERPASS_API: "overpass-api.oenstreetmap.org"
+    OVERPASS_API: "overpass-api.osmseed.org"
     MAX_REQUEST_OBJECTS: "500"
   resources:
     enabled: false

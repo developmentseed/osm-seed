@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-cache
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-cache-deployment
+    component: tiler-cache
     release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.tilerCache.replicaCount }}
@@ -59,7 +59,7 @@ spec:
           envFrom:
           # sqs_processor connects to the tiler DB (POSTGRES_* from this configmap)
           - configMapRef:
-              name: {{ .Release.Name }}-tiler-db-cm
+              name: {{ .Release.Name }}-tiler-db-env
               optional: true
           # /health is valid because sqs_processor writes the heartbeat; if sqs dies,
           # /health returns 503 and the container exits, so k8s restarts it.

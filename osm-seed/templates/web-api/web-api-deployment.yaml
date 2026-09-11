@@ -1,41 +1,41 @@
-{{- if .Values.web.enabled -}}
+{{- if .Values.webApi.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-web
+  name: {{ .Release.Name }}-web-api
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: web-deployment
+    component: web-api
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:
-  replicas: {{ .Values.web.replicaCount }}
+  replicas: {{ .Values.webApi.replicaCount }}
   selector:
     matchLabels:
       app: {{ template "osm-seed.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-web
+      run: {{ .Release.Name }}-web-api
   template:
     metadata:
       labels:
         app: {{ template "osm-seed.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-web
+        run: {{ .Release.Name }}-web-api
     spec:
-      {{- if .Values.web.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.web.serviceAccount.name }}
+      {{- if .Values.webApi.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.webApi.serviceAccount.name }}
       automountServiceAccountToken: true
       {{- end }}
-      priorityClassName: {{ .Release.Name }}-{{ .Values.web.priorityClass | default "high-priority" }}
+      priorityClassName: {{ .Release.Name }}-{{ .Values.webApi.priorityClass | default "high-priority" }}
       containers:
-        - name: {{ .Chart.Name }}-web
-          image: "{{ .Values.web.image.name }}:{{ .Values.web.image.tag }}"
+        - name: {{ .Chart.Name }}-web-api
+          image: "{{ .Values.webApi.image.name }}:{{ .Values.webApi.image.tag }}"
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
           livenessProbe:
-            {{- if .Values.web.livenessProbeExec }}
+            {{- if .Values.webApi.livenessProbeExec }}
             exec:
               command:
               - /bin/bash
@@ -53,17 +53,17 @@ spec:
             initialDelaySeconds: 600 # 10 min, because the compile process takes time.
             timeoutSeconds: 30
             {{- end }}
-          {{- if .Values.web.resources.enabled }}
+          {{- if and .Values.webApi.resources.enabled (or .Values.webApi.resources.requests.enabled .Values.webApi.resources.limits.enabled) }}
           resources:
-            {{- if .Values.web.resources.requests.enabled }}
+            {{- if .Values.webApi.resources.requests.enabled }}
             requests:
-              memory: {{ .Values.web.resources.requests.memory }}
-              cpu: {{ .Values.web.resources.requests.cpu }}
+              memory: {{ .Values.webApi.resources.requests.memory }}
+              cpu: {{ .Values.webApi.resources.requests.cpu }}
             {{- end }}
-            {{- if .Values.web.resources.limits.enabled }}
+            {{- if .Values.webApi.resources.limits.enabled }}
             limits:
-              memory: {{ .Values.web.resources.limits.memory }}
-              cpu: {{ .Values.web.resources.limits.cpu }}
+              memory: {{ .Values.webApi.resources.limits.memory }}
+              cpu: {{ .Values.webApi.resources.limits.cpu }}
             {{- end }}
           {{- end }}
           env:
@@ -71,24 +71,24 @@ spec:
             - name: GET_HOSTS_FROM
               value: dns
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-db
+              value: {{ .Release.Name }}-web-db
             - name: POSTGRES_DB
-              value: {{ .Values.db.env.POSTGRES_DB }}
+              value: {{ .Values.webDb.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
-              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+              value: {{ quote .Values.webDb.env.POSTGRES_PASSWORD }}
             - name: POSTGRES_USER
-              value: {{ .Values.db.env.POSTGRES_USER }}
+              value: {{ .Values.webDb.env.POSTGRES_USER }}
             - name: OPENSTREETMAP_memcache_servers
               value: {{ .Release.Name }}-memcached:11211
             # cgimap always runs as its own pod (external)
             - name: EXTERNAL_CGIMAP
               value: "true"
             - name: CGIMAP_URL
-              value: {{ .Release.Name }}-cgimap-service
+              value: {{ .Release.Name }}-cgimap
             - name: CGIMAP_PORT
               value: {{ quote 80 }}
             # ---- Everything else passes straight through from web.env ----
-            {{- range $k, $v := .Values.web.env }}
+            {{- range $k, $v := .Values.webApi.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
@@ -98,33 +98,34 @@ spec:
       volumes:
         - emptyDir:
             medium: Memory
-            sizeLimit: {{ .Values.web.sharedMemorySize }}
+            sizeLimit: {{ .Values.webApi.sharedMemorySize }}
           name: shared-memory
-      {{- if .Values.web.nodeSelector.enabled }}
+      {{- if .Values.webApi.nodeSelector.enabled }}
       nodeSelector:
-        {{ .Values.web.nodeSelector.label_key }} : {{ .Values.web.nodeSelector.label_value }}
+        {{ .Values.webApi.nodeSelector.label_key }} : {{ .Values.webApi.nodeSelector.label_value }}
       {{- end }}
       # Node affinity
-      {{- if .Values.web.nodeAffinity.enabled }}
+      {{- if .Values.webApi.nodeAffinity.enabled }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: {{ .Values.web.nodeAffinity.key }}
+                  - key: {{ .Values.webApi.nodeAffinity.key }}
                     operator: In
                     values:
-                    {{- range .Values.web.nodeAffinity.values }}
+                    {{- range .Values.webApi.nodeAffinity.values }}
                       - {{ . | quote }}
                     {{- end }}
         # Pod anti-affinity, to set that no two pods are scheduled on the same node
-        {{- if .Values.web.podAntiAffinity.enabled }}
+        {{- if .Values.webApi.podAntiAffinity.enabled }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchLabels:
                   app: {{ template "osm-seed.name" . }}
-                  component: web-deployment
+                  release: {{ .Release.Name }}
+                  run: {{ .Release.Name }}-web-api
               topologyKey: "kubernetes.io/hostname"
         {{- end }}
       {{- end }}

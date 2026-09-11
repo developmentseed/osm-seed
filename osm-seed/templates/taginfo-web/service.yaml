@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "osm-seed.fullname" . }}-taginfo
+  name: {{ .Release.Name }}-taginfo-web
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: taginfo-service
+    component: taginfo-web
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
   {{- with .Values.taginfoWeb.serviceAnnotations }}

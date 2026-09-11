@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-tiler-db
   labels:
     app: {{ template "osm-seed.name" . }}
-    component: tiler-db-service
+    component: tiler-db
     environment: {{ .Values.environment }}
     release: {{ .Release.Name }}
 spec:

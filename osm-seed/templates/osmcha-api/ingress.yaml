@@ -1,10 +1,10 @@
-{{- if and .Values.web.enabled .Values.web.ingress.enabled }}
-{{- $ing := .Values.web.ingress -}}
+{{- if and .Values.osmchaApi.enabled .Values.osmchaApi.ingress.enabled }}
+{{- $ing := .Values.osmchaApi.ingress -}}
 {{- $hosts := $ing.hosts -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-ingress-web
+  name: {{ .Release.Name }}-osmcha-api
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -17,7 +17,7 @@ spec:
         {{- range $hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ $ing.tls.secretName | default (printf "%s-tls-secret" .Release.Name) }}
+      secretName: {{ $ing.tls.secretName | default (printf "%s-secret-osmcha" .Release.Name) }}
   {{- end }}
   rules:
     {{- range $hosts }}
@@ -28,7 +28,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ $.Release.Name }}-service-web
+                name: {{ $.Release.Name }}-osmcha-api
                 port:
                   number: 80
     {{- end }}
