@@ -5,6 +5,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-osmcha-api
+  labels:
+    app: {{ template "osm-seed.name" . }}
+    component: osmcha-api
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
   {{- with $ing.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
